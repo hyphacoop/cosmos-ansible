@@ -1,0 +1,10 @@
+---
+# yamllint disable rule:line-length
+all:
+  vars:
+    genesis_url: "https://github.com/cosmos/vega-test/blob/master/public-testnet/modified_genesis_public_testnet/genesis.json.gz?raw=true"
+    gaiad_home_autoclear: false
+  children:
+    gaia:
+      hosts:
+        root@ansible.stg.earthball.xyz:
