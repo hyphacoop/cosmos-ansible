@@ -209,13 +209,13 @@
   when: not use_cosmovisor
   systemd:
     daemon_reload: true
-    state: started
+    state: restarted
     name: gaiad
 - name: Start cosmovisor systemd service
   when: use_cosmovisor
   systemd:
     daemon_reload: true
-    state: started
+    state: restarted
     name: cosmovisor
 
 
