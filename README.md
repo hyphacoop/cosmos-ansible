@@ -10,6 +10,14 @@ Modify `inventory.ini` to add your own machine.
 ansible-playbook gaia.yml -i inventory.yml
 ```
 
+## TODOs:
+
+- [ ] Docs!
+- [ ] Firewall rules
+- [ ] Populate persistent_peers
+- [ ] Roles extending gaiad
+- [ ] Examples
+
 ## Structure
 
 - The main role for Gaia nodes is `gaia`, most configuration is there
