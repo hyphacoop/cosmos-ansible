@@ -3,6 +3,7 @@
 gaiad_user: gaia
 gaiad_user_home: "/home/{{gaiad_user}}"
 gaiad_home: "{{gaiad_user_home}}/.gaiad"
+gaiad_home_autoclear: false
 gaiad_version: v5.0.5
 gaiad_repository: https://github.com/cosmos/gaia.git
 gaiad_bin: "{{ gaiad_user_home }}/go/bin/gaiad"
