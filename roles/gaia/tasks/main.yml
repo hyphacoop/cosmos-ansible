@@ -186,6 +186,11 @@
     src: cosmovisor.service.j2
     dest: /etc/systemd/system/cosmovisor.service
 
+- name: Restart journalctl so that the logs may flow
+  systemd:
+    state: restarted
+    name: systemd-journald
+
 - name: Start gaiad systemd service
   when: not use_cosmovisor
   systemd:
@@ -198,6 +203,7 @@
     daemon_reload: true
     state: started
     name: cosmovisor
+
 
 # Misc output?
 # - name: print info about the node?
