@@ -1,0 +1,35 @@
+---
+
+- name: Upgrade the system
+  apt:
+    update_cache: true
+    upgrade: dist
+  register: apt_cache
+  retries: 50
+  until: apt_cache is success
+
+- name: Install system required packages
+  apt:
+    pkg:
+      - ntp
+      - python3
+      - python3-pip
+      - python3-apt
+      - curl
+      - apt-transport-https
+      - software-properties-common
+      - wget
+      - git
+      - build-essential
+
+- name: Install basic utils
+  apt:
+    state: present
+    pkg:
+      - curl
+      - htop
+      - mtr-tiny
+
+- name: Set timezone to America/Toronto
+  timezone:
+    name: America/Toronto

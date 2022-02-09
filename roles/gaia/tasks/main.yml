@@ -1,12 +1,7 @@
 ---
-- name: Set up apt dependencies
-  apt:
-    pkg:
-      - build-essential
-      - git
-      - wget
-      - python3
-      - python3-pip
+- include_role:
+    name: common
+
 - name: Set up pip dependencies
   pip:
     name: toml
