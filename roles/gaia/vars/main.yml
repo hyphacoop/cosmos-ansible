@@ -7,14 +7,16 @@ gaiad_home_autoclear: false
 gaiad_version: v5.0.5
 gaiad_repository: https://github.com/cosmos/gaia.git
 gaiad_bin: "{{ gaiad_user_home }}/go/bin/gaiad"
+gaiad_service_name: "gaiad"
 
 # Cosmovisor settings
 ## TODO: Support arbitrary cosmovisor branches
+use_cosmovisor: true
 cosmovisor_version: v1.0.0
 cosmovisor_repository: github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor
 cosmovisor_bin: "{{gaiad_user_home}}/go/bin/cosmovisor"
 cosmovisor_home: "{{ gaiad_home }}/cosmovisor"
-use_cosmovisor: true
+cosmovisor_service_name: "cosmovisor"
 
 # Go configuration
 go_arch: "linux-amd64"
@@ -99,3 +101,5 @@ client_broadcast_mode: sync
 # genesis_file: ""
 # addrbook_file: ""
 # addrbook_url: "https://quicksync.io/addrbook.cosmos.json"
+# node_key_file: ""
+# priv_validator_key_file

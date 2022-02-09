@@ -16,7 +16,7 @@ ansible-playbook gaia.yml -i inventory.yml
 - [ ] Firewall rules
 - [ ] Populate persistent_peers
 - [ ] Roles extending gaiad
-- [ ] Examples
+- [ ] More Examples
 
 ## Structure
 
@@ -37,3 +37,16 @@ Prerequisits:
 - `pip3 install autopep8 yamllint pylint`
 
 Run `./lint.sh` after making changes to detect syntax errors and normalize the formatting
+
+## Useful variables:
+
+- `gaia_version`: `v5.0.5` Set the tag or commit or branch to use when checking out the gaia version to compile.
+- `gaia_repository`: `https://github.com/cosmos/gaia.git` The git repo to use to checkout the source tree for gaia
+- `use_cosmovisor`: `true` Whether to use cosmovisor or a raw `gaiad` service
+- `genesis_url`: `""` a URL to download the gzipped genesis file from
+- `genesis_file`: `""` a file path (within this folder) to the genesis file to use
+- `addrbook_url`: `""` a URL to download the addrbook.json file from. e.g. [via quicksync.io](https://quicksync.io/addrbook.cosmos.json)
+- `addrbook_file`: `""` a file path (within this folder) to the addrbook.json file to use
+- `p2p_pex`: `true` Whether p2p peer exchange is enabled
+- `p2p_persistent_peers` hardcoded list of peers to connect to (e.g. for bootstrapping)
+- `fast_sync`: `true`

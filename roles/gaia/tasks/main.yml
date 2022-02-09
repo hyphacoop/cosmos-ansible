@@ -188,12 +188,12 @@
   when: not use_cosmovisor
   template:
     src: gaiad.service.j2
-    dest: /etc/systemd/system/gaiad.service
+    dest: "/etc/systemd/system/{{gaiad_service_name}}.service"
 - name: configure systemd service for gaiad
   when: use_cosmovisor
   template:
     src: cosmovisor.service.j2
-    dest: /etc/systemd/system/cosmovisor.service
+    dest: "/etc/systemd/system/{{cosmovisor_service_name}}.service"
 
 - name: Restart journalctl so that the logs may flow
   systemd:
