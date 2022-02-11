@@ -1,0 +1,105 @@
+---
+# General Gaiad settings
+gaiad_user: gaia
+gaiad_user_home: "/home/{{gaiad_user}}"
+gaiad_home: "{{gaiad_user_home}}/.gaiad"
+gaiad_home_autoclear: false
+gaiad_version: v5.0.5
+gaiad_repository: https://github.com/cosmos/gaia.git
+gaiad_bin: "{{ gaiad_user_home }}/go/bin/gaiad"
+gaiad_service_name: "gaiad"
+
+# Cosmovisor settings
+## TODO: Support arbitrary cosmovisor branches
+use_cosmovisor: true
+cosmovisor_version: v1.0.0
+cosmovisor_repository: github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor
+cosmovisor_bin: "{{gaiad_user_home}}/go/bin/cosmovisor"
+cosmovisor_home: "{{ gaiad_home }}/cosmovisor"
+cosmovisor_service_name: "cosmovisor"
+
+# Go configuration
+go_arch: "linux-amd64"
+go_version: "1.16.4"
+
+## config.toml variables
+# monicker: "" (taken from hostname on init)
+fast_sync: true
+abci: socket
+
+### RPC
+rpc_port: '26657'
+
+### P2P
+p2p_port: '26656'
+p2p_external_address: ''
+p2p_seeds: ''
+p2p_persistent_peers: ''
+p2p_upnp: false
+p2p_pex: true
+p2p_seed_mode: false
+p2p_private_peer_ids: false
+
+### Statesync
+statesync_enabled: false
+statesync_rpc_servers: ''
+statesync_trust_height: 0
+statesync_trust_hash: ''
+statesync_trust_period: 168h0m0s
+statesync_discovery_time: 15s
+statesync_chunk_request_timeout: 10s
+# TODO: Why does my config say 4 when it isn't default?
+statesync_chunk_fetchers: '4'
+
+### Fastsync
+fastsync_version: v0
+# TODO: All the other fastsync versions?
+
+prometheus_enabled: false
+prometheus_listen_addr: :26660
+instrumentation_namespace: tendermint
+
+## app.toml variables
+minimum_gas_prices: ''
+pruning: default
+pruning_keep_recent: '0'
+pruning_keep_every: '0'
+pruning_interval: '0'
+halt_height: '0'
+halt_time: '0'
+min_retain_blocks: '0'
+inter_block_cache: true
+
+### telemetry
+telemetry_service_name: ''
+telemetry_enabled: false
+telemetry_enable_hostname: false
+telemetry_enable_hostname_label: false
+telemetry_enable_service_label: fase
+prometius_retention_time: '0'
+
+### API
+api_enabled: false
+api_swagger: false
+api_port: '1317'
+
+### grpc
+grpc_enabled: true
+grpc_port: '9090'
+
+### state-sync
+statesync_snapshot_interval: 0
+statesync_snapshot_keep_recent: 2
+
+### client.toml variables
+client_keyring_backend: os
+client_broadcast_mode: sync
+
+# Vars with no defaults (to prevent code from running)
+# These don't get put into config files
+# genesis_url: ""
+# genesis_file: ""
+# addrbook_file: ""
+# addrbook_url: "https://quicksync.io/addrbook.cosmos.json"
+# node_key_file: ""
+# priv_validator_key_file

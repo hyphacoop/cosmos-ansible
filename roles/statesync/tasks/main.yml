@@ -1,0 +1,8 @@
+---
+- name: Configure gaia node
+  include_role:
+    name: gaia
+    vars:
+      statesync_snapshot_interval: 1000
+      statesync_snapshot_keep_recent: 2
+      p2p_upnp: true

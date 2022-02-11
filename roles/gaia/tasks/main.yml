@@ -1,0 +1,218 @@
+---
+- include_role:
+    name: common
+
+- name: Set up pip dependencies
+  pip:
+    name: toml
+
+- name: Ensure user exists for gaiad
+  user:
+    name: "{{gaiad_user}}"
+    append: true
+    groups: adm
+    comment: User for gaiad and cosmovisor services
+
+- name: Check golang version
+  shell: |
+    PATH=$PATH:/usr/local/go/bin:{{ ansible_env.HOME }}/go/bin
+    go version
+  register: go_current_version
+  ignore_errors: true
+
+- name: Download golang
+  when: not go_version in go_current_version.stdout
+  get_url:
+    url: "https://golang.org/dl/go{{go_version}}.{{go_arch}}.tar.gz"
+    dest: "{{ ansible_env.HOME }}/go.tar.gz"
+- name: Extract golang
+  # TODO: Auto-detect go_arch
+  when: not go_version in go_current_version.stdout
+  shell: |
+    sudo tar -C /usr/local -xzf {{ ansible_env.HOME }}/go.tar.gz
+
+# TODO: Firewall
+# - name: set up firewall (block by default?)
+
+- name: Check gaiad version
+  shell: |
+    PATH=$PATH:/usr/local/go/bin:{{ ansible_env.HOME }}/go/bin
+    gaiad version
+  register: gaiad_current_version
+  ignore_errors: true
+- name: clone and install gaiad
+  when: not gaiad_version in gaiad_current_version.stdout
+  shell: |
+    PATH=$PATH:/usr/local/go/bin:{{ ansible_env.HOME }}/go/bin
+    git clone {{gaiad_repository}}
+    cd gaia
+    git checkout {{gaiad_version}}
+    make install
+
+# Clear gaiad_home if it exists
+- name: Check if gaiad home folder exists
+  stat:
+    path: "{{gaiad_home}}"
+  register: gaiad_home_exists
+- name: Clear gaiad home
+  when: gaiad_home_autoclear
+  file:
+    state: absent
+    path: "{{gaiad_home}}"
+
+# Initialize gaiad home
+- name: initialize gaiad
+  when: gaiad_home_autoclear or not gaiad_home_exists.stat.exists
+  # TODO: should we overwrite?
+  shell: |
+    PATH=$PATH:/usr/local/go/bin:{{ ansible_env.HOME }}/go/bin
+    gaiad init {{inventory_hostname}} --home {{gaiad_home}}
+
+- name: Check cosmovisor version
+  when: use_cosmovisor
+  shell: |
+    PATH=$PATH:/usr/local/go/bin:{{ ansible_env.HOME }}/go/bin
+    cosmovisor --version
+  register: cosmovisor_current
+  ignore_errors: true
+
+- name: clone and install cosmovisor
+  when: use_cosmovisor and not cosmovisor_version in cosmovisor_current.stdout
+  shell: |
+    PATH=$PATH:/usr/local/go/bin:{{ ansible_env.HOME }}/go/bin
+    go install {{cosmovisor_repository}}@{{cosmovisor_version}}
+
+# Genesis file configuration
+- name: download genesis file
+  when: genesis_url is defined
+  shell: |
+    wget {{genesis_url}} -O genesis.json.gz
+    gunzip -c genesis.json.gz > {{gaiad_home}}/config/genesis.json
+- name: copy genesis.json
+  when: genesis_file is defined
+  copy:
+    src: '{{genesis_file}}'
+    dest: '{{gaiad_home}}/config/genesis.json'
+- name: verify genesis file
+  when: genesis_shasum is defined
+  # Throw an error if shasum doesn't match
+  shell: |
+    GENESIS_SHASUM="$(sha256sum {{ gaiad_home }}/config/genesis.json)"
+    if [ $GENESIS_SHASUM != {{ genesis_shasum }} ]; then
+      exit 1
+    fi
+      exit 0
+
+# Config file generation
+- name: copy app.toml
+  when: app_toml_file is defined
+  copy:
+    src: '{{app_toml_file}}'
+    dest: '{{gaiad_home}}/config/app.toml'
+- name: copy config.toml
+  when: config_toml_file is defined
+  copy:
+    src: '{{config_toml_file}}'
+    dest: '{{gaiad_home}}/config/config.toml'
+- name: copy node_key.json
+  when: node_key_file is defined
+  copy:
+    src: '{{node_key_file}}'
+    dest: '{{gaiad_home}}/config/node_key.json'
+- name: copy priv_validator_key.json
+  when: priv_validator_key_file is defined
+  copy:
+    src: '{{priv_validator_key_file}}'
+    dest: '{{gaiad_home}}/config/priv_validator_key.json'
+
+## Addressbook config
+- name: copy addrbook.json
+  when: addrbook_file is defined
+  copy:
+    src: '{{addrbook_file}}'
+    dest: '{{gaiad_home}}/config/addrbook_file.json'
+- name: download addrbook.json from URL
+  when: addrbook_url is defined
+  get_url:
+    url: "{{addrbook_url}}"
+    dest: "{{gaiad_home}}/config/addrbook.json"
+
+## Patching Config files
+- name: generate config json for patching toml files
+  template:
+    src: ansible_vars.json.j2
+    dest: '{{gaiad_home}}/config/ansible_vars.json'
+- name: patch .toml configs with ansible variables
+  script: |
+    copy_config_vars.py --gaiad_home=$(echo {{gaiad_home}}) \
+      --config_file=$(echo {{gaiad_home}}/config/ansible_vars.json)
+- name: delete generated config json
+  file:
+    state: absent
+    path: '{{gaiad_home}}/config/ansible_vars.json'
+
+## Copy go binaries
+- name: Copy go binaries to gaiad user
+  copy:
+    remote_src: true
+    src: '{{ ansible_env.HOME }}/go'
+    dest: '/home/{{gaiad_user}}/'
+    owner: "{{ gaiad_user }}"
+
+## Configure cosmovisor
+- name: Prepare cosmovisor folder
+  file:
+    path: '{{ cosmovisor_home }}/genesis/bin'
+    state: directory
+    owner: '{{gaiad_user}}'
+- name: Copy gaiad bin for cosmovisor genesis
+  when: use_cosmovisor
+  copy:
+    # force: false
+    remote_src: true
+    src: '{{ gaiad_bin }}'
+    dest: '{{ cosmovisor_home }}/genesis/bin/gaiad'
+    owner: '{{gaiad_user}}'
+
+## Set ownership for config files
+- name: Set ownership of gaiad home
+  file:
+    path: '{{ gaiad_home }}'
+    owner: '{{ gaiad_user }}'
+    group: '{{ gaiad_user }}'
+    mode: 0775
+    recurse: true
+
+# Service setup
+- name: configure systemd service for gaiad
+  when: not use_cosmovisor
+  template:
+    src: gaiad.service.j2
+    dest: "/etc/systemd/system/{{gaiad_service_name}}.service"
+- name: configure systemd service for gaiad
+  when: use_cosmovisor
+  template:
+    src: cosmovisor.service.j2
+    dest: "/etc/systemd/system/{{cosmovisor_service_name}}.service"
+
+- name: Restart journalctl so that the logs may flow
+  systemd:
+    state: restarted
+    name: systemd-journald
+
+- name: Start gaiad systemd service
+  when: not use_cosmovisor
+  systemd:
+    daemon_reload: true
+    state: restarted
+    name: gaiad
+- name: Start cosmovisor systemd service
+  when: use_cosmovisor
+  systemd:
+    daemon_reload: true
+    state: restarted
+    name: cosmovisor
+
+
+# Misc output?
+# - name: print info about the node?

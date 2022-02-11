@@ -1,0 +1,5 @@
+---
+# Configure a gaia node
+- hosts: all
+  roles:
+  - gaia
