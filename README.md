@@ -13,9 +13,12 @@ ansible-playbook gaia.yml -i inventory.yml
 ## TODOs:
 
 - [ ] Docs!
-- [ ] Firewall rules
+- [ ] Block explorer
 - [ ] Populate persistent_peers
 - [ ] Roles extending gaiad
+	- [x] sync state node
+	- [ ] sentry node (needs persistent_peers)
+- [ ] Firewall rules
 - [ ] More Examples
 
 ## Structure
