@@ -11,6 +11,7 @@
     name: "{{gaiad_user}}"
     append: true
     groups: adm
+    shell: /bin/bash
     comment: User for gaiad and cosmovisor services
 
 - name: Check golang version
