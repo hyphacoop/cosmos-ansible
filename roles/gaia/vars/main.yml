@@ -18,10 +18,6 @@ cosmovisor_bin: "{{gaiad_user_home}}/go/bin/cosmovisor"
 cosmovisor_home: "{{ gaiad_home }}/cosmovisor"
 cosmovisor_service_name: "cosmovisor"
 
-# Go configuration
-go_arch: "linux-amd64"
-go_version: "1.16.4"
-
 ## config.toml variables
 # monicker: "" (taken from hostname on init)
 fast_sync: true

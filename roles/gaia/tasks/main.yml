@@ -2,6 +2,12 @@
 - include_role:
     name: common
 
+- name: Set up golang
+  include_role:
+    name: gantsign.golang
+  vars:
+    golang_version: 1.16.4
+
 - name: Set up pip dependencies
   pip:
     name: toml
@@ -12,24 +18,6 @@
     append: true
     groups: adm
     comment: User for gaiad and cosmovisor services
-
-- name: Check golang version
-  shell: |
-    PATH=$PATH:/usr/local/go/bin:{{ ansible_env.HOME }}/go/bin
-    go version
-  register: go_current_version
-  ignore_errors: true
-
-- name: Download golang
-  when: not go_version in go_current_version.stdout
-  get_url:
-    url: "https://golang.org/dl/go{{go_version}}.{{go_arch}}.tar.gz"
-    dest: "{{ ansible_env.HOME }}/go.tar.gz"
-- name: Extract golang
-  # TODO: Auto-detect go_arch
-  when: not go_version in go_current_version.stdout
-  shell: |
-    sudo tar -C /usr/local -xzf {{ ansible_env.HOME }}/go.tar.gz
 
 # TODO: Firewall
 # - name: set up firewall (block by default?)

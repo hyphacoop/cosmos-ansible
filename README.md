@@ -38,6 +38,7 @@ Prerequisits:
 - Python 3
 - Ansible
 - `pip3 install autopep8 yamllint pylint`
+- `ansible-galaxy install -r ./requirements.yml`
 
 Run `./lint.sh` after making changes to detect syntax errors and normalize the formatting
 

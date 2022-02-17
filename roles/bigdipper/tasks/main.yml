@@ -1,0 +1,73 @@
+---
+# Set up big dipper
+
+- name: "Install python dependencies"
+  pip:
+    name: psycopg2
+
+- name: "Set up docker"
+  inclide_role:
+    name: docker
+
+- name: Set up golang
+  include_role:
+    name: gantsign.golang
+  vars:
+    golang_version: 1.16.4
+
+- name: "Checkout BDJuno"
+  git:
+    repo: 'https://github.com/forbole/bdjuno.git'
+    dest: {{bdjuno_dir}}
+    version: cosmos/v0.44.x
+
+- name: "Install postgres docker container"
+  community.docker.docker_container:
+    state: present
+    name: big-dipper-postgres
+    image: postgres
+    ports:
+      - "5432:5432"
+    env:
+      POSTGRES_PASSWORD: "PASSWORD"
+
+- name: Create postgres database
+  community.postgresql.postgresql_db:
+    name: bigdipper
+
+- name: "Configure users on postgres"
+  community.postgresql.postgresql_user:
+    db: bigdipper
+    name: bdjuno
+    password: PASSWORD
+
+# Loop through schemas one by one
+- name: "Configure postgres schema"
+
+- name: "Install BDJuno"
+  shell: |
+    cd {{bdjuno_dir}}
+    make install
+    bdjuno init --home {{bdjuno_home}}
+
+# Copy config over from template?
+- name: "Configure bdjuno to connect to a node"
+
+- name: "Parse genesis file with bdjuno"
+  shell: bdjuno parse-genesis
+
+# TODO: Default to local node, expose config vars
+- name: "Set up bdjuno systemd service
+- name: "Run bdjuno systemd service"
+- name: "Install hasuna"
+# TODO: Use PG_DATABASE_URL to specify the database?
+- name: "Set up hasuna CLI"
+- name: "Apply metadata to hasura"
+- name: "Set up hasura-actions systemd service"
+- name: "Run hasura-actions service"
+- name: "Set up node+npm"
+- name: "Clone and checkout big-dipper-ui"
+- name: "Create .env file for big-dipper-ui"
+- name: "General config for big-dipper-ui"
+- name: "Create systemd service for big-dipper-ui"
+- name: "Run big-dipper-ui"
