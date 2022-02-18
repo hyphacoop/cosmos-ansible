@@ -14,4 +14,3 @@ all:
           fast_sync: false
         root@143.198.116.23:
           p2p_persistent_peers: "6e08b23315a9f0e1b23c7ed847934f7d6f848c8b@hydrogen.theta-testnet.polypore.xyz:26656"
-          
