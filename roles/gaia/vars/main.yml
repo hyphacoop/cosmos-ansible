@@ -3,11 +3,12 @@
 gaiad_user: gaia
 gaiad_user_home: "/home/{{gaiad_user}}"
 gaiad_home: "{{gaiad_user_home}}/.gaiad"
-gaiad_home_autoclear: false
-gaiad_version: v5.0.5
+gaiad_home_autoclear: true
+gaiad_version: v6.0.0 
 gaiad_repository: https://github.com/cosmos/gaia.git
 gaiad_bin: "{{ gaiad_user_home }}/go/bin/gaiad"
 gaiad_service_name: "gaiad"
+gaiad_create_validator: false
 
 # Cosmovisor settings
 ## TODO: Support arbitrary cosmovisor branches

@@ -2,9 +2,16 @@
 # yamllint disable rule:line-length
 all:
   vars:
-    genesis_url: "https://github.com/cosmos/vega-test/blob/master/public-testnet/modified_genesis_public_testnet/genesis.json.gz?raw=true"
+    genesis_file: "new_genesis.json"
     gaiad_home_autoclear: false
+    gaiad_create_validator: false
   children:
     gaia:
       hosts:
-        root@ansible.stg.earthball.xyz:
+        root@hydrogen.theta-testnet.polypore.xyz:
+          node_key_file: "secrets/node_key.json"
+          priv_validator_key_file: "secrets/priv_validator_key.json"
+          fast_sync: false
+        root@143.198.116.23:
+          p2p_persistent_peers: "6e08b23315a9f0e1b23c7ed847934f7d6f848c8b@hydrogen.theta-testnet.polypore.xyz:26656"
+          

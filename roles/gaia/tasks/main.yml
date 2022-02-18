@@ -66,7 +66,16 @@
   # TODO: should we overwrite?
   shell: |
     PATH=$PATH:/usr/local/go/bin:{{ ansible_env.HOME }}/go/bin
-    gaiad init {{inventory_hostname}} --home {{gaiad_home}}
+    gaiad init {{inventory_hostname}} --home {{gaiad_home}} --chain-id "theta-devnet"
+
+- name: create validator
+  when: gaiad_create_validator
+  shell: |
+    PATH=$PATH:/usr/local/go/bin:{{ ansible_env.HOME }}/go/bin
+    gaiad keys add validator --keyring-backend="test" --home {{gaiad_home}}
+    gaiad add-genesis-account validator '10000000000stake' --home {{gaiad_home}} --keyring-backend="test" 
+    gaiad gentx validator 5000000000stake --keyring-backend="test" --home {{gaiad_home}} --chain-id "theta-devnet"
+    gaiad collect-gentxs --home {{gaiad_home}}
 
 - name: Check cosmovisor version
   when: use_cosmovisor
