@@ -1,0 +1,20 @@
+---
+bigdipper_user: "bigdipper"
+bigdipper_user_home: "/home/{{bigdipper_user}}"
+
+bigdipper_db: "bigdipper"
+bigdipper_db_schema: "bdjuno"
+bigdipper_db_user: "bdjuno"
+bigdipper_db_password: "PASSWORD"
+bigdipper_db_host: "localhost"
+bigdipper_db_port: 5432
+
+bigdipper_genesis_file_path: "/home/gaia/.gaia/config/genesis.json"
+
+bigdipper_rpc_address: "http://localhost:26657"
+bigdipper_grpc_address: "http://localhost:9090"
+bigdipper_telemetry_port: 5000
+
+bdjuno_home: "{{bigdipper_user_home}}/.bdjuno"
+bdjuno_bin: "{{bigdipper_user_home}}/go/bin/bdjuno"
+bdjuno_service_name: "bdjuno"
