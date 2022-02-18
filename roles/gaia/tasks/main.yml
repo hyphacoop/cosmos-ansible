@@ -193,13 +193,13 @@
   systemd:
     daemon_reload: true
     state: restarted
-    name: gaiad
+    name: "{{gaiad_service_name}}"
 - name: Start cosmovisor systemd service
   when: use_cosmovisor
   systemd:
     daemon_reload: true
     state: restarted
-    name: cosmovisor
+    name: "{{cosmovisor_service_name}}"
 
 
 # Misc output?
