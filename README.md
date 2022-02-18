@@ -47,7 +47,7 @@ Run `./lint.sh` after making changes to detect syntax errors and normalize the f
 - `gaia_repository`: `https://github.com/cosmos/gaia.git` The git repo to use to checkout the source tree for gaia
 - `use_cosmovisor`: `true` Whether to use cosmovisor or a raw `gaiad` service
 - `genesis_url`: `""` a URL to download the gzipped genesis file from
-- `genesis_file`: `""` a file path (within this folder) to the genesis file to use
+- `genesis_file`: `""` a file path (within this folder) to the genesis file to use. Note that we don't copy the file if there is an existing file that is the same length.
 - `addrbook_url`: `""` a URL to download the addrbook.json file from. e.g. [via quicksync.io](https://quicksync.io/addrbook.cosmos.json)
 - `addrbook_file`: `""` a file path (within this folder) to the addrbook.json file to use
 - `p2p_pex`: `true` Whether p2p peer exchange is enabled
