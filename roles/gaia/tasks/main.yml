@@ -2,6 +2,11 @@
 - include_role:
     name: common
 
+- name: Setup and enable swap
+  include_role:
+    name: swap
+  when: enable_swap | default(false) | bool
+
 - name: Set up pip dependencies
   pip:
     name: toml
