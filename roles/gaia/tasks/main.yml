@@ -215,8 +215,10 @@
     state: restarted
     name: cosmovisor
 
-- include_role:
+- name: Setup nginx SSL for gaiad
+  include_role:
     name: nginx-ssl
+  when: gaiad_use_ssl_proxy
 
 # Misc output?
 # - name: print info about the node?
