@@ -21,6 +21,7 @@
       - wget
       - git
       - build-essential
+      - haveged
 
 - name: Install basic utils
   apt:
