@@ -1,0 +1,19 @@
+[
+  {
+    "targets": ["{{ inventory_hostname }}:{{ node_exporter_port }}"],
+    "labels": {
+      "job": "{{ chain_id }}",
+      "environment": "{{ inventory_hostname }}_exporter",
+      "service": "{{ inventory_hostname }}_exporter"
+    }
+  },
+  {
+    "targets": ["{{ inventory_hostname }}:{{ prometheus_listen_addr | regex_replace('^:','') }}"],
+    "labels": {
+      "job": "{{ chain_id }}_gaiad",
+      "environment": "{{ inventory_hostname }}_gaiad_exporter",
+      "service": "{{ inventory_hostname }}_gaiad_exporter"
+    }
+  }
+]
+

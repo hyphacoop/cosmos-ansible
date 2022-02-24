@@ -3,6 +3,11 @@
 - include_role:
     name: common
 
+- name: Set value to enable gaiad prometheus
+  set_fact:
+      prometheus_enabled: true
+  when: monitoring_prometheus | default(false) | bool
+
 - name: Setup and enable swap
   include_role:
     name: mkswap
@@ -10,7 +15,9 @@
 
 - name: Set up pip dependencies
   pip:
-    name: toml
+    name:
+      - toml
+      - github3.py
 
 - name: Ensure user exists for gaiad
   user:
@@ -226,6 +233,18 @@
   include_role:
     name: nginx-ssl
   when: gaiad_use_ssl_proxy | default(false) | bool
+
+- name: Setup node-exporter
+  include_role:
+    name: install-node-exporter
+  when: monitoring_prometheus | default(false) | bool
+
+- name: Setup on prometheus server
+  include_role:
+    name: configure-prometheus
+    apply:
+      delegate_to: "{{ grafana_ssh_url }}"
+  when: monitoring_prometheus | default(false) | bool
 
 # Misc output?
 # - name: print info about the node?

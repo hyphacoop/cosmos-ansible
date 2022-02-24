@@ -6,10 +6,13 @@ all:
     gaiad_home_autoclear: false
     gaiad_use_ssl_proxy: false
     letsencrypt_email: "project.cosmos@hypha.coop"
-    ansible_user: root
     enable_swap: false
     swap_size: 8192
+    monitoring_prometheus: false
+    chain_id: vega-testnet
+    grafana_ssh_url: root@monitor.polypore.xyz
   children:
     gaia:
       hosts:
         ansible.stg.earthball.xyz:
+          ansible_user: root
