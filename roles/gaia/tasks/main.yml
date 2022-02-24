@@ -206,12 +206,14 @@
   systemd:
     daemon_reload: true
     state: restarted
+    enabled: yes
     name: gaiad
 - name: Start cosmovisor systemd service
   when: use_cosmovisor
   systemd:
     daemon_reload: true
     state: restarted
+    enabled: yes
     name: cosmovisor
 
 
