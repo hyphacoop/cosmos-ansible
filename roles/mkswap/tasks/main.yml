@@ -1,0 +1,34 @@
+---
+
+- name: Creating swap file {{ swap_size }} MB in size
+  shell: 'dd if\=/dev/zero of\=/swap.swp bs\=1M count\={{ swap_size }}'
+  args:
+    creates: /swap.swp
+  register: created_swap
+
+- name: Change swap file ownership and premissions
+  when: created_swap.changed
+  file:
+    path: /swap.swp
+    owner: root
+    group: root
+    mode: 600
+
+- name: Format swap file
+  when: created_swap.changed
+  shell: mkswap /swap.swp
+
+- name: Add swap to fstab
+  when: created_swap.changed
+  mount:
+    name: swap
+    src: /swap.swp
+    fstype: swap
+    opts: sw
+    passno: 0
+    dump: 0
+    state: present
+
+- name: Turn on swap
+  when: created_swap.changed
+  shell: 'swapon -a'

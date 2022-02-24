@@ -4,6 +4,8 @@ all:
   vars:
     genesis_url: "https://github.com/cosmos/vega-test/blob/master/public-testnet/modified_genesis_public_testnet/genesis.json.gz?raw=true"
     gaiad_home_autoclear: false
+    enable_swap: false
+    swap_size: 8192
   children:
     gaia:
       hosts:
