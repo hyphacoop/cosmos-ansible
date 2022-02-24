@@ -7,6 +7,8 @@ all:
     gaiad_use_ssl_proxy: false
     letsencrypt_email: "project.cosmos@hypha.coop"
     ansible_user: root
+    enable_swap: false
+    swap_size: 8192
   children:
     gaia:
       hosts:

@@ -3,6 +3,11 @@
 - include_role:
     name: common
 
+- name: Setup and enable swap
+  include_role:
+    name: mkswap
+  when: enable_swap | default(false) | bool
+
 - name: Set up pip dependencies
   pip:
     name: toml
@@ -207,12 +212,14 @@
   systemd:
     daemon_reload: true
     state: restarted
+    enabled: yes
     name: gaiad
 - name: Start cosmovisor systemd service
   when: use_cosmovisor
   systemd:
     daemon_reload: true
     state: restarted
+    enabled: yes
     name: cosmovisor
 
 - name: Setup nginx SSL for gaiad
