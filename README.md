@@ -58,5 +58,5 @@ Run `./lint.sh` after making changes to detect syntax errors and normalize the f
 - `monitoring_prometheus`: `false` Whether to configure Prometheus / Grafana monitoring
 - `chain_id`: `vega-testnet` Sets the chain ID right now it is only used for displaying on Grafana
 - `gaiad_use_ssl_proxy`: `false` Wheter to enable SSL proxy using nginx to gaiad endpoints
-- `gaiad_api_host`: `rest` Sets the subdomain for rest API (e.g. rest.one.theta-devnet.polypore.xyz)
-- `gaiad_rpc_host`: `rpc` Sets the subdomain for rpc (e.g. rpc.one.theta-devnet.polypore.xyz)
+- `gaiad_api_host`: `rest` Sets the subdomain for rest API (e.g. `rest.one.theta-devnet.polypore.xyz`)
+- `gaiad_rpc_host`: `rpc` Sets the subdomain for rpc (e.g. `rpc.one.theta-devnet.polypore.xyz`)
