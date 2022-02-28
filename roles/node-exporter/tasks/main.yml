@@ -1,0 +1,74 @@
+---
+- name: Create node_exporter group
+  group:
+    name: node_exporter
+    system: yes
+    state: present
+
+- name: Create node_exporter user
+  user:
+    name: node_exporter
+    group: node_exporter
+    append: no
+    shell: /bin/bash
+    system: yes
+    state: present
+
+- name: Get latest release URL
+  github_release:
+    user: prometheus
+    repo: node_exporter
+    action: latest_release
+  register: node_exporter_latest
+
+- name: Download Node Exporter
+  unarchive:
+    src: https://github.com/prometheus/node_exporter/releases/download/{{ node_exporter_latest['tag'] }}/node_exporter-{{ node_exporter_latest['tag'] | regex_replace('^v','') }}.linux-amd64.tar.gz
+    dest: /opt/
+    remote_src: yes
+
+- name: Create link to Node Exporter version
+  file:
+    src: /opt/node_exporter-{{ node_exporter_latest['tag'] | regex_replace('^v','') }}.linux-amd64
+    dest: /opt/node_exporter
+    state: link
+
+- name: Create directory /opt/node_exporter/textfiles
+  file:
+    path: /opt/node_exporter/textfiles/
+    state: directory
+    mode: '0700'
+    owner: node_exporter
+    group: node_exporter
+
+- name: Chown /opt/node_exporter to node_exporter
+  file:
+    path: /opt/node_exporter
+    state: directory
+    owner: node_exporter
+    group: node_exporter
+    mode: '0700'
+    recurse: yes
+
+- name: Install crontab for monitoring .gaia
+  cron:
+    name: monitoring-gaia-disksize
+    job: echo SIZE_FOLDER_GAIA{src=\"{{gaiad_user_home}}/.gaiad\"} $(du --max-depth=1 {{gaiad_user_home}}/.gaiad | tail -n 1 | awk '{print $1}') > /opt/node_exporter/textfiles/SIZE_FOLDER_GAIA.prom
+    minute: "*/1"
+    user: root
+
+- name: Install node_exporter systemd service
+  template:
+    src: node_exporter.service.j2
+    dest: /etc/systemd/system/node_exporter.service
+    mode: 0644
+
+- name: Reload systemd daemon
+  systemd:
+    daemon_reload: yes
+
+- name: Enable and start node_exporter service
+  systemd:
+    name: node_exporter
+    enabled: yes
+    state: started

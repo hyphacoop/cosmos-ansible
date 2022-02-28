@@ -8,11 +8,14 @@ all:
     gaiad_api_host: "rest"
     gaiad_rpc_host: "rpc"
     letsencrypt_email: "project.cosmos@hypha.coop"
-    ansible_user: root
     enable_swap: false
     swap_size: 8192
+    monitoring_prometheus: false
+    chain_id: vega-testnet
+    grafana_ssh_url: root@monitor.polypore.xyz
     reboot: false
   children:
     gaia:
       hosts:
         ansible.stg.earthball.xyz:
+          ansible_user: root
