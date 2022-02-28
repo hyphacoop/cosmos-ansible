@@ -2,7 +2,7 @@
 
 - name: Set reverse proxy path in vars
   set_fact:
-    proxy_location: 'http://127.0.0.1:{{rpc_port}}'
+    proxy_location: 'http://127.0.0.1:{{endpoint_port}}'
 
 - name: Install nginx packages
   apt:
@@ -38,19 +38,19 @@
     creates: /etc/letsencrypt/accounts
 
 - name: Get Let's Encrypt Cert
-  command: certbot certonly --webroot -w /var/www/html/ -d {{inventory_hostname}} --rsa-key-size 4096 
+  command: certbot certonly --webroot -w /var/www/html/ -d {{site_hostname}} --rsa-key-size 4096 
   args:
-    creates: /etc/letsencrypt/live/{{inventory_hostname}}/fullchain.pem
+    creates: /etc/letsencrypt/live/{{site_hostname}}/fullchain.pem
 
 - name: Configure nginx
   template:
     src: nginx-site.j2
-    dest: '/etc/nginx/sites-available/{{inventory_hostname}}'
+    dest: '/etc/nginx/sites-available/{{site_hostname}}'
 
-- name: Enabling {{inventory_hostname}} nginx config
+- name: Enabling {{site_hostname}} nginx config
   file:
-    src: /etc/nginx/sites-available/{{inventory_hostname}}
-    dest: /etc/nginx/sites-enabled/{{inventory_hostname}}
+    src: /etc/nginx/sites-available/{{site_hostname}}
+    dest: /etc/nginx/sites-enabled/{{site_hostname}}
     state: link
 
 - name: Reload nginx

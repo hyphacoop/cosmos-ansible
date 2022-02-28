@@ -5,12 +5,15 @@ all:
     genesis_url: "https://github.com/cosmos/vega-test/blob/master/public-testnet/modified_genesis_public_testnet/genesis.json.gz?raw=true"
     gaiad_home_autoclear: false
     gaiad_use_ssl_proxy: false
+    gaiad_api_host: "rest"
+    gaiad_rpc_host: "rpc"
     letsencrypt_email: "project.cosmos@hypha.coop"
     enable_swap: false
     swap_size: 8192
     monitoring_prometheus: false
     chain_id: vega-testnet
     grafana_ssh_url: root@monitor.polypore.xyz
+    reboot: false
   children:
     gaia:
       hosts:
