@@ -222,7 +222,24 @@
     enabled: yes
     name: cosmovisor
 
-- name: Setup nginx SSL for gaiad
+- name: Set variables for rpc endpoint
+  set_fact:
+    endpoint_port: '{{rpc_port}}'
+    site_hostname: '{{gaiad_rpc_host}}.{{inventory_hostname}}'
+  when: gaiad_use_ssl_proxy | default(false) | bool
+
+- name: Setup nginx SSL for gaiad rpc endpoint
+  include_role:
+    name: nginx-ssl
+  when: gaiad_use_ssl_proxy | default(false) | bool
+
+- name: Set variables for rest endpoint
+  set_fact:
+    endpoint_port: '{{api_port}}'
+    site_hostname: '{{gaiad_api_host}}.{{inventory_hostname}}'
+  when: gaiad_use_ssl_proxy | default(false) | bool
+
+- name: Setup nginx SSL for gaiad rest API endpoint
   include_role:
     name: nginx-ssl
   when: gaiad_use_ssl_proxy | default(false) | bool
