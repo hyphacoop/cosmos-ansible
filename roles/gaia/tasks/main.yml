@@ -1,16 +1,30 @@
 ---
+  
 - include_role:
     name: common
 
+- name: Set value to enable gaiad prometheus
+  set_fact:
+      prometheus_enabled: true
+  when: monitoring_prometheus | default(false) | bool
+
+- name: Setup and enable swap
+  include_role:
+    name: mkswap
+  when: enable_swap | default(false) | bool
+
 - name: Set up pip dependencies
   pip:
-    name: toml
+    name:
+      - toml
+      - github3.py
 
 - name: Ensure user exists for gaiad
   user:
     name: "{{gaiad_user}}"
     append: true
     groups: adm
+    shell: /bin/bash
     comment: User for gaiad and cosmovisor services
 
 - name: Check golang version
@@ -73,10 +87,20 @@
   shell: |
     PATH=$PATH:/usr/local/go/bin:{{ ansible_env.HOME }}/go/bin
     gaiad keys add validator --keyring-backend="test" --home {{gaiad_home}}
-    gaiad add-genesis-account validator '{{gaiad_validator_stake}}stake,{{gaiad_validator_uatom}}uatom' --home {{gaiad_home}} --keyring-backend="{{gaiad_validator_keyring}}"
-    gaiad add-genesis-account cosmos1hxv7mpztvln45eghez6evw2ypcw4vjmsmr8cdx {{gaiad_airdrop_stake}}stake,{{gaiad_airdrop_uatom}}uatom --home {{gaiad_home}}
-    gaiad add-genesis-account cosmos1cc5mtuje84sx5dsqw4gtr4w8lthpzw02rjjnew {{gaiad_airdrop_stake}}stake,{{gaiad_airdrop_uatom}}uatom --home {{gaiad_home}}
-    gaiad gentx validator {{gaiad_gentx_validator_stake}}stake --keyring-backend="{{gaiad_validator_keyring}}" --home {{gaiad_home}} --chain-id "theta-devnet"
+    gaiad add-genesis-account validator {{gaiad_validator_coins}} --home {{gaiad_home}} --keyring-backend="{{gaiad_validator_keyring}}"
+
+- name: create genesis accounts
+  when: gaiad_airdrop and gaiad_create_validator
+  shell: |
+    PATH=$PATH:/usr/local/go/bin:{{ ansible_env.HOME }}/go/bin
+    gaiad add-genesis-account {{ item }} {{gaiad_airdrop_coins}} --home {{gaiad_home}}
+  loop: "{{ gaiad_aidrop_accounts }}"
+
+- name: collect gentx
+  when: gaiad_create_validator
+  shell: |
+    PATH=$PATH:/usr/local/go/bin:{{ ansible_env.HOME }}/go/bin
+    gaiad gentx validator {{gaiad_gentx_validator_stake}} --keyring-backend="{{gaiad_validator_keyring}}" --home {{gaiad_home}} --chain-id {{chain_id}}
     gaiad collect-gentxs --home {{gaiad_home}}
 
 - name: Check cosmovisor version
@@ -229,14 +253,54 @@
   systemd:
     daemon_reload: true
     state: restarted
+    enabled: yes
     name: gaiad
 - name: Start cosmovisor systemd service
   when: use_cosmovisor
   systemd:
     daemon_reload: true
     state: restarted
+    enabled: yes
     name: cosmovisor
 
+- name: Set variables for rpc endpoint
+  set_fact:
+    endpoint_port: '{{rpc_port}}'
+    site_hostname: '{{gaiad_rpc_host}}.{{inventory_hostname}}'
+  when: gaiad_use_ssl_proxy | default(false) | bool
+
+- name: Setup nginx SSL for gaiad rpc endpoint
+  include_role:
+    name: nginx-ssl
+  when: gaiad_use_ssl_proxy | default(false) | bool
+
+- name: Setup node-exporter
+  include_role:
+    name: node-exporter
+  when: monitoring_prometheus | default(false) | bool
+
+- name: Setup on prometheus server
+  include_role:
+    name: configure-prometheus
+    apply:
+      delegate_to: "{{ grafana_ssh_url }}"
+  when: monitoring_prometheus | default(false) | bool
+
+- name: Set variables for rest endpoint
+  set_fact:
+    endpoint_port: '{{api_port}}'
+    site_hostname: '{{gaiad_api_host}}.{{inventory_hostname}}'
+  when: gaiad_use_ssl_proxy | default(false) | bool
+
+- name: Setup nginx SSL for gaiad rest API endpoint
+  include_role:
+    name: nginx-ssl
+  when: gaiad_use_ssl_proxy | default(false) | bool
+
+- name: Rebooting the machine
+  include_role:
+    name: reboot
+  when: reboot | default(false) | bool
 
 # Misc output?
 # - name: print info about the node?

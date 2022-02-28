@@ -8,7 +8,18 @@ gaiad_version: release/v6.0.0
 gaiad_repository: https://github.com/cosmos/gaia.git
 gaiad_bin: "{{ gaiad_user_home }}/go/bin/gaiad"
 gaiad_service_name: "gaiad"
+chain_id: "theta-devnet"
+
+# Default vaiables for creating a validator
 gaiad_create_validator: false
+gaiad_gentx_validator_stake: "8000000000stake"
+gaiad_validator_keyring: "test"
+gaiad_validator_coins: "10000000000stake,1000000000000uatom"
+
+# Default variables for aidropping tokens
+gaiad_airdrop: false
+gaiad_airdrop_coins: "1000stake,1000000000uatom"
+gaiad_airdrop_accounts: []
 
 # Cosmovisor settings
 ## TODO: Support arbitrary cosmovisor branches
@@ -76,7 +87,7 @@ telemetry_service_name: ''
 telemetry_enabled: false
 telemetry_enable_hostname: false
 telemetry_enable_hostname_label: false
-telemetry_enable_service_label: fase
+telemetry_enable_service_label: false
 prometius_retention_time: '0'
 
 ### API
@@ -95,6 +106,9 @@ statesync_snapshot_keep_recent: 2
 ### client.toml variables
 client_keyring_backend: os
 client_broadcast_mode: sync
+
+### node exporter config
+node_exporter_port: 9100
 
 # Vars with no defaults (to prevent code from running)
 # These don't get put into config files

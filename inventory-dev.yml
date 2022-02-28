@@ -3,10 +3,25 @@
 all:
   vars:
     gaiad_home_autoclear: true
-    gaiad_create_validator: true
     gaiad_version: theta-prepare
     api_enabled: true
+    chain_id: "theta-devnet"
+    gaiad_use_ssl_proxy: true
+    gaiad_api_host: "rest"
+    gaiad_rpc_host: "rpc"
+    letsencrypt_email: "project.cosmos@hypha.coop"
+    enable_swap: false
+    swap_size: 8192
+    monitoring_prometheus: true
+    grafana_ssh_url: root@monitor.polypore.xyz
+    reboot: false
   children:
     gaia:
       hosts:
-        root@one.theta-devnet.polypore.xyz
+        one.theta-devnet.polypore.xyz:
+          ansible_user: root
+          gaiad_create_validator: true
+          gaiad_airdrop: true
+          gaiad_aidrop_accounts:
+            - cosmos1hxv7mpztvln45eghez6evw2ypcw4vjmsmr8cdx
+            - cosmos1cc5mtuje84sx5dsqw4gtr4w8lthpzw02rjjnew
