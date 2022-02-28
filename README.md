@@ -4,7 +4,7 @@
 
 This will spin up a gaia node which will process the genesis file for the [vega testnet](https://github.com/cosmos/vega-test/blob/master/public-testnet/modified_genesis_public_testnet/genesis.json.gz)
 
-Modify `inventory.ini` to add your own machine.
+Modify `inventory.yml` to add your own machine.
 
 ```
 ansible-playbook gaia.yml -i inventory.yml
