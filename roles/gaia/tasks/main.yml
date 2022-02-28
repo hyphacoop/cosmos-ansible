@@ -73,10 +73,10 @@
   shell: |
     PATH=$PATH:/usr/local/go/bin:{{ ansible_env.HOME }}/go/bin
     gaiad keys add validator --keyring-backend="test" --home {{gaiad_home}}
-    gaiad add-genesis-account validator '10000000000stake,1000000000000uatom' --home {{gaiad_home}} --keyring-backend="test"
-    gaiad add-genesis-account cosmos1hxv7mpztvln45eghez6evw2ypcw4vjmsmr8cdx 1000stake,1000000000uatom  --home {{gaiad_home}}
-    gaiad add-genesis-account cosmos1cc5mtuje84sx5dsqw4gtr4w8lthpzw02rjjnew 1000stake,1000000000uatom --home {{gaiad_home}}
-    gaiad gentx validator 8000000000stake --keyring-backend="test" --home {{gaiad_home}} --chain-id "theta-devnet"
+    gaiad add-genesis-account validator '{{gaiad_validator_stake}}stake,{{gaiad_validator_uatom}}uatom' --home {{gaiad_home}} --keyring-backend="{{gaiad_validator_keyring}}"
+    gaiad add-genesis-account cosmos1hxv7mpztvln45eghez6evw2ypcw4vjmsmr8cdx {{gaiad_airdrop_stake}}stake,{{gaiad_airdrop_uatom}}uatom --home {{gaiad_home}}
+    gaiad add-genesis-account cosmos1cc5mtuje84sx5dsqw4gtr4w8lthpzw02rjjnew {{gaiad_airdrop_stake}}stake,{{gaiad_airdrop_uatom}}uatom --home {{gaiad_home}}
+    gaiad gentx validator {{gaiad_gentx_validator_stake}}stake --keyring-backend="{{gaiad_validator_keyring}}" --home {{gaiad_home}} --chain-id "theta-devnet"
     gaiad collect-gentxs --home {{gaiad_home}}
 
 - name: Check cosmovisor version

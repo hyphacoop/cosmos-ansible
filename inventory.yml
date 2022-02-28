@@ -5,6 +5,10 @@ all:
     genesis_file: "new_genesis.json"
     gaiad_home_autoclear: false
     gaiad_create_validator: false
+    gaiad_validator_keyring: "test"
+    gaiad_validator_stake: 10000000000
+    gaiad_validator_uatom: 1000000000000
+    gaiad_account
   children:
     gaia:
       hosts:
