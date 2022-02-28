@@ -60,3 +60,4 @@ Run `./lint.sh` after making changes to detect syntax errors and normalize the f
 - `gaiad_use_ssl_proxy`: `false` Wheter to enable SSL proxy using nginx to gaiad endpoints
 - `gaiad_api_host`: `rest` Sets the subdomain for rest API (e.g. `rest.one.theta-devnet.polypore.xyz`)
 - `gaiad_rpc_host`: `rpc` Sets the subdomain for rpc (e.g. `rpc.one.theta-devnet.polypore.xyz`)
+- `reboot`: `false` Whether to reboot the machine after all tasks are done (useful to make sure all services starts up and apply system updates)
