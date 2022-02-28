@@ -10,6 +10,13 @@ Modify `inventory.yml` to add your own machine.
 ansible-playbook gaia.yml -i inventory.yml
 ```
 
+To override the default variables use the `--extra-vars` option
+
+The example below will enable SSL reverse proxy, configure monitoring and configure swap
+```
+ansible-playbook gaia.yml -i inventory.yml --extra-vars "gaiad_use_ssl_proxy=true monitoring_prometheus=true enable_swap=true"
+```
+
 ## TODOs:
 
 - [ ] Docs!
