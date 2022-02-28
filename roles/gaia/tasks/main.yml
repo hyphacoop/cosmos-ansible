@@ -73,8 +73,10 @@
   shell: |
     PATH=$PATH:/usr/local/go/bin:{{ ansible_env.HOME }}/go/bin
     gaiad keys add validator --keyring-backend="test" --home {{gaiad_home}}
-    gaiad add-genesis-account validator '10000000000stake' --home {{gaiad_home}} --keyring-backend="test"
-    gaiad gentx validator 5000000000stake --keyring-backend="test" --home {{gaiad_home}} --chain-id "theta-devnet"
+    gaiad add-genesis-account validator '10000000000stake,1000000000000uatom' --home {{gaiad_home}} --keyring-backend="test"
+    gaiad add-genesis-account cosmos1hxv7mpztvln45eghez6evw2ypcw4vjmsmr8cdx 1000stake,1000000000uatom  --home {{gaiad_home}}
+    gaiad add-genesis-account cosmos1cc5mtuje84sx5dsqw4gtr4w8lthpzw02rjjnew 1000stake,1000000000uatom --home {{gaiad_home}}
+    gaiad gentx validator 8000000000stake --keyring-backend="test" --home {{gaiad_home}} --chain-id "theta-devnet"
     gaiad collect-gentxs --home {{gaiad_home}}
 
 - name: Check cosmovisor version
@@ -106,16 +108,7 @@
     get_checksum: false
   register: genesis_file_exists
 - name: copy genesis.json
-  when: >
-    genesis_file is defined and
-    (
-      (not genesis_file_exists.stat.exists) or
-      (
-        local_genesis_file_exists.stat.exists and (
-          local_genesis_file_exists.stat.size != genesis_file_exists.stat.size
-        )
-      )
-    )
+  when: genesis_file is defined 
   copy:
     src: '{{genesis_file}}'
     dest: '{{gaiad_home}}/config/genesis.json'

@@ -1,0 +1,12 @@
+---
+# yamllint disable rule:line-length
+all:
+  vars:
+    gaiad_home_autoclear: true
+    gaiad_create_validator: true
+    gaiad_version: theta-prepare
+    api_enabled: true
+  children:
+    gaia:
+      hosts:
+        root@one.theta-devnet.polypore.xyz
