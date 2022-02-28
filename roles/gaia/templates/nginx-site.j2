@@ -2,6 +2,8 @@ server {
 	listen [::]:443 http2;
 	listen 0.0.0.0:443 http2;
 
+	server_name {{site_hostname}};
+
 	ssl on;
 	server_tokens off;
 	ssl_protocols TLSv1.2 TLSv1.3;
@@ -13,13 +15,13 @@ server {
 	add_header X-Frame-Options DENY;
 	ssl_stapling on;
 	ssl_stapling_verify on;
-	ssl_trusted_certificate /etc/letsencrypt/live/{{inventory_hostname}}/fullchain.pem;
+	ssl_trusted_certificate /etc/letsencrypt/live/{{site_hostname}}/fullchain.pem;
 	ssl_ciphers 'ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA256:ECDHE-RSA-AES256-SHA:ECDHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES128-SHA256:DHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA:ECDHE-RSA-DES-CBC3-SHA:EDH-RSA-DES-CBC3-SHA:AES256-GCM-SHA384:AES128-GCM-SHA256:AES256-SHA256:AES128-SHA256:AES256-SHA:AES128-SHA:DES-CBC3-SHA:HIGH:!aNULL:!eNULL:!EXPORT:!CAMELLIA:!DES:!MD5:!PSK:!RC4:!3DES';
 
 	### SSL cert files ###
 	ssl_dhparam          /etc/ssl/dhparam.pem;
-	ssl_certificate      /etc/letsencrypt/live/{{inventory_hostname}}/fullchain.pem;
-	ssl_certificate_key  /etc/letsencrypt/live/{{inventory_hostname}}/privkey.pem;
+	ssl_certificate      /etc/letsencrypt/live/{{site_hostname}}/fullchain.pem;
+	ssl_certificate_key  /etc/letsencrypt/live/{{site_hostname}}/privkey.pem;
 
 	### Add SSL specific settings here ###
 	keepalive_timeout    60;

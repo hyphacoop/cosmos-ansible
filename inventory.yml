@@ -5,6 +5,8 @@ all:
     genesis_url: "https://github.com/cosmos/vega-test/blob/master/public-testnet/modified_genesis_public_testnet/genesis.json.gz?raw=true"
     gaiad_home_autoclear: false
     gaiad_use_ssl_proxy: false
+    gaiad_api_host: "rest"
+    gaiad_rpc_host: "rpc"
     letsencrypt_email: "project.cosmos@hypha.coop"
     ansible_user: root
     enable_swap: false
