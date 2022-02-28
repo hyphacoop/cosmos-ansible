@@ -8,7 +8,9 @@ all:
     gaiad_validator_keyring: "test"
     gaiad_validator_stake: 10000000000
     gaiad_validator_uatom: 1000000000000
-    gaiad_account
+    gaiad_airdrop_stake: 1000
+    gaiad_airdrop_uatom: 1000000000
+    gaiad_gentx_validator_stake: 8000000000
   children:
     gaia:
       hosts:
