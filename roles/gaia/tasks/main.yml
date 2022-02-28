@@ -236,7 +236,7 @@
 
 - name: Setup node-exporter
   include_role:
-    name: install-node-exporter
+    name: node-exporter
   when: monitoring_prometheus | default(false) | bool
 
 - name: Setup on prometheus server
