@@ -118,19 +118,19 @@
     go install {{cosmovisor_repository}}@{{cosmovisor_version}}
 
 # Genesis file configuration
-- name: Check stat of local genesis file
-  when: genesis_file is defined
-  local_action:
-    module: stat
-    path: "{{genesis_file}}"
-    get_checksum: false
-  register: local_genesis_file_exists
-- name: Check if remote genesis file exists
-  when: genesis_file is defined
-  stat:
-    path: "{{gaiad_home}}/config/genesis.json"
-    get_checksum: false
-  register: genesis_file_exists
+# - name: Check stat of local genesis file
+#   when: genesis_file is defined
+#   local_action:
+#     module: stat
+#     path: "{{genesis_file}}"
+#     get_checksum: false
+#   register: local_genesis_file_exists
+# - name: Check if remote genesis file exists
+#   when: genesis_file is defined
+#   stat:
+#     path: "{{gaiad_home}}/config/genesis.json"
+#     get_checksum: false
+#   register: genesis_file_exists
 - name: copy genesis.json
   when: genesis_file is defined 
   copy:

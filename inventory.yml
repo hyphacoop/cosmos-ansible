@@ -17,6 +17,7 @@ all:
     monitoring_prometheus: true
     chain_id: theta-testnet-001
     grafana_ssh_url: root@monitor.polypore.xyz
+    p2p_persistent_peers: '394bfffc1baf6c7132ba04215f6b3717153d2928@p2p.earth.theta-testnet.polypore.xyz,ab5ab66720687dbca93cd670ce11e3c0de30b742@p2p.fire.theta-testnet.polypore.xyz,fb3a0f9e27c2923cb9a53dac83b3d983f0a9871e@p2p.wind.theta-testnet.polypore.xyz,89b44f2e37bf311d426aa1d2a782407c6313e38d@p2p.water.theta-testnet.polypore.xyz'
     reboot: false
   children:
     gaia:
@@ -24,17 +25,30 @@ all:
         earth.theta-testnet.polypore.xyz:
           node_key_file: "secrets/earth/node_key.json"
           priv_validator_key_file: "secrets/earth/priv_validator_key.json"
-          p2p_persistent_peers: '394bfffc1baf6c7132ba04215f6b3717153d2928@p2p.earth.theta-testnet.polypore.xyz,ab5ab66720687dbca93cd670ce11e3c0de30b742@p2p.fire.theta-testnet.polypore.xyz,fb3a0f9e27c2923cb9a53dac83b3d983f0a9871e@p2p.wind.theta-testnet.polypore.xyz,89b44f2e37bf311d426aa1d2a782407c6313e38d@p2p.water.theta-testnet.polypore.xyz'
         fire.theta-testnet.polypore.xyz:
           node_key_file: "secrets/fire/node_key.json"
           priv_validator_key_file: "secrets/fire/priv_validator_key.json"
-          p2p_persistent_peers: '394bfffc1baf6c7132ba04215f6b3717153d2928@p2p.earth.theta-testnet.polypore.xyz,ab5ab66720687dbca93cd670ce11e3c0de30b742@p2p.fire.theta-testnet.polypore.xyz,fb3a0f9e27c2923cb9a53dac83b3d983f0a9871e@p2p.wind.theta-testnet.polypore.xyz,89b44f2e37bf311d426aa1d2a782407c6313e38d@p2p.water.theta-testnet.polypore.xyz'
         wind.theta-testnet.polypore.xyz:
           node_key_file: "secrets/wind/node_key.json"
           priv_validator_key_file: "secrets/wind/priv_validator_key.json"
-          p2p_persistent_peers: '394bfffc1baf6c7132ba04215f6b3717153d2928@p2p.earth.theta-testnet.polypore.xyz,ab5ab66720687dbca93cd670ce11e3c0de30b742@p2p.fire.theta-testnet.polypore.xyz,fb3a0f9e27c2923cb9a53dac83b3d983f0a9871e@p2p.wind.theta-testnet.polypore.xyz,89b44f2e37bf311d426aa1d2a782407c6313e38d@p2p.water.theta-testnet.polypore.xyz'
         water.theta-testnet.polypore.xyz:
           node_key_file: "secrets/water/node_key.json"
           priv_validator_key_file: "secrets/water/priv_validator_key.json"
-          p2p_persistent_peers: '394bfffc1baf6c7132ba04215f6b3717153d2928@p2p.earth.theta-testnet.polypore.xyz,ab5ab66720687dbca93cd670ce11e3c0de30b742@p2p.fire.theta-testnet.polypore.xyz,fb3a0f9e27c2923cb9a53dac83b3d983f0a9871e@p2p.wind.theta-testnet.polypore.xyz,89b44f2e37bf311d426aa1d2a782407c6313e38d@p2p.water.theta-testnet.polypore.xyz'
+        sentry-01.theta-testnet.polypore.xyz:
+          api_enabled: true
+        sentry-02.theta-testnet.polypore.xyz:
+          api_enabled: true
+        state-sync-01.theta-testnet.polypore.xyz:
+          statesync_snapshot_interval: 1000
+          statesync_snapshot_keep_recent: 2
+          p2p_upnp: true
+          api_enabled: true
+        state-sync-02.theta-testnet.polypore.xyz:
+          statesync_snapshot_interval: 1000
+          statesync_snapshot_keep_recent: 2
+          p2p_upnp: true
+          api_enabled: true
+
+
+
   
