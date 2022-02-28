@@ -9,6 +9,7 @@ all:
     ansible_user: root
     enable_swap: false
     swap_size: 8192
+    reboot: false
   children:
     gaia:
       hosts:

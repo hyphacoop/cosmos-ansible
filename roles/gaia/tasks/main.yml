@@ -227,5 +227,11 @@
     name: nginx-ssl
   when: gaiad_use_ssl_proxy | default(false) | bool
 
+
+- name: Rebooting the machine
+  include_role:
+    name: reboot
+  when: reboot | default(false) | bool
+
 # Misc output?
 # - name: print info about the node?
