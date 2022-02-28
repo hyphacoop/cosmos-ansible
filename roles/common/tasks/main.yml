@@ -1,5 +1,12 @@
 ---
 
+
+- name: Remove and reinstall python3-openssl (Workaround for DO Ubuntu image)
+  apt:
+    state: absent
+    pkg:
+      - python3-openssl
+
 - name: Upgrade the system
   apt:
     update_cache: true
@@ -22,6 +29,7 @@
       - git
       - build-essential
       - haveged
+      - python3-openssl
 
 - name: Install basic utils
   apt:
