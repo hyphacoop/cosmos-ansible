@@ -1,7 +1,7 @@
 ---
 
 
-- name: Install basic utils (Workaround for DO Ubuntu image
+- name: Install basic utils (Workaround for DO Ubuntu image)
   apt:
     state: absent
     pkg:
