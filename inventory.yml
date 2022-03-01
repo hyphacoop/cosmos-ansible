@@ -3,8 +3,9 @@
 all:
   vars:
     ansible_user: root
-    genesis_file: "public_testnet_genesis.json"
-    gaiad_home_autoclear: true
+    # genesis_file: "public_testnet_genesis.json"
+    gaiad_home_autoclear: false
+    gaiad_unsafe_reset: true
     gaiad_create_validator: false
     gaiad_use_ssl_proxy: true
     gaiad_api_host: "rest"
@@ -25,6 +26,7 @@ all:
         earth.theta-testnet.polypore.xyz:
           node_key_file: "secrets/earth/node_key.json"
           priv_validator_key_file: "secrets/earth/priv_validator_key.json"
+          fast_sync: false
         fire.theta-testnet.polypore.xyz:
           node_key_file: "secrets/fire/node_key.json"
           priv_validator_key_file: "secrets/fire/priv_validator_key.json"
