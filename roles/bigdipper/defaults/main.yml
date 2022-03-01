@@ -1,4 +1,7 @@
 ---
+
+nodejs_version: "14.x"
+
 bigdipper_user: "bigdipper"
 bigdipper_user_home: "/home/{{bigdipper_user}}"
 
@@ -11,10 +14,31 @@ bigdipper_db_port: 5432
 
 bigdipper_genesis_file_path: "/home/gaia/.gaia/config/genesis.json"
 
+# TODO: use env vars for gaia rpc port
 bigdipper_rpc_address: "http://localhost:26657"
 bigdipper_grpc_address: "http://localhost:9090"
 bigdipper_telemetry_port: 5000
 
 bdjuno_home: "{{bigdipper_user_home}}/.bdjuno"
+bdjuno_dir: "{{bigdipper_user_home}}/bdjuno"
 bdjuno_bin: "{{bigdipper_user_home}}/go/bin/bdjuno"
 bdjuno_service_name: "bdjuno"
+bdjuno_version: "cosmos/v0.44.x"
+
+hasura_version: v2.2.0
+hasura_cli_version: 2.2.0
+hasura_port: 8080
+hasura_actions_service_name: hasura-actions
+
+bdui_dir: "{{bigdipper_user_home}}/big-dipper"
+bdui_version: "base-v1.10.1"
+bdui_port: 3000
+bdui_graphql_url: "http://localhost:{{hasura_port}}/v1/graphql"
+bdui_graphql_ws_url: "ws://localhost:{{hasura_port}}/v1/graphql"
+bdui_rpc_websocket: "ws://localhost:26667/websocket"
+# TODO: Letsencrypt forward proxy and cleaner hostname
+bdui_public_url: "http://{{inventory_hostname}}:{{bdui_port}}"
+bdui_chain: testnet
+bdui_service_name: bigdipper
+# bigdipper_genesis_time: 0
+# bigdipper_genesis_height: 0

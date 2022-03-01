@@ -7,4 +7,5 @@ all:
   children:
     gaia:
       hosts:
-        root@ansible.stg.earthball.xyz:
+        ansible.stg.earthball.xyz:
+          ansible_user: root

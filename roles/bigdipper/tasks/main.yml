@@ -5,10 +5,9 @@
 # Set up big dipper
 - name: "Install python dependencies"
   pip:
-    name: psycopg2
+    name: psycopg2-binary
 
-- name: "Set up docker"
-  inclide_role:
+- include_role:
     name: docker
 
 - name: Set up golang
@@ -25,25 +24,28 @@
     shell: /bin/bash
     comment: User for gaiad and cosmovisor services
 
+- name: "Register bigdipper db URL"
+  set_fact:
+    bigdipper_db_url: "postgres://{{bigdipper_db_user}}:{{bigdipper_db_password}}@{{bigdipper_db_host}}:{{bigdipper_db_port}}/{{bigdipper_db}}"
+
 - name: "Checkout BDJuno"
   git:
     repo: 'https://github.com/forbole/bdjuno.git'
-    dest: {{bdjuno_dir}}
-    version: cosmos/v0.44.x
+    dest: "{{bdjuno_dir}}"
+    version: "{{bdjuno_version}}"
 
-- name: "Install postgres docker container"
-  community.docker.docker_container:
+- name: "Install postgres"
+  apt:
     state: present
-    name: big-dipper-postgres
-    image: postgres
-    ports:
-      - "{{bigdipper_db_port}}:{{bigdipper_db_port}}"
-    env:
-      POSTGRES_PASSWORD: "{{bigdipper_db_password}}"
+    pkg:
+      - postgresql
+      - postgresql-contrib
 
 - name: Create postgres database
   community.postgresql.postgresql_db:
     name: "{{bigdipper_db}}"
+    # login_password: "{{bigdipper_db_password}}"
+    port: "{{bigdipper_db_port}}"
 
 - name: Create postgres schema
   community.postgresql.postgresql_schema:
@@ -57,7 +59,7 @@
     password: "{{bigdipper_db_password}}"
 
 # Loop through schemas one by one
-- name: "Configure postgres schema"
+# - name: "Configure postgres schema"
 
 - name: "Install BDJuno"
   shell: |
@@ -86,23 +88,64 @@
     name: systemd-journald
 
 - name: "Run bdjuno systemd service"
-  when: not use_cosmovisor
   systemd:
     daemon_reload: true
     state: restarted
+    enabled: true
     name: "{{bdjuno_service_name}}"
 
 
-- name: "Install hasuna"
-# TODO: Use PG_DATABASE_URL to specify the database?
-- name: "Set up hasuna CLI"
-- name: "Apply metadata to hasura"
-- name: "Set up hasura-actions systemd service"
-- name: "Run hasura-actions service"
+- name: "Run docker image for Hasura"
+  community.docker.docker_container:
+    state: present
+    name: big-dipper-hasura
+    image: "hasura/graphql-engine:{{hasura_version}}"
+    ports:
+      - "{{hasura_port}}:{{hasura_port}}"
+    env:
+      HASURA_GRAPHQL_DATABASE_URL: "{{bigdipper_db_url}}"
 
 - name: "Set up node+npm"
+  include_role:
+    name: geerlingguy.nodejs
+
+# TODO: Use PG_DATABASE_URL to specify the database?
+- name: "Set up hasuna CLI"
+  shell: "npm i --global hasura-cli@{{hasura_cli_version}}"
+- name: "Apply metadata to hasura"
+  shell: |
+    cd {{bdjuno_dir}}/hasura
+    hasura metadata apply --endpoint http://localhost:{{hasura_port}}
+- name: "Set up hasura-actions systemd service"
+  template:
+    src: hasura-actions.service.j2
+    dest: "/etc/systemd/system/{{hasura_actions_service_name}}.service"
+
+- name: "Run hasura-actions service"
+  systemd:
+    daemon_reload: true
+    state: restarted
+    enabled: true
+    name: "{{hasura_actions_service_name}}"
+
 - name: "Clone and checkout big-dipper-ui"
-- name: "Create .env file for big-dipper-ui"
+  git:
+    repo: 'https://github.com/forbole/big-dipper-2.0-cosmos.git'
+    dest: "{{bdui_dir}}"
+    version: "{{bdui_version}}"
+
 - name: "General config for big-dipper-ui"
+  template:
+    src: chain_config.json.j2
+    dest: "{{bdui_dir}}/chain_config.json"
 - name: "Create systemd service for big-dipper-ui"
+  template:
+    src: bigdipper.service.j2
+    dest: "/etc/systemd/system/{{bdui_service_name}}.service"
+
 - name: "Run big-dipper-ui"
+  systemd:
+    daemon_reload: true
+    state: restarted
+    enabled: true
+    name: "{{bdui_service_name}}"

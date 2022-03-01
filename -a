@@ -1,0 +1,166 @@
+[1mdiff --git a/gaia.yml b/gaia.yml[m
+[1mindex bee92a2..3979d66 100644[m
+[1m--- a/gaia.yml[m
+[1m+++ b/gaia.yml[m
+[36m@@ -1,5 +1,7 @@[m
+ ---[m
+ # Configure a gaia node[m
+ - hosts: all[m
+[32m+[m[32m  become: true[m
+   roles:[m
+   - gaia[m
+[32m+[m[32m  - bigdipper[m
+[1mdiff --git a/inventory.yml b/inventory.yml[m
+[1mindex b43751a..0dc8be4 100644[m
+[1m--- a/inventory.yml[m
+[1m+++ b/inventory.yml[m
+[36m@@ -7,4 +7,5 @@[m [mall:[m
+   children:[m
+     gaia:[m
+       hosts:[m
+[31m-        root@ansible.stg.earthball.xyz:[m
+[32m+[m[32m        ansible.stg.earthball.xyz:[m
+[32m+[m[32m          ansible_user: root[m
+[1mdiff --git a/requirements.yml b/requirements.yml[m
+[1mindex a7ebf15..337b6e7 100644[m
+[1m--- a/requirements.yml[m
+[1m+++ b/requirements.yml[m
+[36m@@ -5,3 +5,4 @@[m [mcollections:[m
+ roles:[m
+   - src: gantsign.golang[m
+   - src: geerlingguy.docker[m
+[32m+[m[32m  - src: geerlingguy.nodejs[m
+[1mdiff --git a/roles/bigdipper/defaults/main.yml b/roles/bigdipper/defaults/main.yml[m
+[1mindex 4b60dc0..b2831c7 100644[m
+[1m--- a/roles/bigdipper/defaults/main.yml[m
+[1m+++ b/roles/bigdipper/defaults/main.yml[m
+[36m@@ -1,4 +1,7 @@[m
+ ---[m
+[32m+[m
+[32m+[m[32mnodejs_version: "14.x"[m
+[32m+[m
+ bigdipper_user: "bigdipper"[m
+ bigdipper_user_home: "/home/{{bigdipper_user}}"[m
+ [m
+[36m@@ -16,5 +19,11 @@[m [mbigdipper_grpc_address: "http://localhost:9090"[m
+ bigdipper_telemetry_port: 5000[m
+ [m
+ bdjuno_home: "{{bigdipper_user_home}}/.bdjuno"[m
+[32m+[m[32mbdjuno_dir: "{{bigdipper_user_home}}/bdjuno"[m
+ bdjuno_bin: "{{bigdipper_user_home}}/go/bin/bdjuno"[m
+ bdjuno_service_name: "bdjuno"[m
+[32m+[m
+[32m+[m[32mhasura_version: v2.2.0[m
+[32m+[m[32mhasura_cli_version: 2.2.0[m
+[32m+[m[32mhasura_port: 8080[m
+[32m+[m[32mhasura_actions_service_name: hasura-actions[m
+[1mdiff --git a/roles/bigdipper/tasks/main.yml b/roles/bigdipper/tasks/main.yml[m
+[1mindex 5eeb7a3..97c8c7c 100644[m
+[1m--- a/roles/bigdipper/tasks/main.yml[m
+[1m+++ b/roles/bigdipper/tasks/main.yml[m
+[36m@@ -5,10 +5,9 @@[m
+ # Set up big dipper[m
+ - name: "Install python dependencies"[m
+   pip:[m
+[31m-    name: psycopg2[m
+[32m+[m[32m    name: psycopg2-binary[m
+ [m
+[31m-- name: "Set up docker"[m
+[31m-  inclide_role:[m
+[32m+[m[32m- include_role:[m
+     name: docker[m
+ [m
+ - name: Set up golang[m
+[36m@@ -25,10 +24,14 @@[m
+     shell: /bin/bash[m
+     comment: User for gaiad and cosmovisor services[m
+ [m
+[32m+[m[32m- name: "Register bigdipper db URL"[m
+[32m+[m[32m  set_fact:[m
+[32m+[m[32m    bigdipper_db_url: "postgres://{{bigdipper_db_user}}:{{bigdipper_db_password}}@{{bigdipper_db_host}}:{{bigdipper_db_port}}/{{bigdipper_db}}"[m
+[32m+[m
+ - name: "Checkout BDJuno"[m
+   git:[m
+     repo: 'https://github.com/forbole/bdjuno.git'[m
+[31m-    dest: {{bdjuno_dir}}[m
+[32m+[m[32m    dest: "{{bdjuno_dir}}"[m
+     version: cosmos/v0.44.x[m
+ [m
+ - name: "Install postgres docker container"[m
+[36m@@ -57,7 +60,7 @@[m
+     password: "{{bigdipper_db_password}}"[m
+ [m
+ # Loop through schemas one by one[m
+[31m-- name: "Configure postgres schema"[m
+[32m+[m[32m#- name: "Configure postgres schema"[m
+ [m
+ - name: "Install BDJuno"[m
+   shell: |[m
+[36m@@ -86,23 +89,48 @@[m
+     name: systemd-journald[m
+ [m
+ - name: "Run bdjuno systemd service"[m
+[31m-  when: not use_cosmovisor[m
+   systemd:[m
+     daemon_reload: true[m
+     state: restarted[m
+[32m+[m[32m    enabled: true[m
+     name: "{{bdjuno_service_name}}"[m
+ [m
+ [m
+[31m-- name: "Install hasuna"[m
+[32m+[m[32m- name: "Run docker image for Hasura"[m
+[32m+[m[32m  community.docker.docker_container:[m
+[32m+[m[32m    state: present[m
+[32m+[m[32m    name: big-dipper-hasura[m
+[32m+[m[32m    image: "hasura/graphql-engine:{{hasura_version}}"[m
+[32m+[m[32m    ports:[m
+[32m+[m[32m      - "{{hasura_port}}:{{hasura_port}}"[m
+[32m+[m[32m    env:[m
+[32m+[m[32m      HASURA_GRAPHQL_DATABASE_URL: ""{{bigdipper_db_url}}"[m
+[32m+[m
+[32m+[m[32m- name: "Set up node+npm"[m
+[32m+[m[32m  include_role:[m
+[32m+[m[32m    name: geerlingguy.nodejs[m
+[32m+[m
+ # TODO: Use PG_DATABASE_URL to specify the database?[m
+ - name: "Set up hasuna CLI"[m
+[32m+[m[32m  shell: "npm i --global hasura-cli@{{hasura_cli_version}}"[m
+ - name: "Apply metadata to hasura"[m
+[32m+[m[32m  shell: |[m
+[32m+[m[32m    cd {{bdjuno_dir}}/hasura[m
+[32m+[m[32m    hasura metadata apply --endpoint http://localhost:{{hasura_port}}[m
+ - name: "Set up hasura-actions systemd service"[m
+[31m-- name: "Run hasura-actions service"[m
+[32m+[m[32m  template:[m
+[32m+[m[32m    src: hasura-actions.service.j2[m
+[32m+[m[32m    dest: "/etc/systemd/system/{{hasura_actions_service_name}}.service"[m
+ [m
+[31m-- name: "Set up node+npm"[m
+[31m-- name: "Clone and checkout big-dipper-ui"[m
+[31m-- name: "Create .env file for big-dipper-ui"[m
+[31m-- name: "General config for big-dipper-ui"[m
+[31m-- name: "Create systemd service for big-dipper-ui"[m
+[31m-- name: "Run big-dipper-ui"[m
+[32m+[m[32m- name: "Run hasura-actions service"[m
+[32m+[m[32m  systemd:[m
+[32m+[m[32m    daemon_reload: true[m
+[32m+[m[32m    state: restarted[m
+[32m+[m[32m    enabled: true[m
+[32m+[m[32m    name: "{{hasura_actions_service_name}}"[m
+[32m+[m
+[32m+[m[32m#- name: "Clone and checkout big-dipper-ui"[m
+[32m+[m[32m#- name: "Create .env file for big-dipper-ui"[m
+[32m+[m[32m#- name: "General config for big-dipper-ui"[m
+[32m+[m[32m#- name: "Create systemd service for big-dipper-ui"[m
+[32m+[m[32m#- name: "Run big-dipper-ui"[m
+[1mdiff --git a/roles/docker/tasks/main.yml b/roles/docker/tasks/main.yml[m
+[1mindex 712a74a..0c1062b 100644[m
+[1m--- a/roles/docker/tasks/main.yml[m
+[1m+++ b/roles/docker/tasks/main.yml[m
+[36m@@ -5,4 +5,4 @@[m
+     name: docker[m
+ [m
+ - include_role:[m
+[31m-  name: geerlingguy.docker[m
+[32m+[m[32m    name: geerlingguy.docker[m

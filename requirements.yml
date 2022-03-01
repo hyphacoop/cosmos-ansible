@@ -5,3 +5,4 @@ collections:
 roles:
   - src: gantsign.golang
   - src: geerlingguy.docker
+  - src: geerlingguy.nodejs

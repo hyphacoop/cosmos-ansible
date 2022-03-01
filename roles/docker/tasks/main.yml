@@ -5,4 +5,4 @@
     name: docker
 
 - include_role:
-  name: geerlingguy.docker
+    name: geerlingguy.docker
