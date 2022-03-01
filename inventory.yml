@@ -17,7 +17,7 @@ all:
     monitoring_prometheus: true
     chain_id: theta-testnet-001
     grafana_ssh_url: root@monitor.polypore.xyz
-    p2p_persistent_peers: '394bfffc1baf6c7132ba04215f6b3717153d2928@p2p.earth.theta-testnet.polypore.xyz,ab5ab66720687dbca93cd670ce11e3c0de30b742@p2p.fire.theta-testnet.polypore.xyz,fb3a0f9e27c2923cb9a53dac83b3d983f0a9871e@p2p.wind.theta-testnet.polypore.xyz,89b44f2e37bf311d426aa1d2a782407c6313e38d@p2p.water.theta-testnet.polypore.xyz'
+    p2p_persistent_peers: "394bfffc1baf6c7132ba04215f6b3717153d2928@p2p.earth.theta-testnet.polypore.xyz:26656,ab5ab66720687dbca93cd670ce11e3c0de30b742@p2p.fire.theta-testnet.polypore.xyz:26656,fb3a0f9e27c2923cb9a53dac83b3d983f0a9871e@p2p.wind.theta-testnet.polypore.xyz:26656,89b44f2e37bf311d426aa1d2a782407c6313e38d@p2p.water.theta-testnet.polypore.xyz:26656"
     reboot: false
   children:
     gaia:
