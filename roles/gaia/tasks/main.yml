@@ -80,7 +80,7 @@
   # TODO: should we overwrite?
   shell: |
     PATH=$PATH:/usr/local/go/bin:{{ ansible_env.HOME }}/go/bin
-    gaiad init {{inventory_hostname}} --home {{gaiad_home}} --chain-id "theta-devnet"
+    gaiad init {{inventory_hostname}} --home {{gaiad_home}} --chain-id {{chain_id}}
 
 - name: create validator
   when: gaiad_create_validator
