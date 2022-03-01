@@ -1,11 +1,10 @@
 ---
-  
 - include_role:
     name: common
 
 - name: Set value to enable gaiad prometheus
   set_fact:
-      prometheus_enabled: true
+    prometheus_enabled: true
   when: monitoring_prometheus | default(false) | bool
 
 - name: Setup and enable swap
@@ -26,6 +25,27 @@
     groups: adm
     shell: /bin/bash
     comment: User for gaiad and cosmovisor services
+
+# Stop existing services
+- name: Populate service facts
+  service_facts:
+- name: Stop existing gaiad systemd service
+  # Check for both `SERVICE_NAME` and `SERVICE_NAME.service`
+  when: >
+    not use_cosmovisor and (
+    (gaiad_service_name in ansible_facts.services) or
+    ((gaiad_service_name + '.service') in ansible_facts.services))
+  systemd:
+    state: stopped
+    name: "{{gaiad_service_name}}"
+- name: Stop existing cosmovisor systemd service
+  when: >
+    use_cosmovisor and (
+    (cosmovisor_service_name in ansible_facts.services) or
+    ((cosmovisor_service_name + '.service') in ansible_facts.services))
+  systemd:
+    state: stopped
+    name: "{{cosmovisor_service_name}}"
 
 - name: Check golang version
   shell: |
@@ -259,15 +279,15 @@
   systemd:
     daemon_reload: true
     state: restarted
-    enabled: yes
-    name: gaiad
+    enabled: true
+    name: "{{gaiad_service_name}}"
 - name: Start cosmovisor systemd service
   when: use_cosmovisor
   systemd:
     daemon_reload: true
     state: restarted
-    enabled: yes
-    name: cosmovisor
+    enabled: true
+    name: "{{cosmovisor_service_name}}"
 
 - name: Set variables for api endpoint
   set_fact:
