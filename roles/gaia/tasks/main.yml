@@ -86,7 +86,7 @@
   when: gaiad_unsafe_reset
   shell: |
     PATH=$PATH:/usr/local/go/bin:{{ ansible_env.HOME }}/go/bin
-    gaiad unsafe-reset-all --home {{gaiad_home}} --chain-id {{chain_id}}
+    gaiad unsafe-reset-all --home {{gaiad_home}}
 
 - name: create validator
   when: gaiad_create_validator
