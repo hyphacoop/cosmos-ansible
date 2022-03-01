@@ -17,6 +17,8 @@ The example below will enable SSL reverse proxy, configure monitoring and config
 ansible-playbook gaia.yml -i inventory.yml --extra-vars "gaiad_use_ssl_proxy=true monitoring_prometheus=true enable_swap=true"
 ```
 
+It is recommanded to use Debian 11 on your machines.
+
 ## TODOs:
 
 - [ ] Docs!
