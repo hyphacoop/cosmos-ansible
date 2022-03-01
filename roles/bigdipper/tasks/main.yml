@@ -42,17 +42,20 @@
       - postgresql-contrib
 
 - name: Create postgres database
+  become_user: postgres
   community.postgresql.postgresql_db:
     name: "{{bigdipper_db}}"
     # login_password: "{{bigdipper_db_password}}"
     port: "{{bigdipper_db_port}}"
 
 - name: Create postgres schema
+  become_user: postgres
   community.postgresql.postgresql_schema:
     db: "{{bigdipper_db}}"
     name: "{{bigdipper_db_schema}}"
 
 - name: "Configure users on postgres"
+  become_user: postgres
   community.postgresql.postgresql_user:
     db: "{{bigdipper_db}}"
     name: "{{bigdipper_db_user}}"
@@ -60,7 +63,6 @@
 
 # Loop through schemas one by one
 # - name: "Configure postgres schema"
-
 - name: "Install BDJuno"
   shell: |
     cd {{bdjuno_dir}}
