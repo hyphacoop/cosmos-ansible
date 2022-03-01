@@ -111,6 +111,18 @@ client_broadcast_mode: sync
 ### node exporter config
 node_exporter_port: 9100
 
+### Prometheus / Grafana defaults
+grafana_ssh_url: root@monitor.polypore.xyz
+monitoring_prometheus: false
+
+### PANIC monitoring defaults
+panic_ssh_url: root@monitor.polypore.xyz
+monitoring_panic: false
+panic_config_file: /home/panic/panic_cosmos/config/user_config_nodes.ini
+panic_is_validator: 'no'
+panic_include_in_node_monitor: 'yes'
+panic_include_in_network_monitor: 'yes'
+
 # Vars with no defaults (to prevent code from running)
 # These don't get put into config files
 # genesis_url: ""

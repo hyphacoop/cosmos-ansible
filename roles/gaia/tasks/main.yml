@@ -325,6 +325,13 @@
       delegate_to: "{{ grafana_ssh_url }}"
   when: monitoring_prometheus | default(false) | bool
 
+- name: Setup PANIC on monitoring server
+  include_role:
+    name: configure-panic
+    apply:
+      delegate_to: "{{ panic_ssh_url }}"
+  when: monitoring_panic | default(false) | bool
+
 - name: Rebooting the machine
   include_role:
     name: reboot
