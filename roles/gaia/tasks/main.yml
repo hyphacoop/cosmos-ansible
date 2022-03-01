@@ -33,11 +33,11 @@
   systemd:
     state: stopped
     name: gaiad
-- name: Stop cosmovisor systemd service
+- name: Stop existing cosmovisor systemd service
   when: use_cosmovisor
   ignore_errors: true
   systemd:
-    state: restarted
+    state: stopped
     name: cosmovisor
 
 - name: Check golang version
