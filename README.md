@@ -46,6 +46,7 @@ Prerequisits:
 
 - Python 3
 - Ansible
+  - Note: Ubuntu 20.04 ships with Ansible 2.9.6 which is a buggy and can't be used in combination with a host running new systemd. It is recommanded to install via pip3 `pip3 install ansible`
 - `pip3 install autopep8 yamllint pylint`
 
 Run `./lint.sh` after making changes to detect syntax errors and normalize the formatting
