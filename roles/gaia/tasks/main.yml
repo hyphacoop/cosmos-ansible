@@ -24,14 +24,14 @@
 
 - name: Check gaiad version
   shell: |
-    PATH=$PATH:/usr/local/go/bin:{{ ansible_env.HOME }}/go/bin
+    PATH=$PATH:{{ansible_local.golang.general.home}}/bin:{{ ansible_env.HOME }}/go/bin
     gaiad version
   register: gaiad_current_version
   ignore_errors: true
 - name: clone and install gaiad
   when: not gaiad_version in gaiad_current_version.stdout
   shell: |
-    PATH=$PATH:/usr/local/go/bin:{{ ansible_env.HOME }}/go/bin
+    PATH=$PATH:{{ansible_local.golang.general.home}}/bin:{{ ansible_env.HOME }}/go/bin
     git clone {{gaiad_repository}}
     cd gaia
     git checkout {{gaiad_version}}
@@ -53,13 +53,13 @@
   when: gaiad_home_autoclear or not gaiad_home_exists.stat.exists
   # TODO: should we overwrite?
   shell: |
-    PATH=$PATH:/usr/local/go/bin:{{ ansible_env.HOME }}/go/bin
+    PATH=$PATH:{{ansible_local.golang.general.home}}/bin:{{ ansible_env.HOME }}/go/bin
     gaiad init {{inventory_hostname}} --home {{gaiad_home}}
 
 - name: Check cosmovisor version
   when: use_cosmovisor
   shell: |
-    PATH=$PATH:/usr/local/go/bin:{{ ansible_env.HOME }}/go/bin
+    PATH=$PATH:{{ansible_local.golang.general.home}}/bin:{{ ansible_env.HOME }}/go/bin
     cosmovisor --version
   register: cosmovisor_current
   ignore_errors: true
@@ -67,7 +67,7 @@
 - name: clone and install cosmovisor
   when: use_cosmovisor and not cosmovisor_version in cosmovisor_current.stdout
   shell: |
-    PATH=$PATH:/usr/local/go/bin:{{ ansible_env.HOME }}/go/bin
+    PATH=$PATH:{{ansible_local.golang.general.home}}/bin:{{ ansible_env.HOME }}/go/bin
     go install {{cosmovisor_repository}}@{{cosmovisor_version}}
 
 # Genesis file configuration

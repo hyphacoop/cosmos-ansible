@@ -16,7 +16,7 @@
   vars:
     golang_version: 1.16.4
 
-- name: Ensure user exists for gaiad
+- name: Ensure user exists for bigdipper
   user:
     name: "{{bigdipper_user}}"
     append: true
@@ -45,7 +45,6 @@
   become_user: postgres
   community.postgresql.postgresql_db:
     name: "{{bigdipper_db}}"
-    # login_password: "{{bigdipper_db_password}}"
     port: "{{bigdipper_db_port}}"
 
 - name: Create postgres schema
@@ -65,9 +64,13 @@
 # - name: "Configure postgres schema"
 - name: "Install BDJuno"
   shell: |
+    PATH=$PATH:{{ansible_local.golang.general.home}}/bin:{{ ansible_env.HOME }}/go/bin
+    export PATH
     cd {{bdjuno_dir}}
     make install
-    bdjuno init --home {{bdjuno_home}}
+    bdjuno init --home {{bdjuno_home}} --replace
+  args:
+    executable: /bin/bash
 
 # Copy config over from template?
 - name: "Generate bdjuno config"
@@ -76,7 +79,10 @@
     dest: "{{bdjuno_home}}/config.yaml"
 
 - name: "Parse genesis file with bdjuno"
-  shell: bdjuno parse-genesis --home {{bdjuno_home}}
+  shell: |
+    PATH=$PATH:{{ansible_local.golang.general.home}}/bin:{{ ansible_env.HOME }}/go/bin
+    export PATH
+    bdjuno parse-genesis --home {{bdjuno_home}}
 
 # TODO: Default to local node, expose config vars
 - name: "Set up bdjuno systemd service"
