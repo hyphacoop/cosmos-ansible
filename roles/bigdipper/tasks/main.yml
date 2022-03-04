@@ -22,7 +22,7 @@
     append: true
     groups: adm
     shell: /bin/bash
-    comment: User for gaiad and cosmovisor services
+    comment: User for bigdipper block explorer services
 
 - name: "Register bigdipper db URL"
   set_fact:
@@ -78,11 +78,34 @@
     src: bdjuno-config.yaml.j2
     dest: "{{bdjuno_home}}/config.yaml"
 
+# Genesis file configuration
+# Copied from Gaia
+# TODO: Make this somewhat reusable between the roles?
+- name: download genesis file
+  when: genesis_url is defined
+  shell: |
+    wget {{genesis_url}} -O genesis.json.gz
+    gunzip -c genesis.json.gz > {{bigdipper_user_home}}/genesis.json
+- name: copy genesis.json
+  when: genesis_file is defined
+  copy:
+    src: '{{genesis_file}}'
+    dest: '{{bigdipper_user_home}}/genesis.json'
+- name: verify genesis file
+  when: genesis_shasum is defined
+  # Throw an error if shasum doesn't match
+  shell: |
+    GENESIS_SHASUM="$(sha256sum {{ bigdipper_user_home }}/genesis.json)"
+    if [ $GENESIS_SHASUM != {{ genesis_shasum }} ]; then
+      exit 1
+    fi
+      exit 0
+
 - name: "Parse genesis file with bdjuno"
   shell: |
     PATH=$PATH:{{ansible_local.golang.general.home}}/bin:{{ ansible_env.HOME }}/go/bin
     export PATH
-    bdjuno parse-genesis --home {{bdjuno_home}}
+    bdjuno parse-genesis --home {{bdjuno_home}} --genesis-file-path {{bigdipper_home}}/genesis.json
 
 # TODO: Default to local node, expose config vars
 - name: "Set up bdjuno systemd service"
