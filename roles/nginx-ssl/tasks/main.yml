@@ -1,0 +1,59 @@
+---
+
+- name: Set reverse proxy path in vars
+  set_fact:
+    proxy_location: 'http://127.0.0.1:{{endpoint_port}}'
+
+- name: Install nginx packages
+  apt:
+    pkg:
+      - nginx
+      - certbot
+
+- name: Configure certbot to reload nginx on renew
+  ini_file:
+    path: /etc/letsencrypt/cli.ini
+    section: ''
+    option: deploy-hook
+    value: 'systemctl reload nginx'
+    state: present
+
+- name: Create nginx SSL directory
+  file:
+    path: /etc/nginx/ssl
+    owner: root
+    group: root
+    mode: '700'
+    state: directory
+
+- name: Generate 4096 bit DH parameters (this may take a long time...)
+  shell: openssl dhparam -writerand - 4096 > /etc/ssl/dhparam.pem
+  args:
+    chdir: /etc/nginx/ssl
+    creates: /etc/ssl/dhparam.pem
+
+- name: Register Let's Encrypt
+  command: certbot register --email {{letsencrypt_email}} --agree-tos -n
+  args:
+    creates: /etc/letsencrypt/accounts
+
+- name: Get Let's Encrypt Cert
+  command: certbot certonly --webroot -w /var/www/html/ -d {{site_hostname}} --rsa-key-size 4096 
+  args:
+    creates: /etc/letsencrypt/live/{{site_hostname}}/fullchain.pem
+
+- name: Configure nginx
+  template:
+    src: nginx-site.j2
+    dest: '/etc/nginx/sites-available/{{site_hostname}}'
+
+- name: Enabling {{site_hostname}} nginx config
+  file:
+    src: /etc/nginx/sites-available/{{site_hostname}}
+    dest: /etc/nginx/sites-enabled/{{site_hostname}}
+    state: link
+
+- name: Reload nginx
+  systemd:
+    state: reloaded
+    name: nginx

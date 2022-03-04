@@ -4,10 +4,17 @@
 
 This will spin up a gaia node which will process the genesis file for the [vega testnet](https://github.com/cosmos/vega-test/blob/master/public-testnet/modified_genesis_public_testnet/genesis.json.gz)
 
-Modify `inventory.ini` to add your own machine.
+Modify `inventory.yml` to add your own machine.
 
 ```
 ansible-playbook gaia.yml -i inventory.yml
+```
+
+To override the default variables use the `--extra-vars` option
+
+The example below will enable SSL reverse proxy, configure monitoring and configure swap
+```
+ansible-playbook gaia.yml -i inventory.yml --extra-vars "gaiad_use_ssl_proxy=true monitoring_prometheus=true enable_swap=true"
 ```
 
 ## TODOs:
@@ -54,3 +61,11 @@ Run `./lint.sh` after making changes to detect syntax errors and normalize the f
 - `p2p_pex`: `true` Whether p2p peer exchange is enabled
 - `p2p_persistent_peers` hardcoded list of peers to connect to (e.g. for bootstrapping)
 - `fast_sync`: `true`
+- `enable_swap`: `false` Whether swap is enabled
+- `swap_size`: `8192` Swap file size in MB (8 GB default)
+- `monitoring_prometheus`: `false` Whether to configure Prometheus / Grafana monitoring
+- `chain_id`: `vega-testnet` Sets the chain ID right now it is only used for displaying on Grafana
+- `gaiad_use_ssl_proxy`: `false` Wheter to enable SSL proxy using nginx to gaiad endpoints
+- `gaiad_api_host`: `rest` Sets the subdomain for rest API (e.g. `rest.one.theta-devnet.polypore.xyz`)
+- `gaiad_rpc_host`: `rpc` Sets the subdomain for rpc (e.g. `rpc.one.theta-devnet.polypore.xyz`)
+- `reboot`: `false` Whether to reboot the machine after all tasks are done (useful to make sure all services starts up and apply system updates)

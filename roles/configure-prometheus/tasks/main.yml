@@ -1,0 +1,16 @@
+---
+- name: Copy over Prometheus configuration
+  template:
+    src: prometheus.json.j2
+    dest: /opt/prometheus/hosts/{{ inventory_hostname }}.json
+    mode: 0644
+    owner: prometheus
+    group: prometheus
+
+- name: Copy over Blackbox Exporter configuration
+  template:
+    src: blackbox.json.j2
+    dest: /opt/prometheus/blackbox-icmp/{{ inventory_hostname }}.json
+    mode: 0644
+    owner: prometheus
+    group: prometheus
