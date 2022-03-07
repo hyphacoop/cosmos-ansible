@@ -1,0 +1,6 @@
+---
+# Reboot all machines in inventory
+- hosts: all
+  become: true
+  roles:
+  - reboot

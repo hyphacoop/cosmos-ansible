@@ -73,3 +73,12 @@ Run `./lint.sh` after making changes to detect syntax errors and normalize the f
 - `reboot`: `false` Whether to reboot the machine after all tasks are done (useful to make sure all services starts up and apply system updates **recommanded** for initial deployment)
 - `monitoring_panic` : `false` Whether to configure PANIC monitoring
 - `panic_is_validator` : `no` Tell PANIC the host is a validator
+
+## gaia-control.py script:
+This script is used to call `ansible-playbook` with different tags to run part of the `gaia` playbook.
+The script takes the inventory `-i` and operation `-o` arguemnts. The inventory argument is optional and defaults to `inventory.yml` (e.g. `./gaia-control.py -o restart`)
+- `./gaia-control.py -i inventory.yml -o restart"` - Restarts gaiad on all nodes in inventory
+- `./gaia-control.py -i inventory.yml -o stop"` - Stops gaiad on all nodes in inventory
+- `./gaia-control.py -i inventory.yml -o start"` - Starts gaiad on all nodes in inventory
+- `./gaia-control.py -i inventory.yml -o reboot"` - Reboots all nodes in inventory
+- `./gaia-control.py -i inventory.yml -o reset` - Runs `gaiad unsafe-reset-all` on all nodes

@@ -123,6 +123,9 @@ panic_is_validator: 'no'
 panic_include_in_node_monitor: 'yes'
 panic_include_in_network_monitor: 'yes'
 
+### Reboot after setup
+reboot: true
+
 # Vars with no defaults (to prevent code from running)
 # These don't get put into config files
 # genesis_url: ""
