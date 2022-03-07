@@ -9,8 +9,8 @@ parser.add_argument('-o', '--operation', required=True)
 
 args = parser.parse_args()
 
-operation=args.operation
-inventory=args.inventory
+operation = args.operation
+inventory = args.inventory
 
 if operation == "restart":
 	print(os.popen("ansible-playbook gaia.yml -i " + inventory + " --tags 'gaiad_restart'").read())
