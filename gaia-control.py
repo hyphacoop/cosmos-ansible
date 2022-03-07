@@ -25,7 +25,7 @@ if operation == "start":
 	sys.exit(0)
 
 if operation == "reset":
-	answer = input("This will reset gaiad database. Are you sure you want to continue (yes/no)? ")
+	answer = input("This will reset gaiad database on all nodes in inventory. Are you sure you want to continue (yes/no)? ")
 	if answer.lower() in ["yes"]:
 		print(os.popen("ansible-playbook gaia.yml -i " + inventory + " --extra-vars 'gaiad_unsafe_reset=true' --tags 'gaiad_stop,gaiad_reset,gaiad_start'").read())
 		sys.exit(0)
