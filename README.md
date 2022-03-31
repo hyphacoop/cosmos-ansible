@@ -70,6 +70,8 @@ Run `./lint.sh` after making changes to detect syntax errors and normalize the f
 - `gaiad_use_ssl_proxy`: `false` Wheter to enable SSL proxy using nginx to gaiad endpoints
 - `gaiad_api_host`: `rest` Sets the subdomain for rest API (e.g. `rest.one.theta-devnet.polypore.xyz`). Configure DNS before provisioning.
 - `gaiad_rpc_host`: `rpc` Sets the subdomain for rpc (e.g. `rpc.one.theta-devnet.polypore.xyz`). Configure DNS before provisioning.
+- `gaiad_grpc_host`: `grpc` Sets the subdomain for grpc (e.g. `grpc.one.theta-devnet.polypore.xyz`). Configure DNS before provisioning.
+- `gaiad_p2p_host`: `p2p` Sets the subdomain for p2p (e.g. `p2p.one.theta-devnet.polypore.xyz`). Configure DNS before provisioning.
 - `reboot`: `false` Whether to reboot the machine after all tasks are done (useful to make sure all services starts up and apply system updates **recommanded** for initial deployment)
 - `monitoring_panic` : `false` Whether to configure PANIC monitoring
 - `panic_is_validator` : `no` Tell PANIC the host is a validator
