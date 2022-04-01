@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 
+# pylint: skip-file
+
 import configparser
 import sys
-import math
 import argparse
 
 # argparse

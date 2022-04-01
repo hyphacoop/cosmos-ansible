@@ -76,7 +76,7 @@ Run `./lint.sh` after making changes to detect syntax errors and normalize the f
 - `monitoring_panic` : `false` Whether to configure PANIC monitoring
 - `panic_is_validator` : `no` Tell PANIC the host is a validator
 
-## gaia-control.py script:
+## gaia_control.py script:
 This script is used to call `ansible-playbook` with different tags to run part of the `gaia` playbook.
 The script takes the inventory `-i` and operation `-o` arguemnts. The inventory argument is optional and defaults to `inventory.yml` (e.g. `./gaia-control.py -o restart`)
 - `./gaia-control.py -i inventory.yml -o restart` - Restarts gaiad on all nodes in inventory
