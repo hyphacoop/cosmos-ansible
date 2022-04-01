@@ -1,0 +1,13 @@
+---
+# yamllint disable rule:line-length
+all:
+  vars:
+    genesis_file: "local_testnet_genesis.json"
+    gaiad_home_autoclear: true
+    gaiad_create_validator: false
+  children:
+    gaia:
+      hosts:
+        root@137.184.46.184:
+          priv_validator_key_file: "not_secret/priv_validator_key.json"
+          fast_sync: false

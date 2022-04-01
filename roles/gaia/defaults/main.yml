@@ -4,10 +4,23 @@ gaiad_user: gaia
 gaiad_user_home: "/home/{{gaiad_user}}"
 gaiad_home: "{{gaiad_user_home}}/.gaiad"
 gaiad_home_autoclear: false
-gaiad_version: v5.0.5
+gaiad_unsafe_reset: false
+gaiad_version: release/v6.0.0
 gaiad_repository: https://github.com/cosmos/gaia.git
 gaiad_bin: "{{ gaiad_user_home }}/go/bin/gaiad"
 gaiad_service_name: "gaiad"
+chain_id: "theta-devnet"
+
+# Default vaiables for creating a validator
+gaiad_create_validator: false
+gaiad_gentx_validator_stake: "8000000000stake"
+gaiad_validator_keyring: "test"
+gaiad_validator_coins: "10000000000stake,1000000000000uatom"
+
+# Default variables for aidropping tokens
+gaiad_airdrop: false
+gaiad_airdrop_coins: "1000stake,1000000000uatom"
+gaiad_airdrop_accounts: []
 
 # Cosmovisor settings
 ## TODO: Support arbitrary cosmovisor branches
@@ -97,6 +110,21 @@ client_broadcast_mode: sync
 
 ### node exporter config
 node_exporter_port: 9100
+
+### Prometheus / Grafana defaults
+grafana_ssh_url: root@monitor.polypore.xyz
+monitoring_prometheus: false
+
+### PANIC monitoring defaults
+panic_ssh_url: root@monitor.polypore.xyz
+monitoring_panic: false
+panic_config_file: /home/panic/panic_cosmos/config/user_config_nodes.ini
+panic_is_validator: 'no'
+panic_include_in_node_monitor: 'yes'
+panic_include_in_network_monitor: 'yes'
+
+### Reboot after setup
+reboot: true
 
 # Vars with no defaults (to prevent code from running)
 # These don't get put into config files

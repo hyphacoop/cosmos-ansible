@@ -1,0 +1,21 @@
+---
+- name: Copy over config_panic_nodes.py
+  copy:
+    src: config_panic_nodes.py
+    dest: /usr/local/bin/config_panic_nodes.py
+    mode: 0755
+    owner: root
+    group: root
+  run_once: true
+
+- name: Configure PANIC with config_panic_nodes.py
+  script:
+    cmd: config_panic_nodes.py --config_file {{ panic_config_file }} add --node_name {{ inventory_hostname }} --node_rpc_url {{ inventory_hostname }} --node_rpc_port {{ rpc_port }} --node_is_validator {{ panic_is_validator }} --include_in_node_monitor {{ panic_include_in_node_monitor }} --include_in_network_monitor {{ panic_include_in_network_monitor }}
+    become_user: panic
+  throttle: 1
+
+- name: Restart PANIC
+  systemd:
+    name: panic-cosmos.service
+    state: restarted
+  run_once: true

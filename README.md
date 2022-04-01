@@ -17,6 +17,8 @@ The example below will enable SSL reverse proxy, configure monitoring and config
 ansible-playbook gaia.yml -i inventory.yml --extra-vars "gaiad_use_ssl_proxy=true monitoring_prometheus=true enable_swap=true"
 ```
 
+It is recommanded to use Debian 11 on your machines.
+
 ## TODOs:
 
 - [ ] Docs!
@@ -44,6 +46,7 @@ Prerequisits:
 
 - Python 3
 - Ansible
+  - Note: Ubuntu 20.04 ships with Ansible 2.9.6 which is a buggy and can't be used in combination with a host running new systemd. It is recommanded to install via pip3 `pip3 install ansible`
 - `pip3 install autopep8 yamllint pylint`
 
 Run `./lint.sh` after making changes to detect syntax errors and normalize the formatting
@@ -54,7 +57,7 @@ Run `./lint.sh` after making changes to detect syntax errors and normalize the f
 - `gaia_repository`: `https://github.com/cosmos/gaia.git` The git repo to use to checkout the source tree for gaia
 - `use_cosmovisor`: `true` Whether to use cosmovisor or a raw `gaiad` service
 - `genesis_url`: `""` a URL to download the gzipped genesis file from
-- `genesis_file`: `""` a file path (within this folder) to the genesis file to use
+- `genesis_file`: `""` a file path (within this folder) to the genesis file to use. Note that we don't copy the file if there is an existing file that is the same length.
 - `addrbook_url`: `""` a URL to download the addrbook.json file from. e.g. [via quicksync.io](https://quicksync.io/addrbook.cosmos.json)
 - `addrbook_file`: `""` a file path (within this folder) to the addrbook.json file to use
 - `p2p_pex`: `true` Whether p2p peer exchange is enabled
@@ -65,6 +68,19 @@ Run `./lint.sh` after making changes to detect syntax errors and normalize the f
 - `monitoring_prometheus`: `false` Whether to configure Prometheus / Grafana monitoring
 - `chain_id`: `vega-testnet` Sets the chain ID right now it is only used for displaying on Grafana
 - `gaiad_use_ssl_proxy`: `false` Wheter to enable SSL proxy using nginx to gaiad endpoints
-- `gaiad_api_host`: `rest` Sets the subdomain for rest API (e.g. `rest.one.theta-devnet.polypore.xyz`)
-- `gaiad_rpc_host`: `rpc` Sets the subdomain for rpc (e.g. `rpc.one.theta-devnet.polypore.xyz`)
-- `reboot`: `false` Whether to reboot the machine after all tasks are done (useful to make sure all services starts up and apply system updates)
+- `gaiad_api_host`: `rest` Sets the subdomain for rest API (e.g. `rest.one.theta-devnet.polypore.xyz`). Configure DNS before provisioning.
+- `gaiad_rpc_host`: `rpc` Sets the subdomain for rpc (e.g. `rpc.one.theta-devnet.polypore.xyz`). Configure DNS before provisioning.
+- `gaiad_grpc_host`: `grpc` Sets the subdomain for grpc (e.g. `grpc.one.theta-devnet.polypore.xyz`). Configure DNS before provisioning.
+- `gaiad_p2p_host`: `p2p` Sets the subdomain for p2p (e.g. `p2p.one.theta-devnet.polypore.xyz`). Configure DNS before provisioning.
+- `reboot`: `false` Whether to reboot the machine after all tasks are done (useful to make sure all services starts up and apply system updates **recommanded** for initial deployment)
+- `monitoring_panic` : `false` Whether to configure PANIC monitoring
+- `panic_is_validator` : `no` Tell PANIC the host is a validator
+
+## gaia-control.py script:
+This script is used to call `ansible-playbook` with different tags to run part of the `gaia` playbook.
+The script takes the inventory `-i` and operation `-o` arguemnts. The inventory argument is optional and defaults to `inventory.yml` (e.g. `./gaia-control.py -o restart`)
+- `./gaia-control.py -i inventory.yml -o restart` - Restarts gaiad on all nodes in inventory
+- `./gaia-control.py -i inventory.yml -o stop` - Stops gaiad on all nodes in inventory
+- `./gaia-control.py -i inventory.yml -o start` - Starts gaiad on all nodes in inventory
+- `./gaia-control.py -i inventory.yml -o reboot` - Reboots all nodes in inventory
+- `./gaia-control.py -i inventory.yml -o reset` - Runs `gaiad unsafe-reset-all` on all nodes

@@ -1,11 +1,10 @@
 ---
-  
 - include_role:
     name: common
 
 - name: Set value to enable gaiad prometheus
   set_fact:
-      prometheus_enabled: true
+    prometheus_enabled: true
   when: monitoring_prometheus | default(false) | bool
 
 - name: Setup and enable swap
@@ -27,9 +26,41 @@
     shell: /bin/bash
     comment: User for gaiad and cosmovisor services
 
+# Stop existing services
+- name: Populate service facts
+  service_facts:
+  tags:
+    - gaiad_stop
+    - gaiad_restart
+
+- name: Stop existing gaiad systemd service
+  # Check for both `SERVICE_NAME` and `SERVICE_NAME.service`
+  when: >
+    not use_cosmovisor and (
+    (gaiad_service_name in ansible_facts.services) or
+    ((gaiad_service_name + '.service') in ansible_facts.services))
+  systemd:
+    state: stopped
+    name: "{{gaiad_service_name}}"
+  tags:
+    - gaiad_stop
+    - gaiad_restart
+
+- name: Stop existing cosmovisor systemd service
+  when: >
+    use_cosmovisor and (
+    (cosmovisor_service_name in ansible_facts.services) or
+    ((cosmovisor_service_name + '.service') in ansible_facts.services))
+  systemd:
+    state: stopped
+    name: "{{cosmovisor_service_name}}"
+  tags:
+    - gaiad_stop
+    - gaiad_restart
+
 - name: Check golang version
   shell: |
-    PATH=$PATH:/usr/local/go/bin:{{ ansible_env.HOME }}/go/bin
+    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
     go version
   register: go_current_version
   ignore_errors: true
@@ -39,6 +70,7 @@
   get_url:
     url: "https://golang.org/dl/go{{go_version}}.{{go_arch}}.tar.gz"
     dest: "{{ ansible_env.HOME }}/go.tar.gz"
+
 - name: Extract golang
   # TODO: Auto-detect go_arch
   when: not go_version in go_current_version.stdout
@@ -50,24 +82,29 @@
 
 - name: Check gaiad version
   shell: |
-    PATH=$PATH:/usr/local/go/bin:{{ ansible_env.HOME }}/go/bin
+    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
     gaiad version
+  become_user: "{{gaiad_user}}"
   register: gaiad_current_version
   ignore_errors: true
+
 - name: clone and install gaiad
   when: not gaiad_version in gaiad_current_version.stdout
   shell: |
-    PATH=$PATH:/usr/local/go/bin:{{ ansible_env.HOME }}/go/bin
+    cd $HOME
+    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
     git clone {{gaiad_repository}}
     cd gaia
     git checkout {{gaiad_version}}
     make install
+  become_user: "{{gaiad_user}}"
 
 # Clear gaiad_home if it exists
 - name: Check if gaiad home folder exists
   stat:
     path: "{{gaiad_home}}"
   register: gaiad_home_exists
+
 - name: Clear gaiad home
   when: gaiad_home_autoclear
   file:
@@ -79,34 +116,93 @@
   when: gaiad_home_autoclear or not gaiad_home_exists.stat.exists
   # TODO: should we overwrite?
   shell: |
-    PATH=$PATH:/usr/local/go/bin:{{ ansible_env.HOME }}/go/bin
-    gaiad init {{inventory_hostname}} --home {{gaiad_home}}
+    cd $HOME
+    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+    gaiad init {{inventory_hostname}} --home {{gaiad_home}} --chain-id {{chain_id}}
+  become_user: "{{gaiad_user}}"
+
+- name: reset gaiad database
+  when: gaiad_unsafe_reset
+  shell: |
+    cd $HOME
+    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+    gaiad unsafe-reset-all --home {{gaiad_home}}
+  become_user: "{{gaiad_user}}"
+  tags:
+    - gaiad_reset
+
+- name: create validator
+  when: gaiad_create_validator
+  shell: |
+    cd $HOME
+    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+    gaiad keys add validator --keyring-backend="test" --home {{gaiad_home}}
+    gaiad add-genesis-account validator {{gaiad_validator_coins}} --home {{gaiad_home}} --keyring-backend="{{gaiad_validator_keyring}}"
+  become_user: "{{gaiad_user}}"
+
+- name: create genesis accounts
+  when: gaiad_airdrop and gaiad_create_validator
+  shell: |
+    cd $HOME
+    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+    gaiad add-genesis-account {{ item }} {{gaiad_airdrop_coins}} --home {{gaiad_home}}
+  become_user: "{{gaiad_user}}"
+  loop: "{{ gaiad_aidrop_accounts }}"
+
+- name: collect gentx
+  when: gaiad_create_validator
+  shell: |
+    cd $HOME
+    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+    gaiad gentx validator {{gaiad_gentx_validator_stake}} --keyring-backend="{{gaiad_validator_keyring}}" --home {{gaiad_home}} --chain-id {{chain_id}}
+    gaiad collect-gentxs --home {{gaiad_home}}
+  become_user: "{{gaiad_user}}"
 
 - name: Check cosmovisor version
   when: use_cosmovisor
   shell: |
-    PATH=$PATH:/usr/local/go/bin:{{ ansible_env.HOME }}/go/bin
+    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
     cosmovisor --version
+  become_user: "{{gaiad_user}}"
   register: cosmovisor_current
   ignore_errors: true
 
 - name: clone and install cosmovisor
   when: use_cosmovisor and not cosmovisor_version in cosmovisor_current.stdout
   shell: |
-    PATH=$PATH:/usr/local/go/bin:{{ ansible_env.HOME }}/go/bin
+    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
     go install {{cosmovisor_repository}}@{{cosmovisor_version}}
+  become_user: "{{gaiad_user}}"
 
 # Genesis file configuration
-- name: download genesis file
-  when: genesis_url is defined
-  shell: |
-    wget {{genesis_url}} -O genesis.json.gz
-    gunzip -c genesis.json.gz > {{gaiad_home}}/config/genesis.json
+# - name: Check stat of local genesis file
+#   when: genesis_file is defined
+#   local_action:
+#     module: stat
+#     path: "{{genesis_file}}"
+#     get_checksum: false
+#   register: local_genesis_file_exists
+# - name: Check if remote genesis file exists
+#   when: genesis_file is defined
+#   stat:
+#     path: "{{gaiad_home}}/config/genesis.json"
+#     get_checksum: false
+#   register: genesis_file_exists
 - name: copy genesis.json
-  when: genesis_file is defined
+  when: genesis_file is defined 
   copy:
     src: '{{genesis_file}}'
     dest: '{{gaiad_home}}/config/genesis.json'
+    owner: '{{gaiad_user}}'
+    group: '{{gaiad_user}}'
+
+- name: download genesis file
+  when: genesis_url is defined
+  shell: |
+    wget {{genesis_url}} -O $HOME/genesis.json.gz
+    gunzip -c $HOME/genesis.json.gz > {{gaiad_home}}/config/genesis.json
+  become_user: "{{gaiad_user}}"
+
 - name: verify genesis file
   when: genesis_shasum is defined
   # Throw an error if shasum doesn't match
@@ -116,6 +212,7 @@
       exit 1
     fi
       exit 0
+  become_user: "{{gaiad_user}}"
 
 # Config file generation
 - name: copy app.toml
@@ -123,21 +220,32 @@
   copy:
     src: '{{app_toml_file}}'
     dest: '{{gaiad_home}}/config/app.toml'
+    owner: '{{gaiad_user}}'
+    group: '{{gaiad_user}}'
+
 - name: copy config.toml
   when: config_toml_file is defined
   copy:
     src: '{{config_toml_file}}'
     dest: '{{gaiad_home}}/config/config.toml'
+    owner: '{{gaiad_user}}'
+    group: '{{gaiad_user}}'
+
 - name: copy node_key.json
   when: node_key_file is defined
   copy:
     src: '{{node_key_file}}'
     dest: '{{gaiad_home}}/config/node_key.json'
+    owner: '{{gaiad_user}}'
+    group: '{{gaiad_user}}'
+
 - name: copy priv_validator_key.json
   when: priv_validator_key_file is defined
   copy:
     src: '{{priv_validator_key_file}}'
     dest: '{{gaiad_home}}/config/priv_validator_key.json'
+    owner: '{{gaiad_user}}'
+    group: '{{gaiad_user}}'
 
 ## Addressbook config
 - name: copy addrbook.json
@@ -145,33 +253,37 @@
   copy:
     src: '{{addrbook_file}}'
     dest: '{{gaiad_home}}/config/addrbook_file.json'
+    owner: '{{gaiad_user}}'
+    group: '{{gaiad_user}}'
+
 - name: download addrbook.json from URL
   when: addrbook_url is defined
   get_url:
     url: "{{addrbook_url}}"
     dest: "{{gaiad_home}}/config/addrbook.json"
+    owner: '{{gaiad_user}}'
+    group: '{{gaiad_user}}'
 
 ## Patching Config files
 - name: generate config json for patching toml files
   template:
     src: ansible_vars.json.j2
     dest: '{{gaiad_home}}/config/ansible_vars.json'
+    owner: '{{gaiad_user}}'
+    group: '{{gaiad_user}}'
+
 - name: patch .toml configs with ansible variables
   script: |
     copy_config_vars.py --gaiad_home=$(echo {{gaiad_home}}) \
       --config_file=$(echo {{gaiad_home}}/config/ansible_vars.json)
+  become_user: "{{gaiad_user}}"
+
 - name: delete generated config json
   file:
     state: absent
     path: '{{gaiad_home}}/config/ansible_vars.json'
-
-## Copy go binaries
-- name: Copy go binaries to gaiad user
-  copy:
-    remote_src: true
-    src: '{{ ansible_env.HOME }}/go'
-    dest: '/home/{{gaiad_user}}/'
-    owner: "{{ gaiad_user }}"
+    owner: '{{gaiad_user}}'
+    group: '{{gaiad_user}}'
 
 ## Configure cosmovisor
 - name: Prepare cosmovisor folder
@@ -179,6 +291,8 @@
     path: '{{ cosmovisor_home }}/genesis/bin'
     state: directory
     owner: '{{gaiad_user}}'
+    group: '{{gaiad_user}}'
+
 - name: Copy gaiad bin for cosmovisor genesis
   when: use_cosmovisor
   copy:
@@ -187,15 +301,17 @@
     src: '{{ gaiad_bin }}'
     dest: '{{ cosmovisor_home }}/genesis/bin/gaiad'
     owner: '{{gaiad_user}}'
+    group: '{{gaiad_user}}'
+    mode: '0755'
 
 ## Set ownership for config files
-- name: Set ownership of gaiad home
-  file:
-    path: '{{ gaiad_home }}'
-    owner: '{{ gaiad_user }}'
-    group: '{{ gaiad_user }}'
-    mode: 0775
-    recurse: true
+#- name: Set ownership of gaiad home
+#  file:
+#    path: '{{ gaiad_home }}'
+#    owner: '{{ gaiad_user }}'
+#    group: '{{ gaiad_user }}'
+#    mode: 0775
+#    recurse: true
 
 # Service setup
 - name: configure systemd service for gaiad
@@ -219,15 +335,22 @@
   systemd:
     daemon_reload: true
     state: restarted
-    enabled: yes
-    name: gaiad
+    enabled: true
+    name: "{{gaiad_service_name}}"
+  tags:
+    - gaiad_start
+    - gaiad_restart
+
 - name: Start cosmovisor systemd service
   when: use_cosmovisor
   systemd:
     daemon_reload: true
     state: restarted
-    enabled: yes
-    name: cosmovisor
+    enabled: true
+    name: "{{cosmovisor_service_name}}"
+  tags:
+    - gaiad_start
+    - gaiad_restart
 
 - name: Set variables for api endpoint
   set_fact:
@@ -285,10 +408,19 @@
       delegate_to: "{{ grafana_ssh_url }}"
   when: monitoring_prometheus | default(false) | bool
 
+- name: Setup PANIC on monitoring server
+  include_role:
+    name: configure-panic
+    apply:
+      delegate_to: "{{ panic_ssh_url }}"
+  when: monitoring_panic | default(false) | bool
+
 - name: Rebooting the machine
   include_role:
     name: reboot
   when: reboot | default(false) | bool
+  tags:
+    - reboot
 
 # Misc output?
 # - name: print info about the node?
