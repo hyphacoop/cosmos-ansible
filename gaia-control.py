@@ -5,9 +5,9 @@ Ansible-backed node management operations:
 ./gaia-control.py -o <operation> [-i <inventory file>]
 -i is optional, it defaults to inventory.yml
 Operations:
-restart: restarts the cosmovisor service
-stop: stops the cosmovisor service
-start: starts the cosmovisor service
+restart: restarts the gaiad/cosmovisor service
+stop: stops the gaiad/cosmovisor service
+start: starts the gaiad/cosmovisor service
 reset: resets the gaia database
 reboot: reboots the host
 """
