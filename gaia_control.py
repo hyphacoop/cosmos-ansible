@@ -27,8 +27,9 @@ operation = args.operation
 inventory = args.inventory
 
 if operation == "restart":
-  print(os.popen("ansible-playbook gaia.yml -i " + inventory + " --tags 'gaiad_restart'").read())
-  sys.exit(0)
+    print(os.popen("ansible-playbook gaia.yml -i " +
+                   inventory + " --tags 'gaiad_restart'").read())
+    sys.exit(0)
 
 if operation == "stop":
     print(os.popen("ansible-playbook gaia.yml -i " +
