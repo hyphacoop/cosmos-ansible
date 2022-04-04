@@ -4,8 +4,8 @@ all:
   vars:
     ansible_user: root
     # genesis_file: "public_testnet_genesis.json"
-   chain_id: theta-testnet-001
-   gaiad_home_autoclear: false
+    chain_id: theta-testnet-001
+    gaiad_home_autoclear: false
     gaiad_unsafe_reset: true
     gaiad_create_validator: false
     gaiad_use_ssl_proxy: true
