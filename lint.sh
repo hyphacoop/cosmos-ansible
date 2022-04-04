@@ -1,11 +1,14 @@
 #!/bin/bash
 pylint=0
 yamllint=0
-echo "Auto-formatting python"
-autopep8 --in-place --recursive .
+
+if [ ! $CI ]
+then
+	echo "Auto-formatting python"
+	autopep8 --in-place --recursive .
+fi
 echo "Linting python"
 find . -type f -name "*.py" | xargs pylint --rcfile=.config/pylintrc
-
 if [ $? -ne 0 ]
 then
 	pylint=1
