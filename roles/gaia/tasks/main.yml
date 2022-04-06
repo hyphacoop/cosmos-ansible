@@ -147,7 +147,7 @@
     PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
     gaiad add-genesis-account {{ item }} {{gaiad_airdrop_coins}} --home {{gaiad_home}}
   become_user: "{{gaiad_user}}"
-  loop: "{{ gaiad_aidrop_accounts }}"
+  loop: "{{ gaiad_airdrop_accounts }}"
 
 - name: collect gentx
   when: gaiad_create_validator
