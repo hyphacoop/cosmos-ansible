@@ -87,7 +87,9 @@ The script takes the inventory `-i` and operation `-o` arguemnts. The inventory 
 
 ## Hermes IBC Relayer playbook:
 This playbook `hermes.yml` spins up Hermes relayer in your inventory under the `hermes` group.
+
 After running the playbook you will have to manually restore the key for the chains you want to relay to.
+
 Please run all this in the `hermes` user
 `su hermes`
 ``hermes -c ~/.hermes/config.toml keys restore hermes-chain-1 -m "<your mnemonic key>"``
