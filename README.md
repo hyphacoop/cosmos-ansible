@@ -91,17 +91,23 @@ This playbook `hermes.yml` spins up Hermes relayer in your inventory under the `
 After running the playbook you will have to manually restore the key for the chains you want to relay to.
 
 Please run all this in the `hermes` user
+
 `su hermes`
+
 ``hermes -c ~/.hermes/config.toml keys restore hermes-chain-1 -m "<your mnemonic key>"``
+
 ``hermes -c ~/.hermes/config.toml keys restore hermes-chain-2 -m "<your mnemonic key>"``
 
 After restoring the keys you can then create a client between the chains
+
 ``$ hermes -c ~/.hermes/config.toml create client hermes-chain-1 hermes-chain-2``
 
 Once that is successful you need to create a channel between the chains
+
 ``hermes -c ~/.hermes/config.toml create channel --port-a transfer --port-b transfer hermes-chain-1 hermes-chain-2``
 
 After successfully created the channel you should restart the hermes service by logging out of `hermes` and back to the `root` shell
+
 ``systemctl restart hermes``
 
 ## Hermes useful variables for defining the chains:
