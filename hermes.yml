@@ -1,0 +1,6 @@
+---
+# Configure a hermes node
+- hosts: hermes
+  become: true
+  roles:
+  - hermes

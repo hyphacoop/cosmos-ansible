@@ -84,3 +84,26 @@ The script takes the inventory `-i` and operation `-o` arguemnts. The inventory 
 - `./gaia-control.py -i inventory.yml -o start` - Starts gaiad on all nodes in inventory
 - `./gaia-control.py -i inventory.yml -o reboot` - Reboots all nodes in inventory
 - `./gaia-control.py -i inventory.yml -o reset` - Runs `gaiad unsafe-reset-all` on all nodes
+
+## Hermes IBC Relayer playbook:
+This playbook `hermes.yml` spins up Hermes relayer in your inventory under the `hermes` group.
+After running the playbook you will have to manually restore the key for the chains you want to relay to.
+Please run all this in the `hermes` user
+`su hermes`
+``hermes -c ~/.hermes/config.toml keys restore hermes-chain-1 -m "<your mnemonic key>"``
+``hermes -c ~/.hermes/config.toml keys restore hermes-chain-2 -m "<your mnemonic key>"``
+
+After restoring the keys you can then create a client between the chains
+``$ hermes -c ~/.hermes/config.toml create client hermes-chain-1 hermes-chain-2``
+
+Once that is successful you need to create a channel between the chains
+``hermes -c ~/.hermes/config.toml create channel --port-a transfer --port-b transfer hermes-chain-1 hermes-chain-2``
+
+After successfully created the channel you should restart the hermes service by logging out of `hermes` and back to the `root` shell
+``systemctl restart hermes``
+
+## Hermes useful variables for defining the chains:
+- `hermes_chains` : `hermes-chain-1` The chain ID of one of the chain being relayed to. There can be a lits of chains
+	- `hermes_chain_hostname:` : `hermes-chain-1.hermes-testnets.polypore.xyz` This is the endpoint of where Hermes will connect to for `hermes-chain-1`
+
+Example playbook [inventory-hermes-example.yml](examples/inventory-hermes-example.yml)

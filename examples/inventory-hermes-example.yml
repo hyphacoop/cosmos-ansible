@@ -1,0 +1,50 @@
+---
+# yamllint disable rule:line-length
+all:
+  vars:
+    gaiad_home_autoclear: true
+    gaiad_version: theta-prepare
+    api_enabled: true
+    #chain_id: "theta-devnet"
+    gaiad_use_ssl_proxy: false
+    gaiad_api_host: "rest"
+    gaiad_rpc_host: "rpc"
+    gaiad_grpc_host: "grpc"
+    gaiad_p2p_host: "p2p"
+    letsencrypt_email: "project.cosmos@hypha.coop"
+    enable_swap: false
+    swap_size: 8192
+    monitoring_prometheus: false
+    grafana_ssh_url: root@monitor.polypore.xyz
+    monitoring_panic: false
+    panic_ssh_url: root@monitor.polypore.xyz
+    gaiad_version: release/v7.0.0
+    reboot: true
+  children:
+    gaia:
+      hosts:
+        hermes-chain-1.hermes-testnets.polypore.xyz:
+          chain_id: hermes-chain-1
+          ansible_user: root
+          gaiad_create_validator: true
+          gaiad_airdrop: true
+          gaiad_aidrop_accounts:
+            - cosmos1hxv7mpztvln45eghez6evw2ypcw4vjmsmr8cdx
+            - cosmos1cc5mtuje84sx5dsqw4gtr4w8lthpzw02rjjnew
+        hermes-chain-2.hermes-testnets.polypore.xyz:
+          chain_id: hermes-chain-2
+          ansible_user: root
+          gaiad_create_validator: true
+          gaiad_airdrop: true
+          gaiad_aidrop_accounts:
+            - cosmos1hxv7mpztvln45eghez6evw2ypcw4vjmsmr8cdx
+            - cosmos1cc5mtuje84sx5dsqw4gtr4w8lthpzw02rjjnew
+    hermes:
+      hosts:
+        hermes.hermes-testnets.polypore.xyz:
+          ansible_user: sysadmin
+          hermes_chains:
+            hermes-chain-1:
+              hermes_chain_hostname: hermes-chain-1.hermes-testnets.polypore.xyz
+            hermes-chain-2:
+              hermes_chain_hostname: hermes-chain-2.hermes-testnets.polypore.xyz

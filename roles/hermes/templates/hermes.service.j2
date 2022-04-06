@@ -1,0 +1,14 @@
+[Unit]
+Description=hermes
+After=network-online.target
+
+[Service]
+User={{ hermes_user }}
+ExecStart=/home/{{ hermes_user }}/bin/hermes -c /home/{{ hermes_user }}/.hermes/config.toml start
+Restart=always
+RestartSec=3
+LimitNOFILE=4096
+Environment="DAEMON_LOG_BUFFER_SIZE=512"
+
+[Install]
+WantedBy=multi-user.target
