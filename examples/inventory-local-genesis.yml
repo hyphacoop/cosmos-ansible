@@ -1,0 +1,13 @@
+---
+# yamllint disable rule:line-length
+all:
+  vars:
+    gaiad_home_autoclear: true
+    gaiad_version: release/v7.0.0
+    genesis_url: "https://github.com/cosmos/testnets/blob/master/v7-theta/local-testnet/genesis.json.gz?raw=true"
+  children:
+    gaia:
+      hosts:
+        root@testnet.com:
+          fast_sync: false
+          priv_validator_key_file: "priv_validator_key.json"

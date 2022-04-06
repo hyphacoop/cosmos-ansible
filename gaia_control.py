@@ -2,7 +2,7 @@
 
 """
 Ansible-backed node management operations:
-./gaia-control.py -o <operation> [-i <inventory file>]
+./gaia-control.py [-i <inventory file>] <operation>
 -i is optional, it defaults to inventory.yml
 Operations:
 restart: restarts the gaiad/cosmovisor service
@@ -16,15 +16,16 @@ import sys
 import argparse
 import os
 
-parser = argparse.ArgumentParser()
-parser.add_argument('-i', '--inventory', required=False,
-                    default="inventory.yml")
-parser.add_argument('-o', '--operation', required=True)
+parser = argparse.ArgumentParser(description='Single-command node management.')
+parser.add_argument('-i', metavar='inventory', help='inventory file (default: inventory.yml)',
+                    required=False,
+                    default='inventory.yml')
+parser.add_argument('operation', help='the operation to perform')
 
 args = parser.parse_args()
 
 operation = args.operation
-inventory = args.inventory
+inventory = args.i
 
 if operation == "restart":
     print(os.popen("ansible-playbook gaia.yml -i " +
