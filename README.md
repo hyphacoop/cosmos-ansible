@@ -88,9 +88,7 @@ The script takes the inventory `-i` and operation `-o` arguemnts. The inventory 
 ## Hermes IBC Relayer playbook:
 This playbook `hermes.yml` spins up Hermes relayer in your inventory under the `hermes` group.
 
-After running the playbook you will have to manually restore the key for the chains you want to relay to.
-
-Please run all this in the `hermes` user
+After running the playbook you will have to manually restore the key for the chains you want to relay to. Please run all these commands under the `hermes` user:
 
 `su hermes`
 
@@ -98,15 +96,15 @@ Please run all this in the `hermes` user
 
 ``hermes -c ~/.hermes/config.toml keys restore hermes-chain-2 -m "<your mnemonic key>"``
 
-After restoring the keys you can then create a client between the chains
+After restoring the keys you can then create a client between the chains:
 
 ``$ hermes -c ~/.hermes/config.toml create client hermes-chain-1 hermes-chain-2``
 
-Once that is successful you need to create a channel between the chains
+Once that is successful you need to create a channel between the chains:
 
 ``hermes -c ~/.hermes/config.toml create channel --port-a transfer --port-b transfer hermes-chain-1 hermes-chain-2``
 
-After successfully created the channel you should restart the hermes service by logging out of `hermes` and back to the `root` shell
+After successfully created the channel you should restart the hermes service by logging out of `hermes` and back to the `root` shell:
 
 ``systemctl restart hermes``
 
