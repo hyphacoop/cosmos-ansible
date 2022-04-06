@@ -38,7 +38,7 @@
     creates: /etc/letsencrypt/accounts
 
 - name: Get Let's Encrypt Cert
-  command: certbot certonly --webroot -w /var/www/html/ -d {{site_hostname}} --rsa-key-size 4096 
+  command: certbot certonly --webroot -w /var/www/html/ -d {{site_hostname}} --rsa-key-size 4096
   args:
     creates: /etc/letsencrypt/live/{{site_hostname}}/fullchain.pem
 
