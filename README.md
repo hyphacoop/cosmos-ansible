@@ -98,7 +98,7 @@ After running the playbook you will have to manually restore the key for the cha
 
 After restoring the keys you can then create a client between the chains:
 
-``$ hermes -c ~/.hermes/config.toml create client hermes-chain-1 hermes-chain-2``
+``hermes -c ~/.hermes/config.toml create client hermes-chain-1 hermes-chain-2``
 
 Once that is successful you need to create a channel between the chains:
 
