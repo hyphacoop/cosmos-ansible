@@ -92,6 +92,8 @@ After running the playbook you will have to manually restore the key for the cha
 
 `su hermes`
 
+Please note that the key name must match the chain-ids. In the example below they are `hermes-chain-1` and `hermes-chain-2`
+
 ``~/bin/hermes -c ~/.hermes/config.toml keys restore hermes-chain-1 -m "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon art"``
 
 ``~/bin/hermes -c ~/.hermes/config.toml keys restore hermes-chain-2 -m "abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon garage"``
