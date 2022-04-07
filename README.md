@@ -88,6 +88,10 @@ The script takes the inventory `-i` and operation `-o` arguemnts. The inventory 
 ## Hermes IBC Relayer playbook:
 This playbook `hermes.yml` spins up Hermes relayer in your inventory under the `hermes` group.
 
+Modify `inventory.yml` to add your own machine. Example inventory file [inventory-hermes-example.yml](examples/inventory-hermes-example.yml)
+
+`ansible-playbook hermes.yml -i inventory.yml`
+
 After running the playbook you will have to manually restore the key for the chains you want to relay to. Please run all these commands under the `hermes` user:
 
 `su hermes`
@@ -113,5 +117,3 @@ After successfully created the channel you should restart the hermes service by 
 ## Hermes useful variables for defining the chains:
 - `hermes_chains` : `hermes-chain-1` The chain ID of one of the chain being relayed to. There can be a lits of chains
 	- `hermes_chain_hostname:` : `hermes-chain-1.hermes-testnets.polypore.xyz` This is the endpoint of where Hermes will connect to for `hermes-chain-1`
-
-Example playbook [inventory-hermes-example.yml](examples/inventory-hermes-example.yml)
