@@ -92,7 +92,13 @@ The operation will apply to all the nodes in the inventory:
   and
   - `roles/gaia/vars/main.yml`
 
-## TODOs:
+## Code Standards
+
+- All Python code is formatted to PEP 8 and linted with `pylint`.
+- All YAML code is linted with `yamllint`.
+- See `lint.sh` and `.config/` for details.
+
+## TODO:
 
 - [ ] Docs 
 - [ ] Block explorer role
