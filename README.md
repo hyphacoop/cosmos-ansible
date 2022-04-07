@@ -92,17 +92,17 @@ After running the playbook you will have to manually restore the key for the cha
 
 `su hermes`
 
-``hermes -c ~/.hermes/config.toml keys restore hermes-chain-1 -m "<your mnemonic key>"``
+``~/bin/hermes -c ~/.hermes/config.toml keys restore hermes-chain-1 -m "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon art"``
 
-``hermes -c ~/.hermes/config.toml keys restore hermes-chain-2 -m "<your mnemonic key>"``
+``~/bin/hermes -c ~/.hermes/config.toml keys restore hermes-chain-2 -m "abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon garage"``
 
 After restoring the keys you can then create a client between the chains:
 
-``hermes -c ~/.hermes/config.toml create client hermes-chain-1 hermes-chain-2``
+``~/bin/hermes -c ~/.hermes/config.toml create client hermes-chain-1 hermes-chain-2``
 
 Once that is successful you need to create a channel between the chains:
 
-``hermes -c ~/.hermes/config.toml create channel --port-a transfer --port-b transfer hermes-chain-1 hermes-chain-2``
+``~/bin/hermes -c ~/.hermes/config.toml create channel --port-a transfer --port-b transfer hermes-chain-1 hermes-chain-2``
 
 After successfully created the channel you should restart the hermes service by logging out of `hermes` and back to the `root` shell:
 
