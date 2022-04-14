@@ -120,8 +120,8 @@ The playbook [`hermes.yml`](/hermes.yml) spins up Hermes relayer in your invento
 * **Gaia version:** `v7.0.0`
 
 ### Required Settings
-- `hermes_chains` : `hermes-chain-1` The chain ID of one of the chain being relayed to. There can be a lits of chains
-  - `hermes_chain_hostname:` : `hermes-chain-1.hermes-testnets.polypore.xyz` This is the endpoint of where Hermes will connect to for `hermes-chain-1`
+- `hermes_chains` : `hermes-chain-1` The chain ID of one of the chain being relayed to. There can be a list of chains
+  - `hermes_chain_hostname:` : `chain-1.dev.testnet.com` This is the endpoint of where Hermes will connect to for `chain-1`
 
 `ansible-playbook hermes.yml -i inventory.yml`
 
