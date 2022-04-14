@@ -147,7 +147,7 @@
     PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
     gaiad add-genesis-account {{ item }} {{gaiad_airdrop_coins}} --home {{gaiad_home}}
   become_user: "{{gaiad_user}}"
-  loop: "{{ gaiad_aidrop_accounts }}"
+  loop: "{{ gaiad_airdrop_accounts }}"
 
 - name: collect gentx
   when: gaiad_create_validator
@@ -189,7 +189,7 @@
 #     get_checksum: false
 #   register: genesis_file_exists
 - name: copy genesis.json
-  when: genesis_file is defined 
+  when: genesis_file is defined
   copy:
     src: '{{genesis_file}}'
     dest: '{{gaiad_home}}/config/genesis.json'
@@ -305,13 +305,13 @@
     mode: '0755'
 
 ## Set ownership for config files
-#- name: Set ownership of gaiad home
-#  file:
-#    path: '{{ gaiad_home }}'
-#    owner: '{{ gaiad_user }}'
-#    group: '{{ gaiad_user }}'
-#    mode: 0775
-#    recurse: true
+# - name: Set ownership of gaiad home
+#   file:
+#     path: '{{ gaiad_home }}'
+#     owner: '{{ gaiad_user }}'
+#     group: '{{ gaiad_user }}'
+#     mode: 0775
+#     recurse: true
 
 # Service setup
 - name: configure systemd service for gaiad

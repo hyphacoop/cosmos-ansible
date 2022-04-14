@@ -1,0 +1,45 @@
+---
+# yamllint disable rule:line-length
+all:
+  vars:
+    ansible_user: root
+    # genesis_file: "public_testnet_genesis.json"
+    chain_id: my-testnet
+    gaiad_home_autoclear: false
+    gaiad_unsafe_reset: true
+    gaiad_create_validator: false
+    gaiad_use_ssl_proxy: true
+    gaiad_api_host: "rest"
+    gaiad_rpc_host: "rpc"
+    gaiad_p2p_host: "p2p"
+    gaiad_grpc_host: "grpc"
+    letsencrypt_email: "validator@testnet.com"
+    enable_swap: false
+    swap_size: 8192
+    monitoring_prometheus: true
+    grafana_ssh_url: root@monitor.testnet.com
+    monitoring_panic: true
+    panic_ssh_url: root@monitor.testnet.com
+    p2p_persistent_peers: "<node1-id>@p2p.node1.testnet.com:26656,<node2-id>@p2p.node2.testnet.com:26656"
+    reboot: false
+  children:
+    gaia:
+      hosts:
+        node1.testnet.com:
+          node_key_file: "secrets/node1/node_key.json"
+          priv_validator_key_file: "secrets/node1/priv_validator_key.json"
+          fast_sync: false
+          panic_is_validator: 'yes'
+        node2.testnet.com:
+          node_key_file: "secrets/node2/node_key.json"
+          priv_validator_key_file: "secrets/node2/priv_validator_key.json"
+          panic_is_validator: 'yes'
+        sentry-01.testnet.com:
+          api_enabled: true
+        sentry-02.testnet.com:
+          api_enabled: true
+        state-sync-01.testnet.com:
+          statesync_snapshot_interval: 1000
+          statesync_snapshot_keep_recent: 2
+          p2p_upnp: true
+          api_enabled: true

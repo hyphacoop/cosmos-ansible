@@ -146,3 +146,4 @@ Once that is successful you need to create a channel between the chains:
 After successfully created the channel you should restart the hermes service by logging out of `hermes` and back to the `root` shell:
 
 ``systemctl restart hermes``
+

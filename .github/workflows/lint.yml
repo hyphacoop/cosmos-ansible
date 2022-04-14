@@ -1,0 +1,27 @@
+---
+
+name: Lint
+on:
+  push
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # Get system info
+      - run: ifconfig
+      - run: sudo dmidecode
+      - run: df -h
+      - run: free -m
+      - run: echo "GitHub branch is ${{ github.ref }}"
+
+      # Checks-out your repository under $GITHUB_WORKSPACE,
+      # so your workflow can access it
+      - name: Checkout repo
+        uses: actions/checkout@master
+
+      # install linting
+      - run: pip3 install autopep8 yamllint pylint
+
+      # run lint.sh
+      - run: ./lint.sh
