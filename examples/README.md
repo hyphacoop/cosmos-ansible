@@ -113,7 +113,7 @@ You must create a DNS entry for all subdomains of each host. If the host is `nod
 **PANIC**
 
 ## Hermes IBC Relayer:
-The playbook `hermes.yml` spins up Hermes relayer in your inventory under the `hermes` group.
+The playbook [`hermes.yml`](/hermes.yml) spins up Hermes relayer in your inventory under the `hermes` group.
 
 * **Inventory file:** [`inventory-hermes.yml`](inventory-hermes.yml)
 * **Chain ID:** `chain-1` and `chain-2`
