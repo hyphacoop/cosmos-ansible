@@ -188,13 +188,19 @@
 #     path: "{{gaiad_home}}/config/genesis.json"
 #     get_checksum: false
 #   register: genesis_file_exists
-- name: copy genesis.json
+- name: copy genesis.json.gz
   when: genesis_file is defined
   copy:
     src: '{{genesis_file}}'
-    dest: '{{gaiad_home}}/config/genesis.json'
+    dest: '{{gaiad_user_home}}/genesis.json.gz'
     owner: '{{gaiad_user}}'
     group: '{{gaiad_user}}'
+
+- name: extract genesis.json.gz
+  when: genesis_file is defined
+  shell: |
+    gunzip -c $HOME/genesis.json.gz > {{gaiad_home}}/config/genesis.json
+  become_user: "{{gaiad_user}}"
 
 - name: download genesis file
   when: genesis_url is defined
