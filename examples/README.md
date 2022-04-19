@@ -112,3 +112,38 @@ You must create a DNS entry for all subdomains of each host. If the host is `nod
 
 **PANIC**
 
+## Hermes IBC Relayer:
+The playbook [`hermes.yml`](/hermes.yml) spins up Hermes relayer in your inventory under the `hermes` group.
+
+* **Inventory file:** [`inventory-hermes.yml`](inventory-hermes.yml)
+* **Chain ID:** `chain-1` and `chain-2`
+* **Gaia version:** `v7.0.0`
+
+### Required Settings
+- `hermes_chains` : `hermes-chain-1` The chain ID of one of the chain being relayed to. There can be a list of chains
+  - `hermes_chain_hostname:` : `chain-1.dev.testnet.com` This is the endpoint of where Hermes will connect to for `chain-1`
+
+`ansible-playbook hermes.yml -i inventory.yml`
+
+After running the playbook you will have to manually restore the key for the chains you want to relay to. Please run all these commands under the `hermes` user:
+
+`su hermes`
+
+Please note that the key name must match the chain-ids. In the example below they are `chain-1` and `chain-2`
+
+``~/bin/hermes -c ~/.hermes/config.toml keys restore chain-1 -m "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon art"``
+
+``~/bin/hermes -c ~/.hermes/config.toml keys restore chain-2 -m "abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon garage"``
+
+After restoring the keys you can then create a client between the chains:
+
+``~/bin/hermes -c ~/.hermes/config.toml create client chain-1 chain-2``
+
+Once that is successful you need to create a channel between the chains:
+
+``~/bin/hermes -c ~/.hermes/config.toml create channel --port-a transfer --port-b transfer chain-1 chain-2``
+
+After successfully created the channel you should restart the hermes service by logging out of `hermes` and back to the `root` shell:
+
+``systemctl restart hermes``
+
