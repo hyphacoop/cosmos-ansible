@@ -138,7 +138,14 @@
     PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
     gaiad keys add validator --keyring-backend="test" --home {{gaiad_home}}
     gaiad add-genesis-account validator {{gaiad_validator_coins}} --home {{gaiad_home}} --keyring-backend="{{gaiad_validator_keyring}}"
+  register: gaiad_create_validator_output
   become_user: "{{gaiad_user}}"
+
+- name: saving validator output
+  when: gaiad_create_validator_output
+  copy:
+    content="{{gaiad_create_validator_output}}"
+    dest="{{gaiad_home}}/create_validator.log"
 
 - name: create genesis accounts
   when: gaiad_airdrop and gaiad_create_validator
