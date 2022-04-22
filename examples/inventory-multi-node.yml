@@ -43,3 +43,13 @@ all:
           statesync_snapshot_keep_recent: 2
           p2p_upnp: true
           api_enabled: true
+        seed-01.testnet.com:
+          api_enabled: true
+          p2p_seed_mode: true
+          node_key_file: "secrets/seed-01/node_key.json"
+          priv_validator_key_file: "secrets/seed-01/priv_validator_key.json"
+        seed-02.testnet.com:
+          api_enabled: true
+          p2p_seed_mode: true
+          node_key_file: "secrets/seed-02/node_key.json"
+          priv_validator_key_file: "secrets/seed-02/priv_validator_key.json"
