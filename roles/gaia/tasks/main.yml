@@ -205,11 +205,14 @@
   register: file_type
 
 - name: File type of {{genesis_file}}
+  when: genesis_file is defined
   debug:
     msg: '{{file_type.stat.mimetype}}'
 
 - name: gzip the file if not zipped
-  when: file_type.stat.mimetype == "text/plain"
+  when: 
+    - genesis_file is defined
+    - file_type.stat.mimetype == "text/plain"
   archive:
     path: '{{genesis_file}}'
     dest: '{{genesis_file}}.gz'
@@ -218,7 +221,9 @@
   become: false
 
 - name: set genesis_file to include .gz
-  when: file_type.stat.mimetype == "text/plain"
+  when: 
+    - genesis_file is defined
+    - file_type.stat.mimetype == "text/plain"
   set_fact:
     genesis_file: '{{ genesis_file }}.gz'
 
