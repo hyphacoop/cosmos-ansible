@@ -195,13 +195,46 @@
 #     path: "{{gaiad_home}}/config/genesis.json"
 #     get_checksum: false
 #   register: genesis_file_exists
-- name: copy genesis.json
+- name: check if genesis_file is gz or not
+  when: genesis_file is defined
+  stat:
+    path: '{{genesis_file}}'
+    get_mime: true
+  delegate_to: localhost
+  become: false
+  register: file_type
+
+- name: File type of {{genesis_file}}
+  debug:
+    msg: '{{file_type.stat.mimetype}}'
+
+- name: gzip the file if not zipped
+  when: file_type.stat.mimetype == "text/plain"
+  archive:
+    path: '{{genesis_file}}'
+    dest: '{{genesis_file}}.gz'
+    format: gz
+  delegate_to: localhost
+  become: false
+
+- name: set genesis_file to include .gz
+  when: file_type.stat.mimetype == "text/plain"
+  set_fact:
+    genesis_file: '{{ genesis_file }}.gz'
+
+- name: copy {{genesis_file}} to remote server
   when: genesis_file is defined
   copy:
     src: '{{genesis_file}}'
-    dest: '{{gaiad_home}}/config/genesis.json'
+    dest: '{{gaiad_user_home}}/genesis.json.gz'
     owner: '{{gaiad_user}}'
     group: '{{gaiad_user}}'
+
+- name: extract {{genesis_file}} to {{gaiad_home}}/config/genesis.json
+  when: genesis_file is defined
+  shell: |
+    gunzip -c $HOME/genesis.json.gz > {{gaiad_home}}/config/genesis.json
+  become_user: "{{gaiad_user}}"
 
 - name: download genesis file
   when: genesis_url is defined
