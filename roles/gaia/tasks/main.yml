@@ -210,7 +210,7 @@
     msg: '{{file_type.stat.mimetype}}'
 
 - name: gzip the file if not zipped
-  when: 
+  when:
     - genesis_file is defined
     - file_type.stat.mimetype == "text/plain"
   archive:
@@ -221,7 +221,7 @@
   become: false
 
 - name: set genesis_file to include .gz
-  when: 
+  when:
     - genesis_file is defined
     - file_type.stat.mimetype == "text/plain"
   set_fact:
