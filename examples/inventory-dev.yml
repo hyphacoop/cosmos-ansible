@@ -3,7 +3,7 @@
 all:
   vars:
     gaiad_home_autoclear: true
-    gaiad_version: release/v7.0.0
+    gaiad_version: v7.0.0
     api_enabled: true
     chain_id: "my-devnet"
     gaiad_use_ssl_proxy: true
