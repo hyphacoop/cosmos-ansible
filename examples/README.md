@@ -112,6 +112,10 @@ ansible-playbook gaia.yml -i examples/inventory-three-node.yml
 
 Set up a host as a single-node developer testnet.
 
+- This network is meant to be exposed to the public.
+- The playbook obtains a certificate from Let's Encrypt and sets up an SSL proxy.
+- Airdrop addresses can be entered in the inventory file.
+
 * **Inventory file:** [`inventory-dev.yml`](inventory-dev.yml)
 * **Chain ID:** `my-devnet`
 * **Gaia version:** `v7.0.0`
