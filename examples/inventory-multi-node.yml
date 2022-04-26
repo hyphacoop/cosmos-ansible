@@ -31,14 +31,17 @@ all:
         val1.cosmostest.network:
           node_key_file: "<val-1-node-key>"
           priv_validator_key_file: "<val-1-priv-validator-key>"
+          # Remove the next line if you are not setting up PANIC
           panic_is_validator: 'yes'
         val2.cosmostest.network:
           node_key_file: "<val-2-node-key>"
           priv_validator_key_file: "<val-2-priv-validator-key>"
+          # Remove the next line if you are not setting up PANIC
           panic_is_validator: 'yes'
         val3.cosmostest.network:
           node_key_file: "<val-3-node-key>"
           priv_validator_key_file: "<val-3-priv-validator-key>"
+          # Remove the next line if you are not setting up PANIC
           panic_is_validator: 'yes'
         sen1.cosmostest.network:
           api_enabled: true
