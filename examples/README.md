@@ -163,7 +163,9 @@ The [`hermes.yml`](/hermes.yml) playbook spins up a Hermes relayer in your inven
 
 ### Run the playbook 
 
-`ansible-playbook hermes.yml -i inventory.yml`
+```
+ansible-playbook hermes.yml -i examples/inventory-hermes.yml
+```
 
 After running the playbook, you must restore the key for the chains you want to relay to. Follow the instructions below to do so.
 
