@@ -1,0 +1,31 @@
+---
+# yamllint disable rule:line-length
+all:
+  vars:
+    ansible_user: root
+    gaiad_version: v7.0.0
+    genesis_file: "examples/genesis-three-node.json"
+    chain_id: cosmos-testnet
+    minimum_gas_prices: '0.001uatom'
+    gaiad_home_autoclear: true
+    gaiad_create_validator: false
+    gaiad_api_host: "rest"
+    gaiad_rpc_host: "rpc"
+    gaiad_p2p_host: "p2p"
+    gaiad_grpc_host: "grpc"
+    enable_swap: false
+    swap_size: 8192
+    p2p_persistent_peers: "9e3598aa3b09ab90a99180b3987f98d69d37ce37@validator-40.testnet.com:26656,6bf63611fd835136ee1039724d40c9989ffd180c@validator-32.testnet.com:26656,f13f0566f2052a737c402a9928d6f9a703ffd47d@validator-28.testnet.com:26656"
+    reboot: false
+  children:
+    gaia:
+      hosts:
+        validator-40.testnet.com:
+          node_key_file: "examples/validator-keys/validator-40/node_key.json"
+          priv_validator_key_file: "examples/validator-keys/validator-40/priv_validator_key.json"
+        validator-32.testnet.com:
+          node_key_file: "examples/validator-keys/validator-32/node_key.json"
+          priv_validator_key_file: "examples/validator-keys/validator-32/priv_validator_key.json"
+        validator-28.testnet.com:
+          node_key_file: "examples/validator-keys/validator-28/node_key.json"
+          priv_validator_key_file: "examples/validator-keys/validator-28/priv_validator_key.json"

@@ -2,9 +2,37 @@
 
 Sample inventory files are provided here as reference.
 
-Copy the files you need to this repo's root folder, make the appropriate modifications to the inventory, and run `ansible-playbook` from there.
+After a playbook is run, you can log into a node and see if the chain is running with one of these commands:
 
-Whenever a playbook is run, you can check the chain is running on the host by running `journalctl -fu cosmovisor.service`, or `journalctl -fu gaiad.service` if you are not using Cosmovisor.
+| `use_cosmovisor` variable | `journalctl` command                |
+|:-------------------------:|-------------------------------------|
+|     `true` (default)      | `journalctl -fu cosmovisor.service` |
+|          `false`          | `journalctl -fu gaiad.service`      |
+
+## Join the Theta Testnet
+
+Set up a node to join the [theta testnet](https://github.com/cosmos/testnets/tree/master/v7-theta/public-testnet) using state sync.
+
+* **Inventory file:** [`inventory-theta.yml`](inventory-theta.yml)
+* **Chain ID:** `theta-testnet-001`
+* **Gaia version:** `v7.0.0`
+
+The validator mnemonic will be saved to `/home/gaia/.gaiad/create_validator.log`.
+
+### Requirements
+
+- Visit a [block explorer](https://github.com/cosmos/testnets/tree/master/v7-theta/public-testnet#block-explorers) to obtain a block height roughly 1000 blocks below the current one, and its corresponding hash.
+
+- Inventory file
+  - Replace the `theta.testnet.com` address with your own in the `hosts` variable.
+
+### Run the playbook 
+
+Use the `--extra-vars` option to enter the trust height and hash obtained from the block explorer.
+
+```
+ansible-playbook gaia.yml -i examples/inventory-theta.yml --extra-vars "statesync_trust_height=9523000 statesync_trust_hash=02D2C347C4C51DE6E289D1CB04EF243056108621FD7CF3FD6198C0A2CDF0C8EE"
+```
 
 ## Start a Local Testnet
 
@@ -12,21 +40,20 @@ Set up a node with a single validator account.
 
 * **Inventory file:** [`inventory-local.yml`](inventory-local.yml)
 * **Chain ID:** `my-testnet`
-* **Gaia version:** `release/v7.0.0`
+* **Gaia version:** `v7.0.0`
 
-### Required Settings
+The validator mnemonic will be saved to `/home/gaia/.gaiad/create_validator.log` in the host.
 
-- Host address: `root@testnet.com`  
- 
-  Replace `testnet.com` with your host address.
+### Requirements
 
+- Inventory file
+  - Replace the `testnet.com` address with your own in the `hosts` variable.
 
 ### Run the Playbook
 
 ```
-ansible-playbook gaia.yml -i inventory-local.yml
+ansible-playbook gaia.yml -i examples/inventory-local.yml
 ```
-
 
 ## Start a Local Testnet Using a Modified Genesis File
 
@@ -36,114 +63,140 @@ The playbook will download the genesis file, and a private key is provided in th
 
 * **Inventory file:** [`inventory-local-genesis.yml`](inventory-local-genesis.yml)
 * **Chain ID:** `theta-localnet`
-* **Gaia version:** `release/v7.0.0`
-* **Validator Mnemonic:** `junk appear guide guess bar reject vendor illegal script sting shock afraid detect ginger other theory relief dress develop core pull across hen float`
+* **Gaia version:** `v7.0.0`
 
-### Required Settings
+### Requirements
 
-- Host address: `root@testnet.com`  
- 
-  Replace `testnet.com` with your host address.
+- Inventory file
+  - Replace the `testnet.com` address with your own in the `hosts` variable.
 
 ### Run the playbook 
 
 ```
-ansible-playbook gaia.yml -i inventory-local-genesis.yml
+ansible-playbook gaia.yml -i examples/inventory-local-genesis.yml
 ```
 
-## Join the Theta Testnet
+## Start a Three-Node Testnet
 
-Set up a node to join the [theta testnet](https://github.com/cosmos/testnets/tree/master/v7-theta/public-testnet) using state sync.
+Set up a chain with three validator nodes that have the following voting power:
 
-* **Inventory file:** [`inventory-theta.yml`](inventory-theta.yml)
-* **Chain ID:** `theta-testnet-001`
-* **Gaia version:** `release/v7.0.0`
+| Validator moniker | Voting power | Self-delegating address                         |
+|:-----------------:|:------------:|-------------------------------------------------|
+|  `validator-40`   |     40%      | `cosmos1r5v5srda7xfth3hn2s26txvrcrntldjumt8mhl` |
+|  `validator-32`   |     32%      | `cosmos1ay4dpm0kjmvtpug28vgw5w32yyjxa5sp97pjqq` |
+|  `validator-28`   |     28%      | `cosmos1v8zgdpzqfazvk6fgwhqqhzx0hfannrajezuc6t` |
 
-### Required Settings
+Each of the validators has a balance of 100 000 000 uatom.
 
-Visit a [block explorer](https://github.com/cosmos/testnets/tree/master/v7-theta/public-testnet#block-explorers) to obtain a block height roughly 1000 blocks below the current one, and its corresponding hash.
+- **Inventory file:** [`inventory-three-node.yml`](inventory-three-node.yml)
+- **Chain ID:** `cosmos-testnet`
+- **Gaia version:** `v7.0.0`
 
-- Host address: `root@testnet.com`  
- 
-  Replace `testnet.com` with your host address.
+Refer to this repo's [wiki](https://github.com/hyphacoop/cosmos-ansible/wiki) to see how these accounts were created and how you can set up a genesis file and private keys if you want to further customize your testnet.
 
-### Run the playbook 
+### Requirements
 
-Use the `--extra-vars` option to enter the trust height and hash obtained from the block explorer.
+- Inventory file
+  - Replace the addresses below with your own in the `p2p_persistent_peers` and `hosts` variables.
+    - `validator-40.testnet.com`
+    - `validator-32.testnet.com`
+    - `validator-28.testnet.com`
+
+### Run the Playbook
 
 ```
-ansible-playbook gaia.yml -i inventory-theta.yml --extra-vars "statesync_trust_height=9523000 statesync_trust_hash=02D2C347C4C51DE6E289D1CB04EF243056108621FD7CF3FD6198C0A2CDF0C8EE"
+ansible-playbook gaia.yml -i examples/inventory-three-node.yml
 ```
 
-## Start a single-node developer net
+## Start a Single-Node Developer Testnet
 
 Set up a host as a single-node developer testnet.
 
 * **Inventory file:** [`inventory-dev.yml`](inventory-dev.yml)
 * **Chain ID:** `my-devnet`
-* **Gaia version:** `release/v7.0.0`
+* **Gaia version:** `v7.0.0`
 
 ### Requirements
 
-## Start a multiple-node testnet
+- DNS
+  - Set up an appropriate A record for Let's Encrypt.
+- Inventory file
+  - Replace the `dev.testnet.com` address with your own in the `hosts` variable.
+  - Replace the `validator@devnet.com` address with your own in the `letsencrypt_email` variable.
+  - Add the addresses of the accounts you want to airdrop tokens to in the `gaiad_airdrop_accounts` variable.
+ 
+  
+### Run the playbook 
 
-Set up multiple hosts to start a testnet.
+```
+ansible-playbook gaia.yml -i examples/inventory-dev.yml
+```
 
-* **Inventory file:** [`inventory-multi-node.yml`](inventory-multi-node.yml)
-* **Chain ID:** `my-testnet`
-* **Gaia version:** `release/v7.0.0`
+## Start a Multi-Node Testnet
 
-### Requirements
+Set up multiple hosts to run a testnet with validator, sentry, and sync nodes.
 
-**DNS**
+* **Inventory file:** [`inventory-multi-node.yml`](inventory-dev.yml)
 
-You must create a DNS entry for all subdomains of each host. If the host is `node1.testnet.com`, you will need a CNAME for:
+Follow the Multi-Node Tesnet Setup guide in the wiki for all the requirements and steps needed to deploy this network. 
 
-* `rest.node1.testnet.com`
-* `rpc.node1.testnet.com`
-* `grpc.node1.testnet.com`
-* `p2p.node1.testnet.com`
 
-**SSL**
+## Set up a Hermes IBC Relayer
 
-**Prometheus**
-
-**Grafana**
-
-**PANIC**
-
-## Hermes IBC Relayer:
-The playbook [`hermes.yml`](/hermes.yml) spins up Hermes relayer in your inventory under the `hermes` group.
+The [`hermes.yml`](/hermes.yml) playbook spins up a Hermes relayer in your inventory under the `hermes` group.
 
 * **Inventory file:** [`inventory-hermes.yml`](inventory-hermes.yml)
 * **Chain ID:** `chain-1` and `chain-2`
 * **Gaia version:** `v7.0.0`
 
-### Required Settings
-- `hermes_chains` : `hermes-chain-1` The chain ID of one of the chain being relayed to. There can be a list of chains
-  - `hermes_chain_hostname:` : `chain-1.dev.testnet.com` This is the endpoint of where Hermes will connect to for `chain-1`
+### Requirements
+
+- DNS
+  - Set up an appropriate A record for Let's Encrypt.
+- Inventory file
+  - Replace the `dev.testnet.com` address with your own in the `hosts` variable.
+  - Replace the chain IDs in the `hermes_chains` variable with the IDs of the chains being relayed to.
+  - Replace the hosts in the `hermes_chain_hostname` variables with the endpoints that Hermes will connect to.
+
+  - Replace the `validator@devnet.com` address with your own in the `letsencrypt_email` variable.
+  - Add the addresses of the accounts you want to airdrop tokens to in the `gaiad_airdrop_accounts` variable.
+
+### Run the playbook 
 
 `ansible-playbook hermes.yml -i inventory.yml`
 
-After running the playbook you will have to manually restore the key for the chains you want to relay to. Please run all these commands under the `hermes` user:
+After running the playbook, you must restore the key for the chains you want to relay to. Follow the instructions below to do so.
 
-`su hermes`
+Switch to the `hermes` user.
+```
+su hermes
+```
 
-Please note that the key name must match the chain-ids. In the example below they are `chain-1` and `chain-2`
+The key name must match the chain-ids. In the example below they are `chain-1` and `chain-2`.
+```
+~/bin/hermes -c ~/.hermes/config.toml keys restore chain-1 -m "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon art"
+```
 
-``~/bin/hermes -c ~/.hermes/config.toml keys restore chain-1 -m "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon art"``
+```
+~/bin/hermes -c ~/.hermes/config.toml keys restore chain-2 -m "abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon garage"
+```
 
-``~/bin/hermes -c ~/.hermes/config.toml keys restore chain-2 -m "abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon garage"``
+Create a client between the chains.
+```
+~/bin/hermes -c ~/.hermes/config.toml create client chain-1 chain-2
+```
 
-After restoring the keys you can then create a client between the chains:
+Create a channel between the chains.
+```
+~/bin/hermes -c ~/.hermes/config.toml create channel --port-a transfer --port-b transfer chain-1 chain-2
+```
 
-``~/bin/hermes -c ~/.hermes/config.toml create client chain-1 chain-2``
+Log out as the `hermes` user.
+```
+exit
+```
 
-Once that is successful you need to create a channel between the chains:
-
-``~/bin/hermes -c ~/.hermes/config.toml create channel --port-a transfer --port-b transfer chain-1 chain-2``
-
-After successfully created the channel you should restart the hermes service by logging out of `hermes` and back to the `root` shell:
-
-``systemctl restart hermes``
-
+Restart the hermes service.
+```
+systemctl restart hermes
+```
