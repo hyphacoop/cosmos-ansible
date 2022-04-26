@@ -5,7 +5,7 @@ gaiad_user_home: "/home/{{gaiad_user}}"
 gaiad_home: "{{gaiad_user_home}}/.gaiad"
 gaiad_home_autoclear: false
 gaiad_unsafe_reset: false
-gaiad_version: release/v6.0.0
+gaiad_version: v7.0.0
 gaiad_repository: https://github.com/cosmos/gaia.git
 gaiad_bin: "{{ gaiad_user_home }}/go/bin/gaiad"
 gaiad_service_name: "gaiad"
@@ -33,7 +33,7 @@ cosmovisor_service_name: "cosmovisor"
 
 # Go configuration
 go_arch: "linux-amd64"
-go_version: "1.16.4"
+go_version: "1.18.1"
 
 ## config.toml variables
 # monicker: "" (taken from hostname on init)
