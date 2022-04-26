@@ -26,6 +26,12 @@ server {
 	### Add SSL specific settings here ###
 	keepalive_timeout    60;
 
+{% if grpc_vhost is defined %}
+	location / {
+		grpc_pass          grpc://127.0.0.1:9090;
+		proxy_redirect     off;
+	}
+{% else %}
 	location / {
 		proxy_pass         {{proxy_location}};
 		proxy_redirect     off;
@@ -39,4 +45,5 @@ server {
 		client_max_body_size       8192M;
 		proxy_read_timeout 1200;
 	}
+{% endif %}
 }
