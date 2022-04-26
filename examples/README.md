@@ -4,10 +4,10 @@ Sample inventory files are provided here as reference.
 
 After a playbook is run, you can log into a node and see if the chain is running with one of these commands:
 
-| `use_cosmovisor` variable | `journalctl` command                |
-|:-------------------------:|-------------------------------------|
-|     `true` (default)      | `journalctl -fu cosmovisor.service` |
-|          `false`          | `journalctl -fu gaiad.service`      |
+|          Inventory file          | `journalctl` command                |
+|:--------------------------------:|-------------------------------------|
+| `use_cosmovisor: true` (default) | `journalctl -fu cosmovisor.service` |
+|     `use_cosmovisor: false`      | `journalctl -fu gaiad.service`      |
 
 ## Join the Theta Testnet
 
@@ -136,7 +136,7 @@ ansible-playbook gaia.yml -i examples/inventory-dev.yml
 
 Set up multiple hosts to run a testnet with validator, sentry, and sync nodes.
 
-* **Inventory file:** [`inventory-multi-node.yml`](inventory-dev.yml)
+* **Inventory file:** [`inventory-multi-node.yml`](inventory-multi-node.yml)
 
 Follow the Multi-Node Tesnet Setup guide in the wiki for all the requirements and steps needed to deploy this network. 
 
