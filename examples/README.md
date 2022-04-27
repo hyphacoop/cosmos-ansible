@@ -22,7 +22,6 @@ The validator mnemonic will be saved to `/home/gaia/.gaiad/create_validator.log`
 ### Requirements
 
 - Visit a [block explorer](https://github.com/cosmos/testnets/tree/master/v7-theta/public-testnet#block-explorers) to obtain a block height roughly 1000 blocks below the current one, and its corresponding hash.
-
 - Inventory file
   - Replace the `theta.testnet.com` address with your own in the `hosts` variable.
 
