@@ -9,6 +9,8 @@ all:
     gaiad_use_ssl_proxy: true
     gaiad_api_host: "rest"
     gaiad_rpc_host: "rpc"
+    gaiad_grpc_host: "grpc"
+    gaiad_p2p_host: "p2p"
     letsencrypt_email: "validator@devnet.com"
     enable_swap: false
     swap_size: 8192
