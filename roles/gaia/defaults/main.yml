@@ -30,6 +30,7 @@ cosmovisor_repository: github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor
 cosmovisor_bin: "{{gaiad_user_home}}/go/bin/cosmovisor"
 cosmovisor_home: "{{ gaiad_home }}/cosmovisor"
 cosmovisor_service_name: "cosmovisor"
+cosmovisor_skip_backup: true
 
 # Go configuration
 go_arch: "linux-amd64"
