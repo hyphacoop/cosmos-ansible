@@ -141,67 +141,14 @@ Set up multiple hosts to run a testnet with validator, sentry, and sync nodes.
 
 * **Inventory file:** [`inventory-multi-node.yml`](inventory-multi-node.yml)
 
-Follow the Multi-Node Tesnet Setup guide in the wiki for all the requirements and steps needed to deploy this network. 
+Follow the [Multi-Node Testnet Setup](/docs/Multi-Node-Testnet-Setup.md) guide in the `docs` folder for all the requirements and steps needed to deploy this network. 
 
+If you want to set up a monitoring host, the [Testnet Monitoring Setup](/docs/Testnet-Monitoring-Setup.md) guide includes instructions for setting up dashboards and alert services using the multi-node testnet as an example.
 
 ## Set up a Hermes IBC Relayer
 
-The [`hermes.yml`](/hermes.yml) playbook spins up a Hermes relayer in your inventory under the `hermes` group.
+Set up a Hermes relayer between two chains.
 
 * **Inventory file:** [`inventory-hermes.yml`](inventory-hermes.yml)
-* **Chain ID:** `chain-1` and `chain-2`
-* **Gaia version:** `v7.0.0`
 
-### Requirements
-
-- DNS
-  - Set up an appropriate A record for Let's Encrypt.
-- Inventory file
-  - Replace the `dev.testnet.com` address with your own in the `hosts` variable.
-  - Replace the chain IDs in the `hermes_chains` variable with the IDs of the chains being relayed to.
-  - Replace the hosts in the `hermes_chain_hostname` variables with the endpoints that Hermes will connect to.
-
-  - Replace the `validator@devnet.com` address with your own in the `letsencrypt_email` variable.
-  - Add the addresses of the accounts you want to airdrop tokens to in the `gaiad_airdrop_accounts` variable.
-
-### Run the playbook 
-
-```
-ansible-playbook hermes.yml -i examples/inventory-hermes.yml
-```
-
-After running the playbook, you must restore the key for the chains you want to relay to. Follow the instructions below to do so.
-
-Switch to the `hermes` user.
-```
-su hermes
-```
-
-The key name must match the chain-ids. In the example below they are `chain-1` and `chain-2`.
-```
-~/bin/hermes -c ~/.hermes/config.toml keys restore chain-1 -m "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon art"
-```
-
-```
-~/bin/hermes -c ~/.hermes/config.toml keys restore chain-2 -m "abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon garage"
-```
-
-Create a client between the chains.
-```
-~/bin/hermes -c ~/.hermes/config.toml create client chain-1 chain-2
-```
-
-Create a channel between the chains.
-```
-~/bin/hermes -c ~/.hermes/config.toml create channel --port-a transfer --port-b transfer chain-1 chain-2
-```
-
-Log out as the `hermes` user.
-```
-exit
-```
-
-Restart the hermes service.
-```
-systemctl restart hermes
-```
+Follow the [Hermes IBC Relayer Setup](/docs/Hermes-Relayer-Setup.md) guide in the `docs` folder for all the requirements and steps needed to deploy the relayer. 
