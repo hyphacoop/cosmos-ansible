@@ -6,7 +6,7 @@ This guide will assist you in setting up a relayer host between two chains.
 
 ## Overview
 
-We will use a scenario in which one host is set up in the `dev.testnet.com` domain. This is an example domain, you should replace it with your own.
+We will use a scenario in which the hosts are set up in the `dev.testnet.com` domain. This is an example domain, you should replace it with your own.
 
 The hosts listed in the example [inventory file](/examples/inventory-hermes.yml) are:
 * Chain 1 host: `chain-1.dev.testnet.com`
