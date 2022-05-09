@@ -50,6 +50,7 @@ ansible-playbook gaia.yml -i inventory.yml
 | `fast_sync`| Enable/disable fast sync | `true` |
 | `enable_swap` |Enable/disable swap | `false`  |
 | `swap_size` |  Swap file size in MB (8 GB default) | `8192` |
+| `cosmovisor_skip_backup` | Skip Cosmovisor backups | `true` |
 | `monitoring_prometheus` | Configure Prometheus / Grafana monitoring | `false` |
 | `gaiad_use_ssl_proxy` | Enable SSL proxy using nginx to gaiad endpoints | `false` |
 | `gaiad_api_host` | Sets the subdomain for rest API (e.g. `rest.testnet.com`)** |  `rest` |
@@ -97,17 +98,3 @@ The operation will apply to all the nodes in the inventory:
 - All Python code is formatted to PEP 8 and linted with `pylint`.
 - All YAML code is linted with `yamllint`.
 - See `lint.sh` and `.config/` for details.
-
-## TODO:
-
-- [ ] Docs 
-- [ ] Block explorer role
-- [ ] Populate persistent_peers
-- [ ] Roles extending gaiad
-	- [x] sync state node
-	- [ ] sentry node (needs persistent_peers)
-- [ ] Mainnet node
-- [ ] Firewall rules
-- [ ] Examples
-  - [ ] Start a multi-node testnet
-

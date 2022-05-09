@@ -3,12 +3,14 @@
 all:
   vars:
     gaiad_home_autoclear: true
-    gaiad_version: release/v7.0.0
+    gaiad_version: v7.0.0
     api_enabled: true
     chain_id: "my-devnet"
     gaiad_use_ssl_proxy: true
     gaiad_api_host: "rest"
     gaiad_rpc_host: "rpc"
+    gaiad_grpc_host: "grpc"
+    gaiad_p2p_host: "p2p"
     letsencrypt_email: "validator@devnet.com"
     enable_swap: false
     swap_size: 8192

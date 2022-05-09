@@ -3,53 +3,52 @@
 all:
   vars:
     ansible_user: root
-    # genesis_file: "public_testnet_genesis.json"
-    chain_id: my-testnet
+    genesis_file: "genesis.json"
+    chain_id: cosmos-testnet
+    gaiad_version: v7.0.0
     gaiad_home_autoclear: false
     gaiad_unsafe_reset: true
     gaiad_create_validator: false
-    gaiad_use_ssl_proxy: true
     gaiad_api_host: "rest"
     gaiad_rpc_host: "rpc"
     gaiad_p2p_host: "p2p"
     gaiad_grpc_host: "grpc"
-    letsencrypt_email: "validator@testnet.com"
-    enable_swap: false
+    gaiad_use_ssl_proxy: true
+    letsencrypt_email: "validator@cosmostest.network"
+    enable_swap: true
     swap_size: 8192
-    monitoring_prometheus: true
-    grafana_ssh_url: root@monitor.testnet.com
-    monitoring_panic: true
-    panic_ssh_url: root@monitor.testnet.com
-    p2p_persistent_peers: "<node1-id>@p2p.node1.testnet.com:26656,<node2-id>@p2p.node2.testnet.com:26656"
+    p2p_persistent_peers: "<val1-node-id>@val1.cosmostest.network:26656,<val2-node-id>@val2.cosmostest.network:26656,<val3-node-id>@val3.cosmostest.network:26656"
     reboot: false
+    # Remove the next four lines if you are not setting up monitoring
+    monitoring_prometheus: true
+    grafana_ssh_url: root@monitor.cosmostest.network
+    monitoring_panic: true
+    panic_ssh_url: root@monitor.cosmostest.network
+
   children:
     gaia:
       hosts:
-        node1.testnet.com:
-          node_key_file: "secrets/node1/node_key.json"
-          priv_validator_key_file: "secrets/node1/priv_validator_key.json"
-          fast_sync: false
+        val1.cosmostest.network:
+          node_key_file: "<val-1-node-key>"
+          priv_validator_key_file: "<val-1-priv-validator-key>"
+          # Remove the next line if you are not setting up PANIC
           panic_is_validator: 'yes'
-        node2.testnet.com:
-          node_key_file: "secrets/node2/node_key.json"
-          priv_validator_key_file: "secrets/node2/priv_validator_key.json"
+        val2.cosmostest.network:
+          node_key_file: "<val-2-node-key>"
+          priv_validator_key_file: "<val-2-priv-validator-key>"
+          # Remove the next line if you are not setting up PANIC
           panic_is_validator: 'yes'
-        sentry-01.testnet.com:
+        val3.cosmostest.network:
+          node_key_file: "<val-3-node-key>"
+          priv_validator_key_file: "<val-3-priv-validator-key>"
+          # Remove the next line if you are not setting up PANIC
+          panic_is_validator: 'yes'
+        sen1.cosmostest.network:
           api_enabled: true
-        sentry-02.testnet.com:
+        sen2.cosmostest.network:
           api_enabled: true
-        state-sync-01.testnet.com:
+        sync.cosmostest.network:
           statesync_snapshot_interval: 1000
           statesync_snapshot_keep_recent: 2
           p2p_upnp: true
           api_enabled: true
-        seed-01.testnet.com:
-          api_enabled: true
-          p2p_seed_mode: true
-          node_key_file: "secrets/seed-01/node_key.json"
-          priv_validator_key_file: "secrets/seed-01/priv_validator_key.json"
-        seed-02.testnet.com:
-          api_enabled: true
-          p2p_seed_mode: true
-          node_key_file: "secrets/seed-02/node_key.json"
-          priv_validator_key_file: "secrets/seed-02/priv_validator_key.json"

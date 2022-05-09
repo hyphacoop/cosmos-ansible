@@ -36,7 +36,7 @@ all:
             - cosmos*
     hermes:
       hosts:
-        hermes.hermes-testnets.polypore.xyz:
+        hermes.dev.testnet.com:
           hermes_chains:
             hermes-chain-1:
               hermes_chain_hostname: chain-1.dev.testnet.com
