@@ -32,7 +32,7 @@ Once the relayer is operational, you will be able to send messages between both 
 
 ### DNS
 
-- Set up an appropriate `A` record for Let's Encrypt.
+- Set up appropriate `A` and `AAAA` records for Let's Encrypt.
 
 ### Chains
 
