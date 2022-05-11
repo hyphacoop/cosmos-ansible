@@ -397,7 +397,7 @@
     - gaiad_start
     - gaiad_restart
 
-- name: Add gaiad bin from cosmovisor to PATH 
+- name: Add gaiad bin from cosmovisor to PATH
   when: use_cosmovisor
   blockinfile:
     dest: '{{ gaiad_user_home }}/.bashrc'
@@ -407,7 +407,7 @@
     insertbefore: EOF
     create: yes
 
-- name: Add gaiad bin from go/bin to PATH 
+- name: Add gaiad bin from go/bin to PATH
   when: not use_cosmovisor
   blockinfile:
     dest: '{{ gaiad_user_home }}/.bashrc'
