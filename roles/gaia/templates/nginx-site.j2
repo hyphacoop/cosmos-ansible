@@ -14,6 +14,7 @@ server {
 	add_header X-Content-Type-Options nosniff;
 	add_header X-Frame-Options DENY;
 	add_header Access-Control-Allow-Origin *;
+	add_header Access-Control-Allow-Headers *;
 	ssl_stapling on;
 	ssl_stapling_verify on;
 	ssl_trusted_certificate /etc/letsencrypt/live/{{site_hostname}}/fullchain.pem;
