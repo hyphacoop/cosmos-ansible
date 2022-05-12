@@ -8,14 +8,14 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      # Get system info
-      - run: ifconfig
-      - run: sudo dmidecode
-      - run: df -h
-      - run: free -m
-      - run: uname -a
-      - run: lsb_release -a
-      - run: echo "GitHub branch is ${{ github.ref }}"
+      - name: Get system info
+        run: ifconfig
+        run: sudo dmidecode
+        run: df -h
+        run: free -m
+        run: uname -a
+        run: lsb_release -a
+        run: echo "GitHub branch is ${{ github.ref }}"
 
       # Checks-out your repository under $GITHUB_WORKSPACE,
       # so your workflow can access it
@@ -26,7 +26,7 @@ jobs:
         run: pip3 install ansible
 
       - name: Configure inventory
-        run: "sed 's/root@testnet.com:/localhost:\\n          connection: local/g' examples/inventory-local.yml"
+        run: "sed 's/root@testnet.com:/localhost:\\n          connection: local/g' > examples/inventory-local.yml"
 
       - name: Run playbook
         run: ansible-playbook gaia.yml -i inventory.yml
