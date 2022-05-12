@@ -9,13 +9,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Get system info
-        run: ifconfig
-        run: sudo dmidecode
-        run: df -h
-        run: free -m
-        run: uname -a
-        run: lsb_release -a
-        run: echo "GitHub branch is ${{ github.ref }}"
+        run: > 
+          ifconfig
+          sudo dmidecode
+          df -h
+          free -m
+          uname -a
+          lsb_release -a
+          echo "GitHub branch is ${{ github.ref }}"
 
       # Checks-out your repository under $GITHUB_WORKSPACE,
       # so your workflow can access it
