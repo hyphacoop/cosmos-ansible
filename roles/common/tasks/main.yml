@@ -23,6 +23,7 @@
       - build-essential
       - haveged
       - python3-openssl
+      - jq
 
 - name: Install basic utils
   apt:

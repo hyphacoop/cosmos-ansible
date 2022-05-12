@@ -260,12 +260,6 @@
   become_user: "{{gaiad_user}}"
 
 # Get trust height automatically
-- name: install jq
-  when: statesync_enabled and statesync_auto_populate
-  apt:
-    pkg:
-      - jq
-
 - name: obtain trust height
   when: statesync_enabled and statesync_auto_populate
   script:
