@@ -62,6 +62,7 @@ statesync_trust_hash: ''
 statesync_trust_period: 168h0m0s
 statesync_discovery_time: 15s
 statesync_chunk_request_timeout: 10s
+statesync_auto_populate: true
 # TODO: Why does my config say 4 when it isn't default?
 statesync_chunk_fetchers: '4'
 
