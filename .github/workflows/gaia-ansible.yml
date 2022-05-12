@@ -22,11 +22,11 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@master
 
-      # install linting
-      - run: pip3 install ansible
+      - name: Install Ansible
+        run: pip3 install ansible
 
-      # configure inventory
-      - run: "sed 's/root@testnet.com:/localhost:\n          connection: local/g' examples/inventory-local.yml"
+      - name: Configure inventory
+        run: "sed 's/root@testnet.com:/localhost:\\n          connection: local/g' examples/inventory-local.yml"
 
-      # run Ansible
+      - name: Run playbook
       - run: ansible-playbook gaia.yml -i inventory.yml
