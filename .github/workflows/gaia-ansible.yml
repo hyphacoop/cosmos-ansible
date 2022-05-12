@@ -25,8 +25,11 @@ jobs:
       - name: Install Ansible
         run: pip3 install ansible
 
+      - name: Configure ansible.cfg
+        run: echo "transport = local" >> ansible.cfg
+
       - name: Configure inventory
-        run: "sed 's/root@testnet.com:/localhost:\\n          connection: local/g' > examples/inventory-local.yml"
+        run: "sed 's/root@testnet.com:/local:/g' examples/inventory-local.yml > inventory.yml"
 
       - name: Run playbook
         run: ansible-playbook gaia.yml -i inventory.yml
