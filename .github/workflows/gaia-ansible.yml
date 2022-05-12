@@ -32,4 +32,4 @@ jobs:
         run: "sed 's/root@testnet.com:/local:/g' examples/inventory-local.yml > inventory.yml"
 
       - name: Run playbook
-        run: ansible-playbook gaia.yml -i inventory.yml
+        run: ansible-playbook gaia.yml -i inventory.yml --extra-vars "reboot=false"
