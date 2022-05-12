@@ -2,10 +2,11 @@
 set -x
 
 gaia_host=$1
+gaia_port=$2
 
-HEIGHT=$(curl -s http://$1/block | jq -r .result.block.header.height)
+HEIGHT=$(curl -s http://$gaia_host:$gaia_port/block | jq -r .result.block.header.height)
 sleep 10
-HEIGHT2=$(curl -s http://$1/block | jq -r .result.block.header.height)
+HEIGHT2=$(curl -s http://$gaia_host:$gaia_port/block | jq -r .result.block.header.height)
 
 echo "$HEIGHT"
 echo "$HEIGHT2"
