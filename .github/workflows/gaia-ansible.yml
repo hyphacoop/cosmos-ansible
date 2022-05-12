@@ -26,7 +26,7 @@ jobs:
       - run: pip3 install ansible
 
       # configure inventory
-      - run: 'sed 's/root@testnet.com:/localhost:\n          connection: local/g' examples/inventory-local.yml'
+      - run: "sed 's/root@testnet.com:/localhost:\n          connection: local/g' examples/inventory-local.yml"
 
       # run Ansible
       - run: ansible-playbook gaia.yml -i inventory.yml
