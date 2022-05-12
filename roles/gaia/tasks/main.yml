@@ -397,6 +397,26 @@
     - gaiad_start
     - gaiad_restart
 
+- name: Add gaiad bin from cosmovisor to PATH
+  when: use_cosmovisor
+  blockinfile:
+    dest: '{{ gaiad_user_home }}/.bashrc'
+    block: |
+      export PATH="$PATH:{{ cosmovisor_home }}/current/bin"
+    marker: '# {mark} ANSIBLE MANAGED BLOCK - GAIAD PATH'
+    insertbefore: EOF
+    create: yes
+
+- name: Add gaiad bin from go/bin to PATH
+  when: not use_cosmovisor
+  blockinfile:
+    dest: '{{ gaiad_user_home }}/.bashrc'
+    block: |
+      export PATH="$PATH:{{ gaiad_user_home }}/go/bin"
+    marker: '# {mark} ANSIBLE MANAGED BLOCK - GAIAD PATH'
+    insertbefore: EOF
+    create: yes
+
 - name: Set variables for api endpoint
   set_fact:
     endpoint_port: '{{api_port}}'
