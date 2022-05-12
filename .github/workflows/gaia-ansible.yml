@@ -38,7 +38,7 @@ jobs:
         run: systemctl status cosmovisor
 
       - name: Run script to check gaiad
-        run: ./gaia_check.sh
+        run: ./gaia_check.sh 127.0.0.1
 
       - name: Get RAM usage while gaiad is running
         run: free -m
