@@ -33,10 +33,10 @@ do
     if [ ${test_counter} -gt ${max_tests} ]
     then
         echo "Testing gaia for $test_counter times but did not reached height $stop_height"
-        exit 1
+        exit 2
     fi
     height=$(curl -s http://$gaia_host:$gaia_port/block | jq -r .result.block.header.height)
-    if [ ! $height ]
+    if [ $height = "" ]
     then
         height=0
     fi
@@ -44,3 +44,6 @@ do
     test_counter=$(($test_counter+1))
     sleep 1
 done
+echo "Gaia is building blocks."
+
+# Submit proposal
