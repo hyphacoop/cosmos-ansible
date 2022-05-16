@@ -1,5 +1,4 @@
 #!/bin/bash 
-set -x
 
 gaia_host=$1
 gaia_port=$2
