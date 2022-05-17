@@ -23,7 +23,7 @@ do
 done
 
 # Get running gaiad version from API
-gaiad_version=$($(curl -s http://$gaia_host:$gaia_port/abci_info | jq -r .result.response.version))
+gaiad_version=$(curl -s http://$gaia_host:$gaia_port/abci_info | jq -r .result.response.version)
 
 # Checking to see if gaiad is producing blocks
 test_counter=0
@@ -58,7 +58,7 @@ echo "Submit upgrade proposal at height: $upgrade_height"
 # TODO
 
 # Show upgrade process / status
-echo "Upgrade status"
+echo "Upgrade status:"
 # TODO
 
 # Waiting until gaiad responds
@@ -86,7 +86,7 @@ test_counter=0
 max_tests=60
 cur_height=$(curl -s http://$gaia_host:$gaia_port/block | jq -r .result.block.header.height)
 let stop_height=cur_height+10
-echo "Running gaiad version is: $gaiad_version"
+echo "Running gaiad version is: $gaiad_upgraded_version"
 echo "Current height is: $cur_height"
 echo "Testing to height: $stop_height"
 height=0
