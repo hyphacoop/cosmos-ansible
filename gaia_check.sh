@@ -1,4 +1,6 @@
 #!/bin/bash 
+# This script is used for automated testing of the gaiad Ansible playbook
+# and gaiad upgrade process using GitHub Actions.
 
 gaia_host=$1
 gaia_port=$2
@@ -21,7 +23,7 @@ do
 done
 
 # Get running gaiad version from API
-gaiad_version=$($(curl -s https://$gaia_host:$gaia_port/abci_info | jq -r .result.response.version))
+gaiad_version=$($(curl -s http://$gaia_host:$gaia_port/abci_info | jq -r .result.response.version))
 
 # Checking to see if gaiad is producing blocks
 test_counter=0
@@ -77,7 +79,7 @@ do
 done
 
 # Get running upgraded version
-gaiad_upgraded_version=$(curl -s https://$gaia_host:$gaia_port/abci_info | jq -r .result.response.version)
+gaiad_upgraded_version=$(curl -s http://$gaia_host:$gaia_port/abci_info | jq -r .result.response.version)
 
 # Checking to see if gaiad is producing blocks
 test_counter=0

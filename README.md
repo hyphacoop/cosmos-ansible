@@ -1,3 +1,8 @@
+# Build status
+| Lint | Gaiad Tests |
+| ---- | ------- |
+|[![Build Status](https://github.com/hyphacoop/cosmos-ansible/actions/workflows/lint.yml/badge.svg?branch=main)](https://github.com/hyphacoop/cosmos-ansible/actions)|[![Build Status](https://github.com/hyphacoop/cosmos-ansible/actions/workflows/test-gaiad-upgrades.yml/badge.svg?branch=main)](https://github.com/hyphacoop/cosmos-ansible/actions)|
+
 # Ansible Cosmos Network Creator
 
 An Ansible toolkit for Cosmos networks. It allows your control node to:

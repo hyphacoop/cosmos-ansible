@@ -1,6 +1,6 @@
 ---
 
-name: Test Gaia Upgrades
+name: Test Gaiad Upgrades
 on:
   push
 
@@ -13,6 +13,7 @@ jobs:
     steps:
       # Get system info
       - run: ifconfig
+      - run: arp -a
       - run: sudo dmidecode
       - run: df -h
       - run: free -m
