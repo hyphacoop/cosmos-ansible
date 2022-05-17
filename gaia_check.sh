@@ -21,7 +21,7 @@ do
 done
 
 # Get running gaiad version from API
-gaiad_version=$(curl -s https://rpc.fire.theta-testnet.polypore.xyz/abci_info | jq -r .result.response.version)
+gaiad_version=$($(curl -s https://$gaia_host:$gaia_port/abci_info | jq -r .result.response.version))
 
 # Checking to see if gaiad is producing blocks
 test_counter=0
@@ -48,12 +48,15 @@ do
     test_counter=$(($test_counter+1))
     sleep 1
 done
-echo "Gaia is building blocks."
+echo "Gaiad is building blocks."
 
 # Submit upgrade proposal
+upgrade_height=$(($height+5))
+echo "Submit upgrade proposal at height: $upgrade_height"
 # TODO
 
 # Show upgrade process / status
+echo "Upgrade status"
 # TODO
 
 # Waiting until gaiad responds
@@ -74,7 +77,7 @@ do
 done
 
 # Get running upgraded version
-gaiad_upgraded_version=$(curl -s https://rpc.fire.theta-testnet.polypore.xyz/abci_info | jq -r .result.response.version)
+gaiad_upgraded_version=$(curl -s https://$gaia_host:$gaia_port/abci_info | jq -r .result.response.version)
 
 # Checking to see if gaiad is producing blocks
 test_counter=0
@@ -101,4 +104,4 @@ do
     test_counter=$(($test_counter+1))
     sleep 1
 done
-echo "Gaia is building blocks."
+echo "Upgraded gaiad is building blocks."
