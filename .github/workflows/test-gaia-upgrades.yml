@@ -1,12 +1,15 @@
 ---
 
-name: Test Gaia Ansible
+name: Test Gaia Upgrades
 on:
   push
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        gaia_version: [v6.0.4,v7.0.0,v7.0.1]
     steps:
       # Get system info
       - run: ifconfig
@@ -32,7 +35,7 @@ jobs:
         run: "sed 's/root@testnet.com:/local:/g' examples/inventory-local.yml > inventory.yml"
 
       - name: Run playbook
-        run: ansible-playbook gaia.yml -i inventory.yml --extra-vars "reboot=false"
+        run: ansible-playbook gaia.yml -i inventory.yml --extra-vars "reboot=false gaiad_version=${{ matrix.gaia_version }}"
 
       - name: systemctl status cosmovisor
         run: systemctl status cosmovisor
