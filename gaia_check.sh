@@ -36,7 +36,7 @@ do
         exit 2
     fi
     height=$(curl -s http://$gaia_host:$gaia_port/block | jq -r .result.block.header.height)
-    if [ -z $height ]
+    if [ -z "$height" ]
     then
         height=0
     fi
