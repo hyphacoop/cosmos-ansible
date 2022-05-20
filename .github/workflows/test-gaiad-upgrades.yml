@@ -9,8 +9,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        gaia_version: [v6.0.4, v7.0.0, v7.0.1]
-        upgrade_version: [v7.0.0, v7.0.1, v7.0.2]
+        gaia_version: [v6.0.41]
+        upgrade_version: [v7.0.0]
     steps:
       # Get system info
       - run: ifconfig
