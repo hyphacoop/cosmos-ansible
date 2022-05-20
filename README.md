@@ -37,8 +37,8 @@ ansible-playbook gaia.yml -i inventory.yml
 
 | Variable          | Description                                                   | Example Value                        |
 |-------------------|---------------------------------------------------------------|--------------------------------------|
-| `gaia_version`    | Gaia repo tag, commit, or branch to check out and compile     | `release/v6.0.4`                     |
-| `gaia_repository` | Gaia source repo                                              | `https://github.com/cosmos/gaia.git` |
+| `gaiad_version`    | Gaia repo tag, commit, or branch to check out and compile     | `release/v6.0.4`                     |
+| `gaiad_repository` | Gaia source repo                                              | `https://github.com/cosmos/gaia.git` |
 | `chain_id`        | Sets the chain ID                                             | `my-testnet`                         |
 | `use_cosmovisor`  | Uses cosmovisor when `true`, raw `gaiad` service when `false` | `true`                               |
 | `genesis_url` | URL to download the gzipped genesis file from | `""` |
@@ -48,7 +48,7 @@ ansible-playbook gaia.yml -i inventory.yml
 | `p2p_pex` | p2p peer exchange is enabled | `true`  | 
 | `p2p_persistent_peers` | list of peers to connect to | |
 | `fast_sync`| Enable/disable fast sync | `true` |
-| `gov_testing` | Set minimum deposit to `1` and voting period to `5s` when `true` | `true` |
+| `gaiad_gov_testing` | Set minimum deposit to `1` and voting period to `5s` when `true` | `true` |
 | `enable_swap` |Enable/disable swap | `false`  |
 | `swap_size` |  Swap file size in MB (8 GB default) | `8192` |
 | `cosmovisor_skip_backup` | Skip Cosmovisor backups | `true` |
