@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        gaia_version: [v6.0.41]
+        gaia_version: [v6.0.4]
         upgrade_version: [v7.0.0]
     steps:
       # Get system info
