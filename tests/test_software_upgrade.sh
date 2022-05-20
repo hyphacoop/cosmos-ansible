@@ -71,93 +71,92 @@ if [ -n "$upgrade_name" ]; then
     echo $vote
     $vote
 
+    # Wait for the voting period to be over
+    echo "Waiting for the voting period to end..."
+    sleep $voting_waiting_time
+
+    echo "Upgrade proposal status:"
+    gaiad q gov proposal 1 --output json | jq '.status'
+
+    # Wait until the right height is reached
+    height=0
+    max_tests=60
+    test_counter=0
+    echo "Waiting for the upgrade to take place at block height $upgrade_height..."
+    until [ $height -ge $upgrade_height ]
+    do
+        sleep 5
+        if [ ${test_counter} -gt ${max_tests} ]
+            then
+            echo "Testing gaia for $test_counter times but did not reach height $upgrade_height"
+            exit 2
+        fi
+        height=$(curl -s http://$gaia_host:$gaia_port/block | jq -r .result.block.header.height)
+        if [ -z "$height" ]
+        then
+            height=0
+        fi
+        echo "Block height: $height"
+        test_counter=$(($test_counter+1))
+
+    done
+    echo "The upgrade height was reached."
+
+    # Waiting until gaiad responds
+    attempt_counter=0
+    max_attempts=60
+    echo "Waiting for gaia to come back online..."
+    until $(curl --output /dev/null --silent --head --fail http://$gaia_host:$gaia_port)
+    do
+        if [ ${attempt_counter} -gt ${max_attempts} ]
+        then
+            echo ""
+            echo "Tried connecting to gaiad for $attempt_counter times. Exiting."
+            exit 3
+        fi
+
+        printf '.'
+        attempt_counter=$(($attempt_counter+1))
+        sleep 1
+    done
+
+    # Get running version
+    gaiad_upgraded_version=$(curl -s http://$gaia_host:$gaia_port/abci_info | jq -r .result.response.version)
+    echo "Current gaiad version: $gaiad_upgraded_version"
+
+    # Check upgraded version is the one we want
+    if [[ "$gaia_upgraded_version" != "$upgrade_version" ]]; then
+        echo "New gaia version does not match requested one."
+        exit 4
+    fi
+
+    # Check if gaiad is producing blocks
+    test_counter=0
+    max_tests=60
+    cur_height=$(curl -s http://$gaia_host:$gaia_port/block | jq -r .result.block.header.height)
+    let stop_height=cur_height+10
+    echo "Block height: $cur_height"
+    echo "Waiting to reach block height $stop_height..."
+    height=0
+    until [ $height -ge $stop_height ]
+    do
+        sleep 5
+        if [ ${test_counter} -gt ${max_tests} ]
+        then
+            echo "Testing gaia for $test_counter times but did not reached height $stop_height"
+            exit 5
+        fi
+        height=$(curl -s http://$gaia_host:$gaia_port/block | jq -r .result.block.header.height)
+        if [ -z "$height" ]
+        then
+            height=0
+        fi
+        echo "Block height: $height"
+        test_counter=$(($test_counter+1))
+    done
+    echo "Upgraded gaiad is building blocks."
+
 else
     echo "No upgrade name specified, skipping upgrade."
 fi
 
-# Wait for the voting period to be over
-echo "Waiting for the voting period to end..."
-sleep $voting_waiting_time
-
-echo "Upgrade proposal status:"
-gaiad q gov proposal 1 --output json | jq '.status'
-
-# Wait until the right height is reached
-height=0
-max_tests=60
-test_counter=0
-echo "Waiting for the upgrade to take place at block height $upgrade_height..."
-until [ $height -ge $upgrade_height ]
-do
-    sleep 5
-    if [ ${test_counter} -gt ${max_tests} ]
-    then
-        echo "Testing gaia for $test_counter times but did not reach height $upgrade_height"
-        exit 2
-    fi
-    height=$(curl -s http://$gaia_host:$gaia_port/block | jq -r .result.block.header.height)
-    if [ -z "$height" ]
-    then
-        height=0
-    fi
-    echo "Block height: $height"
-    test_counter=$(($test_counter+1))
-done
-echo "The upgrade height was reached."
-
-# Waiting until gaiad responds
-attempt_counter=0
-max_attempts=60
-echo "Waiting for gaia to come back online..."
-until $(curl --output /dev/null --silent --head --fail http://$gaia_host:$gaia_port)
-do
-    if [ ${attempt_counter} -gt ${max_attempts} ]
-    then
-        echo ""
-        echo "Tried connecting to gaiad for $attempt_counter times. Exiting."
-        exit 3
-    fi
-
-    printf '.'
-    attempt_counter=$(($attempt_counter+1))
-    sleep 1
-done
-
-176 657 393 532 619
-  5 600 000 000 000
-  
-# Get running version
-gaiad_upgraded_version=$(curl -s http://$gaia_host:$gaia_port/abci_info | jq -r .result.response.version)
-echo "Current gaiad version: $gaiad_upgraded_version"
-
-# Check upgraded version is the one we want
-if [[ "$gaia_upgraded_version" != "$upgrade_version" ]]; then
-    echo "New gaia version does not match requested one."
-    exit 4
-fi
-
-# Check if gaiad is producing blocks
-test_counter=0
-max_tests=60
-cur_height=$(curl -s http://$gaia_host:$gaia_port/block | jq -r .result.block.header.height)
-let stop_height=cur_height+10
-echo "Block height: $cur_height"
-echo "Waiting to reach block height $stop_height..."
-height=0
-until [ $height -ge $stop_height ]
-do
-    sleep 5
-    if [ ${test_counter} -gt ${max_tests} ]
-    then
-        echo "Testing gaia for $test_counter times but did not reached height $stop_height"
-        exit 5
-    fi
-    height=$(curl -s http://$gaia_host:$gaia_port/block | jq -r .result.block.header.height)
-    if [ -z "$height" ]
-    then
-        height=0
-    fi
-    echo "Block height: $height"
-    test_counter=$(($test_counter+1))
-done
-echo "Upgraded gaiad is building blocks."
