@@ -6,6 +6,14 @@ gaia_host=$1
 gaia_port=$2
 upgrade_version=$3
 
+#Print the path
+env | grep PATH
+
+# Source bashrc
+source ~/.bashrc
+
+env | grep PATH
+
 # Get the current gaia version from the API
 gaiad_version=$(curl -s http://$gaia_host:$gaia_port/abci_info | jq -r .result.response.version)
 
