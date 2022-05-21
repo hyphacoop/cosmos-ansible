@@ -9,8 +9,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        gaia_version: [v6.0.4]
-        upgrade_version: [v7.0.0]
+        gaia_version: [v6.0.4, v7.0.0, v7.0.1, v7.0.2]
+        upgrade_version: [v7.0.0, v7.0.1, v7.0.2]
     steps:
       # Get system info
       - run: ifconfig
@@ -46,7 +46,7 @@ jobs:
         run: tests/test_block_production.sh 127.0.0.1 26657
 
       - name: Test software upgrade
-        run: tests/test_software_upgrade.sh 127.0.0.1 26657 {{ matrix.upgrade_version }}
+        run: tests/test_software_upgrade.sh 127.0.0.1 26657 ${{ matrix.upgrade_version }}
 
       - name: Get RAM usage while gaiad is running
         run: free -m
