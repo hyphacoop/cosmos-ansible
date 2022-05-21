@@ -57,5 +57,5 @@ jobs:
       - name: Test software upgrade
         run: tests/test_software_upgrade.sh 127.0.0.1 26657 ${{ matrix.upgrade_version }}
 
-      # - name: Get RAM usage while gaiad is running
+      - name: Get RAM usage while gaiad is running
         run: free -m
