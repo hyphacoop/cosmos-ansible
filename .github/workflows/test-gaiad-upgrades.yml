@@ -52,10 +52,10 @@ jobs:
         run: systemctl status cosmovisor
 
       # - name: Check blocks are being produced
-      #   run: tests/test_block_production.sh 127.0.0.1 26657
+        run: tests/test_block_production.sh 127.0.0.1 26657
 
       # - name: Test software upgrade
-      #   run: tests/test_software_upgrade.sh 127.0.0.1 26657 ${{ matrix.upgrade_version }}
+        run: tests/test_software_upgrade.sh 127.0.0.1 26657 ${{ matrix.upgrade_version }}
 
       # - name: Get RAM usage while gaiad is running
-      #   run: free -m
+        run: free -m
