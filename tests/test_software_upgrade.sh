@@ -44,8 +44,8 @@ if [ -n "$upgrade_name" ]; then
     # Get validator address and account sequence
     # Sequence number must be added 1 for the vote to be accepted.
     echo "Querying gaiad for the validator address and account sequence..."
-    validator_address=$(su gaia -l -c "gaiad keys list --keyring-backend test --output json | jq -r '.[0].address'")
-    validator_sequence=$[ $(su gaia -l -c "gaiad query auth account $validator_address --output json | jq -r '.sequence'")+1 ]
+    validator_address=$(gaiad keys list --keyring-backend test --output json | jq -r '.[0].address')
+    validator_sequence=$[ $(gaiad query auth account $validator_address --output json | jq -r '.sequence')+1 ]
     echo "The validator has address $validator_address, setting sequence # to $validator_sequence."
 
     # Manual download
@@ -59,7 +59,7 @@ if [ -n "$upgrade_name" ]; then
     # Auto download: Set the binary paths need for the proposal message
     download_path="https://github.com/cosmos/gaia/releases/download/$upgrade_version"
     upgrade_info="{\"binaries\":{\"linux/amd64\":\"$download_path/gaiad-$upgrade_version-linux-amd64\",\"linux/arm64\":\"$download_path/$upgrade_version/gaiad-$upgrade_version-linux-arm64\",\"darwin/amd64\":\"$download_path/gaiad-$upgrade_version-darwin-amd64\",\"windows/amd64\":\"$download_path/gaiad-$upgrade_version-windows-amd64.exe\"}}"
-    proposal="su gaia -l -c 'gaiad tx gov submit-proposal software-upgrade $upgrade_name --from $validator_address --keyring-backend test --upgrade-height $upgrade_height --upgrade-info $upgrade_info --title gaia-upgrade --description test --chain-id my-testnet --deposit 10stake --yes'"
+    proposal="gaiad tx gov submit-proposal software-upgrade $upgrade_name --from $validator_address --keyring-backend test --upgrade-height $upgrade_height --upgrade-info $upgrade_info --title gaia-upgrade --description 'test' --chain-id my-testnet --deposit 10stake --yes"
 
     # Submit the proposal and vote yes for it
     echo "Submitting the upgrade proposal."
@@ -67,7 +67,7 @@ if [ -n "$upgrade_name" ]; then
     $proposal
 
     echo "Submitting the \"yes\" vote."
-    vote="su gaia -l -c 'gaiad tx gov vote 1 yes --from $validator_address --keyring-backend test --chain-id my-testnet --sequence $validator_sequence --yes'"
+    vote="gaiad tx gov vote 1 yes --from $validator_address --keyring-backend test --chain-id my-testnet --sequence $validator_sequence --yes"
     echo $vote
     $vote
 
@@ -76,7 +76,7 @@ if [ -n "$upgrade_name" ]; then
     sleep $voting_waiting_time
 
     echo "Upgrade proposal status:"
-    su gaia -l -c "gaiad q gov proposal 1 --output json | jq '.status'"
+    gaiad q gov proposal 1 --output json | jq '.status'
 
     # Wait until the right height is reached
     height=0
