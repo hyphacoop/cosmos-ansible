@@ -7,12 +7,12 @@ gaia_port=$2
 upgrade_version=$3
 
 #Print the path
-env | grep PATH
+echo $PATH
 
 # Source bashrc
-source ~/.bashrc
+export PATH="$PATH:~/.gaia/cosmovisor/current/bin"
 
-env | grep PATH
+echo $PATH
 
 # Get the current gaia version from the API
 gaiad_version=$(curl -s http://$gaia_host:$gaia_port/abci_info | jq -r .result.response.version)
