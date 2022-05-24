@@ -6,13 +6,12 @@ gaia_host=$1
 gaia_port=$2
 upgrade_version=$3
 
-#Print the path
-echo $PATH
+echo "Attempting upgrade to $upgrade_version."
 
-# Source bashrc
+# Add gaiad to PATH
+echo "Adding gaiad to PATH..."
 export PATH="$PATH:~/.gaia/cosmovisor/current/bin"
-
-echo $PATH
+echo "PATH=$PATH"
 
 # Get the current gaia version from the API
 gaiad_version=$(curl -s http://$gaia_host:$gaia_port/abci_info | jq -r .result.response.version)
@@ -134,7 +133,7 @@ if [ -n "$upgrade_name" ]; then
 
     # Check upgraded version is the one we want
     if [[ "$gaia_upgraded_version" != "$upgrade_version" ]]; then
-        echo "New gaia version does not match requested one."
+        echo "Requested $upgrade_version, but detected $gaia_upgraded_version."
         exit 4
     fi
 
