@@ -132,8 +132,8 @@ if [ -n "$upgrade_name" ]; then
     echo "Current gaiad version: $gaiad_upgraded_version"
 
     # Check upgraded version is the one we want
-    if [[ "$gaia_upgraded_version" != "$upgrade_version" ]]; then
-        echo "Requested $upgrade_version, but detected $gaia_upgraded_version."
+    if [[ "$gaiad_upgraded_version" != "$upgrade_version" ]]; then
+        echo "Requested $upgrade_version, but detected $gaiad_upgraded_version."
         exit 4
     fi
 
