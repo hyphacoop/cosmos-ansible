@@ -13,7 +13,11 @@ jobs:
         upgrade_version: [""]
         include:
           - gaia_version: v6.0.4
-            upgrade_version: [v7.0.0, v7.0.1, v7.0.2]
+            upgrade_version: v7.0.0
+          - gaia_version: v6.0.4
+            upgrade_version: v7.0.1
+          - gaia_version: v6.0.4
+            upgrade_version: v7.0.2
     steps:
       # Get system info
       - run: ifconfig
