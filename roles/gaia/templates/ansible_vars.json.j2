@@ -28,7 +28,7 @@
 		"state-sync.snapshot-keep-recent": {{ statesync_snapshot_keep_recent | to_json }}
 	},
 	"config.toml": {
-		{% if gaiad_version == "rho" %}
+		{% if gaiad_version == "rho" or major_version|int >= 8 %}
 		"blocksync.enable": {{ fast_sync | to_json }},
 		"blocksync.version": {{ fastsync_version | to_json }},
 		{% else %}

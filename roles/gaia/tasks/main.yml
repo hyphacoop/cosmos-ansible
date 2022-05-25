@@ -1,4 +1,12 @@
 ---
+# Get gaiad_version number
+- name: parse version
+  set_fact:
+    major_version: "{{ gaiad_version[1] }}"
+    patch_version: "{{ gaiad_version[5] }}"
+  tags:
+    - gaiad_reset
+
 - include_role:
     name: common
 
@@ -121,12 +129,22 @@
     gaiad init {{inventory_hostname}} --home {{gaiad_home}} --chain-id {{chain_id}}
   become_user: "{{gaiad_user}}"
 
-- name: reset gaiad database
-  when: gaiad_unsafe_reset
+- name: reset gaiad database (old comand)
+  when: gaiad_unsafe_reset and (major_version|int == 7 and patch_version|int == 0) or major_version|int < 7
   shell: |
     cd $HOME
     PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
     gaiad unsafe-reset-all --home {{gaiad_home}}
+  become_user: "{{gaiad_user}}"
+  tags:
+    - gaiad_reset
+
+- name: reset gaiad database (new command)
+  when: (major_version|int == 7 and patch_version|int >= 1) or major_version|int > 7
+  shell: |
+    cd $HOME
+    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+    gaiad tendermint unsafe-reset-all --home {{gaiad_home}}
   become_user: "{{gaiad_user}}"
   tags:
     - gaiad_reset
