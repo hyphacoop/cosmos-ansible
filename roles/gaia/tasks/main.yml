@@ -434,30 +434,10 @@
     insertbefore: EOF
     create: yes
 
-- name: Add gaiad bin from cosmovisor to .profile PATH
-  when: use_cosmovisor
-  blockinfile:
-    dest: '{{ gaiad_user_home }}/.profile'
-    block: |
-      export PATH="$PATH:{{ cosmovisor_home }}/current/bin"
-    marker: '# {mark} ANSIBLE MANAGED BLOCK - GAIAD PATH'
-    insertbefore: EOF
-    create: yes
-
 - name: Add gaiad bin from go/bin to .bashrc PATH
   when: not use_cosmovisor
   blockinfile:
     dest: '{{ gaiad_user_home }}/.bashrc'
-    block: |
-      export PATH="$PATH:{{ gaiad_user_home }}/go/bin"
-    marker: '# {mark} ANSIBLE MANAGED BLOCK - GAIAD PATH'
-    insertbefore: EOF
-    create: yes
-
-- name: Add gaiad bin from go/bin to .profile PATH
-  when: not use_cosmovisor
-  blockinfile:
-    dest: '{{ gaiad_user_home }}/.profile'
     block: |
       export PATH="$PATH:{{ gaiad_user_home }}/go/bin"
     marker: '# {mark} ANSIBLE MANAGED BLOCK - GAIAD PATH'
