@@ -36,7 +36,7 @@ jobs:
       - name: Generate starting versions
         id: generate-start
         run: |
-          start=$(tests/generate_version_matrix.py)
+          start=$(tests/generate_version_matrix.py v6.0.4)
           echo $start
           echo ::set-output name=start_versions::$start
       - name: Generate upgrade versions
