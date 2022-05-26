@@ -2,7 +2,7 @@
 
 name: Test Gaia Versions
 on:
-  pull-request:
+  pull_request:
     types:
       - opened
       - closed
