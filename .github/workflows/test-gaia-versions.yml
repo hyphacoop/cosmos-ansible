@@ -10,6 +10,7 @@ on:
     paths-ignore:
       - 'docs/**'
       - 'examples/**'
+      - '!examples/inventory-local.yml'
       - 'README.md'
 jobs:
   generate-matrices:
