@@ -7,7 +7,7 @@ import requests
 releases_list = requests.get(
     'https://api.github.com/repos/cosmos/gaia/releases').json()
 
-with open('releases.json', 'w') as outfile:
+with open('releases.json', 'w', encoding='utf-8') as outfile:
     json.dump(releases_list, outfile)
 
 # Trim list to only releases from 6.0.4 onwards

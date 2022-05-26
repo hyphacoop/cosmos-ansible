@@ -3,7 +3,7 @@
 import json
 
 # Read JSON output from generate_start_matrix.py
-with open('releases.json', 'r') as releases_file:
+with open('releases.json', 'r', encoding='utf-8') as releases_file:
     releases_list = json.load(releases_file)
 
 # Trim list to only releases from 6.0.4 onwards
