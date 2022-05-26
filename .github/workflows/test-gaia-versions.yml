@@ -2,8 +2,15 @@
 
 name: Test Gaia Versions
 on:
-  push
-
+  pull-request:
+    types:
+      - opened
+      - closed
+  push:
+    paths-ignore:
+      - 'docs/**'
+      - 'examples/**'
+      - 'README.md'
 jobs:
   generate-matrices:
     runs-on: ubuntu-latest
