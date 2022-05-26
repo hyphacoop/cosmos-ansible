@@ -49,7 +49,7 @@ jobs:
       - name: Generate upgrade versions
         id: generate-upgrade
         run: |
-          upgrade=$(tests/generate_upgrade_matrix.py)
+          upgrade=$(tests/generate_upgrade_matrix.py v6.0.4)
           echo $upgrade
           echo ::set-output name=upgrade_versions::$upgrade
     outputs:

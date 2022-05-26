@@ -14,6 +14,7 @@ version_patch = int(starting_version[5])
 releases_list = requests.get(
     'https://api.github.com/repos/cosmos/gaia/releases').json()
 
+# Save release list for upgrade matrix script
 with open('releases.json', 'w', encoding='utf-8') as outfile:
     json.dump(releases_list, outfile)
 
