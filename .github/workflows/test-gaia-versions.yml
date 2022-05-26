@@ -31,7 +31,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install ansible toml requests
+          python -m pip installrequests
 
       - name: Generate starting versions
         id: generate-start
@@ -45,7 +45,6 @@ jobs:
           upgrade=$(tests/generate_upgrade_matrix.py)
           echo $upgrade
           echo ::set-output name=upgrade_versions::$upgrade
-      - run: echo "🍏 This job's status is ${{ job.status }}."
     outputs:
       start_versions: ${{ steps.generate-start.outputs.start_versions }}
       upgrade_versions: ${{ steps.generate-upgrade.outputs.upgrade_versions }}
@@ -58,6 +57,17 @@ jobs:
         ${{ fromJSON(needs.generate-matrices.outputs.start_versions) }}
     steps:
       - run: echo "Test ${{matrix.gaia_version}}"
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.10'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install ansible toml
+
       - name: Configure ansible.cfg
         run: echo "transport = local" >> ansible.cfg
       - name: Configure inventory
@@ -79,6 +89,17 @@ jobs:
         ${{ fromJSON(needs.generate-matrices.outputs.upgrade_versions) }}
     steps:
       - run: echo "Test upgrading ${{matrix.gaia_version}} to ${{matrix.upgrade_version}}"
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.10'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install ansible toml
+
       - name: Configure ansible.cfg
         run: echo "transport = local" >> ansible.cfg
       - name: Configure inventory
