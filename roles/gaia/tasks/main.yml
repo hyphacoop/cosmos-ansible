@@ -105,8 +105,18 @@
     cd $HOME
     PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
     git clone {{gaiad_repository}}
+    if [ $? -ne 0 ]
+    then
+      echo "Cannot clone {{gaiad_repository}}"
+      exit 1
+    fi
     cd gaia
     git checkout {{gaiad_version}}
+    if [ $? -ne 0 ]
+    then
+      echo "Cannot checkout {{gaiad_version}}"
+      exit 2
+    fi
     make install
   become_user: "{{gaiad_user}}"
 
