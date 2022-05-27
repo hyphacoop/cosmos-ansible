@@ -1,15 +1,5 @@
 ---
 # Get gaiad_version number
-- name: Map rho branch to version
-  set_fact:
-    major_version: 8
-    patch_version: 0
-  when: gaiad_version == "rho"
-  tags:
-    - gaiad_reset
-    - gaiad_stop
-    - gaiad_restart
-
 - name: parse version
   set_fact:
     major_version: "{{ gaiad_version[1] }}"
