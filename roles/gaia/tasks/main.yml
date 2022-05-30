@@ -155,7 +155,7 @@
     gaiad init {{inventory_hostname}} --home {{gaiad_home}} --chain-id {{chain_id}}
   become_user: "{{gaiad_user}}"
 
-- name: reset gaiad database (old comand)
+- name: reset gaiad database (command for <v7.0.1)
   when: gaiad_unsafe_reset and (major_version|int == 7 and patch_version|int == 0) or major_version|int < 7
   shell: |
     cd $HOME
@@ -165,7 +165,7 @@
   tags:
     - gaiad_reset
 
-- name: reset gaiad database (new command)
+- name: reset gaiad database (command for >v7.0.0)
   when: (major_version|int == 7 and patch_version|int >= 1) or major_version|int > 7
   shell: |
     cd $HOME
