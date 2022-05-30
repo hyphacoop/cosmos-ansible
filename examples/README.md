@@ -9,7 +9,7 @@ After a playbook is run, you can log into a node and see if the chain is running
 | `use_cosmovisor: true` (default) | `journalctl -fu cosmovisor.service` |
 |     `use_cosmovisor: false`      | `journalctl -fu gaiad.service`      |
 
-The playbooks set up Gaia for the `gaia` user by default. Log into the node and switch to the `gaia` user to run `gaiad` commands.
+Gaia is set up for the `gaia` user by default. Log into the node and switch to the `gaia` user to run `gaiad` commands.
 
 ## Join the Theta Testnet
 
