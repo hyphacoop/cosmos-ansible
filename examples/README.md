@@ -9,6 +9,8 @@ After a playbook is run, you can log into a node and see if the chain is running
 | `use_cosmovisor: true` (default) | `journalctl -fu cosmovisor.service` |
 |     `use_cosmovisor: false`      | `journalctl -fu gaiad.service`      |
 
+Gaia is set up for the `gaia` user by default. Log into the node and switch to the `gaia` user to run `gaiad` commands.
+
 ## Join the Theta Testnet
 
 Set up a node to join the [theta testnet](https://github.com/cosmos/testnets/tree/master/v7-theta/public-testnet) using state sync.
@@ -17,21 +19,18 @@ Set up a node to join the [theta testnet](https://github.com/cosmos/testnets/tre
 * **Chain ID:** `theta-testnet-001`
 * **Gaia version:** `v7.0.0`
 
-The validator mnemonic will be saved to `/home/gaia/.gaiad/create_validator.log`.
-
 ### Requirements
 
-- Visit a [block explorer](https://github.com/cosmos/testnets/tree/master/v7-theta/public-testnet#block-explorers) to obtain a block height roughly 1000 blocks below the current one, and its corresponding hash.
 - Inventory file
   - Replace the `theta.testnet.com` address with your own in the `hosts` variable.
 
 ### Run the playbook 
 
-Use the `--extra-vars` option to enter the trust height and hash obtained from the block explorer.
+```
+ansible-playbook gaia.yml -i examples/inventory-theta.yml
+```
 
-```
-ansible-playbook gaia.yml -i examples/inventory-theta.yml --extra-vars "statesync_trust_height=9523000 statesync_trust_hash=02D2C347C4C51DE6E289D1CB04EF243056108621FD7CF3FD6198C0A2CDF0C8EE"
-```
+This playbook obtains a trust block height and the corresponding hash ID from the first RPC server listed in the inventory file in order to use the state sync feature. 
 
 ## Start a Local Testnet
 
