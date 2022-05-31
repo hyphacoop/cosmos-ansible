@@ -55,14 +55,6 @@ if [ -n "$upgrade_name" ]; then
     validator_sequence=$[ $(gaiad query auth account $validator_address --output json | jq -r '.sequence')+1 ]
     echo "The validator has address $validator_address, setting sequence # to $validator_sequence."
 
-    # Manual download
-    # echo "Downloading gaiad binary for $upgrade_version..."
-    # upgrade_info = "-"
-    # mkdir -p ~/.gaia/cosmovisor/upgrades/$upgrade_name/bin
-    # wget https://github.com/cosmos/gaia/releases/download/$upgrade_version/gaiad-$upgrade_version-linux-amd64 -O ~/.gaia/cosmovisor/upgrades/$upgrade_name/bin/gaiad
-    # chmod +x ~/.gaia/cosmovisor/upgrades/$upgrade_name/bin/gaiad
-    # proposal="gaiad tx gov submit-proposal software-upgrade $upgrade_name --from $validator_address --keyring-backend test --upgrade-height $upgrade_height --title gaia-upgrade --description 'test' --chain-id my-testnet --deposit 10stake --yes"
-
     # Auto download: Set the binary paths need for the proposal message
     download_path="https://github.com/cosmos/gaia/releases/download/$upgrade_version"
     upgrade_info="{\"binaries\":{\"linux/amd64\":\"$download_path/gaiad-$upgrade_version-linux-amd64\",\"linux/arm64\":\"$download_path/$upgrade_version/gaiad-$upgrade_version-linux-arm64\",\"darwin/amd64\":\"$download_path/gaiad-$upgrade_version-darwin-amd64\",\"windows/amd64\":\"$download_path/gaiad-$upgrade_version-windows-amd64.exe\"}}"
