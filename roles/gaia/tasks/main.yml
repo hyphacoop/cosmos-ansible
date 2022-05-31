@@ -1,4 +1,15 @@
 ---
+# Get gaiad_version number
+- name: parse version
+  set_fact:
+    major_version: "{{ gaiad_version[1] }}"
+    patch_version: "{{ gaiad_version[5] }}"
+  when: major_version is undefined and patch_version is undefined
+  tags:
+    - gaiad_reset
+    - gaiad_stop
+    - gaiad_restart
+
 - include_role:
     name: common
 
@@ -93,9 +104,32 @@
   shell: |
     cd $HOME
     PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
-    git clone {{gaiad_repository}}
-    cd gaia
+    if [ -d gaia ]
+    then
+      cd gaia
+      git clean -f -d
+      git checkout main
+      git pull --all
+      if [ $? -ne 0 ]
+      then
+        echo "Cannot pull {{gaiad_repository}}"
+       exit 1
+      fi
+    else
+      git clone {{gaiad_repository}}
+      if [ $? -ne 0 ]
+      then
+        echo "Cannot clone {{gaiad_repository}}"
+       exit 2
+      fi
+      cd gaia
+    fi
     git checkout {{gaiad_version}}
+    if [ $? -ne 0 ]
+    then
+      echo "Cannot checkout {{gaiad_version}}"
+      exit 3
+    fi
     make install
   become_user: "{{gaiad_user}}"
 
@@ -121,12 +155,22 @@
     gaiad init {{inventory_hostname}} --home {{gaiad_home}} --chain-id {{chain_id}}
   become_user: "{{gaiad_user}}"
 
-- name: reset gaiad database
-  when: gaiad_unsafe_reset
+- name: reset gaiad database (command for <v7.0.1)
+  when: gaiad_unsafe_reset and (major_version|int == 7 and patch_version|int == 0) or major_version|int < 7
   shell: |
     cd $HOME
     PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
     gaiad unsafe-reset-all --home {{gaiad_home}}
+  become_user: "{{gaiad_user}}"
+  tags:
+    - gaiad_reset
+
+- name: reset gaiad database (command for >v7.0.0)
+  when: (major_version|int == 7 and patch_version|int >= 1) or major_version|int > 7
+  shell: |
+    cd $HOME
+    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+    gaiad tendermint unsafe-reset-all --home {{gaiad_home}}
   become_user: "{{gaiad_user}}"
   tags:
     - gaiad_reset

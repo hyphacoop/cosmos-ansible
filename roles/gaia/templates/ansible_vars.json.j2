@@ -4,7 +4,7 @@
 		"broadcast-mode": {{ client_broadcast_mode | to_json }}
 	},
 	"app.toml": {
-		"minimum_gas_prices": {{ minimum_gas_prices | to_json }},
+		"minimum-gas-prices": {{ minimum_gas_prices | to_json }},
 		"pruning": {{ pruning | to_json }},
 		"pruning-keep-recent": {{ pruning_keep_recent | to_json }},
 		"pruning-keep-every": {{ pruning_keep_every | to_json }},
@@ -28,7 +28,13 @@
 		"state-sync.snapshot-keep-recent": {{ statesync_snapshot_keep_recent | to_json }}
 	},
 	"config.toml": {
+		{% if major_version|int >= 8 %}
+		"blocksync.enable": {{ fast_sync | to_json }},
+		"blocksync.version": {{ fastsync_version | to_json }},
+		{% else %}
 		"fast_sync": {{ fast_sync | to_json }},
+		"fastsync.version": {{ fastsync_version | to_json }},
+		{% endif %}
 		"abci": {{ abci | to_json }},
 		"rpc.laddr": "tcp://0.0.0.0:{{ rpc_port }}",
 		"p2p.laddr": "tcp://0.0.0.0:{{ p2p_port }}",
@@ -47,7 +53,6 @@
 		"statesync.discovery_time": {{ statesync_discovery_time | to_json }},
 		"statesync.chunk_request_timeout": {{ statesync_chunk_request_timeout | to_json }},
 		"statesync.chunk_fetchers": {{ statesync_chunk_fetchers | to_json }},
-		"fastsync.version": {{ fastsync_version | to_json }},
 		"instrumentation.prometheus": {{ prometheus_enabled | to_json }},
 		"instrumentation.prometheus_listen_addr": {{ prometheus_listen_addr | to_json }},
 		"instrumentation.namespace": {{ instrumentation_namespace | to_json }}
