@@ -37,10 +37,9 @@ if [ -n "$upgrade_name" ]; then
 
     # Set time to wait for proposal to pass
     voting_period=$(curl -s http://localhost:26657/genesis\? | jq -r '.result.genesis.app_state.gov.voting_params.voting_period')
-    # voting_period=${voting_period::-1}
-    echo "Adding 5s to the voting period ($voting_period) to calculate the upgrade height."
+    echo "Using ($voting_period)s voting period to calculate the upgrade height."
     voting_period_seconds=${voting_period::-1}
-    let voting_waiting_time=$voting_period_seconds+5
+    
 
     # Calculate upgrade height
     let voting_blocks_delta=$voting_period_seconds/5+3
@@ -51,8 +50,9 @@ if [ -n "$upgrade_name" ]; then
     # Get validator address and account sequence
     # Sequence number must be added 1 for the vote to be accepted.
     echo "Querying gaiad for the validator address and account sequence..."
-    validator_address=$(gaiad keys list --keyring-backend test --output json | jq -r '.[0].address')
-    validator_sequence=$[ $(gaiad query auth account $validator_address --output json | jq -r '.sequence')+1 ]
+    validator_address=$(jq -r '.address' ~/.gaia/validator.json)
+
+#    validator_sequence=$[ $(gaiad query auth account $validator_address --output json | jq -r '.sequence')+1 ]
     echo "The validator has address $validator_address, setting sequence # to $validator_sequence."
 
     # Auto download: Set the binary paths need for the proposal message
@@ -60,19 +60,23 @@ if [ -n "$upgrade_name" ]; then
     upgrade_info="{\"binaries\":{\"linux/amd64\":\"$download_path/gaiad-$upgrade_version-linux-amd64\",\"linux/arm64\":\"$download_path/$upgrade_version/gaiad-$upgrade_version-linux-arm64\",\"darwin/amd64\":\"$download_path/gaiad-$upgrade_version-darwin-amd64\",\"windows/amd64\":\"$download_path/gaiad-$upgrade_version-windows-amd64.exe\"}}"
     proposal="gaiad tx gov submit-proposal software-upgrade $upgrade_name --from $validator_address --keyring-backend test --upgrade-height $upgrade_height --upgrade-info $upgrade_info --title gaia-upgrade --description 'test' --chain-id my-testnet --deposit 10stake --yes"
 
-    # Submit the proposal and vote yes for it
+    # Submit the proposal
     echo "Submitting the upgrade proposal."
     echo $proposal
     $proposal
 
+    # Wait for the proposal to go on chain
+    sleep 6
+
+    # Vote yes on the proposal
     echo "Submitting the \"yes\" vote."
-    vote="gaiad tx gov vote 1 yes --from $validator_address --keyring-backend test --chain-id my-testnet --sequence $validator_sequence --yes"
+    vote="gaiad tx gov vote 1 yes --from $validator_address --keyring-backend test --chain-id my-testnet --yes"
     echo $vote
     $vote
 
     # Wait for the voting period to be over
     echo "Waiting for the voting period to end..."
-    sleep $voting_waiting_time
+    sleep $voting_waiting_time-6
 
     echo "Upgrade proposal status:"
     gaiad q gov proposal 1 --output json | jq '.status'

@@ -1,3 +1,4 @@
+---
 - name: create faucet account
   when: faucet_enabled
   shell: |
@@ -10,8 +11,8 @@
 - name: save faucet name, address, and mnemonic
   when: faucet_enabled
   copy:
-      content: "{{create_faucet_output.stderr}}"
-      dest: "{{gaiad_home}}/faucet.json"
+    content: "{{create_faucet_output.stderr}}"
+    dest: "{{gaiad_home}}/faucet.json"
   become_user: "{{gaiad_user}}"
 
 - name: checkout rest faucet repo

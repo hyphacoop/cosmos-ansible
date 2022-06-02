@@ -10,7 +10,7 @@ gaiad_repository: https://github.com/cosmos/gaia.git
 gaiad_bin: "{{ gaiad_user_home }}/go/bin/gaiad"
 gaiad_service_name: "gaiad"
 gaiad_gov_testing: false
-gaiad_voting_period: 5s
+gaiad_voting_period: 10s
 chain_id: "theta-devnet"
 
 # Default vaiables for creating a validator
