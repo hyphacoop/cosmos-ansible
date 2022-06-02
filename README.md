@@ -94,8 +94,6 @@ The operation will apply to all the nodes in the inventory:
 - Systemd services: `roles/gaia/templates/`
 - To add a variable to the gaia config files, add it to:
   - `roles/gaia/templates/ansible_vars.json.j2`  
-  and
-  - `roles/gaia/vars/main.yml`
 
 ## Code Standards
 
