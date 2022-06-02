@@ -1,0 +1,11 @@
+[Unit]
+Description="Cosmos REST faucet"
+
+[Service]
+User={{gaiad_user}}
+Environment="PATH={{gaiad_home}}/cosmovisor/current/bin"
+WorkingDirectory={{gaiad_user_home}}/cosmos-rest-faucet
+ExecStart={{gaiad_user_home}}/cosmos-rest-faucet/.env/bin/hypercorn cosmos_rest_faucet:app -b 0.0.0.0:8000
+
+[Install]
+WantedBy=multi-user.target

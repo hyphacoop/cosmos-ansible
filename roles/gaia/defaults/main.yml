@@ -112,6 +112,10 @@ statesync_snapshot_keep_recent: 2
 client_keyring_backend: os
 client_broadcast_mode: sync
 
+### Faucet settings
+faucet_enabled: false
+faucet_service_name: token-faucet
+
 ### node exporter config
 node_exporter_port: 9100
 

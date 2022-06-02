@@ -69,6 +69,18 @@
     - gaiad_stop
     - gaiad_restart
 
+- name: Stop existing faucet systemd service
+  when: >
+    faucet_enabled and (
+    (faucet_service_name in ansible_facts.services) or
+    ((faucet_service_name + '.service') in ansible_facts.services))
+  systemd:
+    state: stopped
+    name: "{{faucet_service_name}}"
+  tags:
+    - gaiad_stop
+    - gaiad_restart
+
 - name: Check golang version
   shell: |
     PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
@@ -208,6 +220,10 @@
     gaiad gentx validator {{gaiad_gentx_validator_stake}} --keyring-backend="{{gaiad_validator_keyring}}" --home {{gaiad_home}} --chain-id {{chain_id}}
     gaiad collect-gentxs --home {{gaiad_home}}
   become_user: "{{gaiad_user}}"
+
+- name: set up faucet
+  when: faucet_enabled
+  import_tasks: faucet.yml
 
 - name: patch genesis file with minimum deposit and short voting period
   when: gaiad_gov_testing
