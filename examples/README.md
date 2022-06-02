@@ -40,7 +40,7 @@ Set up a node with a single validator account.
 * **Chain ID:** `my-testnet`
 * **Gaia version:** `v7.0.0`
 
-The validator mnemonic will be saved to `/home/gaia/.gaiad/create_validator.log` in the host.
+The validator mnemonic will be saved to `/home/gaia/.gaia/create_validator.log` in the host.
 
 ### Requirements
 
