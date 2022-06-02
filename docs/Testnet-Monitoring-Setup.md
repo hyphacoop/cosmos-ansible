@@ -489,7 +489,7 @@ mkdir /opt/node_exporter/textfiles
 
 Add a cronjob to log the size of the Gaia home folder every minute.
 ```
-*/1 * * * * echo SIZE_FOLDER_GAIA{src=\"/home/gaia/.gaiad/\"} $(du --max-depth=1 /home/gaia/.gaiad/ | tail -n 1 | awk '{print $1}') > /opt/node_exporter/textfiles/SIZE_FOLDER_GAIA.prom
+*/1 * * * * echo SIZE_FOLDER_GAIA{src=\"/home/gaia/.gaia/\"} $(du --max-depth=1 /home/gaia/.gaia/ | tail -n 1 | awk '{print $1}') > /opt/node_exporter/textfiles/SIZE_FOLDER_GAIA.prom
 ```
 
 Start the Node Exporter service.
