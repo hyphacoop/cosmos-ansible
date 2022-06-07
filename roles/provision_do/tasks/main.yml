@@ -1,0 +1,22 @@
+---
+
+- name: Create a new Droplet
+  community.digitalocean.digital_ocean_droplet:
+    state: present
+    oauth_token: "{{ DO_API_TOKEN }}"
+    name: mainnet-export
+    size: s-1vcpu-1gb
+    region: tor1
+    image: debian-11-x64
+    ipv6: true
+    wait_timeout: 500
+    project_name: Staging
+    ssh_keys: "{{ ssh_keys }}"
+  register: my_droplet
+
+- name: Show Droplet info
+  ansible.builtin.debug:
+    msg: |
+      Droplet ID is {{ my_droplet.data.droplet.id }}
+      First Public IPv4 is {{ (my_droplet.data.droplet.networks.v4 | selectattr('type', 'equalto', 'public')).0.ip_address | default('<none>', true) }}
+      First Private IPv4 is {{ (my_droplet.data.droplet.networks.v4 | selectattr('type', 'equalto', 'private')).0.ip_address | default('<none>', true) }}
