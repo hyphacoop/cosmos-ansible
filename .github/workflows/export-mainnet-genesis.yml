@@ -4,47 +4,48 @@ on:
   push
 
 jobs:
-  runs-on: ubuntu-latest
-  steps:
-    # Get system info
-    - run: ifconfig
-    - run: arp -a
-    - run: sudo dmidecode
-    - run: df -h
-    - run: free -m
-    - run: uname -a
-    - run: lsb_release -a
-    - run: echo "GitHub branch is ${{ github.ref }}"
-    - run: whoami
-    - run: pwd
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # Get system info
+      - run: ifconfig
+      - run: arp -a
+      - run: sudo dmidecode
+      - run: df -h
+      - run: free -m
+      - run: uname -a
+      - run: lsb_release -a
+      - run: echo "GitHub branch is ${{ github.ref }}"
+      - run: whoami
+      - run: pwd
 
-    - name: Set SSH key
-      run: |
-        if [ ! -d ~/.ssh ]
-        then
-          mkdir ~/.ssh
-        fi
-        echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
+      - name: Set SSH key
+        run: |
+          if [ ! -d ~/.ssh ]
+          then
+            mkdir ~/.ssh
+          fi
+          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        python -m pip install ansible toml
-    
-    - name: Provision VM
-      run: ansible-playbook gaia-mainnet-export.yml -i examples/inventory-exporting-genesis-do.yml --extra-vars "digitalocean_api_key=${{ DO_API_KEY }}"
-    
-    - name: Store IPv4 address of the droplet in variable
-      run: export droplet_host=$(cat /tmp/droplet_ipv4.txt)
-    
-    - name: Install Gaia and configure for mainnet
-      run: ansible-playbook gaia.yml -i /tmp/inventory-mainnet.yml
-    
-    - name: Copy export_genesis/sh to VM
-      run: scp /tmp/export_genesis.sh root@$droplet_host:/tmp/export_genesis.sh
-    
-    - name: Copy SSH key to VM
-      run: scp ~/.ssh/id_rsa root@$droplet_host:/root/.ssh/
-    
-    - name: Run export_genesis.sh on VM in a screen session
-      run: ssh root@$droplet_host screen -S export_genesis -d -m /tmp/export_genesis.sh
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install ansible toml
+      
+      - name: Provision VM
+        run: ansible-playbook gaia-mainnet-export.yml -i examples/inventory-exporting-genesis-do.yml --extra-vars "digitalocean_api_key=${{ DO_API_KEY }}"
+      
+      - name: Store IPv4 address of the droplet in variable
+        run: export droplet_host=$(cat /tmp/droplet_ipv4.txt)
+      
+      - name: Install Gaia and configure for mainnet
+        run: ansible-playbook gaia.yml -i /tmp/inventory-mainnet.yml
+      
+      - name: Copy export_genesis/sh to VM
+        run: scp /tmp/export_genesis.sh root@$droplet_host:/tmp/export_genesis.sh
+      
+      - name: Copy SSH key to VM
+        run: scp ~/.ssh/id_rsa root@$droplet_host:/root/.ssh/
+      
+      - name: Run export_genesis.sh on VM in a screen session
+        run: ssh root@$droplet_host screen -S export_genesis -d -m /tmp/export_genesis.sh
