@@ -33,7 +33,7 @@ jobs:
           python -m pip install ansible toml
       
       - name: Provision VM
-        run: ansible-playbook gaia-mainnet-export.yml -i examples/inventory-exporting-genesis-do.yml --extra-vars "digitalocean_api_key=${{ DO_API_KEY }}"
+        run: ansible-playbook gaia-mainnet-export.yml -i examples/inventory-exporting-genesis-do.yml --extra-vars "digitalocean_api_key=${{ secrets.DO_API_KEY }}"
       
       - name: Store IPv4 address of the droplet in variable
         run: export droplet_host=$(cat /tmp/droplet_ipv4.txt)
