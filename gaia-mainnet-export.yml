@@ -1,9 +1,5 @@
 ---
-# Configure a gaia node
+# Provisions VM and configure scripts to export genesis
 - hosts: local
   roles:
-  - provision_do
-- hosts: gaia
-  become: true
-  roles:
-  - gaia
+  - export-genesis
