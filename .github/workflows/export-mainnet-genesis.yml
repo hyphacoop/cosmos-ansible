@@ -32,6 +32,9 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install ansible toml
 
+      - name: Checkout repo
+        uses: actions/checkout@master
+
       - name: Provision VM
         run: ansible-playbook gaia-mainnet-export.yml -i examples/inventory-exporting-genesis-do.yml --extra-vars "digitalocean_api_key=${{ secrets.DO_API_KEY }}"
 
