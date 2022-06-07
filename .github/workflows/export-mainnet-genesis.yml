@@ -23,9 +23,10 @@ jobs:
         run: |
           if [ ! -d ~/.ssh ]
           then
-            mkdir ~/.ssh
+            mkdir -m 700 ~/.ssh
           fi
           echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
 
       - name: Install dependencies
         run: |
