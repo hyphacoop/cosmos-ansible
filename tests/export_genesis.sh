@@ -2,6 +2,37 @@
 gh_branch="export-genesis"
 gh_user="hypha-bot"
 
+# Stop cosmovisor
+systemctl stop cosmovisor
+
+# Use quicksync
+apt-get install wget liblz4-tool aria2 bc -y
+
+echo "
+#!/bin/bash
+set -x
+set -e
+cd ~/.gaia
+URL=`curl https://quicksync.io/cosmos.json|jq -r '.[] |select(.file=="cosmoshub-4-pruned")|.url'`
+aria2c -x5 $URL
+wget https://raw.githubusercontent.com/chainlayer/quicksync-playbooks/master/roles/quicksync/files/checksum.sh
+chmod +x checksum.sh
+wget $URL.checksum
+curl -s https://lcd-cosmos.cosmostation.io/txs/`curl -s $URL.hash`|jq -r '.tx.value.memo'|sha512sum -c
+./checksum.sh `basename $URL` check
+lz4 -d `basename $URL` | tar xf -
+rm `basename $URL`
+if [ ! -d cosmovisor/upgrades ]
+then
+    mkdir -p cosmovisor/upgrades/v7-Theta/bin
+    cp cosmovisor/genesis/bin/gaiad cosmovisor/upgrades/v7-Theta/bin/gaiad
+fi
+" > ~gaia/quicksync.sh
+chmod +x ~gaia/quicksync.sh
+su gaia -c '~gaia/quicksync.sh'
+
+systemctl start cosmovisor
+
 # Wait for gaia service to respond
 echo "Waiting for gaia to respond"
 attempt_counter=0
@@ -61,7 +92,7 @@ then
 fi
 echo "Export genesis"
 cd mainnet-genesis-export
-su gaia -c "/home/gaia/.gaia/cosmovisor/current/bin/gaiad export --height $current_block" 2> mainnet_genesis_$current_block.json
+su gaia -c "~gaia/.gaia/cosmovisor/current/bin/gaiad export --height $current_block" 2> mainnet_genesis_$current_block.json
 gzip mainnet_genesis_$current_block.json
 
 # Push to github
