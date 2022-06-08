@@ -455,7 +455,7 @@
     name: "{{gaiad_service_name}}"
 
 - name: Start gaiad systemd service
-  when: (not use_cosmovisor) and (not reboot)
+  when: (not use_cosmovisor) and (not reboot | default(false) | bool)
   systemd:
     daemon_reload: true
     state: restarted
@@ -474,7 +474,7 @@
     name: "{{cosmovisor_service_name}}"
 
 - name: Start cosmovisor systemd service
-  when: (use_cosmovisor) and (not reboot)
+  when: (use_cosmovisor) and (not reboot | default(false) | bool)
   systemd:
     daemon_reload: true
     state: restarted
