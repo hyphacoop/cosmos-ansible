@@ -435,7 +435,8 @@
   template:
     src: gaiad.service.j2
     dest: "/etc/systemd/system/{{gaiad_service_name}}.service"
-- name: configure systemd service for gaiad
+
+- name: configure systemd service for cosmovisor
   when: use_cosmovisor
   template:
     src: cosmovisor.service.j2

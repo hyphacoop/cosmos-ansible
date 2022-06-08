@@ -12,7 +12,7 @@
   replace:
     path: /tmp/inventory-mainnet.yml
     regexp: 'cosmoshub-4.mainnet.com'
-    replace: '{{ droplet_ipv4 }}'
+    replace: 'mainnet-export'
 
 # - name: Copy example inventory file to /tmp for editing
 #   copy:
@@ -40,3 +40,13 @@
   copy:
     content="{{ droplet_ipv6}}"
     dest="/tmp/droplet_ipv6.txt"
+
+- name: Set IPv6 in hosts file
+  lineinfile:
+    path: /etc/hosts
+    line: '{{ droplet_ipv6 }} mainnet-export'
+
+- name: Set IPv4 in hosts file
+  lineinfile:
+    path: /etc/hosts
+    line: '{{ droplet_ipv4 }} mainnet-export'
