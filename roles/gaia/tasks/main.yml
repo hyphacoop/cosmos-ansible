@@ -446,6 +446,13 @@
     state: restarted
     name: systemd-journald
 
+- name: Enable gaiad systemd service
+  when: not use_cosmovisor
+  systemd:
+    daemon_reload: true
+    enabled: true
+    name: "{{gaiad_service_name}}"
+
 - name: Start gaiad systemd service
   when: not use_cosmovisor
   systemd:
@@ -457,8 +464,16 @@
     - gaiad_start
     - gaiad_restart
 
-- name: Start cosmovisor systemd service
+- name: Enable cosmovisor systemd service
   when: use_cosmovisor
+  systemd:
+    daemon_reload: true
+    state: restarted
+    enabled: true
+    name: "{{cosmovisor_service_name}}"
+
+- name: Start cosmovisor systemd service
+  when: use_cosmovisor and not reboot
   systemd:
     daemon_reload: true
     state: restarted
