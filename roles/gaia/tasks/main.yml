@@ -69,6 +69,18 @@
     - gaiad_stop
     - gaiad_restart
 
+- name: Stop existing faucet systemd service
+  when: >
+    faucet_enabled and (
+    (faucet_service_name in ansible_facts.services) or
+    ((faucet_service_name + '.service') in ansible_facts.services))
+  systemd:
+    state: stopped
+    name: "{{faucet_service_name}}"
+  tags:
+    - gaiad_stop
+    - gaiad_restart
+
 - name: Check golang version
   shell: |
     PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
@@ -180,16 +192,17 @@
   shell: |
     cd $HOME
     PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
-    gaiad keys add validator --keyring-backend="test" --home {{gaiad_home}}
+    gaiad keys add validator --keyring-backend {{gaiad_validator_keyring}} --home {{gaiad_home}} --output json
     gaiad add-genesis-account validator {{gaiad_validator_coins}} --home {{gaiad_home}} --keyring-backend="{{gaiad_validator_keyring}}"
   register: gaiad_create_validator_output
   become_user: "{{gaiad_user}}"
 
-- name: saving validator output
+- name: save validator name, address, and mnemonic
   when: gaiad_create_validator_output
   copy:
-    content="{{gaiad_create_validator_output}}"
-    dest="{{gaiad_home}}/create_validator.log"
+    content="{{gaiad_create_validator_output.stderr}}"
+    dest="{{gaiad_home}}/validator.json"
+  become_user: "{{gaiad_user}}"
 
 - name: create genesis accounts
   when: gaiad_airdrop and gaiad_create_validator
@@ -208,6 +221,10 @@
     gaiad gentx validator {{gaiad_gentx_validator_stake}} --keyring-backend="{{gaiad_validator_keyring}}" --home {{gaiad_home}} --chain-id {{chain_id}}
     gaiad collect-gentxs --home {{gaiad_home}}
   become_user: "{{gaiad_user}}"
+
+- name: set up faucet
+  when: faucet_enabled
+  import_tasks: faucet.yml
 
 - name: patch genesis file with minimum deposit and short voting period
   when: gaiad_gov_testing

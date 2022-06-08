@@ -39,8 +39,7 @@ Set up a node with a single validator account.
 * **Inventory file:** [`inventory-local.yml`](inventory-local.yml)
 * **Chain ID:** `my-testnet`
 * **Gaia version:** `v7.0.0`
-
-The validator mnemonic will be saved to `/home/gaia/.gaia/create_validator.log` in the host.
+* **Faucet REST server**
 
 ### Requirements
 
@@ -52,6 +51,10 @@ The validator mnemonic will be saved to `/home/gaia/.gaia/create_validator.log` 
 ```
 ansible-playbook gaia.yml -i examples/inventory-local.yml
 ```
+
+- The validator address and mnemonic will be saved to `/home/gaia/.gaia/create_validator.log` in the host.
+- The faucet address and mnemonic will be saved to `/home/gaia/.gaia/faucet.json` in the host.
+- The faucet REST server will listen on port `8000` by default. This can be adjusted in the [faucet.service.j2](/roles/gaia/templates/faucet.service.j2) template.
 
 ## Start a Local Testnet Using a Modified Genesis File
 

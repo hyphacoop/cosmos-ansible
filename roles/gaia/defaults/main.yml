@@ -10,7 +10,7 @@ gaiad_repository: https://github.com/cosmos/gaia.git
 gaiad_bin: "{{ gaiad_user_home }}/go/bin/gaiad"
 gaiad_service_name: "gaiad"
 gaiad_gov_testing: false
-gaiad_voting_period: 5s
+gaiad_voting_period: 10s
 chain_id: "theta-devnet"
 
 # Default vaiables for creating a validator
@@ -111,6 +111,10 @@ statesync_snapshot_keep_recent: 2
 ### client.toml variables
 client_keyring_backend: os
 client_broadcast_mode: sync
+
+### Faucet settings
+faucet_enabled: false
+faucet_service_name: token-faucet
 
 ### node exporter config
 node_exporter_port: 9100
