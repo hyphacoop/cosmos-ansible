@@ -198,7 +198,7 @@
   become_user: "{{gaiad_user}}"
 
 - name: save validator name, address, and mnemonic
-  when: gaiad_create_validator_output
+  when: gaiad_create_validator
   copy:
     content="{{gaiad_create_validator_output.stderr}}"
     dest="{{gaiad_home}}/validator.json"
