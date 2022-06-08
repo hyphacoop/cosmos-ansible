@@ -15,15 +15,15 @@ echo "#!/bin/bash
 set -x
 set -e
 cd ~/.gaia
-URL=$(curl https://quicksync.io/cosmos.json|jq -r '.[] |select(.file=="cosmoshub-4-pruned")|.url')
+URL=\$(curl https://quicksync.io/cosmos.json|jq -r '.[] |select(.file=="cosmoshub-4-pruned")|.url')
 aria2c -x5 \$URL
 wget https://raw.githubusercontent.com/chainlayer/quicksync-playbooks/master/roles/quicksync/files/checksum.sh
 chmod +x checksum.sh
 wget \$URL.checksum
-curl -s https://lcd-cosmos.cosmostation.io/txs/$(curl -s \$URL.hash)|jq -r '.tx.value.memo'|sha512sum -c
-./checksum.sh $(basename \$URL) check
-lz4 -d $(basename \$URL) | tar xf -
-rm $(basename \$URL)
+curl -s https://lcd-cosmos.cosmostation.io/txs/\$(curl -s \$URL.hash)|jq -r '.tx.value.memo'|sha512sum -c
+./checksum.sh \$(basename \$URL) check
+lz4 -d \$(basename \$URL) | tar xf -
+rm \$(basename \$URL)
 if [ ! -d cosmovisor/upgrades ]
 then
     mkdir -p cosmovisor/upgrades/v7-Theta/bin
