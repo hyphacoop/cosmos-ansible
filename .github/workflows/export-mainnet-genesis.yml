@@ -2,7 +2,7 @@
 name: Export mainnet genesis
 on:
   schedule:
-    - cron: 0 * * * *
+    - cron: '*/5 * * * *'
 
 jobs:
   build:
