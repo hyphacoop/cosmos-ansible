@@ -88,7 +88,7 @@ systemctl stop cosmovisor
 # Clone cosmos-genesis-tinkerer
 echo "Cloneing cosmos-genesis-tinkerer"
 cd ~
-if [ ! -f ~/.ssh ]
+if [ ! -d ~/.ssh ]
 then
     mkdir -m 700 ~/.ssh
 fi
