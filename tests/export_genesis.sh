@@ -71,4 +71,4 @@ git commit -m "Adding mainnet genesis at height $current_block"
 git push origin $gh_branch
 
 # DESTROY the droplet from itself
-# curl -X DELETE -H "Authorization: Bearer {{ digitalocean_api_key }}" "https://api.digitalocean.com/v2/droplets/{{ droplet_id }}"
+curl -X DELETE -H "Authorization: Bearer {{ digitalocean_api_key }}" "https://api.digitalocean.com/v2/droplets/{{ droplet_id }}"
