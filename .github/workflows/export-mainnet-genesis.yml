@@ -39,17 +39,20 @@ jobs:
       - name: Provision VM
         run: ansible-playbook gaia-mainnet-export.yml -i examples/inventory-exporting-genesis-do.yml --extra-vars "digitalocean_api_key=${{ secrets.DO_API_KEY }}"
 
-      - name: Store IPv4 address of the droplet in variable
-        run: export droplet_host=$(cat /tmp/droplet_ipv4.txt)
-
       - name: Install Gaia and configure for mainnet
         run: ansible-playbook gaia.yml -i /tmp/inventory-mainnet.yml
 
       - name: Copy export_genesis.sh to VM
-        run: scp /tmp/export_genesis.sh root@${{ droplet_host }}:/tmp/export_genesis.sh
+        run: |
+          export droplet_host=$(cat /tmp/droplet_ipv4.txt)
+          scp /tmp/export_genesis.sh root@$droplet_host:/tmp/export_genesis.sh
 
       - name: Copy SSH key to VM
-        run: scp ~/.ssh/id_rsa root@${{ droplet_host }}:/root/.ssh/
+        run: |
+          export droplet_host=$(cat /tmp/droplet_ipv4.txt)
+          scp ~/.ssh/id_rsa root@$droplet_host:/root/.ssh/
 
       - name: Run export_genesis.sh on VM in a screen session
-        run: ssh root@${{ droplet_host }} screen -S export_genesis -d -m /tmp/export_genesis.sh
+        run: |
+          export droplet_host=$(cat /tmp/droplet_ipv4.txt)
+          ssh root@$droplet_host screen -S export_genesis -d -m /tmp/export_genesis.sh
