@@ -45,11 +45,11 @@ jobs:
       - name: Install Gaia and configure for mainnet
         run: ansible-playbook gaia.yml -i /tmp/inventory-mainnet.yml
 
-      - name: Copy export_genesis/sh to VM
-        run: scp /tmp/export_genesis.sh root@$droplet_host:/tmp/export_genesis.sh
+      - name: Copy export_genesis.sh to VM
+        run: scp /tmp/export_genesis.sh root@${{ droplet_host }}:/tmp/export_genesis.sh
 
       - name: Copy SSH key to VM
-        run: scp ~/.ssh/id_rsa root@$droplet_host:/root/.ssh/
+        run: scp ~/.ssh/id_rsa root@${{ droplet_host }}:/root/.ssh/
 
       - name: Run export_genesis.sh on VM in a screen session
-        run: ssh root@$droplet_host screen -S export_genesis -d -m /tmp/export_genesis.sh
+        run: ssh root@${{ droplet_host }} screen -S export_genesis -d -m /tmp/export_genesis.sh
