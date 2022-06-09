@@ -109,6 +109,7 @@ fi
 echo "Export genesis"
 cd mainnet-genesis-export
 su gaia -c "~gaia/.gaia/cosmovisor/current/bin/gaiad export --height $current_block" 2> mainnet_genesis_$current_block.json
+echo "Compressing mainnet_genesis_$current_block.json"
 gzip mainnet_genesis_$current_block.json
 
 # Push to github

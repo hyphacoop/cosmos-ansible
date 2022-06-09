@@ -55,4 +55,4 @@ jobs:
       - name: Run export_genesis.sh on VM in a screen session
         run: |
           export droplet_host=$(cat /tmp/droplet_ipv4.txt)
-          # ssh root@$droplet_host screen -S export_genesis -d -m /tmp/export_genesis.sh
+          ssh root@$droplet_host screen -S export_genesis -d -m sh -c '/tmp/export_genesis.sh; exec bash'
