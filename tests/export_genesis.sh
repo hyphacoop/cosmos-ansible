@@ -14,7 +14,6 @@ apt-get install wget liblz4-tool aria2 bc -y
 
 echo "Creating script for gaia user"
 echo "#!/bin/bash
-set -e
 echo \"cd ~/.gaia\"
 cd ~/.gaia
 echo \"Set URL\"
@@ -31,10 +30,16 @@ echo \"Get sha512sum\"
 curl -s https://lcd-cosmos.cosmostation.io/txs/\$(curl -s \$URL.hash)|jq -r '.tx.value.memo'|sha512sum -c
 echo \"Checking hash of download\"
 ./checksum.sh \$(basename \$URL) check
-echo \"Execting \$(basename \$URL)\"
-lz4 -d \$(basename \$URL) | tar xf -
-echo \"Removing \$(basename \$URL)\"
-rm \$(basename \$URL)
+if [ \$? -ne 0 ]
+then
+	echo "Checksum FAILED using statesync"
+	rm \$(basename \$URL)
+else
+	echo \"Execting \$(basename \$URL)\"
+	lz4 -d \$(basename \$URL) | tar xf -
+	echo \"Removing \$(basename \$URL)\"
+	rm \$(basename \$URL)
+fi
 if [ ! -d cosmovisor/upgrades ]
 then
     echo \"Creating cosmovisor/upgrades/v7-Theta/bin directory\"
