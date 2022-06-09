@@ -113,7 +113,10 @@ echo "Compressing mainnet_genesis_$current_block.json"
 gzip mainnet_genesis_$current_block.json
 
 # Push to github
+apt install -y git-lfs
 echo "push to github"
+git lfs install
+git lfs track "*.gz"
 git add -A
 git commit -m "Adding mainnet genesis at height $current_block"
 git push origin $gh_branch
