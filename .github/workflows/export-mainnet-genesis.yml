@@ -1,7 +1,9 @@
 ---
 name: Export mainnet genesis
 on:
-  push
+  schedule:
+  # Run at 15:30 on every 15th day-of-month
+  - cron: '30 15 */15 * *'
 
 jobs:
   build:
