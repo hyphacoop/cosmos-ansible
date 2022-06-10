@@ -54,7 +54,7 @@ chmod +x ~gaia/quicksync.sh
 echo "Running ~gaia/quicksync.sh as gaia user"
 su gaia -c '~gaia/quicksync.sh'
 
-
+ssh-keyscan github.com >> ~/.ssh/known_hosts
 
 # Print current date and time
 echo -n "Finished at: "
