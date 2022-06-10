@@ -15,6 +15,19 @@ systemctl stop cosmovisor
 echo "Installing utils needed to quicksync"
 apt-get install wget liblz4-tool aria2 bc -y
 
+# Configure Git
+echo "Configureing git"
+cd ~
+if [ ! -d ~/.ssh ]
+then
+    mkdir -m 700 ~/.ssh
+fi
+
+ssh-keyscan github.com >> ~/.ssh/known_hosts
+git config --global credential.helper store
+git config --global user.name "$gh_user"
+git config --global user.email $gh_user@users.noreply.github.com
+
 echo "Creating script for gaia user"
 echo "#!/bin/bash
 echo \"cd ~/.gaia\"
@@ -54,7 +67,6 @@ chmod +x ~gaia/quicksync.sh
 echo "Running ~gaia/quicksync.sh as gaia user"
 su gaia -c '~gaia/quicksync.sh'
 
-ssh-keyscan github.com >> ~/.ssh/known_hosts
 
 # Print current date and time
 echo -n "Finished at: "
