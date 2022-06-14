@@ -16,7 +16,7 @@ echo "Installing utils needed to quicksync"
 apt-get install wget liblz4-tool aria2 bc -y
 
 # Configure Git
-echo "Configureing git"
+echo "Configuring git"
 cd ~
 if [ ! -d ~/.ssh ]
 then
@@ -107,7 +107,7 @@ echo "stop cosmovisor"
 systemctl stop cosmovisor
 
 # Clone cosmos-genesis-tinkerer
-echo "Cloneing cosmos-genesis-tinkerer"
+echo "Cloning cosmos-genesis-tinkerer"
 cd ~
 git clone git@github.com:hyphacoop/cosmos-genesis-tinkerer.git
 cd cosmos-genesis-tinkerer/
