@@ -2,6 +2,9 @@
 
 name: Test Gaia Versions
 on:
+  schedule:
+    # At 15:30 on Monday.
+    - cron: '30 15 * * 1'
   pull_request:
     types:
       - opened
