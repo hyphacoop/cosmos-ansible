@@ -113,6 +113,11 @@ git clone git@github.com:hyphacoop/cosmos-genesis-tinkerer.git
 cd cosmos-genesis-tinkerer/
 git checkout $gh_branch
 
+# Get version number using gaiad version
+echo "Get running gaiad version"
+$gaiad_version=$(su gaia -c "~gaia/.gaia/cosmovisor/current/bin/gaiad version")
+echo "Installed gaiad version is $gaiad_version"
+
 # Export genesis
 if [ ! -d mainnet-genesis-export ]
 then
@@ -120,9 +125,9 @@ then
 fi
 echo "Export genesis"
 cd mainnet-genesis-export
-su gaia -c "~gaia/.gaia/cosmovisor/current/bin/gaiad export --height $current_block" 2> mainnet_genesis_$current_block.json
-echo "Compressing mainnet_genesis_$current_block.json"
-gzip mainnet_genesis_$current_block.json
+su gaia -c "~gaia/.gaia/cosmovisor/current/bin/gaiad export --height $current_block" 2> mainnet-genesis-$start_date-$gaiad_version-$current_block.json
+echo "Compressing mainnet-genesis-$start_date-$gaiad_version-$current_block.json"
+gzip mainnet-genesis-$start_date-$gaiad_version-$current_block.json
 
 # Push to github
 apt install -y git-lfs
@@ -148,7 +153,7 @@ then
 fi
 # wait for log to be written
 sleep 120
-cp /root/export_genesis.log logs/mainnet-export/$start_date\_export_genesis.log
+cp /root/export_genesis.log logs/mainnet-export/$start_date-$gaiad_version-$current_block.log
 git add -A
 git commit -m "Adding export log file"
 git push origin main
