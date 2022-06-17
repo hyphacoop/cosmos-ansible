@@ -102,6 +102,10 @@ echo "Done catching up"
 current_block=$(curl -s 127.0.0.1:26657/block | jq -r .result.block.header.height)
 echo "Current block: $current_block"
 
+# Get block timestamp
+current_block_time=$(curl -s 127.0.0.1:26657/block\?height=$current_block | jq -r .result.block.header.time)
+echo "Current block timestamp: $current_block_time"
+
 # Stop cosmovisor before exporting
 echo "stop cosmovisor"
 systemctl stop cosmovisor
@@ -125,9 +129,9 @@ then
 fi
 echo "Export genesis"
 cd mainnet-genesis-export
-su gaia -c "~gaia/.gaia/cosmovisor/current/bin/gaiad export --height $current_block" 2> mainnet-genesis-$start_date-$gaiad_version-$current_block.json
-echo "Compressing mainnet-genesis-$start_date-$gaiad_version-$current_block.json"
-gzip mainnet-genesis-$start_date-$gaiad_version-$current_block.json
+su gaia -c "~gaia/.gaia/cosmovisor/current/bin/gaiad export --height $current_block" 2> mainnet-genesis_$current_block_time\_$gaiad_version\_$current_block.json
+echo "Compressing mainnet-genesis_$current_block_time\_$gaiad_version\_$current_block.json"
+gzip mainnet-genesis_$current_block_time\_$gaiad_version\_$current_block.json
 
 # Push to github
 apt install -y git-lfs
@@ -153,7 +157,7 @@ then
 fi
 # wait for log to be written
 sleep 120
-cp /root/export_genesis.log logs/mainnet-export/$start_date-$gaiad_version-$current_block.log
+cp /root/export_genesis.log logs/mainnet-export/mainnet-genesis_$start_date\_$gaiad_version\_$current_block.log
 git add -A
 git commit -m "Adding export log file"
 git push origin main
