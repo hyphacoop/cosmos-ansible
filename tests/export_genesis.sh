@@ -122,7 +122,7 @@ git checkout $gh_branch
 
 # Get version number using gaiad version
 echo "Get running gaiad version"
-gaiad_version=$(su gaia -c "~gaia/.gaia/cosmovisor/current/bin/gaiad version")
+gaiad_version=$((su gaia -c "~gaia/.gaia/cosmovisor/current/bin/gaiad version") 2>&1)
 echo "Installed gaiad version is $gaiad_version"
 
 # Export genesis
@@ -131,25 +131,25 @@ then
     mkdir mainnet-genesis-export
 fi
 echo "Export genesis"
-su gaia -c "~gaia/.gaia/cosmovisor/current/bin/gaiad export --height $current_block" 2> "mainnet-genesis-export/mainnet-genesis_$current_block_time\_$gaiad_version\_$current_block.json"
+su gaia -c "~gaia/.gaia/cosmovisor/current/bin/gaiad export --height $current_block" 2> "mainnet-genesis-export/mainnet-genesis_${current_block_time}_${gaiad_version}_${current_block}.json"
 
 echo "Tinkering exported genesis"
 pip3 install -r requirements.txt
-ln -s "$PWD/mainnet-genesis-export/mainnet-genesis_$current_block_time\_$gaiad_version\_$current_block.json" "tests/mainnet_genesis.json"
+ln -s "$PWD/mainnet-genesis-export/mainnet-genesis_${current_block_time}_${gaiad_version}_${current_block}.json" "tests/mainnet_genesis.json"
 python3 ./example_mainnet_genesis.py
 rm tests/mainnet_genesis.json
 if [ ! -d mainnet-genesis-tinkered ]
 then
     mkdir mainnet-genesis-tinkered
 fi
-mv tinkered_genesis.json "mainnet-genesis-tinkered/tinkered-genesis_$current_block_time\_$gaiad_version\_$current_block.json"
+mv tinkered_genesis.json "mainnet-genesis-tinkered/tinkered-genesis_${current_block_time}_${gaiad_version}_${current_block}.json"
 
 
 # Compress files
-echo "Compressing mainnet-genesis-export/mainnet-genesis_$current_block_time\_$gaiad_version\_$current_block.json"
-gzip "mainnet-genesis-export/mainnet-genesis_$current_block_time\_$gaiad_version\_$current_block.json"
-echo "Compressing mainnet-genesis-tinkered/tinkered-genesis_$current_block_time\_$gaiad_version\_$current_block.json"
-gzip "mainnet-genesis-tinkered/tinkered-genesis_$current_block_time\_$gaiad_version\_$current_block.json"
+echo "Compressing mainnet-genesis-export/mainnet-genesis_${current_block_time}_${gaiad_version}_${current_block}.json"
+gzip "mainnet-genesis-export/mainnet-genesis_${current_block_time}_${gaiad_version}_${current_block}.json"
+echo "Compressing mainnet-genesis-tinkered/tinkered-genesis_${current_block_time}_${gaiad_version}_${current_block}.json"
+gzip "mainnet-genesis-tinkered/tinkered-genesis_${current_block_time}_${gaiad_version}_${current_block}.json"
 
 # Push to github
 echo "push to github"
@@ -174,7 +174,7 @@ then
 fi
 # wait for log to be written
 sleep 120
-cp /root/export_genesis.log logs/mainnet-export/mainnet-genesis_$start_date\_$gaiad_version\_$current_block.log
+cp /root/export_genesis.log "logs/mainnet-export/mainnet-genesis_${start_date}_${gaiad_version}_${current_block}.log"
 git add -A
 git commit -m "Adding export log file"
 git push origin main
