@@ -122,7 +122,7 @@ git checkout $gh_branch
 
 # Get version number using gaiad version
 echo "Get running gaiad version"
-$gaiad_version=$(su gaia -c "~gaia/.gaia/cosmovisor/current/bin/gaiad version")
+gaiad_version=$(su gaia -c "~gaia/.gaia/cosmovisor/current/bin/gaiad version")
 echo "Installed gaiad version is $gaiad_version"
 
 # Export genesis
