@@ -1,7 +1,6 @@
 ---
 name: Export mainnet genesis
 on:
-  workflow_dispatch:
   schedule:
     # At 15:30 on day-of-month 1 and 15
     - cron: '30 15 1,15 * *'
