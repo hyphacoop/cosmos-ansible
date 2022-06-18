@@ -12,8 +12,8 @@ echo "Stopping cosmovisor"
 systemctl stop cosmovisor
 
 # Use quicksync as statesync is not reliable
-echo "Installing utils needed to quicksync"
-apt-get install wget liblz4-tool aria2 bc -y
+echo "Installing utils needed to quicksync and git"
+apt-get install wget liblz4-tool aria2 bc git-lfs -y
 
 # Configure Git
 echo "Configuring git"
@@ -27,6 +27,9 @@ ssh-keyscan github.com >> ~/.ssh/known_hosts
 git config --global credential.helper store
 git config --global user.name "$gh_user"
 git config --global user.email $gh_user@users.noreply.github.com
+# Do not pull files in LFS by default
+git config --global filter.lfs.smudge "git-lfs smudge --skip -- %f"
+git config --global filter.lfs.process "git-lfs filter-process --skip"
 
 echo "Creating script for gaia user"
 echo "#!/bin/bash
@@ -128,18 +131,32 @@ then
     mkdir mainnet-genesis-export
 fi
 echo "Export genesis"
-cd mainnet-genesis-export
-su gaia -c "~gaia/.gaia/cosmovisor/current/bin/gaiad export --height $current_block" 2> mainnet-genesis_$current_block_time\_$gaiad_version\_$current_block.json
-echo "Compressing mainnet-genesis_$current_block_time\_$gaiad_version\_$current_block.json"
-gzip mainnet-genesis_$current_block_time\_$gaiad_version\_$current_block.json
+su gaia -c "~gaia/.gaia/cosmovisor/current/bin/gaiad export --height $current_block" 2> "mainnet-genesis-export/mainnet-genesis_$current_block_time\_$gaiad_version\_$current_block.json"
+
+echo "Tinkering exported genesis"
+pip3 install -r requirements.txt
+ln -s "$PWD/mainnet-genesis-export/mainnet-genesis_$current_block_time\_$gaiad_version\_$current_block.json" "tests/mainnet_genesis.json"
+python3 ./example_mainnet_genesis.py
+rm tests/mainnet_genesis.json
+if [ ! -d mainnet-genesis-tinkered ]
+then
+    mkdir mainnet-genesis-tinkered
+fi
+mv tinkered_genesis.json "mainnet-genesis-tinkered/tinkered-genesis_$current_block_time\_$gaiad_version\_$current_block.json"
+
+
+# Compress files
+echo "Compressing mainnet-genesis-export/mainnet-genesis_$current_block_time\_$gaiad_version\_$current_block.json"
+gzip "mainnet-genesis-export/mainnet-genesis_$current_block_time\_$gaiad_version\_$current_block.json"
+echo "Compressing mainnet-genesis-tinkered/tinkered-genesis_$current_block_time\_$gaiad_version\_$current_block.json"
+gzip "mainnet-genesis-tinkered/tinkered-genesis_$current_block_time\_$gaiad_version\_$current_block.json"
 
 # Push to github
-apt install -y git-lfs
 echo "push to github"
 git lfs install
 git lfs track "*.gz"
 git add -A
-git commit -m "Adding mainnet genesis at height $current_block"
+git commit -m "Adding mainnet and tinkered genesis at height $current_block"
 git push origin $gh_branch
 
 # Print current date and time
