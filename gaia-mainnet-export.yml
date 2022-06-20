@@ -1,0 +1,5 @@
+---
+# Provisions VM and configure scripts to export genesis
+- hosts: local
+  roles:
+  - export-genesis

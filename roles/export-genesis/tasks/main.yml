@@ -1,0 +1,54 @@
+---
+# Provision the DO VM
+- include_role:
+    name: provision-digitalocean
+
+- name: Copy example inventory file to /tmp for editing
+  copy:
+    src: examples/inventory-mainnet.yml
+    dest: /tmp/inventory-mainnet.yml
+
+- name: Modify mainnet inventory file with the droplet's IPv4 address
+  replace:
+    path: /tmp/inventory-mainnet.yml
+    regexp: 'cosmoshub-4.mainnet.com'
+    replace: 'mainnet-export'
+
+# - name: Copy example inventory file to /tmp for editing
+#   copy:
+#     src: examples/inventory-local.yml
+#     dest: /tmp/inventory-mainnet.yml
+
+# - name: Modify mainnet inventory file with the droplet's IPv4 address
+#   replace:
+#     path: /tmp/inventory-mainnet.yml
+#     regexp: 'root@testnet.com'
+#     replace: 'root@{{ droplet_ipv4 }}'
+
+- name: Modify script with values of the droplet
+  template:
+    src: tests/export_genesis.sh
+    dest: /tmp/export_genesis.sh
+    mode: 0755
+
+- name: Store IPv4 address into /tmp/droplet_ipv4.txt
+  copy:
+    content="{{ droplet_ipv4}}"
+    dest="/tmp/droplet_ipv4.txt"
+
+- name: Store IPv6 address into /tmp/droplet_ipv6.txt
+  copy:
+    content="{{ droplet_ipv6}}"
+    dest="/tmp/droplet_ipv6.txt"
+
+- name: Set IPv6 in hosts file
+  lineinfile:
+    path: /etc/hosts
+    line: '{{ droplet_ipv6 }} mainnet-export'
+  become: true
+
+- name: Set IPv4 in hosts file
+  lineinfile:
+    path: /etc/hosts
+    line: '{{ droplet_ipv4 }} mainnet-export'
+  become: true

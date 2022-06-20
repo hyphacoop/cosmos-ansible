@@ -1,0 +1,15 @@
+---
+# yamllint disable rule:line-length
+all:
+  vars:
+    digitalocean_ssh_keys: ['34666002']
+    ansible_connection: local
+
+  children:
+    export_genesis:
+      hosts:
+        local:
+          digitalocean_hostname: mainnet-export
+          digitalocean_size: s-8vcpu-16gb
+          digitalocean_region: tor1
+          digitalocean_project: Staging

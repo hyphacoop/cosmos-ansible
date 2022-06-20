@@ -452,7 +452,8 @@
   template:
     src: gaiad.service.j2
     dest: "/etc/systemd/system/{{gaiad_service_name}}.service"
-- name: configure systemd service for gaiad
+
+- name: configure systemd service for cosmovisor
   when: use_cosmovisor
   template:
     src: cosmovisor.service.j2
@@ -463,8 +464,16 @@
     state: restarted
     name: systemd-journald
 
-- name: Start gaiad systemd service
+- name: Enable gaiad systemd service
   when: not use_cosmovisor
+  systemd:
+    daemon_reload: true
+    state: stopped
+    enabled: true
+    name: "{{gaiad_service_name}}"
+
+- name: Start gaiad systemd service
+  when: (not use_cosmovisor) and (not reboot | default(false) | bool)
   systemd:
     daemon_reload: true
     state: restarted
@@ -474,8 +483,16 @@
     - gaiad_start
     - gaiad_restart
 
-- name: Start cosmovisor systemd service
+- name: Enable cosmovisor systemd service
   when: use_cosmovisor
+  systemd:
+    daemon_reload: true
+    state: stopped
+    enabled: true
+    name: "{{cosmovisor_service_name}}"
+
+- name: Start cosmovisor systemd service
+  when: (use_cosmovisor) and (not reboot | default(false) | bool)
   systemd:
     daemon_reload: true
     state: restarted

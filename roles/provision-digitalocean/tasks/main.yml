@@ -1,0 +1,39 @@
+---
+- name: Create a new Droplet
+  community.digitalocean.digital_ocean_droplet:
+    state: present
+    oauth_token: "{{ digitalocean_api_key }}"
+    name: "{{ digitalocean_hostname }}"
+    unique_name: true
+    size: "{{ digitalocean_size }}"
+    region: "{{ digitalocean_region }}"
+    image: "{{ digitalocean_image }}"
+    ipv6: true
+    wait_timeout: 500
+    project_name: "{{ digitalocean_project }}"
+    ssh_keys: "{{ digitalocean_ssh_keys }}"
+  register: droplet_info
+
+- name: Show Droplet info
+  debug:
+    msg: |
+      Droplet ID is {{ droplet_info.data.droplet.id }}
+      First Public IPv6 is {{ (droplet_info.data.droplet.networks.v6 | selectattr('type', 'equalto', 'public')).0.ip_address }}
+      First Public IPv4 is {{ (droplet_info.data.droplet.networks.v4 | selectattr('type', 'equalto', 'public')).0.ip_address }}
+      First Private IPv4 is {{ (droplet_info.data.droplet.networks.v4 | selectattr('type', 'equalto', 'private')).0.ip_address }}
+
+- name: Error VM already exists
+  fail: msg="The host {{ digitalocean_hostname }} already exists."
+  when: droplet_info.changed == false
+
+- name: Store IPv6 address
+  set_fact:
+    droplet_ipv6: "{{ (droplet_info.data.droplet.networks.v6 | selectattr('type', 'equalto', 'public')).0.ip_address }}"
+
+- name: Store IPv4 address
+  set_fact:
+    droplet_ipv4: "{{ (droplet_info.data.droplet.networks.v4 | selectattr('type', 'equalto', 'public')).0.ip_address }}"
+
+- name: Store droplet_id
+  set_fact:
+    droplet_id: "{{ droplet_info.data.droplet.id }}"
