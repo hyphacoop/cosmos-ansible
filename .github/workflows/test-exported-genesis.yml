@@ -23,12 +23,6 @@ jobs:
       - name: Current working directory
         run: pwd
 
-      - name: ls -al ~
-        run: ls -al ~
-
-      - name: ls -al
-        run: ls -al
-
       - name: Set up Python
         uses: actions/setup-python@v3
         with:
@@ -63,16 +57,21 @@ jobs:
         ${{ fromJSON(needs.generate-matrices.outputs.start_versions) }}
     steps:
       - run: echo "Test ${{matrix.gaia_version}}"
-      - name: Check out repository code
+      - name: Installing system utils
+        run: apt install tree git-lfs
+      - name: Check out hyphacoop/cosmos-genesis-tinkerer
         uses: actions/checkout@v3
         with:
           repository: hyphacoop/cosmos-genesis-tinkerer
+          lfs: true
+      - name: Check out hyphacoop/cosmos-ansible
+        uses: actions/checkout@v3
+        with:
+          repository: hyphacoop/cosmos-ansible
       - name: Current working directory
         run: pwd
-      - name: ls -al
-        run: ls -al
-      - name: ls -al ~
-        run: ls -al ~
+      - name: tree
+        run: tree ~
       - name: Set up Python
         uses: actions/setup-python@v3
         with:
