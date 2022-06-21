@@ -59,17 +59,16 @@ jobs:
       - run: echo "Test ${{matrix.gaia_version}}"
       - name: Installing system utils
         run: sudo apt -y install tree git-lfs
+      - name: Check out hyphacoop/cosmos-ansible
+        uses: actions/checkout@v3
+        with:
+          path: cosmos-ansible
       - name: Check out hyphacoop/cosmos-genesis-tinkerer
         uses: actions/checkout@v3
         with:
           repository: hyphacoop/cosmos-genesis-tinkerer
           lfs: true
           path: cosmos-genesis-tinkerer
-      - name: Check out hyphacoop/cosmos-ansible
-        uses: actions/checkout@v3
-        with:
-          repository: hyphacoop/cosmos-ansible
-          path: cosmos-ansible
       - name: Current working directory
         run: pwd
       - name: tree ~/work
