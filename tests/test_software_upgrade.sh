@@ -72,7 +72,7 @@ if [ -n "$upgrade_name" ]; then
 
     # Wait for the voting period to be over
     echo "Waiting for the voting period to end..."
-    sleep $[$voting_waiting_time-6]
+    sleep 8
 
     echo "Upgrade proposal status:"
     gaiad q gov proposal 1 --output json | jq '.status'
