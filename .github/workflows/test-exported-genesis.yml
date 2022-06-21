@@ -58,7 +58,7 @@ jobs:
     steps:
       - run: echo "Test ${{matrix.gaia_version}}"
       - name: Installing system utils
-        run: apt install tree git-lfs
+        run: sudo apt -y install tree git-lfs
       - name: Check out hyphacoop/cosmos-genesis-tinkerer
         uses: actions/checkout@v3
         with:
