@@ -1,6 +1,6 @@
 ---
 
-name: Test Gaia Versions
+name: Test Gaia Versions with Tinkered Mainnet Genesis
 on:
   workflow_dispatch:
   pull_request:
@@ -67,8 +67,6 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: hyphacoop/cosmos-genesis-tinkerer
-            - name: Check out repository code
-        uses: actions/checkout@v3
       - name: Current working directory
         run: pwd
       - name: ls -al
