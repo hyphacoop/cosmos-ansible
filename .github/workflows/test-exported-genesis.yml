@@ -69,10 +69,14 @@ jobs:
           repository: hyphacoop/cosmos-genesis-tinkerer
           lfs: true
           path: cosmos-genesis-tinkerer
-      - name: Current working directory
-        run: pwd
       - name: tree ~/work
         run: tree ~/work
+      - name: Current working directory
+        run: pwd
+      - name: Change directory to ./cosmos-ansible
+        working-directory: ./cosmos-ansible
+      - name: Current working directory
+        run: pwd
       - name: Set up Python
         uses: actions/setup-python@v3
         with:
