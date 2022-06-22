@@ -7,6 +7,11 @@ stop_height=$3
 
 # Test gaia response
 tests/test_gaia_response.sh $gaia_host $gaia_port
+# Exit if test_gaia_response.sh fails
+if [ $? != 0 ]
+then
+    exit 1
+fi
 
 # Get the current gaia version from the API
 gaiad_version=$(curl -s http://$gaia_host:$gaia_port/abci_info | jq -r .result.response.version)
