@@ -26,7 +26,7 @@ let stop_height=$cur_height+$stop_height
 
 # Check if gaia is producing blocks
 test_counter=0
-max_tests=240
+max_tests=2100
 echo "Current gaiad version: $gaiad_version"
 echo "Block height: $cur_height"
 echo "Waiting to reach block height $stop_height..."
