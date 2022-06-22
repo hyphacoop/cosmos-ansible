@@ -85,7 +85,7 @@ jobs:
       - name: Configure inventory
         run: "sed -e 's/testnet.com:/local:/g ; /genesis_url:/d' examples/inventory-local-genesis.yml > inventory.yml"
       - name: Run playbook
-        run: | 
+        run: |
           latest_genesis=$(ls -t cosmos-genesis-tinkerer/mainnet-genesis-tinkered/*v7* | tail -1)
           ansible-playbook gaia.yml -i inventory.yml --extra-vars "\
           reboot=false \
