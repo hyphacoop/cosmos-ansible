@@ -18,7 +18,7 @@ gaiad_version=$(curl -s http://$gaia_host:$gaia_port/abci_info | jq -r .result.r
 
 # Check if gaia is producing blocks
 test_counter=0
-max_tests=60
+max_tests=120
 echo "Current gaiad version: $gaiad_version"
 echo "Block height: $cur_height"
 echo "Waiting to reach block height $stop_height..."
