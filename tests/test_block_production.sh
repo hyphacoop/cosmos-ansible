@@ -21,6 +21,9 @@ do
     cur_height=$(curl -s http://$gaia_host:$gaia_port/block | jq -r .result.block.header.height)
 done
 
+# Add stop_height to current height
+let stop_height=$cur_height+$stop_height
+
 # Check if gaia is producing blocks
 test_counter=0
 max_tests=240
