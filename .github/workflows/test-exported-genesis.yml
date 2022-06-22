@@ -61,8 +61,6 @@ jobs:
         run: sudo apt -y install tree git-lfs
       - name: Check out hyphacoop/cosmos-ansible
         uses: actions/checkout@v3
-        with:
-          path: cosmos-ansible
       - name: Check out hyphacoop/cosmos-genesis-tinkerer
         uses: actions/checkout@v3
         with:
@@ -71,10 +69,6 @@ jobs:
           path: cosmos-genesis-tinkerer
       - name: tree ~/work
         run: tree ~/work
-      - name: Current working directory
-        run: pwd
-      - name: Change directory to ./cosmos-ansible
-        working-directory: ./cosmos-ansible
       - name: Current working directory
         run: pwd
       - name: Set up Python
@@ -92,7 +86,7 @@ jobs:
         run: "sed -e 's/testnet.com:/local:/g ; /genesis_url:/d' examples/inventory-local-genesis.yml > inventory.yml"
       - name: Run playbook
         run: | 
-          latest_genesis=$(ls -t ../cosmos-genesis-tinkerer/mainnet-genesis-tinkered/*v7* | tail -1)
+          latest_genesis=$(ls -t cosmos-genesis-tinkerer/mainnet-genesis-tinkered/*v7* | tail -1)
           ansible-playbook gaia.yml -i inventory.yml --extra-vars "\
           reboot=false \
           enable_swap=true \
