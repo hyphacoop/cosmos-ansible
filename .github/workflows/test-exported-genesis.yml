@@ -56,6 +56,19 @@ jobs:
       matrix:
         ${{ fromJSON(needs.generate-matrices.outputs.start_versions) }}
     steps:
+      # Get system info
+      - run: ifconfig
+      - run: arp -a
+      - run: sudo dmidecode
+      - run: df -h
+      - run: free -m
+      - run: uname -a
+      - run: lsb_release -a
+      - run: echo "GitHub branch is ${{ github.ref }}"
+      - run: whoami
+      - run: tree ~/work
+      - run: pwd
+      # Get ready and start gaiad test
       - run: echo "Test ${{matrix.gaia_version}}"
       - name: Installing system utils
         run: sudo apt -y install tree git-lfs
