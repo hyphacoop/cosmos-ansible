@@ -1,18 +1,8 @@
 ---
-
+# WIP Current GH Action runners not powerful enough to finish tests in time
 name: Test Gaia Versions with Tinkered Mainnet Genesis
 on:
   workflow_dispatch:
-  pull_request:
-    types:
-      - opened
-      - closed
-  push:
-    paths-ignore:
-      - 'docs/**'
-      - 'examples/**'
-      - '!examples/inventory-local.yml'
-      - 'README.md'
 jobs:
   generate-matrices:
     runs-on: ubuntu-latest

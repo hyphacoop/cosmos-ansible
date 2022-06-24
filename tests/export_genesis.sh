@@ -151,33 +151,40 @@ gzip "mainnet-genesis-export/mainnet-genesis_${current_block_time}_${gaiad_versi
 echo "Compressing mainnet-genesis-tinkered/tinkered-genesis_${current_block_time}_${gaiad_version}_${current_block}.json"
 gzip "mainnet-genesis-tinkered/tinkered-genesis_${current_block_time}_${gaiad_version}_${current_block}.json"
 
-# Push to github
-echo "push to github"
-git lfs install
-git lfs track "*.gz"
-git add -A
-git commit -m "Adding mainnet and tinkered genesis at height $current_block"
-git push origin $gh_branch
+# # Push to github
+# echo "push to github"
+# git lfs install
+# git lfs track "*.gz"
+# git add -A
+# git commit -m "Adding mainnet and tinkered genesis at height $current_block"
+# git push origin $gh_branch
 
 # Print current date and time
 echo -n "Finished at: "
 date
 
-# Push log to cosmos-configurations-private repo
-echo "Push log to cosmos-configurations-private repo"
+# Test upgrade using exported genesis
+echo "Test upgrades using export genesis"
 cd ~
-git clone git@github.com:hyphacoop/cosmos-configurations-private.git
-cd cosmos-configurations-private
-if [ ! -d logs/mainnet-export ]
-then
-    mkdir -p logs/mainnet-export
-fi
-# wait for log to be written
-sleep 120
-cp /root/export_genesis.log "logs/mainnet-export/mainnet-genesis_${start_date}_${gaiad_version}_${current_block}.log"
-git add -A
-git commit -m "Adding export log file"
-git push origin main
+pip3 install ansible
+git clone git@github.com:hyphacoop/cosmos-ansible.git
+
+
+# # Push log to cosmos-configurations-private repo
+# echo "Push log to cosmos-configurations-private repo"
+# cd ~
+# git clone git@github.com:hyphacoop/cosmos-configurations-private.git
+# cd cosmos-configurations-private
+# if [ ! -d logs/mainnet-export ]
+# then
+#     mkdir -p logs/mainnet-export
+# fi
+# # wait for log to be written
+# sleep 120
+# cp /root/export_genesis.log "logs/mainnet-export/mainnet-genesis_${start_date}_${gaiad_version}_${current_block}.log"
+# git add -A
+# git commit -m "Adding export log file"
+# git push origin main
 
 # DESTROY the droplet from itself
-curl -X DELETE -H "Authorization: Bearer {{ digitalocean_api_key }}" "https://api.digitalocean.com/v2/droplets/{{ droplet_id }}"
+#curl -X DELETE -H "Authorization: Bearer {{ digitalocean_api_key }}" "https://api.digitalocean.com/v2/droplets/{{ droplet_id }}"
