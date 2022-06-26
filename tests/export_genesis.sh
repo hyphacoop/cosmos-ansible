@@ -6,7 +6,7 @@ gh_branch="main"
 gh_user="hypha-bot"
 
 # Gaiad versions to start upgrade
-start_version="6.0.4"
+start_version="v6.0.4"
 
 # Store current date and time
 start_date=$(date +"%Y%m%d_%H-%M-%S")
