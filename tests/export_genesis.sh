@@ -48,14 +48,14 @@ gaiad_upgrade () {
         minimum_gas_prices=0.0025uatom \
         gaiad_version=${{ f_gaia_version }} \
         gaiad_home={{ gaiad_user_home }}/.gaia gaiad_gov_testing=true \
-        gaiad_user=runner \
+        gaiad_user=gaia \
         priv_validator_key_file=examples/validator-keys/validator-40/priv_validator_key.json \
         node_key_file=examples/validator-keys/validator-40/node_key.json \
         genesis_file=$f_latest_genesis"
     
     # Test to see if gaia is building blocks
     tests/test_block_production.sh 127.0.0.1 26657 10
-    if [ $? -n 0 ]
+    if [ $? -ne 0 ]
     then
         echo "Failed to build blocks on version: $f_gaia_version"
         f_build_block=0
@@ -68,9 +68,17 @@ gaiad_upgrade () {
     then
         echo "Testing upgrade"
         tests/test_software_upgrade.sh 127.0.0.1 26657 $f_upgrade_version
+        if [ $? -ne 0 ]
+        then
+            echo "Upgrade failed cannot build blocks on version: $f_upgrade_version"
+        else
+            echo "Upgrade Successful to version: $f_upgrade_version"
+        fi
     else
         echo "Skipping upgrade test blocks are not being built!"
     fi
+    # stop cosmovisor
+    systemctl stop cosmovisor
     set -e
 }
 
