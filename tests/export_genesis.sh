@@ -46,8 +46,8 @@ gaiad_upgrade () {
     ansible-playbook gaia.yml -i inventory.yml --extra-vars "\
         reboot=false \
         minimum_gas_prices=0.0025uatom \
-        gaiad_version=${{ f_gaia_version }} \
-        gaiad_home={{ gaiad_user_home }}/.gaia gaiad_gov_testing=true \
+        gaiad_version=$f_gaia_version \
+        gaiad_gov_testing=true \
         gaiad_user=gaia \
         priv_validator_key_file=examples/validator-keys/validator-40/priv_validator_key.json \
         node_key_file=examples/validator-keys/validator-40/node_key.json \
