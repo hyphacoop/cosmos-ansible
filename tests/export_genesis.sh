@@ -43,18 +43,10 @@ gaiad_upgrade () {
     f_upgrade_version=$2
     f_latest_genesis=$3
     sed -e 's/testnet.com:/local:/g ; /genesis_url:/d' examples/inventory-local-genesis.yml > inventory.yml
-    ansible-playbook gaia.yml -i inventory.yml --extra-vars "\
-        reboot=false \
-        minimum_gas_prices=0.0025uatom \
-        gaiad_version=$f_gaia_version \
-        gaiad_gov_testing=true \
-        gaiad_user=gaia \
-        priv_validator_key_file=examples/validator-keys/validator-40/priv_validator_key.json \
-        node_key_file=examples/validator-keys/validator-40/node_key.json \
-        genesis_file=$f_latest_genesis"
+    ansible-playbook gaia.yml -i inventory.yml --extra-vars "reboot=false minimum_gas_prices=0.0025uatom gaiad_version=$f_gaia_version gaiad_gov_testing=true priv_validator_key_file=examples/validator-keys/validator-40/priv_validator_key.json node_key_file=examples/validator-keys/validator-40/node_key.json genesis_file=$f_latest_genesis"
     
     # Test to see if gaia is building blocks
-    tests/test_block_production.sh 127.0.0.1 26657 10
+    su gaia -c "tests/test_block_production.sh 127.0.0.1 26657 10"
     if [ $? -ne 0 ]
     then
         echo "Failed to build blocks on version: $f_gaia_version"
@@ -67,7 +59,7 @@ gaiad_upgrade () {
     if [ $f_build_block -eq 1 ]
     then
         echo "Testing upgrade"
-        tests/test_software_upgrade.sh 127.0.0.1 26657 $f_upgrade_version
+        su gaia -c "tests/test_software_upgrade.sh 127.0.0.1 26657 $f_upgrade_version"
         if [ $? -ne 0 ]
         then
             echo "Upgrade failed cannot build blocks on version: $f_upgrade_version"
@@ -220,6 +212,9 @@ cd ~
 pip3 install ansible
 git clone git@github.com:hyphacoop/cosmos-ansible.git
 cd cosmos-ansible/
+# checkout running branch
+git checkout test-exported-genesis
+
 echo "transport = local" >> ansible.cfg
 python3 tests/generate_version_matrix.py $start_version
 upgrade=$(python3 tests/generate_upgrade_matrix.py $start_version)
@@ -230,9 +225,9 @@ jq -r .include[].gaia_version <<< $upgrade | while read -r gaia_start_version
 do
     gaia_upgrade_version=$(jq -r ".include[$i].upgrade_version" <<< $upgrade)
     echo "Run test on $gaia_start_version to $gaia_upgrade_version"
-    #gaiad_upgrade $gaia_start_version $gaia_upgrade_version ~/mainnet-genesis-export/mainnet-genesis_${current_block_time}_${gaiad_version}_${current_block}.json
+    #gaiad_upgrade $gaia_start_version $gaia_upgrade_version ~/cosmos-genesis-tinkerer/mainnet-genesis-tinkered/mainnet-genesis_${current_block_time}_${gaiad_version}_${current_block}.json
     # static file for testing
-    gaiad_upgrade $gaia_start_version $gaia_upgrade_version tinkered-genesis_2022-06-18T22:07:07.89761993Z_v7.0.2_10933559.json.gz
+    gaiad_upgrade $gaia_start_version $gaia_upgrade_version ~/cosmos-genesis-tinkerer/mainnet-genesis-tinkered/tinkered-genesis_2022-06-18T22:07:07.89761993Z_v7.0.2_10933559.json.gz
     let i=$i+1
 done
 

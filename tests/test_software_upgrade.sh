@@ -36,9 +36,10 @@ if [ -n "$upgrade_name" ]; then
     echo "Upgrading to $upgrade_name."
 
     # Set time to wait for proposal to pass
-    voting_period=$(curl -s http://localhost:26657/genesis\? | jq -r '.result.genesis.app_state.gov.voting_params.voting_period')
-    echo "Using ($voting_period)s voting period to calculate the upgrade height."
+    #voting_period=$(curl -s http://localhost:26657/genesis\? | jq -r '.result.genesis.app_state.gov.voting_params.voting_period')
+    voting_period=$(cat ~/.gaia/config/genesis.json | jq -r '.app_state.gov.voting_params.voting_period')
     voting_period_seconds=${voting_period::-1}
+    echo "Using ($voting_period_seconds)s voting period to calculate the upgrade height."
     
     # Calculate upgrade height
     let voting_blocks_delta=$voting_period_seconds/5+3
