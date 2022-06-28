@@ -5,6 +5,7 @@ all:
     ansible_user: root
     gaiad_version: v7.0.2
     chain_id: cosmoshub-4
+    genesis_url: "https://github.com/cosmos/mainnet/raw/master/genesis.cosmoshub-4.json.gz"
     gaiad_home_autoclear: false
     gaiad_unsafe_reset: true
     gaiad_use_ssl_proxy: false
@@ -12,7 +13,6 @@ all:
     gaiad_rpc_host: "rpc"
     gaiad_p2p_host: "p2p"
     gaiad_grpc_host: "grpc"
-    p2p_persistent_peers: "6e08b23315a9f0e1b23c7ed847934f7d6f848c8b@165.232.156.86:26656,ee27245d88c632a556cf72cc7f3587380c09b469@45.79.249.253:26656,538ebe0086f0f5e9ca922dae0462cc87e22f0a50@34.122.34.67:26656,d3209b9f88eec64f10555a11ecbf797bb0fa29f4@34.125.169.233:26656,bdc2c3d410ca7731411b7e46a252012323fbbf37@34.83.209.166:26656,585794737e6b318957088e645e17c0669f3b11fc@54.160.123.34:26656,5b4ed476e01c49b23851258d867cc0cfc0c10e58@206.189.4.227:26656"
     addrbook_url: "https://quicksync.io/addrbook.cosmos.json"
     minimum_gas_prices: "0.0025uatom"
     enable_swap: true
@@ -24,4 +24,4 @@ all:
         cosmoshub-4.mainnet.com:
           fast_sync: true
           statesync_enabled: true
-          statesync_rpc_servers: 'https://rpc.cosmos.network:443,https://rpc.cosmos.network:443'
+          statesync_rpc_servers: 'https://rpc-cosmoshub.ecostake.com:443,https://rpc.cosmoshub.pupmos.network:443'
