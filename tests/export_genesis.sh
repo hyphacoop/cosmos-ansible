@@ -76,8 +76,8 @@ gaiad_upgrade () {
     else
         echo "Skipping upgrade test blocks are not being built!"
     fi
-    # stop cosmovisor
-    systemctl stop cosmovisor
+    # Delete key from keyring
+    su gaia -c " ~/.gaia/cosmovisor/current/bin/gaiad keys delete --keyring-backend test val --yes"
     set -e
 }
 

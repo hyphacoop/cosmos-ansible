@@ -14,12 +14,15 @@ export PATH="$PATH:~/.gaia/cosmovisor/current/bin"
 echo "PATH=$PATH"
 
 # Auto set denom
+echo "Get denom from ~/.gaia/config/genesis.json"
 denom=$(jq -r '.app_state.gov.deposit_params.min_deposit[].denom' ~/.gaia/config/genesis.json)
 
 # Get the current gaia version from the API
+echo "Get the current gaia version from the API"
 gaiad_version=$(curl -s http://$gaia_host:$gaia_port/abci_info | jq -r .result.response.version)
 
 # Get chain-id from the API
+echo "Get chain-id from the API"
 chain_id=$(curl -s http://$gaia_host:$gaia_port/status | jq -r .result.node_info.network)
 
 # Submit upgrade proposal
@@ -42,12 +45,13 @@ if [ -n "$upgrade_name" ]; then
     echo "Upgrading to $upgrade_name."
 
     # Set time to wait for proposal to pass
-    #voting_period=$(curl -s http://localhost:26657/genesis\? | jq -r '.result.genesis.app_state.gov.voting_params.voting_period')
+    echo "Get voting_period from genesis file"
     voting_period=$(jq -r '.app_state.gov.voting_params.voting_period' ~/.gaia/config/genesis.json)
     voting_period_seconds=${voting_period::-1}
     echo "Using ($voting_period_seconds)s voting period to calculate the upgrade height."
     
     # Calculate upgrade height
+    echo "Calculate upgrade height"
     let voting_blocks_delta=$voting_period_seconds/5+3
     height=$(curl -s http://$gaia_host:$gaia_port/block | jq -r .result.block.header.height)
     upgrade_height=$(($height+$voting_blocks_delta))
