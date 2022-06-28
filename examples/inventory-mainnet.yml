@@ -24,4 +24,4 @@ all:
         cosmoshub-4.mainnet.com:
           fast_sync: true
           statesync_enabled: true
-          statesync_rpc_servers: 'https://rpc-cosmoshub.ecostake.com:443,https://rpc.cosmoshub.pupmos.network:443'
+          statesync_rpc_servers: 'https://rpc.cosmos.network:443,https://rpc.cosmos.network:443'
