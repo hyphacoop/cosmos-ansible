@@ -13,6 +13,9 @@ echo "Adding gaiad to PATH..."
 export PATH="$PATH:~/.gaia/cosmovisor/current/bin"
 echo "PATH=$PATH"
 
+# Auto set denom
+denom=$(jq '.app_state.gov.deposit_params.min_deposit[].denom' ~/.gaia/config/genesis.json)
+
 # Get the current gaia version from the API
 gaiad_version=$(curl -s http://$gaia_host:$gaia_port/abci_info | jq -r .result.response.version)
 
@@ -37,7 +40,7 @@ if [ -n "$upgrade_name" ]; then
 
     # Set time to wait for proposal to pass
     #voting_period=$(curl -s http://localhost:26657/genesis\? | jq -r '.result.genesis.app_state.gov.voting_params.voting_period')
-    voting_period=$(cat ~/.gaia/config/genesis.json | jq -r '.app_state.gov.voting_params.voting_period')
+    voting_period=$(jq -r '.app_state.gov.voting_params.voting_period' ~/.gaia/config/genesis.json)
     voting_period_seconds=${voting_period::-1}
     echo "Using ($voting_period_seconds)s voting period to calculate the upgrade height."
     
@@ -55,7 +58,7 @@ if [ -n "$upgrade_name" ]; then
     # Auto download: Set the binary paths need for the proposal message
     download_path="https://github.com/cosmos/gaia/releases/download/$upgrade_version"
     upgrade_info="{\"binaries\":{\"linux/amd64\":\"$download_path/gaiad-$upgrade_version-linux-amd64\",\"linux/arm64\":\"$download_path/$upgrade_version/gaiad-$upgrade_version-linux-arm64\",\"darwin/amd64\":\"$download_path/gaiad-$upgrade_version-darwin-amd64\",\"windows/amd64\":\"$download_path/gaiad-$upgrade_version-windows-amd64.exe\"}}"
-    proposal="gaiad tx gov submit-proposal software-upgrade $upgrade_name --from $validator_address --keyring-backend test --upgrade-height $upgrade_height --upgrade-info $upgrade_info --title gaia-upgrade --description 'test' --chain-id my-testnet --deposit 10stake --yes"
+    proposal="gaiad tx gov submit-proposal software-upgrade $upgrade_name --from $validator_address --keyring-backend test --upgrade-height $upgrade_height --upgrade-info $upgrade_info --title gaia-upgrade --description 'test' --chain-id my-testnet --deposit 10$denom --yes"
 
     # Submit the proposal
     echo "Submitting the upgrade proposal."

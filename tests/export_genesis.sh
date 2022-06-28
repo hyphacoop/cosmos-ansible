@@ -1,9 +1,12 @@
 #!/bin/bash
 set -e
 
-# Repo config
+# cosmos-genesis-tinkerer repo config
 gh_branch="main"
 gh_user="hypha-bot"
+
+# get cosmos-ansible from $1
+gh_ansible_branch=$1
 
 # Gaiad versions to start upgrade
 start_version="v6.0.4"
@@ -44,6 +47,9 @@ gaiad_upgrade () {
     f_latest_genesis=$3
     sed -e 's/testnet.com:/local:/g ; /genesis_url:/d' examples/inventory-local-genesis.yml > inventory.yml
     ansible-playbook gaia.yml -i inventory.yml --extra-vars "reboot=false minimum_gas_prices=0.0025uatom gaiad_version=$f_gaia_version gaiad_gov_testing=true priv_validator_key_file=examples/validator-keys/validator-40/priv_validator_key.json node_key_file=examples/validator-keys/validator-40/node_key.json genesis_file=$f_latest_genesis"
+    
+    # Restore the validator key and store /home/gaia/.gaia/validator.json
+    su gaia -c "echo \"abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon art\" | ~/.gaia/cosmovisor/current/bin/gaiad --output json keys add val --keyring-backend test --recover 2> ~/.gaia/validator.json" # Use stderr until gaiad use stdout
     
     # Test to see if gaia is building blocks
     su gaia -c "tests/test_block_production.sh 127.0.0.1 26657 10"
@@ -165,7 +171,7 @@ git checkout $gh_branch
 
 # # Get version number using gaiad version
 # echo "Get running gaiad version"
-# gaiad_version=$((su gaia -c "~gaia/.gaia/cosmovisor/current/bin/gaiad version") 2>&1)
+# gaiad_version=$((su gaia -c "~gaia/.gaia/cosmovisor/current/bin/gaiad version") 2>&1) # Use stderr until gaiad use stdout
 # echo "Installed gaiad version is $gaiad_version"
 
 # # Export genesis
@@ -213,7 +219,7 @@ pip3 install ansible
 git clone git@github.com:hyphacoop/cosmos-ansible.git
 cd cosmos-ansible/
 # checkout running branch
-git checkout test-exported-genesis
+git checkout $gh_ansible_branch
 
 echo "transport = local" >> ansible.cfg
 python3 tests/generate_version_matrix.py $start_version
