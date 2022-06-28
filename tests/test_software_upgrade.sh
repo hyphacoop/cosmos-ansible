@@ -14,7 +14,7 @@ export PATH="$PATH:~/.gaia/cosmovisor/current/bin"
 echo "PATH=$PATH"
 
 # Auto set denom
-denom=$(jq '.app_state.gov.deposit_params.min_deposit[].denom' ~/.gaia/config/genesis.json)
+denom=$(jq -r '.app_state.gov.deposit_params.min_deposit[].denom' ~/.gaia/config/genesis.json)
 
 # Get the current gaia version from the API
 gaiad_version=$(curl -s http://$gaia_host:$gaia_port/abci_info | jq -r .result.response.version)
@@ -105,4 +105,3 @@ if [ -n "$upgrade_name" ]; then
 else
     echo "No upgrade name specified, skipping upgrade."
 fi
-
