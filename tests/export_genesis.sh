@@ -45,6 +45,7 @@ gaiad_upgrade () {
     f_gaia_version=$1
     f_upgrade_version=$2
     f_latest_genesis=$3
+    f_initial_height=$4
     sed -e 's/testnet.com:/local:/g ; /genesis_url:/d' examples/inventory-local-genesis.yml > inventory.yml
     ansible-playbook gaia.yml -i inventory.yml --extra-vars "reboot=false minimum_gas_prices=0.0025uatom gaiad_version=$f_gaia_version gaiad_gov_testing=true priv_validator_key_file=examples/validator-keys/validator-40/priv_validator_key.json node_key_file=examples/validator-keys/validator-40/node_key.json genesis_file=$f_latest_genesis"
     
@@ -52,7 +53,7 @@ gaiad_upgrade () {
     su gaia -c "echo \"abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon art\" | ~/.gaia/cosmovisor/current/bin/gaiad --output json keys add val --keyring-backend test --recover 2> ~/.gaia/validator.json" # Use stderr until gaiad use stdout
     
     # Test to see if gaia is building blocks
-    su gaia -c "tests/test_block_production.sh 127.0.0.1 26657 10"
+    su gaia -c "tests/test_block_production.sh 127.0.0.1 26657 $[$f_initial_height+10]"
     if [ $? -ne 0 ]
     then
         echo "Failed to build blocks on version: $f_gaia_version"
@@ -226,6 +227,8 @@ python3 tests/generate_version_matrix.py $start_version
 upgrade=$(python3 tests/generate_upgrade_matrix.py $start_version)
 
 # Loop through upgrade versions
+# static height for testing
+current_block=10933559
 i=0
 jq -r .include[].gaia_version <<< $upgrade | while read -r gaia_start_version
 do
@@ -233,7 +236,7 @@ do
     echo "Run test on $gaia_start_version to $gaia_upgrade_version"
     #gaiad_upgrade $gaia_start_version $gaia_upgrade_version ~/cosmos-genesis-tinkerer/mainnet-genesis-tinkered/mainnet-genesis_${current_block_time}_${gaiad_version}_${current_block}.json
     # static file for testing
-    gaiad_upgrade $gaia_start_version $gaia_upgrade_version ~/cosmos-genesis-tinkerer/mainnet-genesis-tinkered/tinkered-genesis_2022-06-18T22:07:07.89761993Z_v7.0.2_10933559.json.gz
+    gaiad_upgrade $gaia_start_version $gaia_upgrade_version ~/cosmos-genesis-tinkerer/mainnet-genesis-tinkered/tinkered-genesis_2022-06-18T22:07:07.89761993Z_v7.0.2_10933559.json.gz $current_block
     let i=$i+1
 done
 
