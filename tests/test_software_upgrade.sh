@@ -19,6 +19,9 @@ denom=$(jq -r '.app_state.gov.deposit_params.min_deposit[].denom' ~/.gaia/config
 # Get the current gaia version from the API
 gaiad_version=$(curl -s http://$gaia_host:$gaia_port/abci_info | jq -r .result.response.version)
 
+# Get chain-id from the API
+chain_id=$(curl -s http://$gaia_host:$gaia_port/status | jq -r .result.node_info.network)
+
 # Submit upgrade proposal
 gaiad_version_major=${gaiad_version:1:1}
 echo "Current major version: $gaiad_version_major"
@@ -58,7 +61,7 @@ if [ -n "$upgrade_name" ]; then
     # Auto download: Set the binary paths need for the proposal message
     download_path="https://github.com/cosmos/gaia/releases/download/$upgrade_version"
     upgrade_info="{\"binaries\":{\"linux/amd64\":\"$download_path/gaiad-$upgrade_version-linux-amd64\",\"linux/arm64\":\"$download_path/$upgrade_version/gaiad-$upgrade_version-linux-arm64\",\"darwin/amd64\":\"$download_path/gaiad-$upgrade_version-darwin-amd64\",\"windows/amd64\":\"$download_path/gaiad-$upgrade_version-windows-amd64.exe\"}}"
-    proposal="gaiad tx gov submit-proposal software-upgrade $upgrade_name --from $validator_address --keyring-backend test --upgrade-height $upgrade_height --upgrade-info $upgrade_info --title gaia-upgrade --description 'test' --chain-id my-testnet --deposit 10$denom --yes"
+    proposal="gaiad tx gov submit-proposal software-upgrade $upgrade_name --from $validator_address --keyring-backend test --upgrade-height $upgrade_height --upgrade-info $upgrade_info --title gaia-upgrade --description 'test' --chain-id $chain_id --deposit 10$denom --fees 1000uatom --yes"
 
     # Submit the proposal
     echo "Submitting the upgrade proposal."
