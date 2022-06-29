@@ -47,9 +47,9 @@ check_code $TXHASH
 # Test delegation
 echo "Delgating funds from test account to validator..."
 # Delegate from test-account to validator
-TXHASH=$(gaiad tx staking delegate $val1 1000000stake --from test-account --keyring-backend test --fees 1stake --chain-id my-testnet -y -o json | jq '.txhash' | tr -d '"')
+TXHASH=$(gaiad tx staking delegate $val1 4000000stake --from test-account --keyring-backend test --fees 1stake --chain-id my-testnet -y -o json | jq '.txhash' | tr -d '"')
 echo "Waiting for transaction to go on chain..."
-sleep 6
+sleep 12
 check_code $TXHASH
 
 # Test withdrawing rewards
