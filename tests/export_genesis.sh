@@ -69,15 +69,23 @@ gaiad_upgrade () {
         su gaia -c "tests/test_software_upgrade.sh 127.0.0.1 26657 $f_upgrade_version"
         if [ $? -ne 0 ]
         then
-            echo "Upgrade failed cannot build blocks on version: $f_upgrade_version"
+            f_message="Upgrade failed from $f_gaia_version to $f_upgrade_version"
         else
-            echo "Upgrade Successful to version: $f_upgrade_version"
+            f_message="Upgrade Successful from $f_gaia_version to $f_upgrade_version"
         fi
     else
-        echo "Skipping upgrade test blocks are not being built!"
+        f_message="Skipping upgrade test blocks are not being built!"
     fi
     # Delete key from keyring
     su gaia -c " ~/.gaia/cosmovisor/current/bin/gaiad keys delete --keyring-backend test val --yes"
+
+    # Output messages to log
+    if [ ! -d logs ]
+    then
+        mkdir logs
+    fi
+    echo "$start_date: $f_message"
+    echo "$start_date: $f_message" > logs/tinkered-genesis-upgrade_${f_gaia_version}_${f_upgrade_version}.log
     set -e
 }
 
@@ -239,6 +247,14 @@ do
     gaiad_upgrade $gaia_start_version $gaia_upgrade_version ~/cosmos-genesis-tinkerer/mainnet-genesis-tinkered/tinkered-genesis_2022-06-18T22:07:07.89761993Z_v7.0.2_10933559.json.gz $current_block
     let i=$i+1
 done
+
+# Push status to cosmos-ansible repo
+echo "Push log to cosmos-configurations-private repo"
+cd ~
+cd cosmos-ansible
+git add -A
+git commit -m "Adding tinkered genesis test results"
+git push origin gh_ansible_branch
 
 # # Push log to cosmos-configurations-private repo
 # echo "Push log to cosmos-configurations-private repo"
