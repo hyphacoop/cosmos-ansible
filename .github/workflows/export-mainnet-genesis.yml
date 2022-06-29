@@ -47,15 +47,12 @@ jobs:
 
       - name: Copy export_genesis.sh to VM
         run: |
-          export droplet_host=$(cat /tmp/droplet_ipv4.txt)
-          scp /tmp/export_genesis.sh root@$droplet_host:/tmp/export_genesis.sh
+          scp /tmp/export_genesis.sh root@mainnet-export:/tmp/export_genesis.sh
 
       - name: Copy SSH key to VM
         run: |
-          export droplet_host=$(cat /tmp/droplet_ipv4.txt)
-          scp ~/.ssh/id_rsa root@$droplet_host:/root/.ssh/
+          scp ~/.ssh/id_rsa root@mainnet-export:/root/.ssh/
 
       - name: Run export_genesis.sh on VM in a screen session
         run: |
-          export droplet_host=$(cat /tmp/droplet_ipv4.txt)
-          ssh root@$droplet_host screen -L -Logfile /root/export_genesis.log -S export_genesis -d -m sh -c '/tmp/export_genesis.sh'
+          ssh root@mainnet-export screen -L -Logfile /root/export_genesis.log -S export_genesis -d -m sh -c '/tmp/export_genesis.sh ${{ github.ref }}'
