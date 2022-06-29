@@ -76,10 +76,11 @@ if [ -n "$upgrade_name" ]; then
     sleep 6
 
     # Get proposal ID from txhash
+    echo "Get proposal ID from txhash"
     proposal_id=$(gaiad --output json q tx $txhash | jq -r '.logs[].events[] | select(.type=="submit_proposal") | .attributes[] | select(.key=="proposal_id") | .value')
 
     # Vote yes on the proposal
-    echo "Submitting the \"yes\" vote."
+    echo "Submitting the \"yes\" vote to proposal $proposal_id"
     vote="gaiad tx gov vote $proposal_id yes --from $validator_address --keyring-backend test --chain-id $chain_id --fees 1000$denom --yes"
     echo $vote
     $vote
@@ -88,7 +89,7 @@ if [ -n "$upgrade_name" ]; then
     echo "Waiting for the voting period to end..."
     sleep 8
 
-    echo "Upgrade proposal status:"
+    echo "Upgrade proposal $proposal_id status:"
     gaiad q gov proposal $proposal_id --output json | jq '.status'
 
     # Wait until the right height is reached
