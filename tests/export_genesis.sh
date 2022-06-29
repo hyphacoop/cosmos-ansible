@@ -34,8 +34,8 @@ git config --global credential.helper store
 git config --global user.name "$gh_user"
 git config --global user.email $gh_user@users.noreply.github.com
 # Do not pull files in LFS by default
-#git config --global filter.lfs.smudge "git-lfs smudge --skip -- %f"
-#git config --global filter.lfs.process "git-lfs filter-process --skip"
+git config --global filter.lfs.smudge "git-lfs smudge --skip -- %f"
+git config --global filter.lfs.process "git-lfs filter-process --skip"
 
 # Gaiad Upgrade Test Function
 gaiad_upgrade () {
@@ -84,8 +84,8 @@ gaiad_upgrade () {
     then
         mkdir logs
     fi
-    echo "$start_date: $f_message"
-    echo "$start_date: $f_message" > logs/tinkered-genesis-upgrade_${f_gaia_version}_${f_upgrade_version}.log
+    echo "$(date +"%b %d %Y %H:%M:%S"): $f_message"
+    echo "$(date +"%b %d %Y %H:%M:%S"): $f_message" > logs/tinkered-genesis-upgrade_${f_gaia_version}_${f_upgrade_version}.log
     set -e
 }
 
@@ -125,51 +125,51 @@ then
 fi
 " > ~gaia/quicksync.sh
 chmod +x ~gaia/quicksync.sh
-# echo "Running ~gaia/quicksync.sh as gaia user"
-# su gaia -c '~gaia/quicksync.sh'
+echo "Running ~gaia/quicksync.sh as gaia user"
+su gaia -c '~gaia/quicksync.sh'
 
-# echo "Starting cosmovisor"
-# systemctl start cosmovisor
+echo "Starting cosmovisor"
+systemctl start cosmovisor
 
-# # Wait for gaia service to respond
-# echo "Waiting for gaia to respond"
-# attempt_counter=0
-# max_attempts=100
-# until $(curl --output /dev/null --silent --head --fail http://127.0.0.1:26657)
-# do
-#     if [ ${attempt_counter} -gt ${max_attempts} ]
-#     then
-#         echo ""
-#         echo "Tried connecting to gaiad for $attempt_counter times. Exiting."
-#         exit 1
-#     fi
+# Wait for gaia service to respond
+echo "Waiting for gaia to respond"
+attempt_counter=0
+max_attempts=100
+until $(curl --output /dev/null --silent --head --fail http://127.0.0.1:26657)
+do
+    if [ ${attempt_counter} -gt ${max_attempts} ]
+    then
+        echo ""
+        echo "Tried connecting to gaiad for $attempt_counter times. Exiting."
+        exit 1
+    fi
 
-#     printf '.'
-#     attempt_counter=$(($attempt_counter+1))
-#     sleep 1
-# done
+    printf '.'
+    attempt_counter=$(($attempt_counter+1))
+    sleep 1
+done
 
-# # Wait until gaiad is done catching up
-# catching_up="true"
-# while [ $catching_up == "true" ]
-# do
-# 	catching_up=$(curl -s 127.0.0.1:26657/status | jq -r .result.sync_info.catching_up)
-# 	echo "catching up"
-# 	sleep 5
-# done
-# echo "Done catching up"
+# Wait until gaiad is done catching up
+catching_up="true"
+while [ $catching_up == "true" ]
+do
+	catching_up=$(curl -s 127.0.0.1:26657/status | jq -r .result.sync_info.catching_up)
+	echo "catching up"
+	sleep 5
+done
+echo "Done catching up"
 
-# # Get current block height
-# current_block=$(curl -s 127.0.0.1:26657/block | jq -r .result.block.header.height)
-# echo "Current block: $current_block"
+# Get current block height
+current_block=$(curl -s 127.0.0.1:26657/block | jq -r .result.block.header.height)
+echo "Current block: $current_block"
 
-# # Get block timestamp
-# current_block_time=$(curl -s 127.0.0.1:26657/block\?height=$current_block | jq -r .result.block.header.time)
-# echo "Current block timestamp: $current_block_time"
+# Get block timestamp
+current_block_time=$(curl -s 127.0.0.1:26657/block\?height=$current_block | jq -r .result.block.header.time)
+echo "Current block timestamp: $current_block_time"
 
-# # Stop cosmovisor before exporting
-# echo "stop cosmovisor"
-# systemctl stop cosmovisor
+# Stop cosmovisor before exporting
+echo "stop cosmovisor"
+systemctl stop cosmovisor
 
 # Clone cosmos-genesis-tinkerer
 echo "Cloning cosmos-genesis-tinkerer"
@@ -178,44 +178,44 @@ git clone git@github.com:hyphacoop/cosmos-genesis-tinkerer.git
 cd cosmos-genesis-tinkerer/
 git checkout $gh_branch
 
-# # Get version number using gaiad version
-# echo "Get running gaiad version"
-# gaiad_version=$((su gaia -c "~gaia/.gaia/cosmovisor/current/bin/gaiad version") 2>&1) # Use stderr until gaiad use stdout
-# echo "Installed gaiad version is $gaiad_version"
+# Get version number using gaiad version
+echo "Get running gaiad version"
+gaiad_version=$((su gaia -c "~gaia/.gaia/cosmovisor/current/bin/gaiad version") 2>&1) # Use stderr until gaiad use stdout
+echo "Installed gaiad version is $gaiad_version"
 
-# # Export genesis
-# if [ ! -d mainnet-genesis-export ]
-# then
-#     mkdir mainnet-genesis-export
-# fi
-# echo "Export genesis"
-# su gaia -c "~gaia/.gaia/cosmovisor/current/bin/gaiad export --height $current_block" 2> "mainnet-genesis-export/mainnet-genesis_${current_block_time}_${gaiad_version}_${current_block}.json"
+# Export genesis
+if [ ! -d mainnet-genesis-export ]
+then
+    mkdir mainnet-genesis-export
+fi
+echo "Export genesis"
+su gaia -c "~gaia/.gaia/cosmovisor/current/bin/gaiad export --height $current_block" 2> "mainnet-genesis-export/mainnet-genesis_${current_block_time}_${gaiad_version}_${current_block}.json"
 
-# echo "Tinkering exported genesis"
-# pip3 install -r requirements.txt
-# ln -s "$PWD/mainnet-genesis-export/mainnet-genesis_${current_block_time}_${gaiad_version}_${current_block}.json" "tests/mainnet_genesis.json"
-# python3 ./example_mainnet_genesis.py
-# rm tests/mainnet_genesis.json
-# if [ ! -d mainnet-genesis-tinkered ]
-# then
-#     mkdir mainnet-genesis-tinkered
-# fi
-# mv tinkered_genesis.json "mainnet-genesis-tinkered/tinkered-genesis_${current_block_time}_${gaiad_version}_${current_block}.json"
+echo "Tinkering exported genesis"
+pip3 install -r requirements.txt
+ln -s "$PWD/mainnet-genesis-export/mainnet-genesis_${current_block_time}_${gaiad_version}_${current_block}.json" "tests/mainnet_genesis.json"
+python3 ./example_mainnet_genesis.py
+rm tests/mainnet_genesis.json
+if [ ! -d mainnet-genesis-tinkered ]
+then
+    mkdir mainnet-genesis-tinkered
+fi
+mv tinkered_genesis.json "mainnet-genesis-tinkered/tinkered-genesis_${current_block_time}_${gaiad_version}_${current_block}.json"
 
 
-# # Compress files
-# echo "Compressing mainnet-genesis-export/mainnet-genesis_${current_block_time}_${gaiad_version}_${current_block}.json"
-# gzip "mainnet-genesis-export/mainnet-genesis_${current_block_time}_${gaiad_version}_${current_block}.json"
-# echo "Compressing mainnet-genesis-tinkered/tinkered-genesis_${current_block_time}_${gaiad_version}_${current_block}.json"
-# gzip "mainnet-genesis-tinkered/tinkered-genesis_${current_block_time}_${gaiad_version}_${current_block}.json"
+# Compress files
+echo "Compressing mainnet-genesis-export/mainnet-genesis_${current_block_time}_${gaiad_version}_${current_block}.json"
+gzip "mainnet-genesis-export/mainnet-genesis_${current_block_time}_${gaiad_version}_${current_block}.json"
+echo "Compressing mainnet-genesis-tinkered/tinkered-genesis_${current_block_time}_${gaiad_version}_${current_block}.json"
+gzip "mainnet-genesis-tinkered/tinkered-genesis_${current_block_time}_${gaiad_version}_${current_block}.json"
 
-# # Push to github
-# echo "push to github"
-# git lfs install
-# git lfs track "*.gz"
-# git add -A
-# git commit -m "Adding mainnet and tinkered genesis at height $current_block"
-# git push origin $gh_branch
+# Push to github
+echo "push to github"
+git lfs install
+git lfs track "*.gz"
+git add -A
+git commit -m "Adding mainnet and tinkered genesis at height $current_block"
+git push origin $gh_branch
 
 # Print current date and time
 echo -n "Finished at: "
@@ -235,16 +235,12 @@ python3 tests/generate_version_matrix.py $start_version
 upgrade=$(python3 tests/generate_upgrade_matrix.py $start_version)
 
 # Loop through upgrade versions
-# static height for testing
-current_block=10933559
 i=0
 jq -r .include[].gaia_version <<< $upgrade | while read -r gaia_start_version
 do
     gaia_upgrade_version=$(jq -r ".include[$i].upgrade_version" <<< $upgrade)
     echo "Run test on $gaia_start_version to $gaia_upgrade_version"
-    #gaiad_upgrade $gaia_start_version $gaia_upgrade_version ~/cosmos-genesis-tinkerer/mainnet-genesis-tinkered/mainnet-genesis_${current_block_time}_${gaiad_version}_${current_block}.json
-    # static file for testing
-    gaiad_upgrade $gaia_start_version $gaia_upgrade_version ~/cosmos-genesis-tinkerer/mainnet-genesis-tinkered/tinkered-genesis_2022-06-18T22:07:07.89761993Z_v7.0.2_10933559.json.gz $current_block
+    gaiad_upgrade $gaia_start_version $gaia_upgrade_version ~/cosmos-genesis-tinkerer/mainnet-genesis-tinkered/mainnet-genesis_${current_block_time}_${gaiad_version}_${current_block}.json
     let i=$i+1
 done
 
@@ -256,21 +252,21 @@ git add -A
 git commit -m "Adding tinkered genesis test results"
 git push origin gh_ansible_branch
 
-# # Push log to cosmos-configurations-private repo
-# echo "Push log to cosmos-configurations-private repo"
-# cd ~
-# git clone git@github.com:hyphacoop/cosmos-configurations-private.git
-# cd cosmos-configurations-private
-# if [ ! -d logs/mainnet-export ]
-# then
-#     mkdir -p logs/mainnet-export
-# fi
-# # wait for log to be written
-# sleep 120
-# cp /root/export_genesis.log "logs/mainnet-export/mainnet-genesis_${start_date}_${gaiad_version}_${current_block}.log"
-# git add -A
-# git commit -m "Adding export log file"
-# git push origin main
+# Push log to cosmos-configurations-private repo
+echo "Push log to cosmos-configurations-private repo"
+cd ~
+git clone git@github.com:hyphacoop/cosmos-configurations-private.git
+cd cosmos-configurations-private
+if [ ! -d logs/mainnet-export ]
+then
+    mkdir -p logs/mainnet-export
+fi
+# wait for log to be written
+sleep 120
+cp /root/export_genesis.log "logs/mainnet-export/mainnet-genesis_${start_date}_${gaiad_version}_${current_block}.log"
+git add -A
+git commit -m "Adding export log file"
+git push origin main
 
 # DESTROY the droplet from itself
-#curl -X DELETE -H "Authorization: Bearer {{ digitalocean_api_key }}" "https://api.digitalocean.com/v2/droplets/{{ droplet_id }}"
+curl -X DELETE -H "Authorization: Bearer {{ digitalocean_api_key }}" "https://api.digitalocean.com/v2/droplets/{{ droplet_id }}"
