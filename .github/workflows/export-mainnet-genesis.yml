@@ -55,4 +55,4 @@ jobs:
 
       - name: Run export_genesis.sh on VM in a screen session
         run: |
-          ssh root@mainnet-export screen -L -Logfile /root/export_genesis.log -S export_genesis -d -m sh -c '/tmp/export_genesis.sh ${{ github.ref_name }}'
+          ssh root@mainnet-export screen -L -Logfile /root/export_genesis.log -S export_genesis -d -m bash '/tmp/export_genesis.sh ${{ github.ref_name }}'
