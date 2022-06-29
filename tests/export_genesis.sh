@@ -84,8 +84,8 @@ gaiad_upgrade () {
     then
         mkdir logs
     fi
-    echo "$start_date: $f_message"
-    echo "$start_date: $f_message" > logs/tinkered-genesis-upgrade_${f_gaia_version}_${f_upgrade_version}.log
+    echo "$(date +"%b %d %Y %H:%M:%S"): $f_message"
+    echo "$(date +"%b %d %Y %H:%M:%S"): $f_message" > logs/tinkered-genesis-upgrade_${f_gaia_version}_${f_upgrade_version}.log
     set -e
 }
 
