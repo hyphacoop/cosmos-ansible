@@ -65,19 +65,22 @@ if [ -n "$upgrade_name" ]; then
     # Auto download: Set the binary paths need for the proposal message
     download_path="https://github.com/cosmos/gaia/releases/download/$upgrade_version"
     upgrade_info="{\"binaries\":{\"linux/amd64\":\"$download_path/gaiad-$upgrade_version-linux-amd64\",\"linux/arm64\":\"$download_path/$upgrade_version/gaiad-$upgrade_version-linux-arm64\",\"darwin/amd64\":\"$download_path/gaiad-$upgrade_version-darwin-amd64\",\"windows/amd64\":\"$download_path/gaiad-$upgrade_version-windows-amd64.exe\"}}"
-    proposal="gaiad tx gov submit-proposal software-upgrade $upgrade_name --from $validator_address --keyring-backend test --upgrade-height $upgrade_height --upgrade-info $upgrade_info --title gaia-upgrade --description 'test' --chain-id $chain_id --deposit 10$denom --fees 1000$denom --yes"
+    proposal="gaiad --output json tx gov submit-proposal software-upgrade $upgrade_name --from $validator_address --keyring-backend test --upgrade-height $upgrade_height --upgrade-info $upgrade_info --title gaia-upgrade --description 'test' --chain-id $chain_id --deposit 10$denom --fees 1000$denom --yes"
 
     # Submit the proposal
     echo "Submitting the upgrade proposal."
     echo $proposal
-    $proposal
+    txhash=$($proposal | jq -r .txhash)
 
     # Wait for the proposal to go on chain
     sleep 6
 
+    # Get proposal ID from txhash
+    proposal_id=$(gaiad --output json q tx $txhash | jq -r '.logs[].events[] | select(.type=="submit_proposal") | .attributes[] | select(.key=="proposal_id") | .value')
+
     # Vote yes on the proposal
     echo "Submitting the \"yes\" vote."
-    vote="gaiad tx gov vote 1 yes --from $validator_address --keyring-backend test --chain-id $chain_id --fees 1000$denom --yes"
+    vote="gaiad tx gov vote $proposal_id yes --from $validator_address --keyring-backend test --chain-id $chain_id --fees 1000$denom --yes"
     echo $vote
     $vote
 
@@ -86,7 +89,7 @@ if [ -n "$upgrade_name" ]; then
     sleep 8
 
     echo "Upgrade proposal status:"
-    gaiad q gov proposal 1 --output json | jq '.status'
+    gaiad q gov proposal $proposal_id --output json | jq '.status'
 
     # Wait until the right height is reached
     echo "Waiting for the upgrade to take place at block height $upgrade_height..."
