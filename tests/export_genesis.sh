@@ -240,7 +240,7 @@ jq -r .include[].gaia_version <<< $upgrade | while read -r gaia_start_version
 do
     gaia_upgrade_version=$(jq -r ".include[$i].upgrade_version" <<< $upgrade)
     echo "Run test on $gaia_start_version to $gaia_upgrade_version"
-    gaiad_upgrade $gaia_start_version $gaia_upgrade_version ~/cosmos-genesis-tinkerer/mainnet-genesis-tinkered/mainnet-genesis_${current_block_time}_${gaiad_version}_${current_block}.json
+    gaiad_upgrade $gaia_start_version $gaia_upgrade_version ~/cosmos-genesis-tinkerer/mainnet-genesis-tinkered/tinkered-genesis_${current_block_time}_${gaiad_version}_${current_block}.json
     let i=$i+1
 done
 
