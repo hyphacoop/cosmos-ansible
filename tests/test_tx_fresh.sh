@@ -5,7 +5,6 @@
 # - a faucet and validator have been created as part of the play
 # - the bond denom is stake
 # - the home folder is ~/.gaia
-# - gaiad is in the PATH environment variable
 
 check_code()
 {
@@ -18,6 +17,9 @@ check_code()
     return 1
   fi
 }
+
+# Add gaiad to PATH
+export PATH="$PATH:~/.gaia/cosmovisor/current/bin"
 
 # Recover faucet address
 faucet=$(jq -r '.address' ~/.gaia/faucet.json)
