@@ -1,5 +1,8 @@
 ---
-# WIP Current GH Action runners not powerful enough to finish tests in time
+# WIP Current GH Action runners not powerful enough to finish tests in time.
+# We are currently testing with the export-mainnet-genesis.yml workflow
+# after we tinkered the genesis file in the VM.
+
 name: Test Gaia Versions with Tinkered Mainnet Genesis
 on:
   workflow_dispatch:
