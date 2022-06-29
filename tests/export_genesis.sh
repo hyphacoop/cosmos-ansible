@@ -250,7 +250,7 @@ cd ~
 cd cosmos-ansible
 git add -A
 git commit -m "Adding tinkered genesis test results"
-git push origin gh_ansible_branch
+git push origin $gh_ansible_branch
 
 # Push log to cosmos-configurations-private repo
 echo "Push log to cosmos-configurations-private repo"
