@@ -32,6 +32,8 @@ Set the appropriate variables in `inventory.yml` and run:
 ansible-playbook gaia.yml -i inventory.yml -e 'target=SERVER_IP_OR_DOMAIN'
 ```
 
+For multi-node inventory files, don't specify `target` but instead edit the file and replace the existing domains with your server IPs/domains.
+
 - Use the `--extra-vars` or `-e` option to override the default variables on the command line.
 - See the [examples](examples/) for more command, playbook, and configuration options.
 - Visit the [Cosmos testnets repo](https://github.com/cosmos/testnets) for more information.
