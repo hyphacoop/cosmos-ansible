@@ -104,7 +104,7 @@ We run the fresh state test using GitHub Actions and results are displayed with 
 
 ### Mainnet exported genesis (bi-weekly)
 
-We run the stateful test using a new exported genesis then modify it using our [tinkerer script](https://github.com/hyphacoop/cosmos-genesis-tinkerer). Due to limited resources on GitHub Actions these tests are being run on a remote VM and resultes are in this repository's [log directory](logs/).
+We run the stateful test using a new exported genesis then modify it using our [tinkerer script](https://github.com/hyphacoop/cosmos-genesis-tinkerer). Due to limited resources on GitHub Actions these tests are being run on a remote VM and results are in this repository's [log directory](logs/).
 
 ## Code Standards
 
