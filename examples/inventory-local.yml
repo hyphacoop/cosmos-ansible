@@ -9,6 +9,6 @@ all:
   children:
     gaia:
       hosts:
-        root@testnet.com:
+        "{{ target }}":
           fast_sync: false
           chain_id: my-testnet

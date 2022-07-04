@@ -29,10 +29,10 @@ An Ansible toolkit for Cosmos networks. It allows your control node to:
 Set the appropriate variables in `inventory.yml` and run:
 
 ```
-ansible-playbook gaia.yml -i inventory.yml
+ansible-playbook gaia.yml -i inventory.yml -e 'target=SERVER_IP_OR_DOMAIN'
 ```
 
-- Use the `--extra-vars` option to override the default variables on the command line.
+- Use the `--extra-vars` or `-e` option to override the default variables on the command line.
 - See the [examples](examples/) for more command, playbook, and configuration options.
 - Visit the [Cosmos testnets repo](https://github.com/cosmos/testnets) for more information.
 
@@ -73,10 +73,12 @@ ansible-playbook gaia.yml -i inventory.yml
 `gaia_control.py` calls `ansible-playbook` using tags to run only part of the `gaia` playbook:
 
 ```
-./gaia-control.py [-i inventory] operation
+./gaia-control.py [-i inventory] [-t target] operation
 ```
 
 The inventory argument is optional and defaults to `inventory.yml` (e.g. `./gaia-control.py restart`).
+
+The target option is the server IP or domain.
 
 The operation will apply to all the nodes in the inventory:
 - `restart` restarts the gaiad/cosmovisor service

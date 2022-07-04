@@ -81,10 +81,8 @@ jobs:
 
       - name: Configure ansible.cfg
         run: echo "transport = local" >> ansible.cfg
-      - name: Configure inventory
-        run: "sed 's/root@testnet.com:/local:/g' examples/inventory-local.yml > inventory.yml"
       - name: Run playbook
-        run: ansible-playbook gaia.yml -i inventory.yml --extra-vars "reboot=false gaiad_version=${{ matrix.gaia_version }} gaiad_home={{ gaiad_user_home }}/.gaia gaiad_gov_testing=true gaiad_user=runner"
+        run: ansible-playbook gaia.yml -i examples/inventory-local.yml --extra-vars "target=local reboot=false gaiad_version=${{ matrix.gaia_version }} gaiad_home={{ gaiad_user_home }}/.gaia gaiad_gov_testing=true gaiad_user=runner"
       - name: Check cosmovisor service
         run: systemctl status cosmovisor
       - name: Check blocks are being produced
@@ -115,10 +113,8 @@ jobs:
 
       - name: Configure ansible.cfg
         run: echo "transport = local" >> ansible.cfg
-      - name: Configure inventory
-        run: "sed 's/root@testnet.com:/local:/g' examples/inventory-local.yml > inventory.yml"
       - name: Run playbook
-        run: ansible-playbook gaia.yml -i inventory.yml --extra-vars "reboot=false gaiad_version=${{ matrix.gaia_version }} gaiad_home={{ gaiad_user_home }}/.gaia gaiad_gov_testing=true gaiad_user=runner"
+        run: ansible-playbook gaia.yml -i examples/inventory-local.yml --extra-vars "target=local reboot=false gaiad_version=${{ matrix.gaia_version }} gaiad_home={{ gaiad_user_home }}/.gaia gaiad_gov_testing=true gaiad_user=runner"
       - name: Check cosmovisor service
         run: systemctl status cosmovisor
       - name: Check blocks are being produced

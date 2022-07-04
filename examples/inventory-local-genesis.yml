@@ -8,6 +8,6 @@ all:
   children:
     gaia:
       hosts:
-        root@testnet.com:
+        "{{ target }}":
           fast_sync: false
           priv_validator_key_file: "priv_validator_key.json"

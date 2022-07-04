@@ -2,8 +2,9 @@
 
 """
 Ansible-backed node management operations:
-./gaia-control.py [-i <inventory file>] <operation>
+./gaia-control.py [-i <inventory file>] [-t target] <operation>
 -i is optional, it defaults to inventory.yml
+The target option is the server IP or domain
 Operations:
 restart: restarts the gaiad/cosmovisor service
 stop: stops the gaiad/cosmovisor service
@@ -20,12 +21,16 @@ parser = argparse.ArgumentParser(description='Single-command node management.')
 parser.add_argument('-i', metavar='inventory', help='inventory file (default: inventory.yml)',
                     required=False,
                     default='inventory.yml')
+parser.add_argument('-t', metavar='target', help='target server',
+                    required=False,
+                    default='')
 parser.add_argument('operation', help='the operation to perform')
 
 args = parser.parse_args()
 
 operation = args.operation
 inventory = args.i
+target = args.t
 
 if operation == "restart":
     print(os.popen("ansible-playbook gaia.yml -i " +
@@ -34,12 +39,12 @@ if operation == "restart":
 
 if operation == "stop":
     print(os.popen("ansible-playbook gaia.yml -i " +
-                   inventory + " --tags 'gaiad_stop'").read())
+                   inventory + " -e 'target=" + target + "' --tags 'gaiad_stop'").read())
     sys.exit(0)
 
 if operation == "start":
     print(os.popen("ansible-playbook gaia.yml -i " +
-                   inventory + " --tags 'gaiad_start'").read())
+                   inventory + " -e 'target=" + target + "' --tags 'gaiad_start'").read())
     sys.exit(0)
 
 if operation == "reset":
@@ -49,7 +54,7 @@ if operation == "reset":
     if answer.lower() in ["yes"]:
         print(os.popen("ansible-playbook gaia.yml -i " +
                        inventory +
-                       " --extra-vars 'gaiad_unsafe_reset=true' "
+                       " --extra-vars 'gaiad_unsafe_reset=true target=" + target + "' "
                        " --tags 'gaiad_stop,gaiad_reset,gaiad_start'").read())
         sys.exit(0)
     else:
@@ -58,7 +63,7 @@ if operation == "reset":
 
 if operation == "reboot":
     print(os.popen("ansible-playbook gaia.yml -i " + inventory +
-                   " --extra-vars 'reboot=true' --tags 'reboot'").read())
+                   " --extra-vars 'reboot=true target=" + target + "' --tags 'reboot'").read())
     sys.exit(0)
 
 else:
