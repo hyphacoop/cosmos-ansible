@@ -53,7 +53,7 @@ gaiad_upgrade () {
     su gaia -c "echo \"abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon art\" | ~/.gaia/cosmovisor/current/bin/gaiad --output json keys add val --keyring-backend test --recover 2> ~/.gaia/validator.json" # Use stderr until gaiad use stdout
     
     # Test to see if gaia is building blocks
-    su gaia -c "tests/test_block_production.sh 127.0.0.1 26657 $[$f_initial_height+10]"
+    su gaia -c "tests/test_block_production.sh 127.0.0.1 26657 $(($f_initial_height+10))"
     if [ $? -ne 0 ]
     then
         echo "Failed to build blocks on version: $f_gaia_version"
@@ -85,7 +85,7 @@ gaiad_upgrade () {
         mkdir logs
     fi
     echo "$(date +"%b %d %Y %H:%M:%S"): $f_message"
-    echo "$(date +"%b %d %Y %H:%M:%S"): $f_message" > logs/tinkered-genesis-upgrade_${f_gaia_version}_${f_upgrade_version}.log
+    echo "$(date +"%b %d %Y %H:%M:%S"): $f_message" > logs/tinkered-genesis-upgrade_"${f_gaia_version}"_"${f_upgrade_version}".log
     set -e
 }
 
@@ -164,7 +164,7 @@ current_block=$(curl -s 127.0.0.1:26657/block | jq -r .result.block.header.heigh
 echo "Current block: $current_block"
 
 # Get block timestamp
-current_block_time=$(curl -s 127.0.0.1:26657/block\?height=$current_block | jq -r .result.block.header.time)
+current_block_time=$(curl -s 127.0.0.1:26657/block\?height="$current_block" | jq -r .result.block.header.time)
 echo "Current block timestamp: $current_block_time"
 
 # Stop cosmovisor before exporting
@@ -180,7 +180,7 @@ git checkout $gh_branch
 
 # Get version number using gaiad version
 echo "Get running gaiad version"
-gaiad_version=$((su gaia -c "~gaia/.gaia/cosmovisor/current/bin/gaiad version") 2>&1) # Use stderr until gaiad use stdout
+gaiad_version=$( (su gaia -c "~gaia/.gaia/cosmovisor/current/bin/gaiad version") 2>&1) # Use stderr until gaiad use stdout
 echo "Installed gaiad version is $gaiad_version"
 
 # Export genesis
@@ -228,7 +228,7 @@ pip3 install ansible
 git clone git@github.com:hyphacoop/cosmos-ansible.git
 cd cosmos-ansible/
 # checkout running branch
-git checkout $gh_ansible_branch
+git checkout "$gh_ansible_branch"
 
 echo "transport = local" >> ansible.cfg
 python3 tests/generate_version_matrix.py $start_version
@@ -236,11 +236,11 @@ upgrade=$(python3 tests/generate_upgrade_matrix.py $start_version)
 
 # Loop through upgrade versions
 i=0
-jq -r .include[].gaia_version <<< $upgrade | while read -r gaia_start_version
+jq -r .include[].gaia_version <<< "$upgrade" | while read -r gaia_start_version
 do
-    gaia_upgrade_version=$(jq -r ".include[$i].upgrade_version" <<< $upgrade)
+    gaia_upgrade_version=$(jq -r ".include[$i].upgrade_version" <<< "$upgrade")
     echo "Run test on $gaia_start_version to $gaia_upgrade_version"
-    gaiad_upgrade $gaia_start_version $gaia_upgrade_version ~/cosmos-genesis-tinkerer/mainnet-genesis-tinkered/tinkered-genesis_${current_block_time}_${gaiad_version}_${current_block}.json.gz $current_block
+    gaiad_upgrade "$gaia_start_version" "$gaia_upgrade_version" ~/cosmos-genesis-tinkerer/mainnet-genesis-tinkered/tinkered-genesis_"${current_block_time}"_"${gaiad_version}"_"${current_block}".json.gz "$current_block"
     let i=$i+1
 done
 
@@ -250,7 +250,7 @@ cd ~
 cd cosmos-ansible
 git add logs/*
 git commit -m "Adding tinkered genesis test results"
-git push origin $gh_ansible_branch
+git push origin "$gh_ansible_branch"
 
 # Push log to cosmos-configurations-private repo
 echo "Push log to cosmos-configurations-private repo"
