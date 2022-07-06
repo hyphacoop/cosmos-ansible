@@ -6,7 +6,7 @@ gaia_port=$2
 
 # Waiting until gaiad responds
 attempt_counter=0
-max_attempts=60
+max_attempts=1200
 echo "Waiting for gaia to come back online..."
 until $(curl --output /dev/null --silent --head --fail http://$gaia_host:$gaia_port)
 do
