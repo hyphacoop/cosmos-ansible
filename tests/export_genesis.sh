@@ -262,6 +262,7 @@ then
     mkdir -p logs/mainnet-export
 fi
 # wait for log to be written
+echo "End of log"
 sleep 120
 cp /root/export_genesis.log "logs/mainnet-export/mainnet-genesis_${start_date}_${gaiad_version}_${current_block}.log"
 git add -A
