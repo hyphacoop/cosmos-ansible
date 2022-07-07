@@ -57,25 +57,62 @@ gaiad_upgrade () {
     if [ $? -ne 0 ]
     then
         echo "Failed to build blocks on version: $f_gaia_version"
-        f_build_block=0
+        f_pass=0
     else
         echo "Test building blocks for version: $f_gaia_version"
-        f_build_block=1
+        f_pass=1
     fi
 
-    if [ $f_build_block -eq 1 ]
+    # Happy path - transaction testing
+    if [ $f_pass -eq 1 ]
+    then
+        su gaia -c "tests/test_tx_fresh.sh"
+        if [ $? -ne 0 ]
+        then
+            echo "Happy path transaction test failed on version $f_gaia_version"
+            f_pass=0
+        else
+            echo "Happy path transaction test passed"
+            f_pass=1
+        fi
+    else
+        f_message="Skipping happy path transaction testing blocks are not being built!"
+    fi
+
+    # Test upgrading
+    if [ $f_pass -eq 1 ]
     then
         echo "Testing upgrade"
         su gaia -c "tests/test_software_upgrade.sh 127.0.0.1 26657 $f_upgrade_version"
         if [ $? -ne 0 ]
         then
             f_message="Upgrade failed from $f_gaia_version to $f_upgrade_version"
+            f_pass=0
         else
             f_message="Upgrade Successful from $f_gaia_version to $f_upgrade_version"
+            f_pass=1
         fi
     else
-        f_message="Skipping upgrade test blocks are not being built!"
+        f_message="Skipping upgrade happy path transaction test failed on version $f_gaia_version"
     fi
+
+    # Happy path - transaction testing after upgrade
+    if [ $f_pass -eq 1 ]
+    then
+        su gaia -c "tests/test_tx_fresh.sh"
+        if [ $? -ne 0 ]
+        then
+            echo "Happy path transaction test failed on version $f_gaia_version"
+            f_pass=0
+        else
+            echo "Happy path transaction test passed"
+            f_message="Upgrade Successful from $f_gaia_version to $f_upgrade_version"
+            f_pass=1
+        fi
+    else
+        f_message="Skipping happy path transaction testing blocks are not being built on version $f_upgrade_version!"
+    fi
+
     # Delete key from keyring
     su gaia -c " ~/.gaia/cosmovisor/current/bin/gaiad keys delete --keyring-backend test val --yes"
 
