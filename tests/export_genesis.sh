@@ -131,7 +131,7 @@ echo "#!/bin/bash
 echo \"cd ~/.gaia\"
 cd ~/.gaia
 echo \"Set URL\"
-URL=\$(curl https://quicksync.io/cosmos.json|jq -r '.[] |select(.file==\"cosmoshub-4-pruned\")|.url')
+URL=\$(curl -sL https://quicksync.io/cosmos.json|jq -r '.[] |select(.file==\"cosmoshub-4-pruned\")|.url')
 echo \"URL set to: \$URL\"
 echo \"Starting download\"
 aria2c -x5 \$URL
@@ -141,7 +141,7 @@ chmod +x checksum.sh
 echo \"Download \$URL.checksum\"
 wget \$URL.checksum
 echo \"Get sha512sum\"
-curl -s https://lcd-cosmos.cosmostation.io/txs/\$(curl -s \$URL.hash)|jq -r '.tx.value.memo'|sha512sum -c
+curl -sL https://lcd-cosmos.cosmostation.io/txs/\$(curl -sL \$URL.hash)|jq -r '.tx.value.memo'|sha512sum -c
 echo \"Checking hash of download\"
 ./checksum.sh \$(basename \$URL) check
 if [ \$? -ne 0 ]
