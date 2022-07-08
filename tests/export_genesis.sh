@@ -53,6 +53,7 @@ gaiad_upgrade () {
     su gaia -c "echo \"abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon art\" | ~/.gaia/cosmovisor/current/bin/gaiad --output json keys add val --keyring-backend test --recover 2> ~/.gaia/validator.json" # Use stderr until gaiad use stdout
     
     # Test to see if gaia is building blocks
+    echo "Testing block productions on version: $f_gaia_version"
     su gaia -c "tests/test_block_production.sh 127.0.0.1 26657 $(($f_initial_height+10))"
     if [ $? -ne 0 ]
     then
@@ -64,6 +65,7 @@ gaiad_upgrade () {
     fi
 
     # Happy path - transaction testing
+    echo "Testing happy path on version: $f_gaia_version"
     if [ $f_pass -eq 1 ]
     then
         su gaia -c "tests/test_tx_fresh.sh"
@@ -93,16 +95,17 @@ gaiad_upgrade () {
             f_pass=1
         fi
     else
-        f_message="Skipping upgrade happy path transaction test failed on version $f_gaia_version"
+        echo "SKIPPING testing upgrade due to failed job"
     fi
 
     # Happy path - transaction testing after upgrade
+    echo "Testing happy path on version: $f_upgrade_version"
     if [ $f_pass -eq 1 ]
     then
         su gaia -c "tests/test_tx_fresh.sh"
         if [ $? -ne 0 ]
         then
-            echo "Happy path transaction test failed on version $f_gaia_version"
+            echo "Happy path transaction test failed on version $f_upgrade_version"
             f_pass=0
         else
             echo "Happy path transaction test passed"
@@ -110,7 +113,7 @@ gaiad_upgrade () {
             f_pass=1
         fi
     else
-        f_message="Skipping happy path transaction testing blocks are not being built on version $f_upgrade_version!"
+        echo "SKIPPING happy path after upgrading gaia due to failed job"
     fi
 
     # Delete key from keyring
