@@ -41,12 +41,12 @@ git config --global filter.lfs.process "git-lfs filter-process --skip"
 gaiad_upgrade () {
     # do not exit on error
     set +e
-
+    
     f_gaia_version=$1
     f_upgrade_version=$2
     f_latest_genesis=$3
     f_initial_height=$4
-    sed -e 's/testnet.com:/local:/g ; /genesis_url:/d ; /ansible_user: root/a\    faucet_enabled: true' examples/inventory-local-genesis.yml > inventory.yml
+    sed -e 's/testnet.com:/local:/g ; /genesis_url:/d' examples/inventory-local-genesis.yml > inventory.yml
     ansible-playbook gaia.yml -i inventory.yml --extra-vars "reboot=false minimum_gas_prices=0.0025uatom gaiad_version=$f_gaia_version gaiad_gov_testing=true priv_validator_key_file=examples/validator-keys/validator-40/priv_validator_key.json node_key_file=examples/validator-keys/validator-40/node_key.json genesis_file=$f_latest_genesis"
     
     # Restore the validator key and store /home/gaia/.gaia/validator.json
@@ -68,7 +68,8 @@ gaiad_upgrade () {
     echo "Testing happy path on version: $f_gaia_version"
     if [ $f_pass -eq 1 ]
     then
-        su gaia -c "tests/test_tx_fresh.sh"
+        cp tests/test_tx_stateful.sh ~gaia/
+        su gaia -c "cd ~ && ./test_tx_stateful.sh"
         if [ $? -ne 0 ]
         then
             echo "Happy path transaction test failed on version $f_gaia_version"
@@ -102,7 +103,7 @@ gaiad_upgrade () {
     echo "Testing happy path on version: $f_upgrade_version"
     if [ $f_pass -eq 1 ]
     then
-        su gaia -c "tests/test_tx_fresh.sh"
+        su gaia -c "cd ~ && ./test_tx_stateful.sh"
         if [ $? -ne 0 ]
         then
             echo "Happy path transaction test failed on version $f_upgrade_version"
@@ -116,8 +117,9 @@ gaiad_upgrade () {
         echo "SKIPPING happy path after upgrading gaia due to failed job"
     fi
 
-    # Delete key from keyring
+    # Delete keys from keyring
     su gaia -c " ~/.gaia/cosmovisor/current/bin/gaiad keys delete --keyring-backend test val --yes"
+    su gaia -c " ~/.gaia/cosmovisor/current/bin/gaiad keys delete --keyring-backend test test-account --yes"
 
     # Output messages to log
     if [ ! -d logs ]
