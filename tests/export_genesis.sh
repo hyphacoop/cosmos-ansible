@@ -46,7 +46,7 @@ gaiad_upgrade () {
     f_upgrade_version=$2
     f_latest_genesis=$3
     f_initial_height=$4
-    sed -e 's/testnet.com:/local:/g ; /genesis_url:/d' examples/inventory-local-genesis.yml > inventory.yml
+    sed -e 's/testnet.com:/local:/g ; /genesis_url:/d ; /ansible_user: root/a\    faucet_enabled: true' examples/inventory-local-genesis.yml > inventory.yml
     ansible-playbook gaia.yml -i inventory.yml --extra-vars "reboot=false minimum_gas_prices=0.0025uatom gaiad_version=$f_gaia_version gaiad_gov_testing=true priv_validator_key_file=examples/validator-keys/validator-40/priv_validator_key.json node_key_file=examples/validator-keys/validator-40/node_key.json genesis_file=$f_latest_genesis"
     
     # Restore the validator key and store /home/gaia/.gaia/validator.json
