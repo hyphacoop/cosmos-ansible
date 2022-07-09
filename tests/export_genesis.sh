@@ -85,10 +85,12 @@ gaiad_upgrade () {
     echo "Testing happy path on version: $f_upgrade_version"
     if [ $f_pass -eq 1 ]
     then
+        cp tests/test_tx_stateful.sh ~gaia/
         su gaia -c "cd ~ && ./test_tx_stateful.sh"
         if [ $? -ne 0 ]
         then
             echo "Happy path transaction test failed on version $f_upgrade_version"
+            f_message="Happy path transaction test failed on version $f_upgrade_version"
             f_pass=0
         else
             echo "Happy path transaction test passed"
