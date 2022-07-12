@@ -3,11 +3,12 @@
 all:
   vars:
     gaiad_home_autoclear: true
-    gaiad_version: v7.0.0
-    genesis_url: "https://github.com/cosmos/testnets/blob/master/v7-theta/local-testnet/genesis.json.gz?raw=true"
+    gaiad_version: v7.0.2
+    genesis_url: "https://github.com/cosmos/testnets/raw/master/v7-theta/local-testnet/genesis.json.gz"
+    ansible_user: root
   children:
     gaia:
       hosts:
         "{{ target }}":
           fast_sync: false
-          priv_validator_key_file: "priv_validator_key.json"
+          priv_validator_key_file: "examples/local-genesis/priv_validator_key.json"
