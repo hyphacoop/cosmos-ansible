@@ -6,7 +6,6 @@ all:
     gaiad_version: v7.0.2
     genesis_url: "https://github.com/cosmos/mainnet/raw/master/genesis.cosmoshub-4.json.gz"
     chain_id: cosmoshub-4
-    genesis_url: "https://github.com/cosmos/mainnet/raw/master/genesis.cosmoshub-4.json.gz"
     gaiad_home_autoclear: false
     gaiad_unsafe_reset: true
     gaiad_use_ssl_proxy: false
