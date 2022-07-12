@@ -41,7 +41,7 @@ git config --global filter.lfs.process "git-lfs filter-process --skip"
 gaiad_upgrade () {
     # do not exit on error
     set +e
-
+    
     f_gaia_version=$1
     f_upgrade_version=$2
     f_latest_genesis=$3
@@ -53,31 +53,57 @@ gaiad_upgrade () {
     su gaia -c "echo \"abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon art\" | ~/.gaia/cosmovisor/current/bin/gaiad --output json keys add val --keyring-backend test --recover 2> ~/.gaia/validator.json" # Use stderr until gaiad use stdout
     
     # Test to see if gaia is building blocks
+    echo "Testing block productions on version: $f_gaia_version"
     su gaia -c "tests/test_block_production.sh 127.0.0.1 26657 $(($f_initial_height+10))"
     if [ $? -ne 0 ]
     then
         echo "Failed to build blocks on version: $f_gaia_version"
-        f_build_block=0
+        f_pass=0
     else
         echo "Test building blocks for version: $f_gaia_version"
-        f_build_block=1
+        f_pass=1
     fi
 
-    if [ $f_build_block -eq 1 ]
+    # Test upgrading
+    if [ $f_pass -eq 1 ]
     then
         echo "Testing upgrade"
         su gaia -c "tests/test_software_upgrade.sh 127.0.0.1 26657 $f_upgrade_version"
         if [ $? -ne 0 ]
         then
             f_message="Upgrade failed from $f_gaia_version to $f_upgrade_version"
+            f_pass=0
         else
             f_message="Upgrade Successful from $f_gaia_version to $f_upgrade_version"
+            f_pass=1
         fi
     else
-        f_message="Skipping upgrade test blocks are not being built!"
+        echo "SKIPPING testing upgrade due to failed job"
     fi
-    # Delete key from keyring
+
+    # Happy path - transaction testing after upgrade
+    echo "Testing happy path on version: $f_upgrade_version"
+    if [ $f_pass -eq 1 ]
+    then
+        cp tests/test_tx_stateful.sh ~gaia/
+        su gaia -c "cd ~ && ./test_tx_stateful.sh"
+        if [ $? -ne 0 ]
+        then
+            echo "Happy path transaction test failed on version $f_upgrade_version"
+            f_message="Happy path transaction test failed on version $f_upgrade_version"
+            f_pass=0
+        else
+            echo "Happy path transaction test passed"
+            f_message="Upgrade Successful from $f_gaia_version to $f_upgrade_version"
+            f_pass=1
+        fi
+    else
+        echo "SKIPPING happy path after upgrading gaia due to failed job"
+    fi
+
+    # Delete keys from keyring
     su gaia -c " ~/.gaia/cosmovisor/current/bin/gaiad keys delete --keyring-backend test val --yes"
+    su gaia -c " ~/.gaia/cosmovisor/current/bin/gaiad keys delete --keyring-backend test test-account --yes"
 
     # Output messages to log
     if [ ! -d logs ]
@@ -94,7 +120,7 @@ echo "#!/bin/bash
 echo \"cd ~/.gaia\"
 cd ~/.gaia
 echo \"Set URL\"
-URL=\$(curl https://quicksync.io/cosmos.json|jq -r '.[] |select(.file==\"cosmoshub-4-pruned\")|.url')
+URL=\$(curl -sL https://quicksync.io/cosmos.json|jq -r '.[] |select(.file==\"cosmoshub-4-pruned\")|.url')
 echo \"URL set to: \$URL\"
 echo \"Starting download\"
 aria2c -x5 \$URL
@@ -104,7 +130,7 @@ chmod +x checksum.sh
 echo \"Download \$URL.checksum\"
 wget \$URL.checksum
 echo \"Get sha512sum\"
-curl -s https://lcd-cosmos.cosmostation.io/txs/\$(curl -s \$URL.hash)|jq -r '.tx.value.memo'|sha512sum -c
+curl -sL https://lcd-cosmos.cosmostation.io/txs/\$(curl -sL \$URL.hash)|jq -r '.tx.value.memo'|sha512sum -c
 echo \"Checking hash of download\"
 ./checksum.sh \$(basename \$URL) check
 if [ \$? -ne 0 ]

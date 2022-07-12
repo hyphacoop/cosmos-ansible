@@ -73,7 +73,7 @@ if [ -n "$upgrade_name" ]; then
     txhash=$($proposal | jq -r .txhash)
 
     # Wait for the proposal to go on chain
-    sleep 6
+    sleep 12
 
     # Get proposal ID from txhash
     echo "Get proposal ID from txhash"
