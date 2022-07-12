@@ -2,7 +2,7 @@
 
 [![Lint](https://github.com/hyphacoop/cosmos-ansible/actions/workflows/lint.yml/badge.svg?branch=main)](https://github.com/hyphacoop/cosmos-ansible/actions/workflows/lint.yml)
 [![Test Gaia Versions](https://github.com/hyphacoop/cosmos-ansible/actions/workflows/test-gaia-versions.yml/badge.svg?branch=main)](https://github.com/hyphacoop/cosmos-ansible/actions/workflows/test-gaia-versions.yml)
-[![Test Gaia Versions with Stateful Genesis](https://github.com/hyphacoop/cosmos-ansible/actions/workflows/export-mainnet-status-badge.yml/badge.svg?branch=main)](https://github.com/hyphacoop/cosmos-ansible/actions/workflows/test-gaia-versions.yml)
+[![Test Gaia Versions with Stateful Genesis](https://github.com/hyphacoop/cosmos-ansible/actions/workflows/export-mainnet-status-badge.yml/badge.svg?branch=main)](https://github.com/hyphacoop/cosmos-ansible/actions/workflows/export-mainnet-status-badge.yml)
 
 An Ansible toolkit for Cosmos networks. It allows your control node to:
 
