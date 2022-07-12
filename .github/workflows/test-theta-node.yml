@@ -52,7 +52,7 @@ jobs:
       - name: Configure inventory host
         run: "sed 's/theta.testnet.com:/local:/g' examples/inventory-theta.yml > inventory-host.yml"
       - name: Configure inventory user
-        run: "sed 's/ansible_user: root/ /g' examples/inventory-host.yml > inventory.yml"
+        run: "sed 's/ansible_user: root/ /g' inventory-host.yml > inventory.yml"
       - name: Run playbook
         run: ansible-playbook gaia.yml -i inventory.yml --extra-vars "reboot=false gaiad_version=v7.0.2 gaiad_home={{ gaiad_user_home }}/.gaia gaiad_user=runner enable_swap=true swap_size=8192"
       - name: Check cosmovisor service
