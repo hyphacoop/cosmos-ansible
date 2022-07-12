@@ -1,6 +1,6 @@
 ---
 
-name: Test Gaia Versions
+name: Test Gaia Versions Stateful Genesis
 on:
   pull_request:
     types:
