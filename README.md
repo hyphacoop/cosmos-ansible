@@ -26,13 +26,17 @@ An Ansible toolkit for Cosmos networks. It allows your control node to:
 
 ## How to Use
 
-Set the appropriate variables in `inventory.yml` and run:
+If you are setting up a single node, run:
 
 ```
 ansible-playbook gaia.yml -i inventory.yml -e 'target=SERVER_IP_OR_DOMAIN'
 ```
 
-For multi-node inventory files, don't specify `target` but instead edit the file and replace the existing domains with your server IPs/domains.
+If you are setting up a multi-node testnet, add the target addresses to the `hosts` section and run:
+
+```
+ansible-playbook gaia.yml -i inventory.yml
+```
 
 - Use the `--extra-vars` or `-e` option to override the default variables on the command line.
 - See the [examples](examples/) for more command, playbook, and configuration options.
@@ -42,6 +46,7 @@ For multi-node inventory files, don't specify `target` but instead edit the file
 
 | Variable          | Description                                                   | Example Value                        |
 |-------------------|---------------------------------------------------------------|--------------------------------------|
+| `target` | Target server IP/domain for Ansible | `example.com`
 | `gaiad_version`    | Gaia repo tag, commit, or branch to check out and compile     | `release/v6.0.4`                     |
 | `gaiad_repository` | Gaia source repo                                              | `https://github.com/cosmos/gaia.git` |
 | `chain_id`        | Sets the chain ID                                             | `my-testnet`                         |
