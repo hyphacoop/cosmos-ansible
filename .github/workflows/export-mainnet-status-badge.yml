@@ -47,7 +47,7 @@ jobs:
     needs: generate-matrices
     strategy:
       matrix:
-        ${{ fromJSON(needs.generate-matrices.outputs.start_versions) }}
+        ${{ fromJSON(needs.generate-matrices.outputs.upgrade_versions) }}
     steps:
       - run: echo "Test ${{matrix.gaia_version}}"
       - name: Check out repository code
