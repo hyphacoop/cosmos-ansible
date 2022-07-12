@@ -1,0 +1,14 @@
+---
+# yamllint disable rule:line-length
+all:
+  vars:
+    ansible_user: root
+    regen_home_autoclear: true
+    regen_create_validator: true
+    faucet_enabled: true
+  children:
+    regen:
+      hosts:
+        regen.node.testnet:
+          fast_sync: false
+          chain_id: my-testnet

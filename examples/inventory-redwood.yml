@@ -1,0 +1,18 @@
+---
+# yamllint disable rule:line-length
+all:
+  vars:
+    ansible_user: root
+    genesis_file: "examples/genesis-redwood.json.gz"
+    chain_id: regen-redwood-1
+    regen_home_autoclear: true
+    regen_unsafe_reset: true
+    p2p_seeds: "61f53f226a4a71968a87583f58902405e289b4b9@209.182.218.23:26656,11298b5f3cd7cd1ce055eb6b26e6cd38733296f3@209.182.218.249:26656"
+    reboot: false
+  children:
+    regen:
+      hosts:
+        regen.node.testnet:
+          fast_sync: true
+          statesync_enabled: true
+          statesync_rpc_servers: 'http://209.182.218.23:26657,http://209.182.218.23:26657'

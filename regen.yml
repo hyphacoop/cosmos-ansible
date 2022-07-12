@@ -1,0 +1,6 @@
+---
+# Configure a gaia node
+- hosts: regen
+  become: true
+  roles:
+  - regen

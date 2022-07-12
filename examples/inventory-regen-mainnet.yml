@@ -1,0 +1,19 @@
+---
+# yamllint disable rule:line-length
+all:
+  vars:
+    ansible_user: root
+    genesis_file: "examples/genesis-regen-mainnet.json.gz"
+    chain_id: regen-1
+    regen_home_autoclear: true
+    regen_unsafe_reset: true
+    node_moniker: regen-node
+    p2p_seeds: "aebb8431609cb126a977592446f5de252d8b7fa1@104.236.201.138:26656"
+    reboot: false
+  children:
+    regen:
+      hosts:
+        regen.node.testnet:
+          fast_sync: true
+          statesync_enabled: true
+          statesync_rpc_servers: 'http://public-rpc.regen.vitwit.com:26657,https://rpc.regen.forbole.com:443,https://regen.stakesystems.io:2053'

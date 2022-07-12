@@ -1,0 +1,16 @@
+[Unit]
+Description=Regen service
+After=network-online.target
+[Service]
+User={{regen_user}}
+ExecStart={{regen_bin}} start --home {{regen_home}}
+Restart=always
+RestartSec=3
+LimitNOFILE=4096
+Environment='DAEMON_NAME=regen'
+Environment='DAEMON_HOME={{regen_home}}'
+Environment='DAEMON_ALLOW_DOWNLOAD_BINARIES=true'
+Environment='DAEMON_RESTART_AFTER_UPGRADE=true'
+Environment='DAEMON_LOG_BUFFER_SIZE=512'
+[Install]
+WantedBy=multi-user.target

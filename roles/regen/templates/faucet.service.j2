@@ -1,0 +1,11 @@
+[Unit]
+Description="Regen REST faucet"
+
+[Service]
+User={{regen_user}}
+Environment="PATH={{regen_home}}/cosmovisor/current/bin"
+WorkingDirectory={{regen_user_home}}/cosmos-rest-faucet
+ExecStart={{regen_user_home}}/cosmos-rest-faucet/.env/bin/hypercorn cosmos_rest_faucet:app -b 0.0.0.0:{{faucet_port}}
+
+[Install]
+WantedBy=multi-user.target
