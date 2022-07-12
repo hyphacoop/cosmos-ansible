@@ -1,0 +1,4 @@
+---
+collections:
+- name: https://github.com/hyphacoop/ansible-common.git
+  type: git
