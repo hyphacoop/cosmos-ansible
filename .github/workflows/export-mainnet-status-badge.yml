@@ -8,7 +8,7 @@ on:
       - closed
   push:
     paths:
-      - 'logs/tinkered-genesis*'
+      - 'logs/tinkered-genesis**'
 jobs:
   generate-matrices:
     runs-on: ubuntu-latest
