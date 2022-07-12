@@ -159,8 +159,8 @@
     group: gaia
     mode: '0774'
     recurse: true
-  register: gaiad_home_created
-    
+  when: not gaiad_home_exists
+
 - name: Clear gaiad home
   when: gaiad_home_autoclear
   file:
@@ -169,7 +169,7 @@
 
 # Initialize gaiad home
 - name: initialize gaiad
-  when: gaiad_home_autoclear or not gaiad_home_exists.stat.exists or gaiad_home_created
+  when: gaiad_home_autoclear or not gaiad_home_exists.stat.exists
   # TODO: should we overwrite?
   shell: |
     cd $HOME

@@ -1,13 +1,13 @@
 ---
 
-- name: Creating swap file {{ swap_size }} MB in size using DD
+- name: Creating swap file {{ swap_size }} MB in size using dd
   shell: 'dd if\=/dev/zero of\={{ mkswap_path }} bs\=1M count\={{ swap_size }}'
   args:
     creates: "{{ mkswap_path }}"
   register: created_swap
   when: mkswap_dd
 
-- name: Creating swap file {{ swap_size }} MB in size using falloc
+- name: Creating swap file {{ swap_size }} MB in size using fallocate
   shell: 'fallocate -l {{ swap_size }}M {{ mkswap_path }}'
   args:
     creates: "{{ mkswap_path }}"
