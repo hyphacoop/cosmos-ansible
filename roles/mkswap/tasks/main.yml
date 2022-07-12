@@ -17,20 +17,20 @@
 - name: Change swap file ownership and premissions
   when: created_swap.changed
   file:
-    path: {{ mkswap_path }}
+    path: "{{ mkswap_path }}"
     owner: root
     group: root
     mode: 0600
 
 - name: Format swap file
   when: created_swap.changed
-  shell: mkswap {{ mkswap_path }}
+  shell: "mkswap {{ mkswap_path }}"
 
 - name: Add swap to fstab
   when: created_swap.changed
   mount:
     name: swap
-    src: {{ mkswap_path }}
+    src: "{{ mkswap_path }}"
     fstype: swap
     opts: sw
     passno: 0
