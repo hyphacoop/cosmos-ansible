@@ -1,28 +1,36 @@
 ---
 
-- name: Creating swap file {{ swap_size }} MB in size
-  shell: 'dd if\=/dev/zero of\=/swap.swp bs\=1M count\={{ swap_size }}'
+- name: Creating swap file {{ swap_size }} MB in size using DD
+  shell: 'dd if\=/dev/zero of\={{ mkswap_path }} bs\=1M count\={{ swap_size }}'
   args:
-    creates: /swap.swp
+    creates: "{{ mkswap_path }}"
   register: created_swap
+  when: mkswap_dd
+
+- name: Creating swap file {{ swap_size }} MB in size using falloc
+  shell: 'fallocate -l {{ swap_size }}M {{ mkswap_path }}'
+  args:
+    creates: "{{ mkswap_path }}"
+  register: created_swap
+  when: mkswap_dd == false
 
 - name: Change swap file ownership and premissions
   when: created_swap.changed
   file:
-    path: /swap.swp
+    path: {{ mkswap_path }}
     owner: root
     group: root
     mode: 0600
 
 - name: Format swap file
   when: created_swap.changed
-  shell: mkswap /swap.swp
+  shell: mkswap {{ mkswap_path }}
 
 - name: Add swap to fstab
   when: created_swap.changed
   mount:
     name: swap
-    src: /swap.swp
+    src: {{ mkswap_path }}
     fstype: swap
     opts: sw
     passno: 0
