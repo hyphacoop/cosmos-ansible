@@ -157,7 +157,7 @@
     path: "{{gaiad_home}}"
     owner: gaia
     group: gaia
-    mode: '0664'
+    mode: '0774'
     recurse: true
   register: gaiad_home_created
     
