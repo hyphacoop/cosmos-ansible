@@ -35,7 +35,7 @@ cosmovisor_service_name: "cosmovisor"
 cosmovisor_skip_backup: true
 
 # Go configuration
-go_arch: "linux-amd64"
+go_arch: '{% set new_ansible_var = {"aarch64": "linux-arm64"}[ansible_architecture] | default("linux-amd64") -%}'
 go_version: "1.18.1"
 
 ## config.toml variables
