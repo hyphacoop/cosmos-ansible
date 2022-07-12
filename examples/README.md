@@ -93,7 +93,7 @@ Each of the validators has a balance of 100 000 000 uatom.
 - **Chain ID:** `cosmos-testnet`
 - **Gaia version:** `v7.0.0`
 
-Refer to this repo's [wiki](https://github.com/hyphacoop/cosmos-ansible/wiki) to see how these accounts were created and how you can set up a genesis file and private keys if you want to further customize your testnet.
+Refer to the [Multi-Node Testnet Setup](/docs/Multi-Node-Testnet-Setup.md) guide in the `docs` folder to learn how these accounts were created and how you can set up a genesis file and private keys if you want to further customize your testnet.
 
 ### Requirements
 
