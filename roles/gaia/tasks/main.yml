@@ -157,8 +157,9 @@
     path: "{{gaiad_home}}"
     owner: gaia
     group: gaia
-    mode: '0644'
+    mode: '0664'
     recurse: true
+  register: gaiad_home_created
     
 - name: Clear gaiad home
   when: gaiad_home_autoclear
@@ -168,7 +169,7 @@
 
 # Initialize gaiad home
 - name: initialize gaiad
-  when: gaiad_home_autoclear or not gaiad_home_exists.stat.exists
+  when: gaiad_home_autoclear or not gaiad_home_exists.stat.exists or gaiad_home_created
   # TODO: should we overwrite?
   shell: |
     cd $HOME
