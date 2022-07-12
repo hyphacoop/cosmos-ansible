@@ -150,7 +150,15 @@
   stat:
     path: "{{gaiad_home}}"
   register: gaiad_home_exists
-
+  
+# Create home giad home if it does not exist
+- name: Create giad {{gaiad_home}}
+  ansible.builtin.file:
+    path: "{{gaiad_home}}"
+    owner: gaia
+    group: gaia
+    mode: '0644'
+    
 - name: Clear gaiad home
   when: gaiad_home_autoclear
   file:
