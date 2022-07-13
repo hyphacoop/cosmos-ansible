@@ -15,10 +15,12 @@ fi
 
 # Get the current gaia version and block height from the API
 gaiad_version=$(curl -s http://$gaia_host:$gaia_port/abci_info | jq -r .result.response.version)
+echo $gaiad_version
 cur_height=0
 until [ ${cur_height} -gt 1 ]
 do
     cur_height=$(curl -s http://$gaia_host:$gaia_port/block | jq -r .result.block.header.height)
+    echo $cur_height
     sleep 5
 done
 
