@@ -1,0 +1,45 @@
+---
+# yamllint disable rule:line-length
+all:
+  vars:
+    ansible_user: sysadmin
+#    gaiad_version: v7.0.2
+#    genesis_url: "https://share.blockpane.com/juno/phoenix/genesis.json"
+#"https://github.com/cosmos/mainnet/raw/master/genesis.cosmoshub-4.json.gz"
+    chain_id: juno-1
+    gaiad_home_autoclear: false
+    gaiad_unsafe_reset: true
+    gaiad_use_ssl_proxy: false
+    gaiad_api_host: "rest"
+    gaiad_rpc_host: "rpc"
+    gaiad_p2p_host: "p2p"
+    gaiad_grpc_host: "grpc"
+#    addrbook_url: "https://quicksync.io/addrbook.cosmos.json"
+#    minimum_gas_prices: "0.0025uatom"
+#    enable_swap: true
+#    swap_size: 8192
+    reboot: false
+#    mkswap_path: /mnt/sda1/swap.swp
+#    go_arch: "linux-arm64"
+#    gaiad_home: "/mnt/sda1/gaiad/.gaia"
+    letsencrypt_email: "infra-noop@hypha.coop"
+  children:
+    gaia:
+      hosts:
+#        192.168.40.61:
+         junotest.networkedserver.net:
+          fast_sync: true
+#          statesync_enabled: false
+#          statesync_rpc_servers: 'https://rpc.cosmos.network:443,https://rpc.cosmos.network:443'
+          nginx_sites:
+            "root":
+              ssl_provider: "letsencrypt"
+
+              web_hostname: "{{ inventory_hostname }}"
+              locations:
+                "/":
+                  local_location: "/var/www/html/"
+                "/api":
+                  proxy_location: 'http://127.0.0.1:1317/'
+                "/rpc":
+                  proxy_location: 'http://127.0.0.1:26657/'
