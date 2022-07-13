@@ -1,17 +1,38 @@
 ---
+chain: juno
+chains:
+  gaia:
+    repo: https://github.com/cosmos/gaia.git
+    binary: gaiad
+    version: v7.0.0
+    chain_id: "theta-devnet"
+  juno:
+    repo: https://github.com/CosmosContracts/juno.git
+    binary: junod
+    version: v8.0.0
+    chain_id: "juno-1"
+
+  regen:
+    repo: https://github.com/regen-network/regen-ledger.git
+    binary: regen
+    version: v3.0.0
+    chain_id: "testnet"
+
+chain_user: cosmos
+
 # General Gaiad settings
-gaiad_user: gaia
+gaiad_user: "{{chain_user}}"
 gaiad_user_home: "/home/{{gaiad_user}}"
-gaiad_home: "{{gaiad_user_home}}/.gaia"
+gaiad_home: "{{gaiad_user_home}}/.{{chain}}"
 gaiad_home_autoclear: false
 gaiad_unsafe_reset: false
-gaiad_version: v7.0.0
-gaiad_repository: https://github.com/cosmos/gaia.git
-gaiad_bin: "{{ gaiad_user_home }}/go/bin/gaiad"
-gaiad_service_name: "gaiad"
+gaiad_version: "{{chains[chain]['version']}}"
+gaiad_repository: "{{chains[chain]['repo']}}"
+gaiad_bin: "{{ gaiad_user_home }}/go/bin/{{chains[chain]['binary']}}"
+gaiad_service_name: "{{chains[chain]['binary']}}"
 gaiad_gov_testing: false
 gaiad_voting_period: 10s
-chain_id: "theta-devnet"
+chain_id: "{{chains[chain]['chain_id']}}"
 
 # Default vaiables for creating a validator
 gaiad_create_validator: false
@@ -26,7 +47,7 @@ gaiad_airdrop_accounts: []
 
 # Cosmovisor settings
 ## TODO: Support arbitrary cosmovisor branches
-use_cosmovisor: true
+use_cosmovisor: false
 cosmovisor_version: v1.0.0
 cosmovisor_repository: github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor
 cosmovisor_bin: "{{gaiad_user_home}}/go/bin/cosmovisor"
@@ -35,12 +56,16 @@ cosmovisor_service_name: "cosmovisor"
 cosmovisor_skip_backup: true
 
 # Go configuration
-go_arch: '{% set new_ansible_var = {"aarch64": "linux-arm64"}[ansible_architecture] | default("linux-amd64") -%}'
+go_archs: 
+  aarch64: "linux-arm64"
+  x86_64: "linux-amd64"
+
+go_arch: "{{go_archs[ansible_architecture]}}" #| default("linux-amd64")
 go_version: "1.18.1"
 
 ## config.toml variables
 # monicker: "" (taken from hostname on init)
-fast_sync: true
+fast_sync: false
 abci: socket
 
 ### RPC

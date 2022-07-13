@@ -106,7 +106,7 @@
 - name: Check gaiad version
   shell: |
     PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
-    gaiad version
+    {{gaiad_binary}}  version
   become_user: "{{gaiad_user}}"
   register: gaiad_current_version
   ignore_errors: true
@@ -128,13 +128,13 @@
        exit 1
       fi
     else
-      git clone {{gaiad_repository}}
+      git clone {{gaiad_repository}} {{gaiad_service_name}}
       if [ $? -ne 0 ]
       then
         echo "Cannot clone {{gaiad_repository}}"
        exit 2
       fi
-      cd gaia
+      cd {{gaiad_service_name}}
     fi
     git checkout {{gaiad_version}}
     if [ $? -ne 0 ]
@@ -150,7 +150,7 @@
   stat:
     path: "{{gaiad_home}}"
   register: gaiad_home_exists
-  
+
 # Create home giad home if it does not exist
 - name: Create gaiad {{gaiad_home}}
   ansible.builtin.file:
@@ -174,7 +174,7 @@
   shell: |
     cd $HOME
     PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
-    gaiad init {{inventory_hostname}} --home {{gaiad_home}} --chain-id {{chain_id}}
+    {{gaiad_binary}} init {{inventory_hostname}} --home {{gaiad_home}} --chain-id {{chain_id}}
   become_user: "{{gaiad_user}}"
 
 - name: reset gaiad database (command for <v7.0.1)
@@ -182,7 +182,7 @@
   shell: |
     cd $HOME
     PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
-    gaiad unsafe-reset-all --home {{gaiad_home}}
+    {{gaiad_binary}} unsafe-reset-all --home {{gaiad_home}}
   become_user: "{{gaiad_user}}"
   tags:
     - gaiad_reset
@@ -192,7 +192,7 @@
   shell: |
     cd $HOME
     PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
-    gaiad tendermint unsafe-reset-all --home {{gaiad_home}}
+    {{gaiad_binary}} tendermint unsafe-reset-all --home {{gaiad_home}}
   become_user: "{{gaiad_user}}"
   tags:
     - gaiad_reset
@@ -202,8 +202,8 @@
   shell: |
     cd $HOME
     PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
-    gaiad keys add validator --keyring-backend {{gaiad_validator_keyring}} --home {{gaiad_home}} --output json
-    gaiad add-genesis-account validator {{gaiad_validator_coins}} --home {{gaiad_home}} --keyring-backend="{{gaiad_validator_keyring}}"
+    {{gaiad_binary}} keys add validator --keyring-backend {{gaiad_validator_keyring}} --home {{gaiad_home}} --output json
+    {{gaiad_binary}} add-genesis-account validator {{gaiad_validator_coins}} --home {{gaiad_home}} --keyring-backend="{{gaiad_validator_keyring}}"
   register: gaiad_create_validator_output
   become_user: "{{gaiad_user}}"
 
@@ -219,7 +219,7 @@
   shell: |
     cd $HOME
     PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
-    gaiad add-genesis-account {{ item }} {{gaiad_airdrop_coins}} --home {{gaiad_home}}
+    {{gaiad_binary}} add-genesis-account {{ item }} {{gaiad_airdrop_coins}} --home {{gaiad_home}}
   become_user: "{{gaiad_user}}"
   loop: "{{ gaiad_airdrop_accounts }}"
 
@@ -228,8 +228,8 @@
   shell: |
     cd $HOME
     PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
-    gaiad gentx validator {{gaiad_gentx_validator_stake}} --keyring-backend="{{gaiad_validator_keyring}}" --home {{gaiad_home}} --chain-id {{chain_id}}
-    gaiad collect-gentxs --home {{gaiad_home}}
+    {{gaiad_binary}} gentx validator {{gaiad_gentx_validator_stake}} --keyring-backend="{{gaiad_validator_keyring}}" --home {{gaiad_home}} --chain-id {{chain_id}}
+    {{gaiad_binary}} collect-gentxs --home {{gaiad_home}}
   become_user: "{{gaiad_user}}"
 
 - name: set up faucet
