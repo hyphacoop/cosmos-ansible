@@ -33,6 +33,10 @@ To join the [Theta testnet](https://github.com/cosmos/testnets/tree/master/v7-th
    journalctl -fu cosmovisor
    ```
 
+Watch the video below to see the playbook in action:
+
+[![Join the Cosmos Theta Testnet](https://img.youtube.com/vi/SYt0EC5pcY0/0.jpg)](https://www.youtube.com/watch?v=SYt0EC5pcY0)
+
 ## 🌳 Explore Further
 
 - See the [examples](examples/README.md) for more command, playbook, and configuration options.
