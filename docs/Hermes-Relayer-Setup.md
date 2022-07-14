@@ -9,8 +9,8 @@ This guide will assist you in setting up a relayer host between two chains.
 We will use a scenario in which the hosts are set up in the `dev.testnet.com` domain. This is an example domain, you should replace it with your own.
 
 The hosts listed in the example [inventory file](/examples/inventory-hermes.yml) are:
-* Chain 1 host: `chain-1.dev.testnet.com`
-* Chain 2 host: `chain-2.dev.testnet.com`
+* Chain 1 host: `my-chain-1.dev.testnet.com`
+* Chain 2 host: `my-chain-2.dev.testnet.com`
 * Hermes relayer: `hermes.dev.testnet.com`
 
 Once the relayer is operational, you will be able to send messages between both chains using the `ibc transfer` command.
@@ -19,7 +19,7 @@ Once the relayer is operational, you will be able to send messages between both 
 ## Chains Settings
 
 * **Gaia version:** `v7.0.0`
-* **Chain IDs:** `chain-1` and `chain-2`
+* **Chain IDs:** `my-chain-1` and `my-chain-2`
 
 ## Workflow
 
@@ -66,21 +66,28 @@ Switch to the `hermes` user.
 su hermes
 ```
 
-Restore the account key for the chains you want to relay to. Each key name must match the chain ID, in this example they are `chain-1` and `chain-2`.
+Restore the account key for the chains you want to relay to. Each key name must match the chain ID, in this example they are `my-chain-1` and `my-chain-2`.
 ```
-~/bin/hermes -c ~/.hermes/config.toml keys restore chain-1 -m "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon art"
+~/bin/hermes -c ~/.hermes/config.toml keys restore my-chain-1 -m "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon art"
 
-~/bin/hermes -c ~/.hermes/config.toml keys restore chain-2 -m "abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon garage"
+~/bin/hermes -c ~/.hermes/config.toml keys restore my-chain-2 -m "abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon garage"
 ```
 
 Create a client between the chains.
 ```
-~/bin/hermes -c ~/.hermes/config.toml create client chain-1 chain-2
+~/bin/hermes -c ~/.hermes/config.toml create client my-chain-1 my-chain-2
 ```
 
-Create a channel between the chains.
+Create a connection between the chains.
 ```
-~/bin/hermes -c ~/.hermes/config.toml create channel --port-a transfer --port-b transfer chain-1 chain-2
+~/bin/hermes -c ~/.hermes/config.toml create connection my-chain-1 my-chain-2
+```
+
+Note down the `ConnectionId` returned.
+
+Create a channel between the chains using the chain name and `ConnectionID` above for this example we use `connection-0`
+```
+~/bin/hermes -c ~/.hermes/config.toml create channel --port-a transfer --port-b transfer my-chain-1 connection-0
 ```
 
 Log out as the `hermes` user.
@@ -93,7 +100,7 @@ Restart the hermes service.
 systemctl restart hermes
 ```
 
-You can now send messages between `chain-1` and `chain-2` using the `gaiad tx ibc-transfer` command. In the example below, `hermes` created `channel-329`.
+You can now send messages between `my-chain-1` and `my-chain-2` using the `gaiad tx ibc-transfer` command. In the example below, `hermes` created `channel-329`.
 ```
 gaiad tx ibc-transfer transfer transfer channel-329 [cosmos address of receiver] 1000uatom --chain-id [chain we are sending from] --from [cosmos address of sender] --fees 500uatom --gas auto -y
 ```
