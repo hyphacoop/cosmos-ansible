@@ -1,0 +1,18 @@
+---
+# yamllint disable rule:line-length
+all:
+  vars:
+    ansible_user: root
+    genesis_file: "examples/genesis-uni-3.json"
+    chain_id: uni-3
+    juno_home_autoclear: true
+    minimum_gas_prices: "0.0025ujunox"
+    p2p_persistent_peers: "ec41af656b3450050ae27559b66b877373c44861@65.21.122.47:26656,2ae09360327854c79971d07245764626f43fdfc5@38.242.247.46:36656,d3bb05d61ebe83958a5ea2af2abf5d8fce620038@116.202.143.90:26656,c583f7bbfee00ca0ff0208663fe2d07014415ec9@185.213.27.145:36656"
+    p2p_seeds: "fd1e3f9baf1922f81bfd9754ddbc4269dbf08264@uni.seed.rhinostake.com:26656"
+    reboot: false
+    use_cosmovisor: false
+  children:
+    juno:
+      hosts:
+        juno-node.testnet.com:
+          node_moniker: hypha-test

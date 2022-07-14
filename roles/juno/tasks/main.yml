@@ -1,0 +1,583 @@
+---
+# Get juno_version number
+- name: parse version
+  set_fact:
+    major_version: "{{ juno_version[1] }}"
+    patch_version: "{{ juno_version[5] }}"
+  when: major_version is undefined and patch_version is undefined
+  tags:
+    - juno_reset
+    - juno_stop
+    - juno_restart
+
+- include_role:
+    name: common
+
+- name: Set value to enable gaiad prometheus
+  set_fact:
+    prometheus_enabled: true
+  when: monitoring_prometheus | default(false) | bool
+
+- name: Setup and enable swap
+  include_role:
+    name: mkswap
+  when: enable_swap | default(false) | bool
+
+- name: Set up pip dependencies
+  pip:
+    name:
+      - toml
+      - github3.py
+
+- name: Ensure user exists for juno
+  user:
+    name: "{{juno_user}}"
+    append: true
+    groups: adm
+    shell: /bin/bash
+    comment: User for juno and cosmovisor services
+
+# Stop existing services
+- name: Populate service facts
+  service_facts:
+  tags:
+    - juno_stop
+    - juno_restart
+
+- name: Stop existing junod systemd service
+  # Check for both `SERVICE_NAME` and `SERVICE_NAME.service`
+  when: >
+    not use_cosmovisor and (
+    (juno_service_name in ansible_facts.services) or
+    ((juno_service_name + '.service') in ansible_facts.services))
+  systemd:
+    state: stopped
+    name: "{{juno_service_name}}"
+  tags:
+    - juno_stop
+    - juno_restart
+
+- name: Stop existing cosmovisor systemd service
+  when: >
+    use_cosmovisor and (
+    (cosmovisor_service_name in ansible_facts.services) or
+    ((cosmovisor_service_name + '.service') in ansible_facts.services))
+  systemd:
+    state: stopped
+    name: "{{cosmovisor_service_name}}"
+  tags:
+    - juno_stop
+    - juno_restart
+
+- name: Stop existing faucet systemd service
+  when: >
+    faucet_enabled and (
+    (faucet_service_name in ansible_facts.services) or
+    ((faucet_service_name + '.service') in ansible_facts.services))
+  systemd:
+    state: stopped
+    name: "{{faucet_service_name}}"
+  tags:
+    - juno_stop
+    - juno_restart
+
+- name: Check golang version
+  shell: |
+    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+    go version
+  register: go_current_version
+  ignore_errors: true
+
+- name: Download golang
+  when: not go_version in go_current_version.stdout
+  get_url:
+    url: "https://golang.org/dl/go{{go_version}}.{{go_arch}}.tar.gz"
+    dest: "{{ ansible_env.HOME }}/go.tar.gz"
+
+- name: Extract golang
+  # TODO: Auto-detect go_arch
+  when: not go_version in go_current_version.stdout
+  shell: |
+    sudo tar -C /usr/local -xzf {{ ansible_env.HOME }}/go.tar.gz
+
+# # TODO: Firewall
+# # - name: set up firewall (block by default?)
+
+- name: Check juno version
+  shell: |
+    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+    juno version
+  become_user: "{{juno_user}}"
+  register: juno_current_version
+  ignore_errors: true
+
+- name: clone and install juno
+  when: not juno_version in juno_current_version.stdout
+  shell: |
+    cd $HOME
+    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+    if [ -d juno ]
+    then
+      cd juno
+      git clean -f -d
+      git checkout main
+      git pull --all
+      if [ $? -ne 0 ]
+      then
+        echo "Cannot pull {{juno_repository}}"
+       exit 1
+      fi
+    else
+      git clone {{juno_repository}}
+      if [ $? -ne 0 ]
+      then
+        echo "Cannot clone {{juno_repository}}"
+       exit 2
+      fi
+      cd juno
+    fi
+    git checkout {{juno_version}}
+    if [ $? -ne 0 ]
+    then
+      echo "Cannot checkout {{juno_version}}"
+      exit 3
+    fi
+    make install
+  become_user: "{{juno_user}}"
+
+# Clear juno_home if it exists
+- name: Check if juno home folder exists
+  stat:
+    path: "{{juno_home}}"
+  register: juno_home_exists
+
+- name: Clear juno home
+  when: juno_home_autoclear
+  file:
+    state: absent
+    path: "{{juno_home}}"
+
+# Initialize juno home
+- name: initialize juno
+  when: juno_home_autoclear or not juno_home_exists.stat.exists
+  # TODO: should we overwrite?
+  shell: |
+    cd $HOME
+    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+    junod init {{node_moniker}} --home {{juno_home}} --chain-id {{chain_id}}
+  become_user: "{{juno_user}}"
+
+- name: reset juno database (command for v3.0.0)
+  when: juno_unsafe_reset
+  shell: |
+    cd $HOME
+    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+    junod unsafe-reset-all --home {{juno_home}}
+  become_user: "{{juno_user}}"
+  tags:
+    - juno_reset
+
+- name: create validator
+  when: juno_create_validator
+  shell: |
+    cd $HOME
+    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+    junod keys add validator --keyring-backend {{juno_validator_keyring}} --home {{juno_home}} --output json
+    junod add-genesis-account validator {{juno_validator_coins}} --home {{juno_home}} --keyring-backend="{{juno_validator_keyring}}"
+  register: juno_create_validator_output
+  become_user: "{{juno_user}}"
+
+- name: save validator name, address, and mnemonic
+  when: juno_create_validator
+  copy:
+    content="{{juno_create_validator_output.stdout}}"
+    dest="{{juno_home}}/validator.json"
+  become_user: "{{juno_user}}"
+
+- name: create airdrop accounts
+  when: juno_airdrop and juno_create_validator
+  shell: |
+    cd $HOME
+    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+    junod add-genesis-account {{ item }} {{juno_airdrop_coins}} --home {{juno_home}}
+  become_user: "{{juno_user}}"
+  loop: "{{ juno_airdrop_accounts }}"
+
+- name: collect gentx
+  when: juno_create_validator
+  shell: |
+    cd $HOME
+    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+    junod gentx validator {{juno_gentx_validator_stake}} --keyring-backend="{{juno_validator_keyring}}" --home {{juno_home}} --chain-id {{chain_id}}
+    junod collect-gentxs --home {{juno_home}}
+  become_user: "{{juno_user}}"
+
+- name: set up faucet
+  when: faucet_enabled
+  import_tasks: faucet.yml
+
+# Update native staking token to ujuno
+- name: set token to "ujuno"
+  when: juno_create_validator
+  shell: |
+    cd $HOME
+    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+    sed -i "s/stake/ujuno/g" {{juno_home}}/config/genesis.json
+  become_user: "{{juno_user}}"
+
+# - name: patch genesis file with minimum deposit and short voting period
+#   when: juno_gov_testing
+#   shell: |
+#     cd {{juno_home}}/config
+#     jq '.app_state.gov.deposit_params.min_deposit[0].amount |= "1"' genesis.json > temp.json
+#     jq '.app_state.gov.voting_params.voting_period |= "{{ juno_voting_period }}"' temp.json > genesis.json
+#     rm temp.json
+
+- name: Check cosmovisor version
+  when: use_cosmovisor
+  shell: |
+    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+    cosmovisor --version
+  become_user: "{{juno_user}}"
+  register: cosmovisor_current
+  ignore_errors: true
+
+- name: clone and install cosmovisor
+  when: use_cosmovisor and not cosmovisor_version in cosmovisor_current.stdout
+  shell: |
+    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+    go install {{cosmovisor_repository}}@{{cosmovisor_version}}
+  become_user: "{{juno_user}}"
+
+# Genesis file configuration
+# - name: Check stat of local genesis file
+#   when: genesis_file is defined
+#   local_action:
+#     module: stat
+#     path: "{{genesis_file}}"
+#     get_checksum: false
+#   register: local_genesis_file_exists
+# - name: Check if remote genesis file exists
+#   when: genesis_file is defined
+#   stat:
+#     path: "{{gaiad_home}}/config/genesis.json"
+#     get_checksum: false
+#   register: genesis_file_exists
+
+- name: check if genesis_file is gz or not
+  when: genesis_file is defined
+  stat:
+    path: '{{genesis_file}}'
+    get_mime: true
+  delegate_to: localhost
+  become: false
+  register: file_type
+
+- name: File type of {{genesis_file}}
+  when: genesis_file is defined
+  debug:
+    msg: '{{file_type.stat.mimetype}}'
+
+- name: gzip the file if not zipped
+  when:
+    - genesis_file is defined
+    - file_type.stat.mimetype == "text/plain"
+  archive:
+    path: '{{genesis_file}}'
+    dest: '{{genesis_file}}.gz'
+    format: gz
+  delegate_to: localhost
+  become: false
+
+- name: set genesis_file to include .gz
+  when:
+    - genesis_file is defined
+    - file_type.stat.mimetype == "text/plain"
+  set_fact:
+    genesis_file: '{{ genesis_file }}.gz'
+
+- name: copy {{genesis_file}} to remote server
+  when: genesis_file is defined
+  copy:
+    src: '{{genesis_file}}'
+    dest: '{{juno_user_home}}/genesis.json.gz'
+    owner: '{{juno_user}}'
+    group: '{{juno_user}}'
+
+- name: extract {{genesis_file}} to {{juno_home}}/config/genesis.json
+  when: genesis_file is defined
+  shell: |
+    gunzip -c $HOME/genesis.json.gz > {{juno_home}}/config/genesis.json
+  become_user: "{{juno_user}}"
+
+- name: download genesis file
+  when: genesis_url is defined
+  shell: |
+    wget {{genesis_url}} -O $HOME/genesis.json.gz
+    gunzip -c $HOME/genesis.json.gz > {{juno_home}}/config/genesis.json
+  become_user: "{{juno_user}}"
+
+- name: verify genesis file
+  when: genesis_shasum is defined
+  # Throw an error if shasum doesn't match
+  shell: |
+    GENESIS_SHASUM="$(sha256sum {{ juno_home }}/config/genesis.json)"
+    if [ $GENESIS_SHASUM != {{ genesis_shasum }} ]; then
+      exit 1
+    fi
+      exit 0
+  become_user: "{{juno_user}}"
+
+# Get trust height automatically
+- name: obtain trust height
+  when: statesync_enabled and statesync_auto_populate
+  script:
+    get_trust_height.sh {{ statesync_rpc_servers.split(',')[0] }}
+  register: trust_height
+
+- name: obtain trust height block hash ID
+  when: statesync_enabled and statesync_auto_populate
+  script:
+    get_trust_hash.sh {{ statesync_rpc_servers.split(',')[0] }} {{ trust_height.stdout[:-2] }}
+  register: trust_hash
+
+- name: set state sync variables
+  when: statesync_enabled and statesync_auto_populate
+  set_fact:
+    statesync_trust_height: "{{ trust_height.stdout[:-2] }}"
+    statesync_trust_hash: "{{ trust_hash.stdout[:-2] }}"
+
+# Config file generation
+- name: copy app.toml
+  when: app_toml_file is defined
+  copy:
+    src: '{{app_toml_file}}'
+    dest: '{{juno_home}}/config/app.toml'
+    owner: '{{juno_user}}'
+    group: '{{juno_user}}'
+
+- name: copy config.toml
+  when: config_toml_file is defined
+  copy:
+    src: '{{config_toml_file}}'
+    dest: '{{juno_home}}/config/config.toml'
+    owner: '{{juno_user}}'
+    group: '{{juno_user}}'
+
+- name: copy node_key.json
+  when: node_key_file is defined
+  copy:
+    src: '{{node_key_file}}'
+    dest: '{{juno_home}}/config/node_key.json'
+    owner: '{{juno_user}}'
+    group: '{{juno_user}}'
+
+- name: copy priv_validator_key.json
+  when: priv_validator_key_file is defined
+  copy:
+    src: '{{priv_validator_key_file}}'
+    dest: '{{juno_home}}/config/priv_validator_key.json'
+    owner: '{{juno_user}}'
+    group: '{{juno_user}}'
+
+## Addressbook config
+- name: copy addrbook.json
+  when: addrbook_file is defined
+  copy:
+    src: '{{addrbook_file}}'
+    dest: '{{juno_home}}/config/addrbook_file.json'
+    owner: '{{juno_user}}'
+    group: '{{juno_user}}'
+
+- name: download addrbook.json from URL
+  when: addrbook_url is defined
+  get_url:
+    url: "{{addrbook_url}}"
+    dest: "{{juno_home}}/config/addrbook.json"
+    owner: '{{juno_user}}'
+    group: '{{juno_user}}'
+
+## Patching Config files
+- name: generate config json for patching toml files
+  template:
+    src: ansible_vars.json.j2
+    dest: '{{juno_home}}/config/ansible_vars.json'
+    owner: '{{juno_user}}'
+    group: '{{juno_user}}'
+
+- name: patch .toml configs with ansible variables
+  script: |
+    copy_config_vars.py --junod_home=$(echo {{juno_home}}) \
+      --config_file=$(echo {{juno_home}}/config/ansible_vars.json)
+  become_user: "{{juno_user}}"
+
+- name: delete generated config json
+  file:
+    state: absent
+    path: '{{juno_home}}/config/ansible_vars.json'
+    owner: '{{juno_user}}'
+    group: '{{juno_user}}'
+
+## Configure cosmovisor
+- name: Prepare cosmovisor folder
+  file:
+    path: '{{ cosmovisor_home }}/genesis/bin'
+    state: directory
+    owner: '{{juno_user}}'
+    group: '{{juno_user}}'
+
+- name: Copy gaiad bin for cosmovisor genesis
+  when: use_cosmovisor
+  copy:
+    # force: false
+    remote_src: true
+    src: '{{ juno_bin }}'
+    dest: '{{ cosmovisor_home }}/genesis/bin/junod'
+    owner: '{{juno_user}}'
+    group: '{{juno_user}}'
+    mode: '0755'
+
+# Service setup
+- name: configure systemd service for juno
+  when: not use_cosmovisor
+  template:
+    src: junod.service.j2
+    dest: "/etc/systemd/system/{{juno_service_name}}.service"
+
+- name: configure systemd service for cosmovisor
+  when: use_cosmovisor
+  template:
+    src: cosmovisor.service.j2
+    dest: "/etc/systemd/system/{{cosmovisor_service_name}}.service"
+
+- name: Restart journalctl so that the logs may flow
+  systemd:
+    state: restarted
+    name: systemd-journald
+
+- name: Start juno systemd service
+  when: not use_cosmovisor
+  systemd:
+    daemon_reload: true
+    state: restarted
+    enabled: true
+    name: "{{juno_service_name}}"
+  tags:
+    - juno_start
+    - juno_restart
+
+- name: Start cosmovisor systemd service
+  when: use_cosmovisor
+  systemd:
+    daemon_reload: true
+    state: restarted
+    enabled: true
+    name: "{{cosmovisor_service_name}}"
+  tags:
+    - juno_start
+    - juno_restart
+
+- name: Add juno bin from cosmovisor to .bashrc PATH
+  when: use_cosmovisor
+  blockinfile:
+    dest: '{{ juno_user_home }}/.bashrc'
+    block: |
+      export PATH="$PATH:{{ cosmovisor_home }}/current/bin"
+    marker: '# {mark} ANSIBLE MANAGED BLOCK - juno PATH'
+    insertbefore: EOF
+    create: yes
+
+- name: Add juno bin from go/bin to .bashrc PATH
+  when: not use_cosmovisor
+  blockinfile:
+    dest: '{{ juno_user_home }}/.bashrc'
+    block: |
+      export PATH="$PATH:{{ juno_user_home }}/go/bin"
+    marker: '# {mark} ANSIBLE MANAGED BLOCK - juno PATH'
+    insertbefore: EOF
+    create: yes
+
+- name: Set variables for faucet endpoint
+  set_fact:
+    endpoint_port: '{{faucet_port}}'
+    site_hostname: '{{juno_faucet_host}}.{{inventory_hostname}}'
+  when: juno_use_ssl_proxy | default(false) | bool
+
+- name: Setup nginx SSL for faucet endpoint
+  include_role:
+    name: nginx-ssl
+  when: juno_use_ssl_proxy | default(false) | bool
+
+- name: Set variables for api endpoint
+  set_fact:
+    endpoint_port: '{{api_port}}'
+    site_hostname: '{{juno_api_host}}.{{inventory_hostname}}'
+  when: juno_use_ssl_proxy | default(false) | bool
+
+- name: Setup nginx SSL for api endpoint
+  include_role:
+    name: nginx-ssl
+  when: juno_use_ssl_proxy | default(false) | bool
+
+- name: Set variables for rpc endpoint
+  set_fact:
+    endpoint_port: '{{rpc_port}}'
+    site_hostname: '{{juno_rpc_host}}.{{inventory_hostname}}'
+  when: juno_use_ssl_proxy | default(false) | bool
+
+- name: Setup nginx SSL for rpc endpoint
+  include_role:
+    name: nginx-ssl
+  when: juno_use_ssl_proxy | default(false) | bool
+
+- name: Set variables for GRPC endpoint
+  set_fact:
+    endpoint_port: '{{grpc_port}}'
+    site_hostname: '{{juno_grpc_host}}.{{inventory_hostname}}'
+    grpc_vhost: true
+  when: juno_use_ssl_proxy | default(false) | bool
+
+- name: Setup nginx SSL for GRPC endpoint
+  include_role:
+    name: nginx-ssl
+  when: juno_use_ssl_proxy | default(false) | bool
+
+- name: Set variables for P2P endpoint
+  set_fact:
+    endpoint_port: '{{p2p_port}}'
+    site_hostname: '{{juno_p2p_host}}.{{inventory_hostname}}'
+  when: juno_use_ssl_proxy | default(false) | bool
+
+- name: Setup nginx SSL for P2P endpoint
+  include_role:
+    name: nginx-ssl
+  when: juno_use_ssl_proxy | default(false) | bool
+
+- name: Setup node-exporter
+  include_role:
+    name: node-exporter
+  when: monitoring_prometheus | default(false) | bool
+
+- name: Setup on prometheus server
+  include_role:
+    name: configure-prometheus
+    apply:
+      delegate_to: "{{ grafana_ssh_url }}"
+  when: monitoring_prometheus | default(false) | bool
+
+- name: Setup PANIC on monitoring server
+  include_role:
+    name: configure-panic
+    apply:
+      delegate_to: "{{ panic_ssh_url }}"
+  when: monitoring_panic | default(false) | bool
+
+- name: Rebooting the machine
+  include_role:
+    name: reboot
+  when: reboot | default(false) | bool
+  tags:
+    - reboot
+
+# # Misc output?
+# # - name: print info about the node?

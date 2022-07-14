@@ -1,0 +1,16 @@
+[Unit]
+Description=Juno service
+After=network-online.target
+[Service]
+User={{juno_user}}
+ExecStart={{juno_bin}} start --home {{juno_home}}
+Restart=always
+RestartSec=3
+LimitNOFILE=4096
+Environment='DAEMON_NAME=junod'
+Environment='DAEMON_HOME={{juno_home}}'
+Environment='DAEMON_ALLOW_DOWNLOAD_BINARIES=true'
+Environment='DAEMON_RESTART_AFTER_UPGRADE=true'
+Environment='DAEMON_LOG_BUFFER_SIZE=512'
+[Install]
+WantedBy=multi-user.target

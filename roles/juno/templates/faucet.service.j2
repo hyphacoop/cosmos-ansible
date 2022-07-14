@@ -1,0 +1,11 @@
+[Unit]
+Description="Juno REST faucet"
+
+[Service]
+User={{juno_user}}
+Environment="PATH={{juno_home}}/cosmovisor/current/bin"
+WorkingDirectory={{juno_user_home}}/cosmos-rest-faucet
+ExecStart={{juno_user_home}}/cosmos-rest-faucet/.env/bin/hypercorn cosmos_rest_faucet:app -b 0.0.0.0:{{faucet_port}}
+
+[Install]
+WantedBy=multi-user.target
