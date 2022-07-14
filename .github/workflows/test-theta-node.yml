@@ -2,20 +2,15 @@
 
 name: Join Theta Testnet
 on:
-  # schedule:
+  workflow_dispatch:
+  schedule:
   # At 15:30 on Monday.
-  # - cron: '30 15 * * 1'
+  - cron: '30 15 * * 1'
   pull_request:
     types:
       - opened
       - closed
-  push:
-    paths-ignore:
-      - 'docs/**'
-      - 'examples/**'
-      - 'logs/**'
-      - '!examples/inventory-local.yml'
-      - 'README.md'
+
 jobs:
   #   - name: Generate starting versions
   #     id: generate-start
