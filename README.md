@@ -1,10 +1,16 @@
-# Ansible Cosmos Network Creator 
+# Ansible Cosmos Network Creator
 
 [![Lint](https://github.com/hyphacoop/cosmos-ansible/actions/workflows/lint.yml/badge.svg?branch=main)](https://github.com/hyphacoop/cosmos-ansible/actions/workflows/lint.yml)
 [![Test Gaia Versions](https://github.com/hyphacoop/cosmos-ansible/actions/workflows/test-gaia-versions.yml/badge.svg?branch=main)](https://github.com/hyphacoop/cosmos-ansible/actions/workflows/test-gaia-versions.yml)
 [![Test Gaia Versions with Stateful Genesis](https://github.com/hyphacoop/cosmos-ansible/actions/workflows/export-mainnet-status-badge.yml/badge.svg?branch=main)](https://github.com/hyphacoop/cosmos-ansible/actions/workflows/export-mainnet-status-badge.yml)
 
-✨ An Ansible toolkit for joining and starting Cosmos networks 💫
+✨ An Ansible toolkit for Cosmos networks 💫
+
+Use this toolkit to:
+
+- Join a testnet
+- Start a local testnet
+- Start a multi-node testnet
 
 ![Waterdrops feeding seedlings](images/seedling.gif)
 
