@@ -8,7 +8,7 @@ all:
 #"https://github.com/cosmos/mainnet/raw/master/genesis.cosmoshub-4.json.gz"
     chain_id: juno-1
     gaiad_home_autoclear: false
-    gaiad_unsafe_reset: true
+    gaiad_unsafe_reset: false
     gaiad_use_ssl_proxy: false
     gaiad_api_host: "rest"
     gaiad_rpc_host: "rpc"

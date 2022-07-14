@@ -178,7 +178,7 @@
   become_user: "{{gaiad_user}}"
 
 - name: reset gaiad database (command for <v7.0.1)
-  when: gaiad_unsafe_reset and (major_version|int == 7 and patch_version|int == 0) or major_version|int < 7
+  when: gaiad_unsafe_reset and ((major_version|int == 7 and patch_version|int == 0) or major_version|int < 7)
   shell: |
     cd $HOME
     PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
@@ -320,11 +320,44 @@
     gunzip -c $HOME/genesis.json.gz > {{gaiad_home}}/config/genesis.json
   become_user: "{{gaiad_user}}"
 
+# genesis_url
 - name: download genesis file
   when: genesis_url is defined
-  shell: |
-    wget {{genesis_url}} -O $HOME/genesis.json.gz
-    gunzip -c $HOME/genesis.json.gz > {{gaiad_home}}/config/genesis.json
+  get_url:
+    url: "{{ genesis_url }}"
+    dest: "{{gaiad_user_home}}/{{genesis_url | basename}}"
+    mode: "0660"
+  become_user: "{{gaiad_user}}"
+  
+- name: check if genesis_url is gz or not
+  when: genesis_url is defined
+  stat:
+    path: '{{gaiad_user_home}}/{{genesis_url | basename}}'
+    get_mime: true
+  become_user: "{{gaiad_user}}"
+  register: file_type
+
+- name: File type of {{genesis_file}}
+  when: genesis_url is defined
+  debug:
+    msg: '{{file_type.stat.mimetype}}'
+
+- name: unzip the file if zipped
+  when:
+    - genesis_url is defined
+    - file_type.stat.mimetype != "text/plain"
+  unarchive:
+    src: '{{gaiad_user_home}}/{{genesis_url | basename}}'
+    dest: '{{gaiad_home}}/config/genesis.json'
+  become_user: "{{gaiad_user}}"
+
+- name: Copy file if not zipped
+  when:
+    - genesis_url is defined
+    - file_type.stat.mimetype == "text/plain"
+  ansible.builtin.copy:  
+    src: '{{gaiad_user_home}}/{{genesis_url | basename}}'
+    dest: '{{gaiad_home}}/config/genesis.json'
   become_user: "{{gaiad_user}}"
 
 - name: verify genesis file
