@@ -21,7 +21,6 @@ until [ ${cur_height} -gt 1 ]
 do
     cur_height=$(curl -s http://$gaia_host:$gaia_port/block | jq -r .result.block.header.height)
     echo $cur_height
-    echo $(journalctl -u cosmovisor)
     sleep 5
 done
 

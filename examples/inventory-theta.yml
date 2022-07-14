@@ -3,7 +3,7 @@
 all:
   vars:
     ansible_user: root
-    gaiad_version: v7.0.0
+    gaiad_version: v7.0.2
     genesis_url: "https://github.com/cosmos/testnets/blob/master/v7-theta/public-testnet/genesis.json.gz?raw=true"
     chain_id: theta-testnet-001
     gaiad_home_autoclear: false
