@@ -4,8 +4,8 @@ name: Join Theta Testnet
 on:
   workflow_dispatch:
   schedule:
-  # At 15:30 on Monday.
-  - cron: '30 15 * * 1'
+    # At 15:30 on Monday.
+    - cron: '30 15 * * 1'
   pull_request:
     types:
       - opened
