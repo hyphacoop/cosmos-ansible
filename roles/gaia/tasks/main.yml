@@ -371,6 +371,12 @@
     get_trust_hash.sh {{ statesync_rpc_servers.split(',')[0] }} {{ trust_height.stdout[:-2] }}
   register: trust_hash
 
+- name: print trust hash
+  when: statesync_enabled and statesync_auto_populate
+  debug:
+    msg: '{{ trust_hash.stdout[:-2] }}'
+  become_user: "{{gaiad_user}}"
+
 - name: set state sync variables
   when: statesync_enabled and statesync_auto_populate
   set_fact:
