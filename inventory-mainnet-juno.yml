@@ -2,6 +2,16 @@
 # yamllint disable rule:line-length
 all:
   vars:
+
+    ssh_user_keys:
+      - name: yurko
+        key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCtv4I2W8TlVsWKKHwASF78cGrn06BJi9dGQQQksW0Ke9ED/KJG2pvG4GXnh57/AOuJtUaS3gXBEj/knE3t/qtvO2cUg1EufnkItzNLdY1B0Hwm98I8O7JdhE+3c/SUIU4Miioj/IlKl8fRxDqx03FTVBdd6Q7kKF79LcobTqo7Pd6i7vnp46U6bBm01tDdRB+g+lok9x+B8umRqqjAGcboucwZ5NrzmLjz/p1wg+5Gva2zcyzBp1aQk7JPhsbElTLfhUP7hJbJ6rFWnebgK8z/vbyofeZljXb6LttttMGoWKg6QAdn61mRwEGff1FUPVLiEVnQ5IY+f97NlQ36c81b yurko@tomesh"
+      - name: ben
+        key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMLiPavTvnbFRc6JvkGVinFoAk93k88KTg1u3zZQxMyW benedict@Benedicts-MacBook-Air.local"
+      - name: cole
+        key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDa7CV1MuEEWiO21CcrakO5h/2W8SgXGqN9xUj7tmT/9i4+IYoCFw4eARe9ZMUUuAa/jBThKK9oAylMEc5u6faWUVUNY5z46KeNEH482z+kcprSEYEY0w9lWyA5c93BIRcvH3KYZkfwCe4U5i6cxD3RAHJNTuHKdeUfT4hCWEyJMKNPsW5ggILJe/9Iq7XVy1ukXmV+ta0u9AKH/fWW4OA6RADzD7eFNZtooZoU1VAcRgpaLhzVFp+0kyhBIciiajZ4r217TMA+DEQ9QGVIxrQJJGm6v0UYLOPuv3NAnGrjHFE7+gGXKVQljx2N/eoyKmF7lWaqDBg3uvic3FCSBeunC5rggeFTtfZ37/J9Lk+rwWwk3HgfzLc7eefYG2lPoX3ftjeD41E4EcobH8A2J1dOgcD7SiOwCZc8dGtWMjC02SaSufWnl8swphd+PNdO/JeWLbGmnVW3AfiaDrVHLXviP2NRfwEKtbH4oB9d/aaryREgi3fLm6MsRm8c+GSWUOc= cole@hypha"
+
+
     ansible_user: sysadmin
 #    gaiad_version: v7.0.2
 #    genesis_url: "https://share.blockpane.com/juno/phoenix/genesis.json"
@@ -47,24 +57,26 @@ all:
                 "/":
                   proxy_location: 'http://127.0.0.1:26657/'
 
-
-
         juno.prod.puffball.xyz:
+          chain: juno
+
           api_enabled: true
           fast_sync: true
-          cosmovisor: true
+          use_cosmovisor: true
 #          statesync_enabled: false
 #          statesync_rpc_servers: 'https://rpc.cosmos.network:443,https://rpc.cosmos.network:443'
           gaiad_version: v6.0.0
+          gaiad_binary_source: repo
           nginx_sites:
-            "api.juno.stg.puffball.xyz":
+            "api":
               ssl_provider: "letsencrypt"
               web_hostname: "api.juno.prod.puffball.xyz"
               locations:
                 "/":
                   proxy_location: 'http://127.0.0.1:1317/'
-            "rpc.juno.stg.puffball.xyz":
+            "rpc":
               ssl_provider: "letsencrypt"
               web_hostname: "api.juno.prod.puffball.xyz"
               locations:
                 "/":
+                  proxy_location: 'http://127.0.0.1:26657/'

@@ -111,8 +111,9 @@
   register: gaiad_current_version
   ignore_errors: true
 
+# Compile gaiad
 - name: clone and install gaiad
-  when: not gaiad_version in gaiad_current_version.stdout
+  when: not gaiad_version in gaiad_current_version.stdout and gaiad_binary_source == 'source'
   shell: |
     cd $HOME
     PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
@@ -144,6 +145,17 @@
     fi
     make install
   become_user: "{{gaiad_user}}"
+
+
+- name: download binary from repo
+  when: gaiad_binary_source == 'repo'
+  get_url:
+    url: "{{ gaiad_binary_repo }}"
+    dest: "{{gaiad_user_home}}/go/bin/{{gaiad_binary}}"
+    mode: "0777"
+    force: true
+  become_user: "{{gaiad_user}}"
+
 
 # Clear gaiad_home if it exists
 - name: Check if gaiad home folder exists
