@@ -1,0 +1,44 @@
+---
+
+name: Join Theta Testnet
+on:
+  workflow_dispatch:
+  schedule:
+    # At 15:30 on Monday.
+    - cron: '30 15 * * 1'
+  pull_request:
+    types:
+      - opened
+      - closed
+jobs:
+  test-theta-testnet:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Test v7.0.2"
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.10'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install ansible toml
+      - name: Configure ansible.cfg
+        run: echo "transport = local" >> ansible.cfg
+      - name: Configure inventory host
+        run: "sed 's/theta.testnet.com:/local:/g' examples/inventory-theta.yml > inventory-host.yml"
+      - name: Configure inventory user
+        run: "sed 's/ansible_user: root/ /g' inventory-host.yml > inventory.yml"
+      - name: Run playbook
+        run: |
+          gaiad_version=$(curl -s https://rpc.state-sync-01.theta-testnet.polypore.xyz/abci_info? | jq -r '.result.response.version')
+          ansible-playbook gaia.yml -i inventory.yml --extra-vars "reboot=false gaiad_version=$gaiad_version gaiad_home={{ gaiad_user_home }}/.gaia gaiad_user=runner enable_swap=true swap_size=16384"
+      - name: Check cosmovisor service
+        run: systemctl status cosmovisor
+      - name: Check blocks are being produced
+        run: |
+          height=$(curl -s http://rpc.state-sync-01.theta-testnet.polypore.xyz:26657/block | jq -r '.result.block.header.height')
+          echo "Waiting for block $[ $height + 100 ]..."
+          tests/test_block_production.sh 127.0.0.1 26657 $[ $height + 100]

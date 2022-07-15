@@ -3,6 +3,7 @@
 [![Lint](https://github.com/hyphacoop/cosmos-ansible/actions/workflows/lint.yml/badge.svg?branch=main)](https://github.com/hyphacoop/cosmos-ansible/actions/workflows/lint.yml)
 [![Test Gaia Versions](https://github.com/hyphacoop/cosmos-ansible/actions/workflows/test-gaia-versions.yml/badge.svg?branch=main)](https://github.com/hyphacoop/cosmos-ansible/actions/workflows/test-gaia-versions.yml)
 [![Test Gaia Versions with Stateful Genesis](https://github.com/hyphacoop/cosmos-ansible/actions/workflows/export-mainnet-status-badge.yml/badge.svg?branch=main)](https://github.com/hyphacoop/cosmos-ansible/actions/workflows/export-mainnet-status-badge.yml)
+[![Join Theta Testnet](https://github.com/hyphacoop/cosmos-ansible/actions/workflows/test-theta-node.yml/badge.svg?branch=main)](https://github.com/hyphacoop/cosmos-ansible/actions/workflows/test-theta-node.yml)
 
 An Ansible toolkit for Cosmos networks. It allows your control node to:
 
@@ -97,7 +98,7 @@ The operation will apply to all the nodes in the inventory:
 
 ## Automatic Tests
 
-This repository automatically tests upgrading between Gaia versions `v6.0.4` to `v7.0.x` with a fresh state and using an modified genesis file exported from the `cosmoshub-4` mainnet.
+This repository runs different tests automatically as defined below.
 
 ### Fresh State (weekly)
 
@@ -106,6 +107,10 @@ We run the fresh state test using GitHub Actions and results are displayed with 
 ### Mainnet exported genesis (bi-weekly)
 
 We run the stateful test using a new exported genesis then modify it using our [tinkerer script](https://github.com/hyphacoop/cosmos-genesis-tinkerer). Due to limited resources on GitHub Actions these tests are being run on a remote VM and results are in this repository's [log directory](logs/) and a badge is displayed at the top of this readme.
+
+### Joining the Theta Testnet (weekly)
+
+We test joining the Theta Testnet weekly using GitHub Actions and a badge is displayed at the top of this readme.
 
 ## Code Standards
 
