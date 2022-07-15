@@ -10,7 +10,8 @@ on:
     types:
       - opened
       - closed
-
+  push:
+  
 jobs:
   test-theta-testnet:
     runs-on: ubuntu-latest
