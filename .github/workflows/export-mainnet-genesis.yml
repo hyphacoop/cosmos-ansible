@@ -40,10 +40,10 @@ jobs:
         uses: actions/checkout@master
 
       - name: Provision VM
-        run: ansible-playbook gaia-mainnet-export.yml -i examples/inventory-exporting-genesis-do.yml --extra-vars "target=local digitalocean_api_key=${{ secrets.DO_API_KEY }}"
+        run: ansible-playbook gaia-mainnet-export.yml -i examples/inventory-exporting-genesis-do.yml --extra-vars "digitalocean_api_key=${{ secrets.DO_API_KEY }}"
 
       - name: Install Gaia and configure for mainnet
-        run: ansible-playbook gaia.yml -i /tmp/inventory-mainnet.yml
+        run: ansible-playbook gaia.yml -i /tmp/inventory-mainnet.yml --extra-vars "target=local"
 
       - name: Copy export_genesis.sh to VM
         run: |
