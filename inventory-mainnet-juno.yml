@@ -27,19 +27,44 @@ all:
     gaia:
       hosts:
 #        192.168.40.61:
-         junotest.networkedserver.net:
+        juno.stg.puffball.xyz:
+          api_enabled: true
           fast_sync: true
 #          statesync_enabled: false
 #          statesync_rpc_servers: 'https://rpc.cosmos.network:443,https://rpc.cosmos.network:443'
+          gaiad_version: v6.0.0
           nginx_sites:
-            "root":
+            "api.juno.stg.puffball.xyz":
               ssl_provider: "letsencrypt"
-
-              web_hostname: "{{ inventory_hostname }}"
+              web_hostname: "api.juno.stg.puffball.xyz"
               locations:
                 "/":
-                  local_location: "/var/www/html/"
-                "/api":
                   proxy_location: 'http://127.0.0.1:1317/'
-                "/rpc":
+            "rpc.juno.stg.puffball.xyz":
+              ssl_provider: "letsencrypt"
+              web_hostname: "api.juno.stg.puffball.xyz"
+              locations:
+                "/":
                   proxy_location: 'http://127.0.0.1:26657/'
+
+
+
+        juno.prod.puffball.xyz:
+          api_enabled: true
+          fast_sync: true
+          cosmovisor: true
+#          statesync_enabled: false
+#          statesync_rpc_servers: 'https://rpc.cosmos.network:443,https://rpc.cosmos.network:443'
+          gaiad_version: v6.0.0
+          nginx_sites:
+            "api.juno.stg.puffball.xyz":
+              ssl_provider: "letsencrypt"
+              web_hostname: "api.juno.prod.puffball.xyz"
+              locations:
+                "/":
+                  proxy_location: 'http://127.0.0.1:1317/'
+            "rpc.juno.stg.puffball.xyz":
+              ssl_provider: "letsencrypt"
+              web_hostname: "api.juno.prod.puffball.xyz"
+              locations:
+                "/":

@@ -44,7 +44,7 @@ gaiad_home_autoclear: false
 gaiad_unsafe_reset: false
 gaiad_version: "{{chains[chain]['version']}}"
 gaiad_repository: "{{chains[chain]['repo']}}"
-gaiad_bin: "{{ gaiad_user_home }}/go/bin/{{chains[chain]['binary']}}"
+gaiad_bin: "{{ gaiad_user_home }}/go/bin/{{gaiad_binary}}"
 gaiad_service_name: "{{chains[chain]['binary']}}"
 gaiad_gov_testing: false
 gaiad_voting_period: 10s
