@@ -11,7 +11,6 @@ on:
       - opened
       - closed
   push:
-  
 jobs:
   test-theta-testnet:
     runs-on: ubuntu-latest
@@ -34,7 +33,7 @@ jobs:
       - name: Configure inventory user
         run: "sed 's/ansible_user: root/ /g' inventory-host.yml > inventory.yml"
       - name: Run playbook
-        run:
+        run: |
           gaiad_version=$(curl -s https://rpc.state-sync-01.theta-testnet.polypore.xyz/abci_info? | jq -r '.result.response.version')
           ansible-playbook gaia.yml -i inventory.yml --extra-vars "reboot=false gaiad_version=$gaiad_version gaiad_home={{ gaiad_user_home }}/.gaia gaiad_user=runner enable_swap=true swap_size=16384"
       - name: Check cosmovisor service
