@@ -12,22 +12,6 @@ on:
       - closed
 
 jobs:
-  #   - name: Generate starting versions
-  #     id: generate-start
-  #     run: |
-  #       start=$(tests/generate_version_matrix.py v6.0.4)
-  #       echo $start
-  #       echo ::set-output name=start_versions::$start
-  #   - name: Generate upgrade versions
-  #     id: generate-upgrade
-  #     run: |
-  #       upgrade=$(tests/generate_upgrade_matrix.py v6.0.4)
-  #       echo $upgrade
-  #       echo ::set-output name=upgrade_versions::$upgrade
-  # outputs:
-  #   start_versions: ${{ steps.generate-start.outputs.start_versions }}
-  #   upgrade_versions: ${{ steps.generate-upgrade.outputs.upgrade_versions }}
-
   test-theta-testnet:
     runs-on: ubuntu-latest
     steps:

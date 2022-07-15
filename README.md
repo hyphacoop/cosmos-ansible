@@ -98,7 +98,7 @@ The operation will apply to all the nodes in the inventory:
 
 ## Automatic Tests
 
-This repository run different tests automatically as defined below.
+This repository runs different tests automatically as defined below.
 
 ### Fresh State (weekly)
 
