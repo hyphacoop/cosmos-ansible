@@ -43,7 +43,7 @@ jobs:
         run: ansible-playbook gaia-mainnet-export.yml -i examples/inventory-exporting-genesis-do.yml --extra-vars "digitalocean_api_key=${{ secrets.DO_API_KEY }}"
 
       - name: Install Gaia and configure for mainnet
-        run: ansible-playbook gaia.yml -i /tmp/inventory-mainnet.yml --extra-vars "target=local"
+        run: ansible-playbook gaia.yml -i examples/inventory-mainnet.yml --extra-vars "target=mainnet-export"
 
       - name: Copy export_genesis.sh to VM
         run: |
