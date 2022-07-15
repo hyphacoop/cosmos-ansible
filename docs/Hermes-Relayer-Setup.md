@@ -90,6 +90,8 @@ Create a channel between the chains using the chain name and `ConnectionID` abov
 ~/bin/hermes -c ~/.hermes/config.toml create channel --port-a transfer --port-b transfer my-chain-1 connection-0
 ```
 
+Note down and save the `ChannelId` for both chains. You will need it whenever you want to make IBC transfers, as shown below.
+
 Log out as the `hermes` user.
 ```
 exit
