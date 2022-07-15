@@ -35,4 +35,4 @@ ansible-playbook gaia.yml -i examples/inventory-local.yml --extra-vars "gaiad_ve
 
 - *The file will not be copied if there already is an existing file with the same length.  
 - **Configure DNS before provisioning.  
-- *** Useful to make sure all services start up, recommended for initial deployment.
+- ***Recommended for initial deployment: this makes sure all services start up and pending system updates are applied.
