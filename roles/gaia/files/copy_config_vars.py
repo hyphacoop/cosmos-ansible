@@ -63,5 +63,4 @@ def set_nested(nested_dict, path, value):
             current_val = current_val[subpath]
     current_val[final_field] = value
 
-
 update_config_files(config_file, gaiad_home)

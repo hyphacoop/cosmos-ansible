@@ -113,7 +113,7 @@
 
 # Compile gaiad
 - name: clone and install gaiad
-  when: not gaiad_version in gaiad_current_version.stdout and gaiad_binary_source == 'source'
+  when: gaiad_binary_source == 'source' and not gaiad_version in gaiad_current_version.stdout
   shell: |
     cd $HOME
     PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
