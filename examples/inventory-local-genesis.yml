@@ -11,4 +11,4 @@ all:
       hosts:
         "{{ target }}":
           fast_sync: false
-          priv_validator_key_file: "examples/local-genesis/priv_validator_key.json"
+          priv_validator_key_file: "examples/validator-keys/local-genesis/priv_validator_key.json"
