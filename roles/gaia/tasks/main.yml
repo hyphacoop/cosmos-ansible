@@ -328,7 +328,7 @@
     dest: "{{gaiad_user_home}}/{{genesis_url | basename}}"
     mode: "0660"
   become_user: "{{gaiad_user}}"
-  
+
 - name: check if genesis_url is gz or not
   when: genesis_url is defined
   stat:
@@ -355,9 +355,10 @@
   when:
     - genesis_url is defined
     - file_type.stat.mimetype == "text/plain"
-  ansible.builtin.copy:  
+  ansible.builtin.copy:
     src: '{{gaiad_user_home}}/{{genesis_url | basename}}'
     dest: '{{gaiad_home}}/config/genesis.json'
+    remote_src: true
   become_user: "{{gaiad_user}}"
 
 - name: verify genesis file
@@ -475,7 +476,7 @@
     # force: false
     remote_src: true
     src: '{{ gaiad_bin }}'
-    dest: '{{ cosmovisor_home }}/genesis/bin/gaiad'
+    dest: '{{ cosmovisor_home }}/genesis/bin/{{gaiad_binary}}'
     owner: '{{gaiad_user}}'
     group: '{{gaiad_user}}'
     mode: '0755'
