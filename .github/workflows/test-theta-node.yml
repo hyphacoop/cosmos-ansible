@@ -27,14 +27,10 @@ jobs:
           python -m pip install ansible toml
       - name: Configure ansible.cfg
         run: echo "transport = local" >> ansible.cfg
-      - name: Configure inventory host
-        run: "sed 's/theta.testnet.com:/local:/g' examples/inventory-theta.yml > inventory-host.yml"
-      - name: Configure inventory user
-        run: "sed 's/ansible_user: root/ /g' inventory-host.yml > inventory.yml"
       - name: Run playbook
         run: |
           gaiad_version=$(curl -s https://rpc.state-sync-01.theta-testnet.polypore.xyz/abci_info? | jq -r '.result.response.version')
-          ansible-playbook gaia.yml -i inventory.yml --extra-vars "reboot=false gaiad_version=$gaiad_version gaiad_home={{ gaiad_user_home }}/.gaia gaiad_user=runner enable_swap=true swap_size=16384"
+          ansible-playbook gaia.yml -i examples/inventory-theta.yml --extra-vars "target=local reboot=false gaiad_version=$gaiad_version gaiad_home={{ gaiad_user_home }}/.gaia gaiad_user=runner enable_swap=true swap_size=16384"
       - name: Check cosmovisor service
         run: systemctl status cosmovisor
       - name: Check blocks are being produced
