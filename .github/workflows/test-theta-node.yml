@@ -14,7 +14,6 @@ jobs:
   test-theta-testnet:
     runs-on: ubuntu-latest
     steps:
-      - run: echo "Test v7.0.2"
       - name: Check out repository code
         uses: actions/checkout@v3
       - name: Set up Python
