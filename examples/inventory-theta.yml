@@ -18,7 +18,7 @@ all:
   children:
     gaia:
       hosts:
-        theta.testnet.com:
+        "{{ target }}":
           fast_sync: true
           statesync_enabled: true
           statesync_rpc_servers: 'rpc.state-sync-01.theta-testnet.polypore.xyz:26657,rpc.state-sync-02.theta-testnet.polypore.xyz:26657'

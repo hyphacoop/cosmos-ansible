@@ -21,7 +21,7 @@ all:
   children:
     gaia:
       hosts:
-        cosmoshub-4.mainnet.com:
+        "{{ target }}":
           fast_sync: true
           statesync_enabled: true
           statesync_rpc_servers: 'https://rpc.cosmos.network:443,https://rpc.cosmos.network:443'
