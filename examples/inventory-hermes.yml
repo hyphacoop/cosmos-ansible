@@ -3,7 +3,7 @@
 all:
   vars:
     gaiad_home_autoclear: true
-    gaiad_version: v7.0.0
+    gaiad_version: v7.0.2
     api_enabled: true
     gaiad_use_ssl_proxy: true
     gaiad_api_host: "rest"
@@ -20,25 +20,25 @@ all:
   children:
     gaia:
       hosts:
-        chain-1.dev.testnet.com:
-          chain_id: chain-1
+        my-chain-1.dev.testnet.com:
+          chain_id: my-chain-1
           gaiad_create_validator: true
           gaiad_airdrop: true
-          gaiad_aidrop_accounts:
+          gaiad_airdrop_accounts:
             - cosmos*
             - cosmos*
-        chain-2.dev.testnet.com:
-          chain_id: chain-2
+        my-chain-2.dev.testnet.com:
+          chain_id: my-chain-2
           gaiad_create_validator: true
           gaiad_airdrop: true
-          gaiad_aidrop_accounts:
+          gaiad_airdrop_accounts:
             - cosmos*
             - cosmos*
     hermes:
       hosts:
         hermes.dev.testnet.com:
           hermes_chains:
-            hermes-chain-1:
-              hermes_chain_hostname: chain-1.dev.testnet.com
-            hermes-chain-2:
-              hermes_chain_hostname: chain-2.dev.testnet.com
+            my-chain-1:
+              hermes_chain_hostname: my-chain-1.dev.testnet.com
+            my-chain-2:
+              hermes_chain_hostname: my-chain-2.dev.testnet.com

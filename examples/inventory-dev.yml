@@ -20,7 +20,7 @@ all:
   children:
     gaia:
       hosts:
-        dev.testnet.com:
+        "{{ target }}":
           ansible_user: root
           gaiad_create_validator: true
           gaiad_airdrop: true

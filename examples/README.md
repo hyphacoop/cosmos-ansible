@@ -19,15 +19,10 @@ Set up a node to join the [theta testnet](https://github.com/cosmos/testnets/tre
 * **Chain ID:** `theta-testnet-001`
 * **Gaia version:** `v7.0.0`
 
-### Requirements
-
-- Inventory file
-  - Replace the `theta.testnet.com` address with your own in the `hosts` variable.
-
 ### Run the playbook 
 
 ```
-ansible-playbook gaia.yml -i examples/inventory-theta.yml
+ansible-playbook gaia.yml -i examples/inventory-theta.yml -e 'target=SERVER_IP_OR_DOMAIN'
 ```
 
 This playbook obtains a trust block height and the corresponding hash ID from the first RPC server listed in the inventory file in order to use the state sync feature. 
@@ -41,15 +36,10 @@ Set up a node with a single validator account.
 * **Gaia version:** `v7.0.0`
 * **Faucet REST server**
 
-### Requirements
-
-- Inventory file
-  - Replace the `testnet.com` address with your own in the `hosts` variable.
-
 ### Run the Playbook
 
 ```
-ansible-playbook gaia.yml -i examples/inventory-local.yml
+ansible-playbook gaia.yml -i examples/inventory-local.yml -e 'target=SERVER_IP_OR_DOMAIN'
 ```
 
 - The validator address and mnemonic will be saved to `/home/gaia/.gaia/create_validator.log` in the host.
@@ -66,15 +56,10 @@ The playbook will download the genesis file, and a private key is provided in th
 * **Chain ID:** `theta-localnet`
 * **Gaia version:** `v7.0.0`
 
-### Requirements
-
-- Inventory file
-  - Replace the `testnet.com` address with your own in the `hosts` variable.
-
 ### Run the playbook 
 
 ```
-ansible-playbook gaia.yml -i examples/inventory-local-genesis.yml
+ansible-playbook gaia.yml -i examples/inventory-local-genesis.yml -e 'target=SERVER_IP_OR_DOMAIN'
 ```
 
 ## Start a Three-Node Testnet
@@ -126,7 +111,6 @@ Set up a host as a single-node developer testnet.
 - DNS
   - Set up an appropriate A record for Let's Encrypt.
 - Inventory file
-  - Replace the `dev.testnet.com` address with your own in the `hosts` variable.
   - Replace the `validator@devnet.com` address with your own in the `letsencrypt_email` variable.
   - Add the addresses of the accounts you want to airdrop tokens to in the `gaiad_airdrop_accounts` variable.
  
@@ -134,7 +118,7 @@ Set up a host as a single-node developer testnet.
 ### Run the playbook 
 
 ```
-ansible-playbook gaia.yml -i examples/inventory-dev.yml
+ansible-playbook gaia.yml -i examples/inventory-dev.yml -e 'target=SERVER_IP_OR_DOMAIN'
 ```
 
 ## Start a Multi-Node Testnet

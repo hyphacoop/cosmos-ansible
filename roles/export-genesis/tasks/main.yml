@@ -3,28 +3,6 @@
 - include_role:
     name: provision-digitalocean
 
-- name: Copy example inventory file to /tmp for editing
-  copy:
-    src: examples/inventory-mainnet.yml
-    dest: /tmp/inventory-mainnet.yml
-
-- name: Modify mainnet inventory file with the droplet's IPv4 address
-  replace:
-    path: /tmp/inventory-mainnet.yml
-    regexp: 'cosmoshub-4.mainnet.com'
-    replace: 'mainnet-export'
-
-# - name: Copy example inventory file to /tmp for editing
-#   copy:
-#     src: examples/inventory-local.yml
-#     dest: /tmp/inventory-mainnet.yml
-
-# - name: Modify mainnet inventory file with the droplet's IPv4 address
-#   replace:
-#     path: /tmp/inventory-mainnet.yml
-#     regexp: 'root@testnet.com'
-#     replace: 'root@{{ droplet_ipv4 }}'
-
 - name: Modify script with values of the droplet
   template:
     src: tests/export_genesis.sh

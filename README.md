@@ -3,6 +3,7 @@
 [![Lint](https://github.com/hyphacoop/cosmos-ansible/actions/workflows/lint.yml/badge.svg?branch=main)](https://github.com/hyphacoop/cosmos-ansible/actions/workflows/lint.yml)
 [![Test Gaia Versions](https://github.com/hyphacoop/cosmos-ansible/actions/workflows/test-gaia-versions.yml/badge.svg?branch=main)](https://github.com/hyphacoop/cosmos-ansible/actions/workflows/test-gaia-versions.yml)
 [![Test Gaia Versions with Stateful Genesis](https://github.com/hyphacoop/cosmos-ansible/actions/workflows/export-mainnet-status-badge.yml/badge.svg?branch=main)](https://github.com/hyphacoop/cosmos-ansible/actions/workflows/export-mainnet-status-badge.yml)
+[![Join Theta Testnet](https://github.com/hyphacoop/cosmos-ansible/actions/workflows/test-theta-node.yml/badge.svg?branch=main)](https://github.com/hyphacoop/cosmos-ansible/actions/workflows/test-theta-node.yml)
 
 ✨ An Ansible toolkit for Cosmos networks 💫
 
@@ -29,12 +30,11 @@ To join the [Theta testnet](https://github.com/cosmos/testnets/tree/master/v7-th
 
 1. Clone this repository
 2. Set up SSH access to the target machine
-3. Replace `theta.testnet.com` with the target address in [inventory-theta.yml](examples/inventory-theta.yml)
-4. Run the playbook
+3. Run the playbook
    ```
-   ansible-playbook gaia.yml -i examples/inventory-theta.yml
+   ansible-playbook gaia.yml -i examples/inventory-theta.yml -e 'target=SERVER_IP_OR_DOMAIN'
    ```
-5. Log into the target machine to follow the syncing process
+4. Log into the target machine to follow the syncing process
    ```
    journalctl -fu cosmovisor
    ```
@@ -46,7 +46,7 @@ Watch the video below to see the playbook in action:
 ## 🌳 Explore Further
 
 - See the [examples](examples/README.md) for more command, playbook, and configuration options.
-- See the [Playbook Variables Overview](docs/Playbook-Variables.md) for a list of default variables you can override with the `--extra-vars` option.
+- See the [Playbook Variables Overview](docs/Playbook-Variables.md) for a list of default variables you can override with the `--extra-vars` or `-e` option.
 - Visit the [Cosmos testnets repo](https://github.com/cosmos/testnets) for more information.
 
 ### Playbook Tags
@@ -54,10 +54,12 @@ Watch the video below to see the playbook in action:
 Use `gaia_control.py` to run only part of the `gaia` playbook:
 
 ```
-./gaia-control.py [-i inventory] operation
+./gaia-control.py [-i inventory] [-t target] operation
 ```
 
 The inventory argument is optional and defaults to `inventory.yml` (e.g. `./gaia-control.py restart`).
+
+The target option is the server IP or domain.
 
 The operation will apply to all the nodes in the inventory:
 - `restart` restarts the gaiad/cosmovisor service
@@ -77,7 +79,7 @@ The operation will apply to all the nodes in the inventory:
 
 ## 🌴 Automatic Tests
 
-This repository automatically tests upgrading between Gaia versions `v6.0.4` to `v7.0.x` with a fresh state and a modified genesis file exported from the `cosmoshub-4` mainnet.
+This repository runs different tests automatically as defined below.
 
 ### Fresh State (weekly)
 
@@ -89,6 +91,9 @@ The stateful test is run using an exported mainnet genesis file that is modified
 
 Due to limited resources on GitHub Actions these tests are run on a remote virtual machine. The test results are saved to this repository's [log directory](logs/) and a badge is displayed at the top of this readme.
 
+### Joining the Theta Testnet (weekly)
+
+We test joining the Theta Testnet weekly using GitHub Actions and a badge is displayed at the top of this readme.
 
 ## 🔎 Code Standards
 

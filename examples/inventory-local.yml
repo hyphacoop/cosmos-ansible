@@ -6,9 +6,10 @@ all:
     gaiad_version: v7.0.0
     gaiad_create_validator: true
     faucet_enabled: true
+    ansible_user: root
   children:
     gaia:
       hosts:
-        root@testnet.com:
+        "{{ target }}":
           fast_sync: false
           chain_id: my-testnet
