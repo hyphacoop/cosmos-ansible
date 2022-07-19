@@ -97,8 +97,11 @@
 - name: Extract golang
   # TODO: Auto-detect go_arch
   when: not go_version in go_current_version.stdout
-  shell: |
-    sudo tar -C /usr/local -xzf {{ ansible_env.HOME }}/go.tar.gz
+  unarchive:
+    src: "{{ ansible_env.HOME }}/go.tar.gz"
+    dest: /usr/local
+    remote_src: yes
+  become: true
 
 # TODO: Firewall
 # - name: set up firewall (block by default?)
