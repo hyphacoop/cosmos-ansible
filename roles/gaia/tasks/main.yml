@@ -234,6 +234,12 @@
     jq '.app_state.gov.voting_params.voting_period |= "{{ gaiad_voting_period }}"' temp.json > genesis.json
     rm temp.json
 
+- name: patch genesis file with specified denom
+  replace:
+    path: '{{gaiad_home}}/config/genesis.json'
+    regexp: 'stake'
+    replace: '{{gaiad_bond_denom}}'
+
 - name: Check cosmovisor version
   when: use_cosmovisor
   shell: |

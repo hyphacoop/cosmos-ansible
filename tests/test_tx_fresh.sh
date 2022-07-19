@@ -3,7 +3,6 @@
 # Test transactions with a fresh state.
 # This script assumes:
 # - a faucet and validator have been created as part of the play
-# - the bond denom is stake
 # - the home folder is ~/.gaia
 
 check_code()
@@ -20,6 +19,9 @@ check_code()
 
 # Add gaiad to PATH
 export PATH="$PATH:~/.gaia/cosmovisor/current/bin"
+
+# Get bond denom
+denom=$(echo $(gaiad q staking params) | jq -r '.bond_denom')
 
 # Recover faucet address
 faucet=$(jq -r '.address' ~/.gaia/faucet.json)
@@ -38,16 +40,16 @@ echo "test-account has address $test_account."
 
 # Test tx send
 echo "Sending funds from faucet to test account..."
-TXHASH=$(gaiad tx bank send $faucet $test_account 5000100stake --from $faucet --keyring-backend test --fees 1stake --chain-id my-testnet -y -o json | jq '.txhash' | tr -d '"')
+TXHASH=$(gaiad tx bank send $faucet $test_account 5000100$denom --from $faucet --keyring-backend test --fees 1$denom --chain-id my-testnet -y -o json | jq '.txhash' | tr -d '"')
 echo $TXHASH
 echo "Waiting for transaction to go on chain..."
 sleep 6
 check_code $TXHASH
 
 # Test delegation
-echo "Delgating funds from test account to validator..."
+echo "Delegating funds from test account to validator..."
 # Delegate from test-account to validator
-TXHASH=$(gaiad tx staking delegate $val1 4000000stake --from test-account --keyring-backend test --fees 1stake --chain-id my-testnet -y -o json | jq '.txhash' | tr -d '"')
+TXHASH=$(gaiad tx staking delegate $val1 4000000$denom --from test-account --keyring-backend test --fees 1$denom --chain-id my-testnet -y -o json | jq '.txhash' | tr -d '"')
 echo "Waiting for transaction to go on chain..."
 sleep 12
 check_code $TXHASH
@@ -57,7 +59,7 @@ starting_balance=$(gaiad q bank balances $test_account -o json | jq -r '.balance
 balance_denom=$(gaiad q bank balances $test_account -o json | jq -r '.balances[0].denom')
 
 echo "Withdrawing rewards for test account..."
-TXHASH=$(gaiad tx distribution withdraw-all-rewards --from $test_account --keyring-backend test --fees 1stake --chain-id my-testnet -y -o json | jq '.txhash' | tr -d '"')
+TXHASH=$(gaiad tx distribution withdraw-all-rewards --from $test_account --keyring-backend test --fees 1$denom --chain-id my-testnet -y -o json | jq '.txhash' | tr -d '"')
 # Wait for rewards to accumulate
 echo "Waiting for transaction to go on chain..."
 sleep 6

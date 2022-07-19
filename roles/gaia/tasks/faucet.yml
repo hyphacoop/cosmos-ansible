@@ -4,7 +4,7 @@
   shell: |
     PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
     gaiad keys add faucet --home {{gaiad_home}} --keyring-backend {{gaiad_validator_keyring}} --output json
-    gaiad add-genesis-account faucet 1000000000000stake --home {{gaiad_home}} --keyring-backend="{{gaiad_validator_keyring}}"
+    gaiad add-genesis-account faucet 1000000000000{{ gaiad_bond_denom }} --home {{gaiad_home}} --keyring-backend="{{gaiad_validator_keyring}}"
   register: create_faucet_output
   become_user: "{{gaiad_user}}"
 
