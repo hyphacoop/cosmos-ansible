@@ -21,7 +21,8 @@ check_code()
 export PATH="$PATH:~/.gaia/cosmovisor/current/bin"
 
 # Get bond denom
-denom=$(echo $(gaiad q staking params) | jq -r '.bond_denom')
+denom=$(echo $(gaiad q staking params -o json) | jq -r '.bond_denom')
+echo "Bond denom is $denom."
 
 # Recover faucet address
 faucet=$(jq -r '.address' ~/.gaia/faucet.json)
