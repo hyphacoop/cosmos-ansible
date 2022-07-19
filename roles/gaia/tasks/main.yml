@@ -298,7 +298,7 @@
   when: genesis_url is defined
   get_url:
     url: "{{genesis_url}}"
-    dest: "{{ ansible_env.HOME }}/genesis.data"
+    dest: "{{ gaiad_user_home }}/genesis.data"
     mode: 0644
   become_user: "{{gaiad_user}}"
 
