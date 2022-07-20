@@ -2,10 +2,8 @@
 # yamllint disable rule:line-length
 all:
   vars:
-    gaiad_home_autoclear: true
-    gaiad_version: v7.0.0
-    gaiad_create_validator: true
-    faucet_enabled: true
+    gaiad_home_autoclear: false
+    gaiad_version: v7.0.1
     ansible_user: root
   children:
     gaia:
