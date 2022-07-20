@@ -97,8 +97,11 @@
 - name: Extract golang
   # TODO: Auto-detect go_arch
   when: not go_version in go_current_version.stdout
-  shell: |
-    sudo tar -C /usr/local -xzf {{ ansible_env.HOME }}/go.tar.gz
+  unarchive:
+    src: "{{ ansible_env.HOME }}/go.tar.gz"
+    dest: /usr/local
+    remote_src: yes
+  become: true
 
 # TODO: Firewall
 # - name: set up firewall (block by default?)
@@ -111,38 +114,22 @@
   register: gaiad_current_version
   ignore_errors: true
 
-- name: clone and install gaiad
+- name: Clone gaiad
+  when: not gaiad_version in gaiad_current_version.stdout
+  git:
+    repo: "{{gaiad_repository}}"
+    dest: "{{ gaiad_user_home }}/gaia"
+    version: "{{gaiad_version}}"
+    force: yes
+  become_user: "{{gaiad_user}}"
+
+- name: Install gaiad
   when: not gaiad_version in gaiad_current_version.stdout
   shell: |
-    cd $HOME
     PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
-    if [ -d gaia ]
-    then
-      cd gaia
-      git clean -f -d
-      git checkout main
-      git pull --all
-      if [ $? -ne 0 ]
-      then
-        echo "Cannot pull {{gaiad_repository}}"
-       exit 1
-      fi
-    else
-      git clone {{gaiad_repository}}
-      if [ $? -ne 0 ]
-      then
-        echo "Cannot clone {{gaiad_repository}}"
-       exit 2
-      fi
-      cd gaia
-    fi
-    git checkout {{gaiad_version}}
-    if [ $? -ne 0 ]
-    then
-      echo "Cannot checkout {{gaiad_version}}"
-      exit 3
-    fi
     make install
+  args:
+    chdir: "{{ gaiad_user_home }}/gaia"
   become_user: "{{gaiad_user}}"
 
 # Clear gaiad_home if it exists
@@ -318,8 +305,10 @@
 
 - name: download genesis file
   when: genesis_url is defined
-  shell: |
-    wget {{genesis_url}} -O $HOME/genesis.data
+  get_url:
+    url: "{{genesis_url}}"
+    dest: "{{ gaiad_user_home }}/genesis.data"
+    mode: 0644
   become_user: "{{gaiad_user}}"
 
 - name: Check file type of downloaded genesis file
