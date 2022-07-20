@@ -7,8 +7,8 @@ gaiad_home_autoclear: false
 gaiad_unsafe_reset: false
 gaiad_version: v7.0.0
 gaiad_repository: https://github.com/cosmos/gaia.git
-gaiad_binary_release: "https://github.com/cosmos/gaia/releases/download/v7.0.2/gaiad-{{ gaiad_version }}-linux-amd64"
-gaiad_binary_source: build
+gaiad_binary_release: "https://github.com/cosmos/gaia/releases/download/{{ gaiad_version }}/gaiad-{{ gaiad_version }}-linux-amd64"
+gaiad_binary_source: "build"
 gaiad_bin: "{{ gaiad_user_home }}/go/bin/gaiad"
 gaiad_service_name: "gaiad"
 gaiad_gov_testing: false

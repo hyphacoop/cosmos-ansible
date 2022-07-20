@@ -114,7 +114,18 @@
   register: gaiad_current_version
   ignore_errors: true
 
-- name: Download gaiad binary from release download
+## Creatre go bin directory
+- name: Prepare cosmovisor folder
+  when: gaiad_binary_source == "release"
+  file:
+    path: '{{ gaiad_user_home }}/go/bin'
+    state: directory
+    recurse: true
+    owner: '{{gaiad_user}}'
+    group: '{{gaiad_user}}'
+
+
+- name: Download gaiad binary from release
   when: not gaiad_version in gaiad_current_version.stdout and gaiad_binary_source == "release"
   get_url:
     url: "{{ gaiad_binary_release }}"
