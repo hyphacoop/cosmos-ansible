@@ -20,7 +20,7 @@
   git:
     repo: 'https://github.com/hyphacoop/cosmos-rest-faucet.git'
     dest: "{{gaiad_user_home}}/cosmos-rest-faucet"
-    version: "v0.2.0"
+    version: "{{faucet_version}}"
     force: yes
   become_user: "{{gaiad_user}}"
 
