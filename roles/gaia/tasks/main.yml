@@ -1,4 +1,45 @@
 ---
+# Save JSON data from RPC API
+- name: Get RPC /abci_info endpoint
+  uri:
+    url: "{{ chain_info_server }}/abci_info"
+    method: GET
+    return_content: yes
+    status_code: 200
+    body_format: json
+  when: chain_info_server is defined
+  register: gaia_rpc_abci_info
+
+- name: Get RPC /status endpoint
+  uri:
+    url: "{{ chain_info_server }}/status"
+    method: GET
+    return_content: yes
+    status_code: 200
+    body_format: json
+  when: chain_info_server is defined
+  register: gaia_rpc_status
+
+- name: RPC reported chain ID
+  when: chain_info_server is defined
+  debug:
+    msg: '{{ gaia_rpc_status.json.result.node_info.network }}'
+
+- name: Store reported chain ID to chain_id
+  when: chain_info_server is defined
+  set_fact:
+    chain_id: '{{ gaia_rpc_status.json.result.node_info.network }}'
+
+- name: RPC reported gaiad version
+  when: chain_info_server is defined
+  debug:
+    msg: '{{ gaia_rpc_abci_info.json.result.response.version }}'
+
+- name: Store Reported version to gaiad_version
+  when: chain_info_server is defined
+  set_fact:
+    gaiad_version: '{{ gaia_rpc_abci_info.json.result.response.version }}'
+
 # Get gaiad_version number
 - name: parse version
   set_fact:
@@ -213,20 +254,6 @@
   when: faucet_enabled
   import_tasks: faucet.yml
 
-- name: patch genesis file with minimum deposit and short voting period
-  when: gaiad_gov_testing
-  shell: |
-    cd {{gaiad_home}}/config
-    jq '.app_state.gov.deposit_params.min_deposit[0].amount |= "1"' genesis.json > temp.json
-    jq '.app_state.gov.voting_params.voting_period |= "{{ gaiad_voting_period }}"' temp.json > genesis.json
-    rm temp.json
-
-- name: patch genesis file with specified denom
-  replace:
-    path: '{{gaiad_home}}/config/genesis.json'
-    regexp: 'stake'
-    replace: '{{gaiad_bond_denom}}'
-
 - name: Check cosmovisor version
   when: use_cosmovisor
   shell: |
@@ -352,6 +379,20 @@
     fi
       exit 0
   become_user: "{{gaiad_user}}"
+
+- name: patch genesis file with minimum deposit and short voting period
+  when: gaiad_gov_testing
+  shell: |
+    cd {{gaiad_home}}/config
+    jq '.app_state.gov.deposit_params.min_deposit[0].amount |= "1"' genesis.json > temp.json
+    jq '.app_state.gov.voting_params.voting_period |= "{{ gaiad_voting_period }}"' temp.json > genesis.json
+    rm temp.json
+
+- name: patch genesis file with specified denom
+  replace:
+    path: '{{gaiad_home}}/config/genesis.json'
+    regexp: 'stake'
+    replace: '{{gaiad_bond_denom}}'
 
 # Get trust height automatically
 - name: obtain trust height
