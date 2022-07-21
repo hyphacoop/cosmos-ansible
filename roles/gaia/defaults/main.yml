@@ -25,6 +25,10 @@ gaiad_airdrop: false
 gaiad_airdrop_coins: "1000000000{{ gaiad_bond_denom }}"
 gaiad_airdrop_accounts: []
 
+binary_arch_map:
+  aarch64: "linux-arm64"
+  x86_64: "linux-amd64"
+
 # Cosmovisor settings
 ## TODO: Support arbitrary cosmovisor branches
 use_cosmovisor: true
@@ -36,7 +40,7 @@ cosmovisor_service_name: "cosmovisor"
 cosmovisor_skip_backup: true
 
 # Go configuration
-go_arch: "linux-amd64"
+go_arch: "{{binary_arch_map[ansible_architecture]}}"
 go_version: "1.18.1"
 
 ## config.toml variables
