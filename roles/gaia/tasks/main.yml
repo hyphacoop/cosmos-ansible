@@ -114,7 +114,7 @@
   register: gaiad_current_version
   ignore_errors: true
 
-## Creatre go bin directory
+## Create go bin directory
 - name: Prepare cosmovisor folder
   when: gaiad_binary_source == "release"
   file:
