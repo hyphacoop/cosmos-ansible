@@ -1,0 +1,19 @@
+---
+- name: Setup node-exporter
+  include_role:
+    name: node-exporter
+  when: monitoring_prometheus | default(false) | bool
+
+- name: Setup on prometheus server
+  include_role:
+    name: configure-prometheus
+    apply:
+      delegate_to: "{{ grafana_ssh_url }}"
+  when: monitoring_prometheus | default(false) | bool
+
+- name: Setup PANIC on monitoring server
+  include_role:
+    name: configure-panic
+    apply:
+      delegate_to: "{{ panic_ssh_url }}"
+  when: monitoring_panic | default(false) | bool

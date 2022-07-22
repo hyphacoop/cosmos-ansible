@@ -23,8 +23,11 @@
 - name: setup systemd services
   import_tasks: services.yml
 
-- name: setup APIs and monitoring
+- name: setup APIs
   import_tasks: apis.yml
+
+- name: setup monitoring
+  import_tasks: monitoring.yml
 
 - name: Rebooting the machine
   include_role:
