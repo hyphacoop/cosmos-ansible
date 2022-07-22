@@ -10,11 +10,12 @@ ansible-playbook gaia.yml -i examples/inventory-local.yml --extra-vars "gaiad_ve
 | Variable                 | Description                                                                       | Example Value                                                                                       |
 |--------------------------|-----------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------|
 | `target` | Target server IP/domain | `example.com` |
+| `chain_registry` | When set it will automatically define `gaiad_version`, `chain_id` and `genesis_url` variables from the chain registry file | `https://registry.ping.pub/testnets/theta/chain.json` |
 | `gaiad_version`          | Gaia repo tag, commit, or branch to check out and compile                         | `v6.0.4`                                                                                            |
 | `gaiad_repository`       | Gaia source repo                                                                  | `https://github.com/cosmos/gaia.git`                                                                |
 | `chain_id`               | Sets the chain ID                                                                 | `my-testnet`                                                                                        |
 | `use_cosmovisor`         | Uses cosmovisor when `true`, raw `gaiad` service when `false`                     | `true`                                                                                              |
-| `genesis_url`            | URL to download the gzipped genesis file from                                     | `"https://github.com/cosmos/testnets/blob/master/v7-theta/public-testnet/genesis.json.gz?raw=true"` |
+| `genesis_url`            | URL to download the gzipped genesis file from                                     | `"https://github.com/cosmos/testnets/raw/master/v7-theta/public-testnet/genesis.json.gz"` |
 | `genesis_file`           | File path to the genesis file*                                                    | `"examples/genesis-three-node.json"`                                                                |
 | `addrbook_url`           | URL to download the addrbook.json file from                                       | `"https://quicksync.io/addrbook.cosmos.json"`                                                       |
 | `addrbook_file`          | File path to the addrbook.json file to use                                        | `"addresses.json"`                                                                                  |
