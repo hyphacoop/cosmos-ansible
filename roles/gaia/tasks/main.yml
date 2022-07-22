@@ -1,8 +1,4 @@
-
-# faucet.yml can run after gaiad is installed and gaiad home exists
-# no patching of genesis etc needs to be done, doesn't need to be running
-# TODO(makeworld): remove this commnet
-
+---
 - name: setup
   import_tasks: setup.yml
 

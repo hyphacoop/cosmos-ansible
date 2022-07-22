@@ -1,3 +1,4 @@
+---
 - name: Set variables for api endpoint
   set_fact:
     endpoint_port: '{{api_port}}'

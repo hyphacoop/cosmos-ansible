@@ -1,3 +1,4 @@
+---
 - name: configure systemd service for gaiad
   when: not use_cosmovisor
   template:

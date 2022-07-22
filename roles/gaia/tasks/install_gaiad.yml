@@ -1,3 +1,4 @@
+---
 - name: Check golang version
   shell: |
     PATH=$PATH:/usr/local/go/bin:$HOME/go/bin

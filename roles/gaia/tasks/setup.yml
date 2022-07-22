@@ -1,3 +1,4 @@
+---
 # Get gaiad_version number
 - name: parse version
   set_fact:

@@ -1,3 +1,4 @@
+---
 - name: Check cosmovisor version
   shell: |
     PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
@@ -12,10 +13,6 @@
     PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
     go install {{cosmovisor_repository}}@{{cosmovisor_version}}
   become_user: "{{gaiad_user}}"
-
-# GENESIS FILE STUFF WAS HERE
-# GAIAD CONFIG STUFF WAS HERE
-# TODO(makeworld): remove this
 
 ## Configure cosmovisor
 - name: Prepare cosmovisor folder
