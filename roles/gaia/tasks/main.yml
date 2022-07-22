@@ -115,7 +115,7 @@
   ignore_errors: true
 
 ## Create go bin directory
-- name: Prepare cosmovisor folder
+- name: Prepare go folder
   when: gaiad_binary_source == "release"
   file:
     path: '{{ gaiad_user_home }}/go/bin'
