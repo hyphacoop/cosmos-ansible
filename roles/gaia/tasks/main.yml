@@ -1,44 +1,29 @@
 ---
 # Save JSON data from RPC API
-- name: Get RPC /abci_info endpoint
+- name: Get JSON from registry
   uri:
-    url: "{{ chain_info_server }}/abci_info"
+    url: "{{ chain_registry }}"
     method: GET
     return_content: yes
     status_code: 200
     body_format: json
-  when: chain_info_server is defined
-  register: gaia_rpc_abci_info
+  when: chain_registry is defined
+  register: chain_registry_json
 
-- name: Get RPC /status endpoint
-  uri:
-    url: "{{ chain_info_server }}/status"
-    method: GET
-    return_content: yes
-    status_code: 200
-    body_format: json
-  when: chain_info_server is defined
-  register: gaia_rpc_status
-
-- name: RPC reported chain ID
-  when: chain_info_server is defined
-  debug:
-    msg: '{{ gaia_rpc_status.json.result.node_info.network }}'
-
-- name: Store reported chain ID to chain_id
-  when: chain_info_server is defined
+- name: Set chain_id to {{ chain_registry_json.json.chain_id }}
+  when: chain_registry is defined
   set_fact:
-    chain_id: '{{ gaia_rpc_status.json.result.node_info.network }}'
+    chain_id: '{{ chain_registry_json.json.chain_id }}'
 
-- name: RPC reported gaiad version
-  when: chain_info_server is defined
-  debug:
-    msg: '{{ gaia_rpc_abci_info.json.result.response.version }}'
-
-- name: Store Reported version to gaiad_version
-  when: chain_info_server is defined
+- name: Set gaiad_version to {{ chain_registry_json.json.codebase.recommended_version }}
+  when: chain_registry is defined
   set_fact:
-    gaiad_version: '{{ gaia_rpc_abci_info.json.result.response.version }}'
+    gaiad_version: '{{ chain_registry_json.json.codebase.recommended_version }}'
+
+- name: Set genesis_url to {{ chain_registry_json.json.genesis.genesis_url }}
+  when: chain_registry is defined
+  set_fact:
+    genesis_url: '{{ chain_registry_json.json.genesis.genesis_url }}'
 
 # Get gaiad_version number
 - name: parse version

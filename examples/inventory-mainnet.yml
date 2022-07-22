@@ -3,8 +3,7 @@
 all:
   vars:
     ansible_user: root
-    genesis_url: "https://github.com/cosmos/mainnet/raw/master/genesis.cosmoshub-4.json.gz"
-    chain_info_server: "https://rpc.cosmos.network:443"
+    chain_registry: "https://registry.ping.pub/cosmoshub/chain.json"
     gaiad_home_autoclear: false
     gaiad_unsafe_reset: true
     gaiad_use_ssl_proxy: false

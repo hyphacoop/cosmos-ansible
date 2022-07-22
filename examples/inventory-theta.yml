@@ -3,8 +3,9 @@
 all:
   vars:
     ansible_user: root
-    chain_info_server: "http://rpc.state-sync-01.theta-testnet.polypore.xyz:26657"
+    gaiad_version: v7.0.2
     genesis_url: "https://github.com/cosmos/testnets/raw/master/v7-theta/public-testnet/genesis.json.gz"
+    chain_id: theta-testnet-001
     gaiad_home_autoclear: false
     gaiad_unsafe_reset: true
     gaiad_use_ssl_proxy: false
