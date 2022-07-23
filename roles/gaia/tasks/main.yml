@@ -114,8 +114,28 @@
   register: gaiad_current_version
   ignore_errors: true
 
+## Create go bin directory
+- name: Prepare go folder
+  when: gaiad_binary_source == "release"
+  file:
+    path: '{{ gaiad_user_home }}/go/bin'
+    state: directory
+    recurse: true
+    owner: '{{gaiad_user}}'
+    group: '{{gaiad_user}}'
+
+
+- name: Download gaiad binary from release
+  when: not gaiad_version in gaiad_current_version.stdout and gaiad_binary_source == "release"
+  get_url:
+    url: "{{ gaiad_binary_release }}"
+    dest: "{{gaiad_user_home}}/go/bin/gaiad"
+    mode: "0777"
+    force: true
+  become_user: "{{gaiad_user}}"
+
 - name: Clone gaiad
-  when: not gaiad_version in gaiad_current_version.stdout
+  when: not gaiad_version in gaiad_current_version.stdout and gaiad_binary_source == "build"
   git:
     repo: "{{gaiad_repository}}"
     dest: "{{ gaiad_user_home }}/gaia"
@@ -124,7 +144,7 @@
   become_user: "{{gaiad_user}}"
 
 - name: Install gaiad
-  when: not gaiad_version in gaiad_current_version.stdout
+  when: not gaiad_version in gaiad_current_version.stdout and gaiad_binary_source == "build"
   shell: |
     PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
     make install
