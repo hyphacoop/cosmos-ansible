@@ -1,6 +1,6 @@
 ---
 
-name: Join Cosmos Mainnet
+name: Join Cosmos Hub
 on:
   workflow_dispatch:
   schedule:
@@ -10,8 +10,9 @@ on:
     types:
       - opened
       - closed
+  push:
 jobs:
-  test-theta-testnet:
+  test-cosmoshub:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository code
@@ -28,7 +29,7 @@ jobs:
         run: echo "transport = local" >> ansible.cfg
       - name: Run playbook
         run: |
-          ansible-playbook gaia.yml -i examples/inventory-mainnet.yml --extra-vars "target=local reboot=false gaiad_home={{ gaiad_user_home }}/.gaia gaiad_user=runner enable_swap=true swap_size=16384"
+          ansible-playbook gaia.yml -i examples/inventory-cosmos-hub.yml --extra-vars "target=local reboot=false gaiad_home={{ gaiad_user_home }}/.gaia gaiad_user=runner enable_swap=true swap_size=16384"
       - name: Check cosmovisor service
         run: systemctl status cosmovisor
       - name: Check blocks are being produced
