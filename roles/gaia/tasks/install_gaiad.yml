@@ -1,0 +1,117 @@
+---
+- name: Check golang version
+  shell: |
+    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+    go version
+  register: go_current_version
+  ignore_errors: true
+
+- name: Extract golang
+  # TODO: Auto-detect go_arch
+  when: not go_version in go_current_version.stdout
+  unarchive:
+    src: "https://golang.org/dl/go{{go_version}}.{{go_arch}}.tar.gz"
+    dest: /usr/local
+    remote_src: yes
+  become: true
+
+# TODO: Firewall
+# - name: set up firewall (block by default?)
+
+- name: Check gaiad version
+  shell: |
+    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+    gaiad version
+  become_user: "{{gaiad_user}}"
+  register: gaiad_current_version
+  ignore_errors: true
+
+## Create go bin directory
+- name: Prepare go folder
+  when: gaiad_binary_source == "release"
+  file:
+    path: '{{ gaiad_user_home }}/go/bin'
+    state: directory
+    recurse: true
+    owner: '{{gaiad_user}}'
+    group: '{{gaiad_user}}'
+
+
+- name: Download gaiad binary from release
+  when: not gaiad_version in gaiad_current_version.stdout and gaiad_binary_source == "release"
+  get_url:
+    url: "{{ gaiad_binary_release }}"
+    dest: "{{gaiad_user_home}}/go/bin/gaiad"
+    mode: "0777"
+    force: true
+  become_user: "{{gaiad_user}}"
+
+- name: Clone gaiad
+  when: not gaiad_version in gaiad_current_version.stdout and gaiad_binary_source == "build"
+  git:
+    repo: "{{gaiad_repository}}"
+    dest: "{{ gaiad_user_home }}/gaia"
+    version: "{{gaiad_version}}"
+    force: yes
+  become_user: "{{gaiad_user}}"
+
+- name: Install gaiad
+  when: not gaiad_version in gaiad_current_version.stdout and gaiad_binary_source == "build"
+  shell: |
+    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+    make install
+  args:
+    chdir: "{{ gaiad_user_home }}/gaia"
+  become_user: "{{gaiad_user}}"
+
+  # Clear gaiad_home if it exists
+- name: Check if gaiad home folder exists
+  stat:
+    path: "{{gaiad_home}}"
+  register: gaiad_home_exists
+
+- name: Clear gaiad home
+  when: gaiad_home_autoclear
+  file:
+    state: absent
+    path: "{{gaiad_home}}"
+
+# Initialize gaiad home
+- name: initialize gaiad
+  when: gaiad_home_autoclear or not gaiad_home_exists.stat.exists
+  # TODO: should we overwrite?
+  shell: |
+    cd $HOME
+    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+    gaiad init {{inventory_hostname}} --home {{gaiad_home}} --chain-id {{chain_id}}
+  become_user: "{{gaiad_user}}"
+
+- name: reset gaiad database (command for <v7.0.1)
+  when: gaiad_unsafe_reset and ((major_version|int == 7 and patch_version|int == 0) or major_version|int < 7)
+  shell: |
+    cd $HOME
+    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+    gaiad unsafe-reset-all --home {{gaiad_home}}
+  become_user: "{{gaiad_user}}"
+  tags:
+    - gaiad_reset
+
+- name: reset gaiad database (command for >v7.0.0)
+  when: gaiad_unsafe_reset and ((major_version|int == 7 and patch_version|int >= 1) or major_version|int > 7)
+  shell: |
+    cd $HOME
+    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+    gaiad tendermint unsafe-reset-all --home {{gaiad_home}}
+  become_user: "{{gaiad_user}}"
+  tags:
+    - gaiad_reset
+
+- name: Add gaiad bin from go/bin to .bashrc PATH
+  when: not use_cosmovisor
+  blockinfile:
+    dest: '{{ gaiad_user_home }}/.bashrc'
+    block: |
+      export PATH="$PATH:{{ gaiad_user_home }}/go/bin"
+    marker: '# {mark} ANSIBLE MANAGED BLOCK - GAIAD PATH'
+    insertbefore: EOF
+    create: yes
