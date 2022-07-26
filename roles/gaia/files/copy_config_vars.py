@@ -61,6 +61,9 @@ def set_nested(nested_dict, path, value):
     for subpath in segments:
         if subpath in current_val:
             current_val = current_val[subpath]
+        else:
+            current_val[subpath] = {}
+            current_val = current_val[subpath]
     current_val[final_field] = value
 
 
