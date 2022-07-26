@@ -10,7 +10,6 @@ on:
     types:
       - opened
       - closed
-  push:
 jobs:
   test-cosmoshub:
     runs-on: ubuntu-latest
