@@ -1,4 +1,30 @@
 ---
+# Save JSON data from RPC API
+- name: Get JSON from registry
+  uri:
+    url: "{{ chain_registry }}"
+    method: GET
+    return_content: yes
+    status_code: 200
+    body_format: json
+  when: chain_registry is defined
+  register: chain_registry_json
+
+- name: Set chain_id to {{ chain_registry_json.json.chain_id }}
+  when: chain_registry is defined
+  set_fact:
+    chain_id: '{{ chain_registry_json.json.chain_id }}'
+
+- name: Set gaiad_version to {{ chain_registry_json.json.codebase.recommended_version }}
+  when: chain_registry is defined
+  set_fact:
+    gaiad_version: '{{ chain_registry_json.json.codebase.recommended_version }}'
+
+- name: Set genesis_url to {{ chain_registry_json.json.genesis.genesis_url }}
+  when: chain_registry is defined
+  set_fact:
+    genesis_url: '{{ chain_registry_json.json.genesis.genesis_url }}'
+
 # Get gaiad_version number
 - name: parse version
   set_fact:

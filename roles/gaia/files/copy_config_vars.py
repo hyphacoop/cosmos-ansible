@@ -59,7 +59,11 @@ def set_nested(nested_dict, path, value):
     final_field = segments.pop()
     current_val = nested_dict
     for subpath in segments:
-        current_val = current_val[subpath]
+        if subpath in current_val:
+            current_val = current_val[subpath]
+        else:
+            current_val[subpath] = {}
+            current_val = current_val[subpath]
     current_val[final_field] = value
 
 
