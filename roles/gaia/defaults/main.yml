@@ -100,7 +100,7 @@ telemetry_enabled: false
 telemetry_enable_hostname: false
 telemetry_enable_hostname_label: false
 telemetry_enable_service_label: false
-prometius_retention_time: '0'
+prometheus_retention_time: '0'
 
 ### API
 api_enabled: false
