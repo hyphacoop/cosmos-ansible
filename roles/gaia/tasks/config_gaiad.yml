@@ -4,8 +4,8 @@
   shell: |
     cd $HOME
     PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
-    gaiad keys add validator --keyring-backend {{gaiad_validator_keyring}} --home {{chain_home}} --output json
-    gaiad add-genesis-account validator {{gaiad_validator_coins}} --home {{chain_home}} --keyring-backend="{{gaiad_validator_keyring}}"
+    gaiad keys add validator --keyring-backend {{node_keyring}} --home {{chain_home}} --output json
+    gaiad add-genesis-account validator {{gaiad_validator_coins}} --home {{chain_home}} --keyring-backend="{{node_keyring}}"
   register: chain_create_validator_output
   become_user: "{{node_user}}"
 
@@ -30,7 +30,7 @@
   shell: |
     cd $HOME
     PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
-    gaiad gentx validator {{chain_gentx_validator}} --keyring-backend="{{gaiad_validator_keyring}}" --home {{chain_home}} --chain-id {{chain_id}}
+    gaiad gentx validator {{chain_gentx_validator}} --keyring-backend="{{node_keyring}}" --home {{chain_home}} --chain-id {{chain_id}}
     gaiad collect-gentxs --home {{chain_home}}
   become_user: "{{node_user}}"
 
