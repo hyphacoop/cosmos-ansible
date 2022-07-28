@@ -71,14 +71,14 @@
   register: chain_home_exists
 
 - name: Clear gaiad home
-  when: chain_home_autoclear
+  when: chain_home_clear
   file:
     state: absent
     path: "{{chain_home}}"
 
 # Initialize gaiad home
 - name: initialize gaiad
-  when: chain_home_autoclear or not chain_home_exists.stat.exists
+  when: chain_home_clear or not chain_home_exists.stat.exists
   # TODO: should we overwrite?
   shell: |
     cd $HOME

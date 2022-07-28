@@ -2,7 +2,7 @@
 # yamllint disable rule:line-length
 all:
   vars:
-    chain_home_autoclear: true
+    chain_home_clear: true
     chain_version: v7.0.0
     api_enabled: true
     chain_id: "my-devnet"

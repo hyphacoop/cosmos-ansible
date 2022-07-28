@@ -9,7 +9,7 @@ chain_name: gaia
 node_user: gaia
 node_user_home: "/home/{{node_user}}"
 chain_home: "{{node_user_home}}/.gaia"
-chain_home_autoclear: false
+chain_home_clear: false
 node_unsafe_reset: false
 chain_version: v7.0.0
 gaiad_repository: https://github.com/cosmos/gaia.git
