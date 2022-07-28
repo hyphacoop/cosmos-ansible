@@ -47,8 +47,6 @@ ansible-playbook gaia.yml -i examples/inventory-local.yml --extra-vars "gaiad_ve
 | `addrbook_url`         | URL to download the addrbook.json file from                                                                                | `"https://quicksync.io/addrbook.cosmos.json"`                                             |
 | `addrbook_file`        | File path to the addrbook.json file to use                                                                                 | `"addresses.json"`                                                                        |
 
-
-
 ## Chain Configuration: `genesis.json`
 
 | Variable                      | Description                                                                               | Example Value                                                                             |
