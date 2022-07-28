@@ -2,15 +2,15 @@
 - name: create faucet account
   shell: |
     PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
-    gaiad keys add faucet --home {{gaiad_home}} --keyring-backend {{gaiad_validator_keyring}} --output json
-    gaiad add-genesis-account faucet 1000000000000{{ gaiad_bond_denom }} --home {{gaiad_home}} --keyring-backend="{{gaiad_validator_keyring}}"
+    gaiad keys add faucet --home {{chain_home}} --keyring-backend {{gaiad_validator_keyring}} --output json
+    gaiad add-genesis-account faucet 1000000000000{{ gaiad_bond_denom }} --home {{chain_home}} --keyring-backend="{{gaiad_validator_keyring}}"
   register: create_faucet_output
   become_user: "{{node_user}}"
 
 - name: save faucet name, address, and mnemonic
   copy:
     content: "{{create_faucet_output.stderr}}"
-    dest: "{{gaiad_home}}/faucet.json"
+    dest: "{{chain_home}}/faucet.json"
   become_user: "{{node_user}}"
 
 - name: checkout rest faucet repo
@@ -43,7 +43,7 @@
 
 - name: set faucet address
   shell: |
-    jq '.address' {{gaiad_home}}/faucet.json
+    jq '.address' {{chain_home}}/faucet.json
   register: faucet_address
   become_user: "{{node_user}}"
 

@@ -4,7 +4,7 @@ all:
   vars:
     ansible_user: root
     chain_registry: "https://registry.ping.pub/cosmoshub/chain.json"
-    gaiad_home_autoclear: false
+    chain_home_autoclear: false
     gaiad_unsafe_reset: true
     gaiad_use_ssl_proxy: false
     gaiad_api_host: "rest"

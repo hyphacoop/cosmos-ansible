@@ -6,7 +6,7 @@ all:
     genesis_file: "genesis.json"
     chain_id: cosmos-testnet
     gaiad_version: v7.0.0
-    gaiad_home_autoclear: false
+    chain_home_autoclear: false
     gaiad_unsafe_reset: true
     gaiad_create_validator: false
     gaiad_api_host: "rest"

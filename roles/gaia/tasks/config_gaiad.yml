@@ -4,8 +4,8 @@
   shell: |
     cd $HOME
     PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
-    gaiad keys add validator --keyring-backend {{gaiad_validator_keyring}} --home {{gaiad_home}} --output json
-    gaiad add-genesis-account validator {{gaiad_validator_coins}} --home {{gaiad_home}} --keyring-backend="{{gaiad_validator_keyring}}"
+    gaiad keys add validator --keyring-backend {{gaiad_validator_keyring}} --home {{chain_home}} --output json
+    gaiad add-genesis-account validator {{gaiad_validator_coins}} --home {{chain_home}} --keyring-backend="{{gaiad_validator_keyring}}"
   register: gaiad_create_validator_output
   become_user: "{{node_user}}"
 
@@ -13,7 +13,7 @@
   when: gaiad_create_validator
   copy:
     content="{{gaiad_create_validator_output.stderr}}"
-    dest="{{gaiad_home}}/validator.json"
+    dest="{{chain_home}}/validator.json"
   become_user: "{{node_user}}"
 
 - name: create genesis accounts
@@ -21,7 +21,7 @@
   shell: |
     cd $HOME
     PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
-    gaiad add-genesis-account {{ item }} {{gaiad_airdrop_coins}} --home {{gaiad_home}}
+    gaiad add-genesis-account {{ item }} {{gaiad_airdrop_coins}} --home {{chain_home}}
   become_user: "{{node_user}}"
   loop: "{{ gaiad_airdrop_accounts }}"
 
@@ -30,21 +30,21 @@
   shell: |
     cd $HOME
     PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
-    gaiad gentx validator {{gaiad_gentx_validator_stake}} --keyring-backend="{{gaiad_validator_keyring}}" --home {{gaiad_home}} --chain-id {{chain_id}}
-    gaiad collect-gentxs --home {{gaiad_home}}
+    gaiad gentx validator {{gaiad_gentx_validator_stake}} --keyring-backend="{{gaiad_validator_keyring}}" --home {{chain_home}} --chain-id {{chain_id}}
+    gaiad collect-gentxs --home {{chain_home}}
   become_user: "{{node_user}}"
 
 - name: patch genesis file with minimum deposit and short voting period
   when: gaiad_gov_testing
   shell: |
-    cd {{gaiad_home}}/config
+    cd {{chain_home}}/config
     jq '.app_state.gov.deposit_params.min_deposit[0].amount |= "1"' genesis.json > temp.json
     jq '.app_state.gov.voting_params.voting_period |= "{{ gaiad_voting_period }}"' temp.json > genesis.json
     rm temp.json
 
 - name: patch genesis file with specified denom
   replace:
-    path: '{{gaiad_home}}/config/genesis.json'
+    path: '{{chain_home}}/config/genesis.json'
     regexp: 'stake'
     replace: '{{gaiad_bond_denom}}'
 
@@ -78,7 +78,7 @@
   when: app_toml_file is defined
   copy:
     src: '{{app_toml_file}}'
-    dest: '{{gaiad_home}}/config/app.toml'
+    dest: '{{chain_home}}/config/app.toml'
     owner: '{{node_user}}'
     group: '{{node_user}}'
 
@@ -86,7 +86,7 @@
   when: config_toml_file is defined
   copy:
     src: '{{config_toml_file}}'
-    dest: '{{gaiad_home}}/config/config.toml'
+    dest: '{{chain_home}}/config/config.toml'
     owner: '{{node_user}}'
     group: '{{node_user}}'
 
@@ -94,7 +94,7 @@
   when: node_key_file is defined
   copy:
     src: '{{node_key_file}}'
-    dest: '{{gaiad_home}}/config/node_key.json'
+    dest: '{{chain_home}}/config/node_key.json'
     owner: '{{node_user}}'
     group: '{{node_user}}'
 
@@ -102,7 +102,7 @@
   when: priv_validator_key_file is defined
   copy:
     src: '{{priv_validator_key_file}}'
-    dest: '{{gaiad_home}}/config/priv_validator_key.json'
+    dest: '{{chain_home}}/config/priv_validator_key.json'
     owner: '{{node_user}}'
     group: '{{node_user}}'
 
@@ -111,7 +111,7 @@
   when: addrbook_file is defined
   copy:
     src: '{{addrbook_file}}'
-    dest: '{{gaiad_home}}/config/addrbook_file.json'
+    dest: '{{chain_home}}/config/addrbook_file.json'
     owner: '{{node_user}}'
     group: '{{node_user}}'
 
@@ -119,7 +119,7 @@
   when: addrbook_url is defined
   get_url:
     url: "{{addrbook_url}}"
-    dest: "{{gaiad_home}}/config/addrbook.json"
+    dest: "{{chain_home}}/config/addrbook.json"
     owner: '{{node_user}}'
     group: '{{node_user}}'
 
@@ -127,19 +127,19 @@
 - name: generate config json for patching toml files
   template:
     src: ansible_vars.json.j2
-    dest: '{{gaiad_home}}/config/ansible_vars.json'
+    dest: '{{chain_home}}/config/ansible_vars.json'
     owner: '{{node_user}}'
     group: '{{node_user}}'
 
 - name: patch .toml configs with ansible variables
   script: |
-    copy_config_vars.py --gaiad_home=$(echo {{gaiad_home}}) \
-      --config_file=$(echo {{gaiad_home}}/config/ansible_vars.json)
+    copy_config_vars.py --chain_home=$(echo {{chain_home}}) \
+      --config_file=$(echo {{chain_home}}/config/ansible_vars.json)
   become_user: "{{node_user}}"
 
 - name: delete generated config json
   file:
     state: absent
-    path: '{{gaiad_home}}/config/ansible_vars.json'
+    path: '{{chain_home}}/config/ansible_vars.json'
     owner: '{{node_user}}'
     group: '{{node_user}}'

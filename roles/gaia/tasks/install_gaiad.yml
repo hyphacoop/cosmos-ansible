@@ -64,26 +64,26 @@
     chdir: "{{ node_user_home }}/gaia"
   become_user: "{{node_user}}"
 
-  # Clear gaiad_home if it exists
+  # Clear chain_home if it exists
 - name: Check if gaiad home folder exists
   stat:
-    path: "{{gaiad_home}}"
-  register: gaiad_home_exists
+    path: "{{chain_home}}"
+  register: chain_home_exists
 
 - name: Clear gaiad home
-  when: gaiad_home_autoclear
+  when: chain_home_autoclear
   file:
     state: absent
-    path: "{{gaiad_home}}"
+    path: "{{chain_home}}"
 
 # Initialize gaiad home
 - name: initialize gaiad
-  when: gaiad_home_autoclear or not gaiad_home_exists.stat.exists
+  when: chain_home_autoclear or not chain_home_exists.stat.exists
   # TODO: should we overwrite?
   shell: |
     cd $HOME
     PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
-    gaiad init {{inventory_hostname}} --home {{gaiad_home}} --chain-id {{chain_id}}
+    gaiad init {{inventory_hostname}} --home {{chain_home}} --chain-id {{chain_id}}
   become_user: "{{node_user}}"
 
 - name: reset gaiad database (command for <v7.0.1)
@@ -91,7 +91,7 @@
   shell: |
     cd $HOME
     PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
-    gaiad unsafe-reset-all --home {{gaiad_home}}
+    gaiad unsafe-reset-all --home {{chain_home}}
   become_user: "{{node_user}}"
   tags:
     - gaiad_reset
@@ -101,7 +101,7 @@
   shell: |
     cd $HOME
     PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
-    gaiad tendermint unsafe-reset-all --home {{gaiad_home}}
+    gaiad tendermint unsafe-reset-all --home {{chain_home}}
   become_user: "{{node_user}}"
   tags:
     - gaiad_reset

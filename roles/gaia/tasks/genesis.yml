@@ -10,7 +10,7 @@
 # - name: Check if remote genesis file exists
 #   when: genesis_file is defined
 #   stat:
-#     path: "{{gaiad_home}}/config/genesis.json"
+#     path: "{{chain_home}}/config/genesis.json"
 #     get_checksum: false
 #   register: genesis_file_exists
 - name: check if genesis_file is gz or not
@@ -53,10 +53,10 @@
     owner: '{{node_user}}'
     group: '{{node_user}}'
 
-- name: extract {{genesis_file}} to {{gaiad_home}}/config/genesis.json
+- name: extract {{genesis_file}} to {{chain_home}}/config/genesis.json
   when: genesis_file is defined
   shell: |
-    gunzip -c $HOME/genesis.json.gz > {{gaiad_home}}/config/genesis.json
+    gunzip -c $HOME/genesis.json.gz > {{chain_home}}/config/genesis.json
   become_user: "{{node_user}}"
 
 - name: download genesis file
@@ -84,7 +84,7 @@
     - genesis_url is defined
     - file_type.stat.mimetype == "application/gzip"
   shell: |
-    gunzip -c $HOME/genesis.data > {{gaiad_home}}/config/genesis.json
+    gunzip -c $HOME/genesis.data > {{chain_home}}/config/genesis.json
   become_user: "{{node_user}}"
 
 - name: Copy non-zipped genesis to genesis config
@@ -93,7 +93,7 @@
     - file_type.stat.mimetype == "text/plain"
   copy:
     src: '{{node_user_home}}/genesis.data'
-    dest: '{{gaiad_home}}/config/genesis.json'
+    dest: '{{chain_home}}/config/genesis.json'
     owner: '{{node_user}}'
     group: '{{node_user}}'
     remote_src: true
@@ -102,7 +102,7 @@
   when: genesis_shasum is defined
   # Throw an error if shasum doesn't match
   shell: |
-    GENESIS_SHASUM="$(sha256sum {{ gaiad_home }}/config/genesis.json)"
+    GENESIS_SHASUM="$(sha256sum {{ chain_home }}/config/genesis.json)"
     if [ $GENESIS_SHASUM != {{ genesis_shasum }} ]; then
       exit 1
     fi

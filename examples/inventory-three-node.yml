@@ -7,7 +7,7 @@ all:
     genesis_file: "examples/genesis-three-node.json"
     chain_id: cosmos-testnet
     minimum_gas_prices: '0.001uatom'
-    gaiad_home_autoclear: true
+    chain_home_autoclear: true
     gaiad_create_validator: false
     gaiad_api_host: "rest"
     gaiad_rpc_host: "rpc"

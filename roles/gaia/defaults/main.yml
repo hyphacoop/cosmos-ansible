@@ -8,8 +8,8 @@ chain_name: gaia
 # General Gaiad settings
 node_user: gaia
 node_user_home: "/home/{{node_user}}"
-gaiad_home: "{{node_user_home}}/.gaia"
-gaiad_home_autoclear: false
+chain_home: "{{node_user_home}}/.gaia"
+chain_home_autoclear: false
 gaiad_unsafe_reset: false
 gaiad_version: v7.0.0
 gaiad_repository: https://github.com/cosmos/gaia.git
@@ -39,7 +39,7 @@ use_cosmovisor: true
 cosmovisor_version: v1.0.0
 cosmovisor_repository: github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor
 cosmovisor_bin: "{{node_user_home}}/go/bin/cosmovisor"
-cosmovisor_home: "{{ gaiad_home }}/cosmovisor"
+cosmovisor_home: "{{ chain_home }}/cosmovisor"
 cosmovisor_service_name: "cosmovisor"
 cosmovisor_skip_backup: true
 

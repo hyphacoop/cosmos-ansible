@@ -2,7 +2,7 @@
 # yamllint disable rule:line-length
 all:
   vars:
-    gaiad_home_autoclear: true
+    chain_home_autoclear: true
     gaiad_version: v7.0.2
     api_enabled: true
     gaiad_use_ssl_proxy: true
