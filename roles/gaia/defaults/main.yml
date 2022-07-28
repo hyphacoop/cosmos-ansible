@@ -29,9 +29,9 @@ node_keyring: "test"
 chain_validator_coins: "1000000000000{{ chain_denom }}"
 
 # Default variables for aidropping tokens
-gaiad_airdrop: false
-gaiad_airdrop_coins: "1000000000{{ chain_denom }}"
-gaiad_airdrop_accounts: []
+chain_airdrop: false
+chain_airdrop_coins: "1000000000{{ chain_denom }}"
+chain_airdrop_accounts: []
 
 # Cosmovisor settings
 ## TODO: Support arbitrary cosmovisor branches

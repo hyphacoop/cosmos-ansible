@@ -112,7 +112,7 @@ Set up a host as a single-node developer testnet.
   - Set up an appropriate A record for Let's Encrypt.
 - Inventory file
   - Replace the `validator@devnet.com` address with your own in the `letsencrypt_email` variable.
-  - Add the addresses of the accounts you want to airdrop tokens to in the `gaiad_airdrop_accounts` variable.
+  - Add the addresses of the accounts you want to airdrop tokens to in the `chain_airdrop_accounts` variable.
  
   
 ### Run the playbook 

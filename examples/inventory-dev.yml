@@ -23,7 +23,7 @@ all:
         "{{ target }}":
           ansible_user: root
           chain_create_validator: true
-          gaiad_airdrop: true
-          gaiad_airdrop_accounts:
+          chain_airdrop: true
+          chain_airdrop_accounts:
             - cosmos*
             - cosmos*

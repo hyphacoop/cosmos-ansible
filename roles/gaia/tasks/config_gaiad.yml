@@ -17,13 +17,13 @@
   become_user: "{{node_user}}"
 
 - name: create genesis accounts
-  when: gaiad_airdrop and chain_create_validator
+  when: chain_airdrop and chain_create_validator
   shell: |
     cd $HOME
     PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
-    gaiad add-genesis-account {{ item }} {{gaiad_airdrop_coins}} --home {{chain_home}}
+    gaiad add-genesis-account {{ item }} {{chain_airdrop_coins}} --home {{chain_home}}
   become_user: "{{node_user}}"
-  loop: "{{ gaiad_airdrop_accounts }}"
+  loop: "{{ chain_airdrop_accounts }}"
 
 - name: collect gentx
   when: chain_create_validator
