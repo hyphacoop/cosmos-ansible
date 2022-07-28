@@ -49,7 +49,7 @@
 - name: Clone gaiad
   when: not chain_version in gaiad_current_version.stdout and gaiad_binary_source == "build"
   git:
-    repo: "{{gaiad_repository}}"
+    repo: "{{chain_repository}}"
     dest: "{{ node_user_home }}/gaia"
     version: "{{chain_version}}"
     force: yes

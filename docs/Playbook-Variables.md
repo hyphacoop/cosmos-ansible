@@ -12,7 +12,7 @@ ansible-playbook gaia.yml -i examples/inventory-local.yml --extra-vars "chain_ve
 | `target` | Target server IP/domain | `example.com` |
 | `chain_registry` | When set it will automatically define `chain_version`, `chain_id` and `genesis_url` variables from the chain registry file | `https://registry.ping.pub/testnets/theta/chain.json` |
 | `chain_version`          | Gaia repo tag, commit, or branch to check out and compile                         | `v6.0.4`                                                                                            |
-| `gaiad_repository`       | Gaia source repo                                                                  | `https://github.com/cosmos/gaia.git`                                                                |
+| `chain_repository`       | Gaia source repo                                                                  | `https://github.com/cosmos/gaia.git`                                                                |
 | `chain_id`               | Sets the chain ID                                                                 | `my-testnet`                                                                                        |
 | `use_cosmovisor`         | Uses cosmovisor when `true`, raw `gaiad` service when `false`                     | `true`                                                                                              |
 | `genesis_url`            | URL to download the gzipped genesis file from                                     | `"https://github.com/cosmos/testnets/raw/master/v7-theta/public-testnet/genesis.json.gz"` |
