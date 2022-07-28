@@ -35,7 +35,7 @@
   become_user: "{{node_user}}"
 
 - name: patch genesis file with minimum deposit and short voting period
-  when: gaiad_gov_testing
+  when: chain_gov_testing
   shell: |
     cd {{chain_home}}/config
     jq '.app_state.gov.deposit_params.min_deposit[0].amount |= "1"' genesis.json > temp.json
