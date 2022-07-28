@@ -40,7 +40,7 @@
 - name: Download gaiad binary from release
   when: not chain_version in gaiad_current_version.stdout and gaiad_binary_source == "release"
   get_url:
-    url: "{{ gaiad_binary_release }}"
+    url: "{{ chain_binary_release }}"
     dest: "{{node_user_home}}/go/bin/gaiad"
     mode: "0777"
     force: true
