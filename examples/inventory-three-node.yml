@@ -8,7 +8,7 @@ all:
     chain_id: cosmos-testnet
     minimum_gas_prices: '0.001uatom'
     chain_home_clear: true
-    gaiad_create_validator: false
+    chain_create_validator: false
     gaiad_api_host: "rest"
     gaiad_rpc_host: "rpc"
     gaiad_p2p_host: "p2p"

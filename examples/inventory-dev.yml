@@ -22,7 +22,7 @@ all:
       hosts:
         "{{ target }}":
           ansible_user: root
-          gaiad_create_validator: true
+          chain_create_validator: true
           gaiad_airdrop: true
           gaiad_airdrop_accounts:
             - cosmos*

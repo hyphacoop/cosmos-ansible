@@ -1,23 +1,23 @@
 ---
 - name: create validator
-  when: gaiad_create_validator
+  when: chain_create_validator
   shell: |
     cd $HOME
     PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
     gaiad keys add validator --keyring-backend {{gaiad_validator_keyring}} --home {{chain_home}} --output json
     gaiad add-genesis-account validator {{gaiad_validator_coins}} --home {{chain_home}} --keyring-backend="{{gaiad_validator_keyring}}"
-  register: gaiad_create_validator_output
+  register: chain_create_validator_output
   become_user: "{{node_user}}"
 
 - name: save validator name, address, and mnemonic
-  when: gaiad_create_validator
+  when: chain_create_validator
   copy:
-    content="{{gaiad_create_validator_output.stderr}}"
+    content="{{chain_create_validator_output.stderr}}"
     dest="{{chain_home}}/validator.json"
   become_user: "{{node_user}}"
 
 - name: create genesis accounts
-  when: gaiad_airdrop and gaiad_create_validator
+  when: gaiad_airdrop and chain_create_validator
   shell: |
     cd $HOME
     PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
@@ -26,7 +26,7 @@
   loop: "{{ gaiad_airdrop_accounts }}"
 
 - name: collect gentx
-  when: gaiad_create_validator
+  when: chain_create_validator
   shell: |
     cd $HOME
     PATH=$PATH:/usr/local/go/bin:$HOME/go/bin

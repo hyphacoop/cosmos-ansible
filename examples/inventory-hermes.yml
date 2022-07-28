@@ -22,14 +22,14 @@ all:
       hosts:
         my-chain-1.dev.testnet.com:
           chain_id: my-chain-1
-          gaiad_create_validator: true
+          chain_create_validator: true
           gaiad_airdrop: true
           gaiad_airdrop_accounts:
             - cosmos*
             - cosmos*
         my-chain-2.dev.testnet.com:
           chain_id: my-chain-2
-          gaiad_create_validator: true
+          chain_create_validator: true
           gaiad_airdrop: true
           gaiad_airdrop_accounts:
             - cosmos*
