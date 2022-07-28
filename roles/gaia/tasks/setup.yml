@@ -85,11 +85,11 @@
   # Check for both `SERVICE_NAME` and `SERVICE_NAME.service`
   when: >
     not use_cosmovisor and (
-    (gaiad_service_name in ansible_facts.services) or
-    ((gaiad_service_name + '.service') in ansible_facts.services))
+    (node_service_name in ansible_facts.services) or
+    ((node_service_name + '.service') in ansible_facts.services))
   systemd:
     state: stopped
-    name: "{{gaiad_service_name}}"
+    name: "{{node_service_name}}"
   tags:
     - gaiad_stop
     - gaiad_restart
