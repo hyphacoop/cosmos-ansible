@@ -3,7 +3,9 @@
 name: Test Gaia Versions
 on:
   workflow-dispatch:
-  push
+  push:
+    branches:
+      - 'experiment/**'
 jobs:
   generate-matrices:
     runs-on: ubuntu-latest
