@@ -5,7 +5,7 @@
     cd $HOME
     PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
     gaiad keys add validator --keyring-backend {{node_keyring}} --home {{chain_home}} --output json
-    gaiad add-genesis-account validator {{gaiad_validator_coins}} --home {{chain_home}} --keyring-backend="{{node_keyring}}"
+    gaiad add-genesis-account validator {{chain_validator_coins}} --home {{chain_home}} --keyring-backend="{{node_keyring}}"
   register: chain_create_validator_output
   become_user: "{{node_user}}"
 
