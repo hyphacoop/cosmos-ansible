@@ -2,7 +2,8 @@
 
 name: Test Gaia Versions Stateful Genesis
 on:
-  workflow_dispatch:
+  push
+  workflow_dispatch
 jobs:
   generate-matrices:
     runs-on: ubuntu-latest

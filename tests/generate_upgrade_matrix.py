@@ -23,13 +23,9 @@ for rel in trimmed_releases:
     if rel['name'] == 'v7.0.0-rc0':
         trimmed_releases.remove(rel)
 
-for rel in trimmed_releases:
-    print(rel['name'])
-
 # Set upgrade versions to target for each release
 matrix = {release['name']: [] for release in trimmed_releases}
-matrix['release/v7.0.x'] = list()
-print(matrix)
+matrix['release/v7.0.x'] = []
 
 # This skips v7.0.0-rc0
 for start_version, _ in matrix.items():
