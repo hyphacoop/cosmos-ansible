@@ -5,7 +5,7 @@ all:
     ansible_user: root
     genesis_file: "genesis.json"
     chain_id: cosmos-testnet
-    gaiad_version: v7.0.0
+    chain_version: v7.0.0
     chain_home_autoclear: false
     node_unsafe_reset: true
     gaiad_create_validator: false

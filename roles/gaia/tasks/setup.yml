@@ -15,21 +15,21 @@
   set_fact:
     chain_id: '{{ chain_registry_json.json.chain_id }}'
 
-- name: Set gaiad_version to {{ chain_registry_json.json.codebase.recommended_version }}
+- name: Set chain_version to {{ chain_registry_json.json.codebase.recommended_version }}
   when: chain_registry is defined
   set_fact:
-    gaiad_version: '{{ chain_registry_json.json.codebase.recommended_version }}'
+    chain_version: '{{ chain_registry_json.json.codebase.recommended_version }}'
 
 - name: Set genesis_url to {{ chain_registry_json.json.genesis.genesis_url }}
   when: chain_registry is defined
   set_fact:
     genesis_url: '{{ chain_registry_json.json.genesis.genesis_url }}'
 
-# Get gaiad_version number
+# Get chain_version number
 - name: parse version
   set_fact:
-    major_version: "{{ gaiad_version[1] }}"
-    patch_version: "{{ gaiad_version[5] }}"
+    major_version: "{{ chain_version[1] }}"
+    patch_version: "{{ chain_version[5] }}"
   when: major_version is undefined and patch_version is undefined
   tags:
     - gaiad_reset
