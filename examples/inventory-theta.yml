@@ -7,7 +7,7 @@ all:
     genesis_url: "https://github.com/cosmos/testnets/raw/master/v7-theta/public-testnet/genesis.json.gz"
     chain_id: theta-testnet-001
     chain_home_autoclear: false
-    gaiad_unsafe_reset: true
+    node_unsafe_reset: true
     gaiad_use_ssl_proxy: false
     gaiad_api_host: "rest"
     gaiad_rpc_host: "rpc"

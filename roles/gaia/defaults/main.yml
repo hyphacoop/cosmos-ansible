@@ -10,7 +10,7 @@ node_user: gaia
 node_user_home: "/home/{{node_user}}"
 chain_home: "{{node_user_home}}/.gaia"
 chain_home_autoclear: false
-gaiad_unsafe_reset: false
+node_unsafe_reset: false
 gaiad_version: v7.0.0
 gaiad_repository: https://github.com/cosmos/gaia.git
 gaiad_binary_release: "https://github.com/cosmos/gaia/releases/download/{{ gaiad_version }}/gaiad-{{ gaiad_version }}-{{binary_arch_map[ansible_architecture]}}"
