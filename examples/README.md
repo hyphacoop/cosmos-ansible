@@ -11,6 +11,14 @@ After a playbook is run, you can log into a node and see if the chain is running
 
 Gaia is set up for the `gaia` user by default. Log into the node and switch to the `gaia` user to run `gaiad` commands.
 
+## Install deps
+
+Before running any playbooks, first install the Ansible dependencies:
+
+```
+ansible-galaxy install -r requirements.yml
+```
+
 ## Join the Theta Testnet
 
 Set up a node to join the [theta testnet](https://github.com/cosmos/testnets/tree/master/v7-theta/public-testnet) using state sync.

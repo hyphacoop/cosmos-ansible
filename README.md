@@ -29,7 +29,7 @@ Use this toolkit to:
 To join the [Theta testnet](https://github.com/cosmos/testnets/tree/master/v7-theta/public-testnet):
 
 1. Clone this repository
-2. Run `ansible-galaxy install -r ./requirements.yml` to install deps 
+2. Run `ansible-galaxy install -r requirements.yml` to install deps 
 3. Set up SSH access to the target machine
 4. Run the playbook
    ```
