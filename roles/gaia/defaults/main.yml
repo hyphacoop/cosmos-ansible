@@ -24,7 +24,7 @@ chain_id: "theta-devnet"
 
 # Default vaiables for creating a validator
 chain_create_validator: false
-gaiad_gentx_validator_stake: "8000000000{{ chain_denom }}"
+chain_gentx_validator: "8000000000{{ chain_denom }}"
 gaiad_validator_keyring: "test"
 gaiad_validator_coins: "1000000000000{{ chain_denom }}"
 

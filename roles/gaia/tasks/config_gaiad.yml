@@ -30,7 +30,7 @@
   shell: |
     cd $HOME
     PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
-    gaiad gentx validator {{gaiad_gentx_validator_stake}} --keyring-backend="{{gaiad_validator_keyring}}" --home {{chain_home}} --chain-id {{chain_id}}
+    gaiad gentx validator {{chain_gentx_validator}} --keyring-backend="{{gaiad_validator_keyring}}" --home {{chain_home}} --chain-id {{chain_id}}
     gaiad collect-gentxs --home {{chain_home}}
   become_user: "{{node_user}}"
 
