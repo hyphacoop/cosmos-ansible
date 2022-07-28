@@ -1,0 +1,58 @@
+---
+name: Export mainnet genesis
+on:
+  workflow_dispatch:
+  schedule:
+    # At 05:30 on day-of-month 1 and 15
+    - cron: '30 5 1,15 * *'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # Get system info
+      - run: ifconfig
+      - run: arp -a
+      - run: sudo dmidecode
+      - run: df -h
+      - run: free -m
+      - run: uname -a
+      - run: lsb_release -a
+      - run: echo "GitHub branch is ${{ github.ref }}"
+      - run: whoami
+      - run: pwd
+
+      - name: Set SSH key
+        run: |
+          if [ ! -d ~/.ssh ]
+          then
+            mkdir -m 700 ~/.ssh
+          fi
+          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install ansible toml
+
+      - name: Checkout repo
+        uses: actions/checkout@master
+
+      - name: Provision VM
+        run: ansible-playbook gaia-mainnet-export.yml -i examples/inventory-exporting-genesis-do.yml --extra-vars "digitalocean_api_key=${{ secrets.DO_API_KEY }}"
+
+      - name: Install Gaia and configure for mainnet
+        run: ansible-playbook gaia.yml -i examples/inventory-cosmos-hub.yml --extra-vars "target=mainnet-export"
+
+      - name: Copy export_genesis.sh to VM
+        run: |
+          scp /tmp/export_genesis.sh root@mainnet-export:/tmp/export_genesis.sh
+
+      - name: Copy SSH key to VM
+        run: |
+          scp ~/.ssh/id_rsa root@mainnet-export:/root/.ssh/
+
+      - name: Run export_genesis.sh on VM in a screen session
+        run: |
+          ssh root@mainnet-export screen -L -Logfile /root/export_genesis.log -S export_genesis -d -m bash '/tmp/export_genesis.sh ${{ github.ref_name }}'

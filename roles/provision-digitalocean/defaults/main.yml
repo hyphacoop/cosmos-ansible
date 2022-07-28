@@ -1,0 +1,9 @@
+---
+### Digital Ocean API defaults
+digitalocean_api_key: ''
+digitalocean_ssh_keys: []
+digitalocean_size: s-1vcpu-1gb
+digitalocean_hostname: ''
+digitalocean_image: debian-11-x64
+digitalocean_project: ''
+digitalocean_region: tor1

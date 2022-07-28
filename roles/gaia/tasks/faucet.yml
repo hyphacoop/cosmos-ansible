@@ -1,0 +1,68 @@
+---
+- name: create faucet account
+  shell: |
+    PATH=$PATH:{{ansible_local.golang.general.home}}/bin:$HOME/go/bin
+    gaiad keys add faucet --home {{gaiad_home}} --keyring-backend {{gaiad_validator_keyring}} --output json
+    gaiad add-genesis-account faucet 1000000000000{{ gaiad_bond_denom }} --home {{gaiad_home}} --keyring-backend="{{gaiad_validator_keyring}}"
+  register: create_faucet_output
+  become_user: "{{gaiad_user}}"
+
+- name: save faucet name, address, and mnemonic
+  copy:
+    content: "{{create_faucet_output.stderr}}"
+    dest: "{{gaiad_home}}/faucet.json"
+  become_user: "{{gaiad_user}}"
+
+- name: checkout rest faucet repo
+  git:
+    repo: 'https://github.com/hyphacoop/cosmos-rest-faucet.git'
+    dest: "{{gaiad_user_home}}/cosmos-rest-faucet"
+    version: "{{faucet_version}}"
+    force: yes
+  become_user: "{{gaiad_user}}"
+
+- name: install python for faucet
+  apt:
+    pkg:
+      - python3
+      - python3-venv
+      - python3-pip
+      - python-is-python3
+
+- name: set up python virtual environment
+  shell: |
+    cd {{gaiad_user_home}}/cosmos-rest-faucet
+    python -m venv .env
+  become_user: "{{gaiad_user}}"
+
+- name: install faucet dependencies
+  pip:
+    requirements: "{{gaiad_user_home}}/cosmos-rest-faucet/requirements.txt"
+    virtualenv: "{{gaiad_user_home}}/cosmos-rest-faucet/.env"
+  become_user: "{{gaiad_user}}"
+
+- name: set faucet address
+  shell: |
+    jq '.address' {{gaiad_home}}/faucet.json
+  register: faucet_address
+  become_user: "{{gaiad_user}}"
+
+- name: configure faucet
+  template:
+    src: faucet_config.toml.j2
+    dest: "{{gaiad_user_home}}/cosmos-rest-faucet/config.toml"
+
+- name: configure faucet service
+  template:
+    src: faucet.service.j2
+    dest: "/etc/systemd/system/{{faucet_service_name}}.service"
+
+- name: Start faucet service
+  systemd:
+    daemon_reload: true
+    state: restarted
+    enabled: true
+    name: "{{faucet_service_name}}"
+  tags:
+    - gaiad_start
+    - gaiad_restart

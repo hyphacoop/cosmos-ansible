@@ -1,0 +1,6 @@
+secrets/
+*.log
+inventory.yml
+releases.json
+!logs/*.log
+.vscode

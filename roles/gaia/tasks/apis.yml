@@ -1,0 +1,45 @@
+---
+- name: Set variables for api endpoint
+  set_fact:
+    endpoint_port: '{{api_port}}'
+    site_hostname: '{{gaiad_api_host}}.{{inventory_hostname}}'
+  when: gaiad_use_ssl_proxy | default(false) | bool
+
+- name: Setup nginx SSL for gaiad api endpoint
+  include_role:
+    name: nginx-ssl
+  when: gaiad_use_ssl_proxy | default(false) | bool
+
+- name: Set variables for rpc endpoint
+  set_fact:
+    endpoint_port: '{{rpc_port}}'
+    site_hostname: '{{gaiad_rpc_host}}.{{inventory_hostname}}'
+  when: gaiad_use_ssl_proxy | default(false) | bool
+
+- name: Setup nginx SSL for gaiad rpc endpoint
+  include_role:
+    name: nginx-ssl
+  when: gaiad_use_ssl_proxy | default(false) | bool
+
+- name: Set variables for GRPC endpoint
+  set_fact:
+    endpoint_port: '{{grpc_port}}'
+    site_hostname: '{{gaiad_grpc_host}}.{{inventory_hostname}}'
+    grpc_vhost: true
+  when: gaiad_use_ssl_proxy | default(false) | bool
+
+- name: Setup nginx SSL for gaiad GRPC endpoint
+  include_role:
+    name: nginx-ssl
+  when: gaiad_use_ssl_proxy | default(false) | bool
+
+- name: Set variables for P2P endpoint
+  set_fact:
+    endpoint_port: '{{p2p_port}}'
+    site_hostname: '{{gaiad_p2p_host}}.{{inventory_hostname}}'
+  when: gaiad_use_ssl_proxy | default(false) | bool
+
+- name: Setup nginx SSL for gaiad P2P endpoint
+  include_role:
+    name: nginx-ssl
+  when: gaiad_use_ssl_proxy | default(false) | bool

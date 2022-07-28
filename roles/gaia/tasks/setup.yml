@@ -1,0 +1,113 @@
+---
+# Save JSON data from RPC API
+- name: Get JSON from registry
+  uri:
+    url: "{{ chain_registry }}"
+    method: GET
+    return_content: yes
+    status_code: 200
+    body_format: json
+  when: chain_registry is defined
+  register: chain_registry_json
+
+- name: Set chain_id to {{ chain_registry_json.json.chain_id }}
+  when: chain_registry is defined
+  set_fact:
+    chain_id: '{{ chain_registry_json.json.chain_id }}'
+
+- name: Set gaiad_version to {{ chain_registry_json.json.codebase.recommended_version }}
+  when: chain_registry is defined
+  set_fact:
+    gaiad_version: '{{ chain_registry_json.json.codebase.recommended_version }}'
+
+- name: Set genesis_url to {{ chain_registry_json.json.genesis.genesis_url }}
+  when: chain_registry is defined
+  set_fact:
+    genesis_url: '{{ chain_registry_json.json.genesis.genesis_url }}'
+
+# Get gaiad_version number
+- name: parse version
+  set_fact:
+    major_version: "{{ gaiad_version[1] }}"
+    patch_version: "{{ gaiad_version[5] }}"
+  when: major_version is undefined and patch_version is undefined
+  tags:
+    - gaiad_reset
+    - gaiad_stop
+    - gaiad_restart
+
+- include_role:
+    name: common
+
+- name: Set value to enable gaiad prometheus
+  set_fact:
+    prometheus_enabled: true
+  when: monitoring_prometheus | default(false) | bool
+
+- name: Setup and enable swap
+  include_role:
+    name: mkswap
+  when: enable_swap | default(false) | bool
+
+- name: Set up pip dependencies
+  pip:
+    name:
+      - toml
+      - github3.py
+
+- name: Ensure user exists for gaiad
+  user:
+    name: "{{gaiad_user}}"
+    append: true
+    groups: adm
+    shell: /bin/bash
+    comment: User for gaiad and cosmovisor services
+
+# Stop existing services
+- name: Populate service facts
+  service_facts:
+  tags:
+    - gaiad_stop
+    - gaiad_restart
+
+- name: Stop existing faucet systemd service
+  when: >
+    (faucet_service_name in ansible_facts.services) or
+    ((faucet_service_name + '.service') in ansible_facts.services)
+  systemd:
+    state: stopped
+    name: "{{faucet_service_name}}"
+  tags:
+    - gaiad_stop
+    - gaiad_restart
+
+- name: Stop existing gaiad systemd service
+  # Check for both `SERVICE_NAME` and `SERVICE_NAME.service`
+  when: >
+    not use_cosmovisor and (
+    (gaiad_service_name in ansible_facts.services) or
+    ((gaiad_service_name + '.service') in ansible_facts.services))
+  systemd:
+    state: stopped
+    name: "{{gaiad_service_name}}"
+  tags:
+    - gaiad_stop
+    - gaiad_restart
+
+- name: Stop existing cosmovisor systemd service
+  when: >
+    use_cosmovisor and (
+    (cosmovisor_service_name in ansible_facts.services) or
+    ((cosmovisor_service_name + '.service') in ansible_facts.services))
+  systemd:
+    state: stopped
+    name: "{{cosmovisor_service_name}}"
+  tags:
+    - gaiad_stop
+    - gaiad_restart
+
+- name: Set up golang
+  include_role:
+    name: gantsign.golang
+  vars:
+    golang_version: 1.18.1
