@@ -39,7 +39,7 @@
   shell: |
     cd {{chain_home}}/config
     jq '.app_state.gov.deposit_params.min_deposit[0].amount |= "1"' genesis.json > temp.json
-    jq '.app_state.gov.voting_params.voting_period |= "{{ gaiad_voting_period }}"' temp.json > genesis.json
+    jq '.app_state.gov.voting_params.voting_period |= "{{ chain_voting_period }}"' temp.json > genesis.json
     rm temp.json
 
 - name: patch genesis file with specified denom

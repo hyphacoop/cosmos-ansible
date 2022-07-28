@@ -18,7 +18,7 @@ chain_binary_source: "build"
 chain_bin: "{{ node_user_home }}/go/bin/gaiad"
 node_service_name: "gaiad"
 chain_gov_testing: false
-gaiad_voting_period: 10s
+chain_voting_period: 10s
 gaiad_bond_denom: uatom
 chain_id: "theta-devnet"
 
