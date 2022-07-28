@@ -2,6 +2,7 @@
 
 name: Test Gaia Versions
 on:
+  workflow-dispatch:
   push
 jobs:
   generate-matrices:
