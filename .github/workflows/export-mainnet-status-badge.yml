@@ -3,7 +3,6 @@
 name: Test Gaia Versions Stateful Genesis
 on:
   push
-  workflow_dispatch
 jobs:
   generate-matrices:
     runs-on: ubuntu-latest
