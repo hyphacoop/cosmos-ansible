@@ -8,7 +8,7 @@ ansible-playbook gaia.yml -i examples/inventory-local.yml --extra-vars "gaiad_ve
 ```
 
 - Default values and less commonly used variables can be found in the defaults [main.yml file](/roles/gaia/defaults/main.yml).
-- Update `roles/gaia/templates/ansible_vars.json.j2` to modify additional variables in the gaia config files.
+- Update the [ansible_vars template](/roles/gaia/templates/ansible_vars.json.j2) to modify additional variables in the gaia config files.
 
 ## Target
 
