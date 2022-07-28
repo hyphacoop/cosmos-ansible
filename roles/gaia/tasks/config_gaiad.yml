@@ -46,7 +46,7 @@
   replace:
     path: '{{chain_home}}/config/genesis.json'
     regexp: 'stake'
-    replace: '{{gaiad_bond_denom}}'
+    replace: '{{chain_denom}}'
 
 # Get trust height automatically
 - name: obtain trust height

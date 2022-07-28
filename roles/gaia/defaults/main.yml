@@ -19,18 +19,18 @@ chain_bin: "{{ node_user_home }}/go/bin/gaiad"
 node_service_name: "gaiad"
 chain_gov_testing: false
 chain_voting_period: 10s
-gaiad_bond_denom: uatom
+chain_denom: uatom
 chain_id: "theta-devnet"
 
 # Default vaiables for creating a validator
 gaiad_create_validator: false
-gaiad_gentx_validator_stake: "8000000000{{ gaiad_bond_denom }}"
+gaiad_gentx_validator_stake: "8000000000{{ chain_denom }}"
 gaiad_validator_keyring: "test"
-gaiad_validator_coins: "1000000000000{{ gaiad_bond_denom }}"
+gaiad_validator_coins: "1000000000000{{ chain_denom }}"
 
 # Default variables for aidropping tokens
 gaiad_airdrop: false
-gaiad_airdrop_coins: "1000000000{{ gaiad_bond_denom }}"
+gaiad_airdrop_coins: "1000000000{{ chain_denom }}"
 gaiad_airdrop_accounts: []
 
 # Cosmovisor settings
