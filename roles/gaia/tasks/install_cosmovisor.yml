@@ -26,7 +26,7 @@
   copy:
     # force: false
     remote_src: true
-    src: '{{ gaiad_bin }}'
+    src: '{{ chain_bin }}'
     dest: '{{ cosmovisor_home }}/genesis/bin/gaiad'
     owner: '{{node_user}}'
     group: '{{node_user}}'

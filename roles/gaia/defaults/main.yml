@@ -15,7 +15,7 @@ chain_version: v7.0.0
 chain_repository: https://github.com/cosmos/gaia.git
 chain_binary_release: "https://github.com/cosmos/gaia/releases/download/{{ chain_version }}/gaiad-{{ chain_version }}-{{binary_arch_map[ansible_architecture]}}"
 chain_binary_source: "build"
-gaiad_bin: "{{ node_user_home }}/go/bin/gaiad"
+chain_bin: "{{ node_user_home }}/go/bin/gaiad"
 gaiad_service_name: "gaiad"
 gaiad_gov_testing: false
 gaiad_voting_period: 10s
