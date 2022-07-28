@@ -3,6 +3,8 @@ binary_arch_map:
   aarch64: "linux-arm64"
   x86_64: "linux-amd64"
 
+chain_name: gaia
+
 # General Gaiad settings
 gaiad_user: gaia
 gaiad_user_home: "/home/{{gaiad_user}}"
