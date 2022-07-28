@@ -18,15 +18,26 @@ trimmed_releases = [release for release in releases_list if
                     (int(release['name'][1]) == version_major and
                      int(release['name'][5]) >= version_patch) or
                     int(release['name'][1]) > version_major]
+trimmed_releases.append({'name': 'release/v7.0.x'})
+for rel in trimmed_releases:
+    if rel['name'] == 'v7.0.0-rc0':
+        trimmed_releases.remove(rel)
+
+for rel in trimmed_releases:
+    print(rel['name'])
 
 # Set upgrade versions to target for each release
 matrix = {release['name']: [] for release in trimmed_releases}
+matrix['release/v7.0.x'] = list()
+print(matrix)
 
+# This skips v7.0.0-rc0
 for start_version, _ in matrix.items():
     matrix[start_version] = [
         release['name']
         for release in trimmed_releases
-        if int(release['name'][1]) > int(start_version[1])]
+        if int(release['name'][-5]) > int(start_version[-5])
+        ]
 
 # Assemble matrix include section:
 includes = []

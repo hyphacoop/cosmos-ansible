@@ -2,13 +2,7 @@
 
 name: Test Gaia Versions Stateful Genesis
 on:
-  pull_request:
-    types:
-      - opened
-      - closed
-  push:
-    paths:
-      - 'logs/tinkered-genesis**'
+  workflow_dispatch:
 jobs:
   generate-matrices:
     runs-on: ubuntu-latest

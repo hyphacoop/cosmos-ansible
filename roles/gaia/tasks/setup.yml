@@ -28,8 +28,8 @@
 # Get gaiad_version number
 - name: parse version
   set_fact:
-    major_version: "{{ gaiad_version[1] }}"
-    patch_version: "{{ gaiad_version[5] }}"
+    major_version: "{{ gaiad_version[-5] }}"
+    patch_version: "{{ gaiad_version[-1] }}"
   when: major_version is undefined and patch_version is undefined
   tags:
     - gaiad_reset

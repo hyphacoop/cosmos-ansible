@@ -20,9 +20,13 @@ with open('releases.json', 'w', encoding='utf-8') as outfile:
 
 # Trim list to only releases from specified version onwards
 trimmed_releases = [release for release in releases_list if
-                    (int(release['name'][1]) == version_major and
-                     int(release['name'][5]) >= version_patch) or
-                    int(release['name'][1]) > version_major]
+                    ((int(release['name'][1]) == version_major) and
+                     (int(release['name'][5]) >= version_patch)) or
+                    (int(release['name'][1]) > version_major)]
+for rel in trimmed_releases:
+    if rel['name'] == 'v7.0.0-rc0':
+        trimmed_releases.remove(rel)
+trimmed_releases.append({'name': 'release/v7.0.x'})
 
 start_json = json.dumps(
     {'gaia_version': [rel['name'] for rel in trimmed_releases]})
