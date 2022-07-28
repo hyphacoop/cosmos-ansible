@@ -2,7 +2,7 @@
 
 name: Test Gaia Versions
 on:
-  workflow-dispatch:
+  workflow_dispatch:
   push:
     branches:
       - 'experiment/**'
