@@ -3,7 +3,7 @@ Description=cosmovisor
 After=network-online.target
 
 [Service]
-User={{gaiad_user}}
+User={{node_user}}
 ExecStart={{ cosmovisor_bin }} start --x-crisis-skip-assert-invariants --home {{ gaiad_home }}
 Restart=always
 RestartSec=3

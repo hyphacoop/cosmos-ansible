@@ -49,32 +49,32 @@
   when: genesis_file is defined
   copy:
     src: '{{genesis_file}}'
-    dest: '{{gaiad_user_home}}/genesis.json.gz'
-    owner: '{{gaiad_user}}'
-    group: '{{gaiad_user}}'
+    dest: '{{node_user_home}}/genesis.json.gz'
+    owner: '{{node_user}}'
+    group: '{{node_user}}'
 
 - name: extract {{genesis_file}} to {{gaiad_home}}/config/genesis.json
   when: genesis_file is defined
   shell: |
     gunzip -c $HOME/genesis.json.gz > {{gaiad_home}}/config/genesis.json
-  become_user: "{{gaiad_user}}"
+  become_user: "{{node_user}}"
 
 - name: download genesis file
   when: genesis_url is defined
   get_url:
     url: "{{genesis_url}}"
-    dest: "{{ gaiad_user_home }}/genesis.data"
+    dest: "{{ node_user_home }}/genesis.data"
     mode: 0644
-  become_user: "{{gaiad_user}}"
+  become_user: "{{node_user}}"
 
 - name: Check file type of downloaded genesis file
   when: genesis_url is defined
   stat:
-    path: '{{gaiad_user_home}}/genesis.data'
+    path: '{{node_user_home}}/genesis.data'
     get_mime: true
   register: file_type
 
-- name: File type of {{gaiad_user_home}}/genesis.data
+- name: File type of {{node_user_home}}/genesis.data
   when: genesis_url is defined
   debug:
     msg: '{{file_type.stat.mimetype}}'
@@ -85,17 +85,17 @@
     - file_type.stat.mimetype == "application/gzip"
   shell: |
     gunzip -c $HOME/genesis.data > {{gaiad_home}}/config/genesis.json
-  become_user: "{{gaiad_user}}"
+  become_user: "{{node_user}}"
 
 - name: Copy non-zipped genesis to genesis config
   when:
     - genesis_url is defined
     - file_type.stat.mimetype == "text/plain"
   copy:
-    src: '{{gaiad_user_home}}/genesis.data'
+    src: '{{node_user_home}}/genesis.data'
     dest: '{{gaiad_home}}/config/genesis.json'
-    owner: '{{gaiad_user}}'
-    group: '{{gaiad_user}}'
+    owner: '{{node_user}}'
+    group: '{{node_user}}'
     remote_src: true
 
 - name: verify genesis file
@@ -107,4 +107,4 @@
       exit 1
     fi
       exit 0
-  become_user: "{{gaiad_user}}"
+  become_user: "{{node_user}}"

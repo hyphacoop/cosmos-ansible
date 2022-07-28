@@ -3,7 +3,7 @@
   shell: |
     PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
     cosmovisor --version
-  become_user: "{{gaiad_user}}"
+  become_user: "{{node_user}}"
   register: cosmovisor_current
   ignore_errors: true
 
@@ -12,15 +12,15 @@
   shell: |
     PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
     go install {{cosmovisor_repository}}@{{cosmovisor_version}}
-  become_user: "{{gaiad_user}}"
+  become_user: "{{node_user}}"
 
 ## Configure cosmovisor
 - name: Prepare cosmovisor folder
   file:
     path: '{{ cosmovisor_home }}/genesis/bin'
     state: directory
-    owner: '{{gaiad_user}}'
-    group: '{{gaiad_user}}'
+    owner: '{{node_user}}'
+    group: '{{node_user}}'
 
 - name: Copy gaiad bin for cosmovisor genesis
   copy:
@@ -28,13 +28,13 @@
     remote_src: true
     src: '{{ gaiad_bin }}'
     dest: '{{ cosmovisor_home }}/genesis/bin/gaiad'
-    owner: '{{gaiad_user}}'
-    group: '{{gaiad_user}}'
+    owner: '{{node_user}}'
+    group: '{{node_user}}'
     mode: '0755'
 
 - name: Add gaiad bin from cosmovisor to .bashrc PATH
   blockinfile:
-    dest: '{{ gaiad_user_home }}/.bashrc'
+    dest: '{{ node_user_home }}/.bashrc'
     block: |
       export PATH="$PATH:{{ cosmovisor_home }}/current/bin"
     marker: '# {mark} ANSIBLE MANAGED BLOCK - GAIAD PATH'

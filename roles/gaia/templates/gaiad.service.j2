@@ -2,7 +2,7 @@
 Description=Cosmos Hub Gaia service
 After=network-online.target
 [Service]
-User={{gaiad_user}}
+User={{node_user}}
 ExecStart={{gaiad_bin}} start --home {{gaiad_home}}
 Restart=always
 RestartSec=3

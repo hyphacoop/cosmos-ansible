@@ -57,7 +57,7 @@
 
 - name: Ensure user exists for gaiad
   user:
-    name: "{{gaiad_user}}"
+    name: "{{node_user}}"
     append: true
     groups: adm
     shell: /bin/bash
