@@ -48,7 +48,7 @@ Make the following modifications to [inventory-hermes.yml](/examples/inventory-h
   - Replace the chain IDs in the `hermes_chains` variable with the IDs of the chains being relayed to.
   - Replace the hosts in the `hermes_chain_hostname` variables with the endpoints that Hermes will connect to.
   - Replace the `validator@devnet.com` address with your own in the `letsencrypt_email` variable.
-  - Add the addresses of the accounts you want to airdrop tokens to in the `gaiad_airdrop_accounts` variable.
+  - Add the addresses of the accounts you want to airdrop tokens to in the `chain_airdrop_accounts` variable.
 
 
 ### Run the playbook 

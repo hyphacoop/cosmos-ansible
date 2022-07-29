@@ -1,24 +1,17 @@
 ---
-- name: setup
-  import_tasks: setup.yml
+- name: base
+  import_tasks: base.yml
 
-- name: install go and gaiad
-  import_tasks: install_gaiad.yml
+- name: config
+  import_tasks: config.yml
 
-- name: configure gaiad
-  import_tasks: config_gaiad.yml
-
-- name: set up faucet
+- name: faucet
   import_tasks: faucet.yml
   when: faucet_enabled
 
-- name: add genesis file
-  import_tasks: genesis.yml
+- name: join
+  import_tasks: join.yml
   when: genesis_file is defined or genesis_url is defined
-
-- name: install cosmovisor
-  import_tasks: install_cosmovisor.yml
-  when: use_cosmovisor
 
 - name: setup systemd services
   import_tasks: services.yml

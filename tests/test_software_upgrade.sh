@@ -19,19 +19,19 @@ denom=$(jq -r '.app_state.gov.deposit_params.min_deposit[].denom' ~/.gaia/config
 
 # Get the current gaia version from the API
 echo "Get the current gaia version from the API"
-gaiad_version=$(curl -s http://$gaia_host:$gaia_port/abci_info | jq -r .result.response.version)
+chain_version=$(curl -s http://$gaia_host:$gaia_port/abci_info | jq -r .result.response.version)
 
 # Get chain-id from the API
 echo "Get chain-id from the API"
 chain_id=$(curl -s http://$gaia_host:$gaia_port/status | jq -r .result.node_info.network)
 
 # Submit upgrade proposal
-gaiad_version_major=${gaiad_version:1:1}
-echo "Current major version: $gaiad_version_major"
+chain_version_major=${chain_version:1:1}
+echo "Current major version: $chain_version_major"
 
 upgrade_version_major=${upgrade_version:1:1}
 echo "Upgrade major version: $upgrade_version_major"
-major_difference=$[ $upgrade_version_major-$gaiad_version_major ]
+major_difference=$[ $upgrade_version_major-$chain_version_major ]
 
 if [ $major_difference -eq 1 ]; then
     if [ $upgrade_version_major -eq 7 ]; then

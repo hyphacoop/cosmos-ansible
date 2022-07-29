@@ -3,7 +3,7 @@
   when: not use_cosmovisor
   template:
     src: gaiad.service.j2
-    dest: "/etc/systemd/system/{{gaiad_service_name}}.service"
+    dest: "/etc/systemd/system/{{node_service_name}}.service"
 
 - name: configure systemd service for cosmovisor
   when: use_cosmovisor
@@ -22,7 +22,7 @@
     daemon_reload: true
     state: stopped
     enabled: true
-    name: "{{gaiad_service_name}}"
+    name: "{{node_service_name}}"
 
 - name: Start gaiad systemd service
   when: (not use_cosmovisor) and (not reboot | default(false) | bool)
@@ -30,7 +30,7 @@
     daemon_reload: true
     state: restarted
     enabled: true
-    name: "{{gaiad_service_name}}"
+    name: "{{node_service_name}}"
   tags:
     - gaiad_start
     - gaiad_restart
