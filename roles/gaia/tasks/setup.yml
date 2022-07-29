@@ -105,3 +105,9 @@
   tags:
     - gaiad_stop
     - gaiad_restart
+
+- name: Set up golang
+  include_role:
+    name: gantsign.golang
+  vars:
+    golang_version: 1.18.1

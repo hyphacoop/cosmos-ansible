@@ -1,0 +1,44 @@
+{
+  "title": "Theta Block Explorer",
+  "network": "{{chain_id}}",
+  "icon": "https://raw.githubusercontent.com/hyphacoop/handbook/master/images/hypha-wordmark.png?sanitize=true",
+  "logo": {
+    "default": "https://raw.githubusercontent.com/hyphacoop/handbook/master/images/hypha-wordmark.png?sanitize=true"
+  },
+  "prefix": {
+    "consensus": "cosmosvalcons",
+    "validator": "cosmosvaloper",
+    "account": "cosmos"
+  },
+  "genesis": {
+    "time": "{{bigdipper_genesis_time | json}}",
+    "height": {{bigdipper_genesis_height | json}}
+  },
+  "primaryTokenUnit": "uatom",
+  "votingPowerTokenUnit": "uatom",
+  "tokenUnits": {
+    "uatom": {
+      "display": "atom",
+      "exponent": 6
+    },
+    "rho": {
+      "display": "rho",
+      "exponent": 0
+    },
+    "lambda": {
+      "display": "lambda",
+      "exponent": 0
+    },
+    "epsilon": {
+      "display": "epsilon",
+      "exponent": 0
+    },
+    "theta": {
+      "display": "theta",
+      "exponent": 0
+    }
+  },
+  "extra": {
+    "profile": true
+  }
+}

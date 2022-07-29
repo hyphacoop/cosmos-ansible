@@ -54,6 +54,7 @@ Make the following modifications to [inventory-hermes.yml](/examples/inventory-h
 ### Run the playbook 
 
 ```
+ansible-galaxy install -r requirements.yml
 ansible-playbook hermes.yml -i examples/inventory-hermes.yml
 ```
 

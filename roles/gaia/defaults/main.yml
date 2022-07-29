@@ -37,10 +37,6 @@ cosmovisor_home: "{{ gaiad_home }}/cosmovisor"
 cosmovisor_service_name: "cosmovisor"
 cosmovisor_skip_backup: true
 
-# Go configuration
-go_arch: "{{binary_arch_map[ansible_architecture]}}"
-go_version: "1.18.1"
-
 ## config.toml variables
 fast_sync: true
 abci: socket

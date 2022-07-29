@@ -1,0 +1,76 @@
+chain:
+    bech32_prefix: cosmos
+    modules: 
+        - modules
+        - messages
+        - auth
+        - bank
+        - consensus
+        - gov
+        - mint
+        - slashing
+        - staking
+        - distribution
+node:
+    type: remote
+    config:
+        rpc:
+            client_name: juno
+            address: {{bigdipper_rpc_address}}
+            max_connections: 20
+        grpc:
+            address: {{bigdipper_grpc_address}}
+            insecure: true
+parsing:
+    workers: 1
+    listen_new_blocks: true
+    parse_old_blocks: true
+    parse_genesis: true
+    start_height: 1
+    fast_sync: true
+    genesis_file_path: {{bigdipper_genesis_file_path}}
+database:
+    name: {{bigdipper_db}}
+    host: {{bigdipper_db_host}}
+    port: {{bigdipper_db_port}}
+    user: {{bigdipper_db_user}}
+    password: {{bigdipper_db_host}}
+    schema: {{bigdipper_db_schema}}
+    max_open_connections: 10
+    max_idle_connections: 10
+logging:
+    level: debug
+    format: text
+telemetry:
+    port: {{bigdipper_telemetry_port}}
+pruning:
+    keep_recent: 100
+    keep_every: 500
+    interval: 10
+pricefeed:
+    tokens:
+        - name: Atom
+          units:
+            - denom: uatom
+              exponent: 0
+            - denom: atom
+              exponent: 6
+              price_id: cosmos
+        - name: Rho
+          units:
+            - denom: rho
+              exponent: 0
+        - name: Lambda
+          units:
+            - denom: lambda
+              exponent: 0
+        - name: Epsilon
+          units:
+            - denom: epsilon
+              exponent: 0
+        - name: Theta
+          units:
+            - denom: theta
+              exponent: 0
+distribution:
+    rewards_frequency: 100
