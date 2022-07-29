@@ -21,7 +21,7 @@ ansible-playbook gaia.yml -i examples/inventory-local.yml --extra-vars "gaiad_ve
 | `gaiad_use_ssl_proxy` | Enable SSL proxy for gaiad endpoints using Nginx*          | `false`       |
 | `gaiad_api_host`      | Set the subdomain for REST API (e.g. `rest.testnet.com`)* | `rest`        |
 | `gaiad_rpc_host`      | Set the subdomain for RPC (e.g. `rpc.testnet.com`)*       | `rpc`         |
-| `gaiad_gprc_host`     | Set the subdomain for GRPC (e.g. `grpc.testnet.com`)*     | `grpc`        |
+| `gaiad_grpc_host`     | Set the subdomain for GRPC (e.g. `grpc.testnet.com`)*     | `grpc`        |
 | `gaiad_p2p_host`      | Set the subdomain for P2P (e.g. `p2p.testnet.com`)*       | `p2p`         |
 | `reboot`              | Reboot the machine after all tasks are done when `true`**  | `false`       |
 
