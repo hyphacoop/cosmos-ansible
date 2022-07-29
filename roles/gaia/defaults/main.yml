@@ -1,8 +1,4 @@
 ---
-binary_arch_map:
-  aarch64: "linux-arm64"
-  x86_64: "linux-amd64"
-
 # General Gaiad settings
 gaiad_user: gaia
 gaiad_user_home: "/home/{{gaiad_user}}"
@@ -20,13 +16,13 @@ gaiad_voting_period: 10s
 gaiad_bond_denom: uatom
 chain_id: "theta-devnet"
 
-# Default vaiables for creating a validator
+# Default variables for creating a validator
 gaiad_create_validator: false
 gaiad_gentx_validator_stake: "8000000000{{ gaiad_bond_denom }}"
 gaiad_validator_keyring: "test"
 gaiad_validator_coins: "1000000000000{{ gaiad_bond_denom }}"
 
-# Default variables for aidropping tokens
+# Default variables for airdropping tokens
 gaiad_airdrop: false
 gaiad_airdrop_coins: "1000000000{{ gaiad_bond_denom }}"
 gaiad_airdrop_accounts: []
@@ -46,7 +42,6 @@ go_arch: "{{binary_arch_map[ansible_architecture]}}"
 go_version: "1.18.1"
 
 ## config.toml variables
-# monicker: "" (taken from hostname on init)
 fast_sync: true
 abci: socket
 
@@ -150,3 +145,8 @@ reboot: true
 # addrbook_url: "https://quicksync.io/addrbook.cosmos.json"
 # node_key_file: ""
 # priv_validator_key_file
+
+# Architecture mapping
+binary_arch_map:
+  aarch64: "linux-arm64"
+  x86_64: "linux-amd64"
