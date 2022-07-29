@@ -1,7 +1,7 @@
 #!/bin/bash 
 # Test a gaia software upgrade via governance proposal.
 # It assumes gaia is running on the local host.
-# Cosmovisor auto-updates are turned off.
+# Cosmovisor is not used.
 
 gaia_host=$1
 gaia_port=$2
@@ -63,19 +63,6 @@ if [ -n "$upgrade_name" ]; then
     validator_address=$(jq -r '.address' ~/.gaia/validator.json)
     echo "The validator has address $validator_address."
 
-    # Add go to PATH
-    echo "Adding go to PATH..."
-    export PATH="$PATH:/usr/local/go/bin"
-    echo "PATH=$PATH"
-
-   # Install new gaia version
-    cd ~/gaia
-    git checkout $upgrade_version
-    git pull
-    make install
-    mkdir -p ~/.gaia/cosmovisor/upgrades/v7-Theta/bin
-    cp ~/go/bin/gaiad ~/.gaia/cosmovisor/upgrades/v7-Theta/bin
-
     # Auto download: Set the binary paths need for the proposal message
     download_path="https://github.com/cosmos/gaia/releases/download/$upgrade_version"
     upgrade_info="{\"binaries\":{\"linux/amd64\":\"$download_path/gaiad-$upgrade_version-linux-amd64\",\"linux/arm64\":\"$download_path/$upgrade_version/gaiad-$upgrade_version-linux-arm64\",\"darwin/amd64\":\"$download_path/gaiad-$upgrade_version-darwin-amd64\",\"windows/amd64\":\"$download_path/gaiad-$upgrade_version-windows-amd64.exe\"}}"
@@ -95,7 +82,7 @@ if [ -n "$upgrade_name" ]; then
 
     # Vote yes on the proposal
     echo "Submitting the \"yes\" vote to proposal $proposal_id"
-    vote="gaiad tx gov vote $proposal_id yes --from $validator_address --keyring-backend test --chain-id $chain_id --fees 1000$denom --gas auto --yes"
+    vote="gaiad tx gov vote $proposal_id yes --from $validator_address --keyring-backend test --chain-id $chain_id --fees 1000$denom --yes"
     echo $vote
     $vote
 
@@ -106,17 +93,33 @@ if [ -n "$upgrade_name" ]; then
     echo "Upgrade proposal $proposal_id status:"
     gaiad q gov proposal $proposal_id --output json | jq '.status'
 
-    # Wait until the right height is reached
-    echo "Waiting for the upgrade to take place at block height $upgrade_height..."
-    tests/test_block_production.sh $gaia_host $gaia_port $upgrade_height
-    echo "The upgrade height was reached."
+    # # Wait until the right height is reached
+    # echo "Waiting for the upgrade to take place at block height $upgrade_height..."
+    # tests/test_block_production.sh $gaia_host $gaia_port $[$upgrade_height-1]
+    # echo "The upgrade height was reached."
 
-    # Test gaia response
-    tests/test_gaia_response.sh $gaia_host $gaia_port
 
-    # Get running version
-    gaiad_upgraded_version=$(curl -s http://$gaia_host:$gaia_port/abci_info | jq -r .result.response.version)
-    echo "Current gaiad version: $gaiad_upgraded_version"
+    # Add go to PATH
+    echo "Adding go to PATH..."
+    export PATH="$PATH:/usr/local/go/bin"
+    echo "PATH=$PATH"
+
+   # Install new gaia version
+    cd ~/gaia
+    git checkout $upgrade_version
+    git pull
+    make install
+
+
+
+    # Restart gaiad service
+
+    # # Test gaia response
+    # tests/test_gaia_response.sh $gaia_host $gaia_port
+
+    # # Get running version
+    # gaiad_upgraded_version=$(curl -s http://$gaia_host:$gaia_port/abci_info | jq -r .result.response.version)
+    # echo "Current gaiad version: $gaiad_upgraded_version"
 
     # Check upgraded version is the one we want
     # if [[ "$gaiad_upgraded_version" != "$upgrade_version" ]]; then
@@ -124,8 +127,8 @@ if [ -n "$upgrade_name" ]; then
     #     exit 4
     # fi
 
-    # Test block production
-    tests/test_block_production.sh $gaia_host $gaia_port $[$upgrade_height+10]
+    # # Test block production
+    # tests/test_block_production.sh $gaia_host $gaia_port $[$upgrade_height+10]
 
 else
     echo "No upgrade name specified, skipping upgrade."
