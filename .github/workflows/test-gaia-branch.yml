@@ -2,8 +2,8 @@
 
 name: Test Gaia Branch
 on:
-  push:
   workflow_dispatch:
+  push:
 jobs:
   generate-matrices:
     runs-on: ubuntu-22.04
