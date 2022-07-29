@@ -79,7 +79,7 @@ if [ -n "$upgrade_name" ]; then
     # Auto download: Set the binary paths need for the proposal message
     download_path="https://github.com/cosmos/gaia/releases/download/$upgrade_version"
     upgrade_info="{\"binaries\":{\"linux/amd64\":\"$download_path/gaiad-$upgrade_version-linux-amd64\",\"linux/arm64\":\"$download_path/$upgrade_version/gaiad-$upgrade_version-linux-arm64\",\"darwin/amd64\":\"$download_path/gaiad-$upgrade_version-darwin-amd64\",\"windows/amd64\":\"$download_path/gaiad-$upgrade_version-windows-amd64.exe\"}}"
-    proposal="gaiad --output json tx gov submit-proposal software-upgrade $upgrade_name --from $validator_address --keyring-backend test --upgrade-height $upgrade_height --upgrade-info $upgrade_info --title gaia-upgrade --description 'test' --chain-id $chain_id --deposit 10$denom --fees 1000$denom --yes"
+    proposal="gaiad --output json tx gov submit-proposal software-upgrade $upgrade_name --from $validator_address --keyring-backend test --upgrade-height $upgrade_height --upgrade-info $upgrade_info --title gaia-upgrade --description 'test' --chain-id $chain_id --deposit 10$denom --fees 1000$denom --gas auto --yes"
 
     # Submit the proposal
     echo "Submitting the upgrade proposal."
@@ -87,7 +87,7 @@ if [ -n "$upgrade_name" ]; then
     txhash=$($proposal | jq -r .txhash)
 
     # Wait for the proposal to go on chain
-    sleep 12
+    sleep 14
 
     # Get proposal ID from txhash
     echo "Get proposal ID from txhash"
