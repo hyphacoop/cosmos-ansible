@@ -45,6 +45,19 @@ fi
 if [ -n "$upgrade_name" ]; then
     echo "Upgrading to $upgrade_name."
 
+    # Add go to PATH
+    echo "Adding go to PATH..."
+    export PATH="$PATH:/usr/local/go/bin"
+    echo "PATH=$PATH"
+
+   # Install new gaia version
+    cd ~/gaia
+    git checkout $upgrade_version
+    git pull
+    make install
+    mkdir -p ~/.gaia/cosmovisor/upgrades/v7-Theta/bin
+    cp ~/go/bin/gaiad ~/.gaia/cosmovisor/upgrades/v7-Theta/bin
+
     # Set time to wait for proposal to pass
     echo "Get voting_period from genesis file"
     voting_period=$(jq -r '.app_state.gov.voting_params.voting_period' ~/.gaia/config/genesis.json)
@@ -63,19 +76,6 @@ if [ -n "$upgrade_name" ]; then
     validator_address=$(jq -r '.address' ~/.gaia/validator.json)
     echo "The validator has address $validator_address."
 
-    # Add go to PATH
-    echo "Adding go to PATH..."
-    export PATH="$PATH:/usr/local/go/bin"
-    echo "PATH=$PATH"
-
-   # Install new gaia version
-    cd ~/gaia
-    git checkout $upgrade_version
-    git pull
-    make install
-    mkdir -p ~/.gaia/cosmovisor/upgrades/v7-Theta/bin
-    cp ~/go/bin/gaiad ~/.gaia/cosmovisor/upgrades/v7-Theta/bin
-
     # Auto download: Set the binary paths need for the proposal message
     download_path="https://github.com/cosmos/gaia/releases/download/$upgrade_version"
     upgrade_info="{\"binaries\":{\"linux/amd64\":\"$download_path/gaiad-$upgrade_version-linux-amd64\",\"linux/arm64\":\"$download_path/$upgrade_version/gaiad-$upgrade_version-linux-arm64\",\"darwin/amd64\":\"$download_path/gaiad-$upgrade_version-darwin-amd64\",\"windows/amd64\":\"$download_path/gaiad-$upgrade_version-windows-amd64.exe\"}}"
@@ -87,7 +87,7 @@ if [ -n "$upgrade_name" ]; then
     txhash=$($proposal | jq -r .txhash)
 
     # Wait for the proposal to go on chain
-    sleep 14
+    sleep 6
 
     # Get proposal ID from txhash
     echo "Get proposal ID from txhash"
