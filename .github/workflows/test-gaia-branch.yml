@@ -110,7 +110,7 @@ jobs:
       - name: Test software upgrade
         run: tests/test_software_upgrade_gaia.sh 127.0.0.1 26657 ${{ matrix.upgrade_version }}
       - name: Restart gaiad service
-        run: systemctl restart gaiad
+        run: sudo systemctl restart gaiad
       - name: Check blocks are being produced
         run: tests/test_block_production.sh 127.0.0.1 26657 30  
       - name: Happy path - transaction testing
