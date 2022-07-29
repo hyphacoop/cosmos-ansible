@@ -6,7 +6,7 @@ gaia_port=$2
 stop_height=$3
 
 # Test gaia response
-tests/test_gaia_response.sh $gaia_host $gaia_port
+$HOME/work/cosmos-ansible/cosmos-ansible/tests/test_gaia_response.sh $gaia_host $gaia_port
 # Exit if test_gaia_response.sh fails
 if [ $? != 0 ]
 then

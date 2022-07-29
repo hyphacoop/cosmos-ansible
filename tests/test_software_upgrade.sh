@@ -7,7 +7,11 @@ gaia_host=$1
 gaia_port=$2
 upgrade_version=$3
 
+echo "HOME: $HOME"
+echo "PWD: $PWD"
+
 echo "Attempting upgrade to $upgrade_version."
+
 
 # Add gaiad to PATH
 echo "Adding gaiad to PATH..."
@@ -108,11 +112,11 @@ if [ -n "$upgrade_name" ]; then
 
     # Wait until the right height is reached
     echo "Waiting for the upgrade to take place at block height $upgrade_height..."
-    tests/test_block_production.sh $gaia_host $gaia_port $upgrade_height
+    $HOME/work/cosmos-ansible/cosmos-ansible/tests/test_block_production.sh $gaia_host $gaia_port $upgrade_height
     echo "The upgrade height was reached."
 
     # Test gaia response
-    tests/test_gaia_response.sh $gaia_host $gaia_port
+    $HOME/work/cosmos-ansible/cosmos-ansible/tests/test_gaia_response.sh $gaia_host $gaia_port
 
     # Get running version
     gaiad_upgraded_version=$(curl -s http://$gaia_host:$gaia_port/abci_info | jq -r .result.response.version)
@@ -125,7 +129,7 @@ if [ -n "$upgrade_name" ]; then
     # fi
 
     # Test block production
-    tests/test_block_production.sh $gaia_host $gaia_port $[$upgrade_height+10]
+    $HOME/work/cosmos-ansible/cosmos-ansible/tests/test_block_production.sh $gaia_host $gaia_port $[$upgrade_height+10]
 
 else
     echo "No upgrade name specified, skipping upgrade."
