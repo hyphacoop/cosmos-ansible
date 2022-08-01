@@ -50,7 +50,7 @@ jobs:
       upgrade_versions: ${{ steps.generate-upgrade.outputs.upgrade_versions }}
 
   test-start:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-20.04
     needs: generate-matrices
     strategy:
       matrix:
