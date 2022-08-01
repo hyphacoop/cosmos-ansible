@@ -118,7 +118,7 @@ jobs:
         run: tests/test_tx_fresh.sh
 
   test-upgrade-cosmovisor:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-20.04
     needs: generate-matrices
     strategy:
       matrix:
