@@ -26,7 +26,7 @@ trimmed_releases = [release for release in releases_list if
 for rel in trimmed_releases:
     if rel['name'] == 'v7.0.0-rc0':
         trimmed_releases.remove(rel)
-trimmed_releases.append({'name': 'release/v7.0.x'})
+# trimmed_releases.append({'name': 'release/v7.0.x'})
 
 start_json = json.dumps(
     {'gaia_version': [rel['name'] for rel in trimmed_releases]})
