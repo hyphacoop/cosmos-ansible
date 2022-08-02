@@ -18,7 +18,7 @@ all:
     p2p_persistent_peers: "9e3598aa3b09ab90a99180b3987f98d69d37ce37@validator-40.testnet.com:26656,6bf63611fd835136ee1039724d40c9989ffd180c@validator-32.testnet.com:26656,f13f0566f2052a737c402a9928d6f9a703ffd47d@validator-28.testnet.com:26656"
     reboot: false
   children:
-    gaia:
+    node:
       hosts:
         validator-40.testnet.com:
           node_key_file: "examples/validator-keys/validator-40/node_key.json"

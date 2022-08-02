@@ -18,7 +18,7 @@ all:
     reboot: false
     ansible_user: root
   children:
-    gaia:
+    node:
       hosts:
         my-chain-1.dev.testnet.com:
           chain_id: my-chain-1

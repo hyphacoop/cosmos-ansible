@@ -48,7 +48,7 @@ We can divide the deployment into the following stages:
 1. Set up the monitor host.
 2. Prepare the gaia assets (genesis file, and validator keys).
 3. Configure the inventory file.
-4. Run the `gaia.yml` playbook from the [cosmos-ansible](https://github.com/hyphacoop/cosmos-ansible/) repo.
+4. Run the `node.yml` playbook from the [cosmos-ansible](https://github.com/hyphacoop/cosmos-ansible/) repo.
 
 ## Prerequisites
 
@@ -185,7 +185,7 @@ Make the following modifications to [inventory-multi-node.yml](/examples/invento
 ### Run the playbook 
 
 ```
-ansible-playbook gaia.yml -i inventory-multi-node.yml
+ansible-playbook node.yml -i inventory-multi-node.yml
 ```
 
 We can verify the chain is live by logging into any node machine and running `journalctl -fu cosmovisor`.

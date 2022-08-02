@@ -16,7 +16,7 @@ all:
     p2p_seeds: "639d50339d7045436c756a042906b9a69970913f@seed-01.theta-testnet.polypore.xyz:26656,3e506472683ceb7ed75c1578d092c79785c27857@seed-02.theta-testnet.polypore.xyz:26656"
     reboot: false
   children:
-    gaia:
+    node:
       hosts:
         "{{ target }}":
           fast_sync: true

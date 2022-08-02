@@ -17,7 +17,7 @@ all:
     swap_size: 8192
     reboot: true
   children:
-    gaia:
+    node:
       hosts:
         "{{ target }}":
           fast_sync: true

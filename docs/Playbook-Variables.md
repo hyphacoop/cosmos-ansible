@@ -4,7 +4,7 @@ You can set many variables on the command line when running a playbook.
 
 For example, to specify a Gaia version for all the hosts in the play:
 ```
-ansible-playbook gaia.yml -i examples/inventory-local.yml --extra-vars "chain_version=v7.0.2"
+ansible-playbook node.yml -i examples/inventory-local.yml --extra-vars "chain_version=v7.0.2"
 ```
 
 - Default values and less commonly used variables can be found in the defaults [main.yml file](/roles/gaia/defaults/main.yml).

@@ -8,7 +8,7 @@ all:
     faucet_enabled: true
     ansible_user: root
   children:
-    gaia:
+    node:
       hosts:
         "{{ target }}":
           fast_sync: false

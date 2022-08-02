@@ -1,12 +1,12 @@
 # Cosmos REST Faucet configuration
 
-gaia_home_folder = "{{gaiad_home}}"
+gaia_home_folder = "{{chain_home}}"
 transactions_log = "transactions.csv"
 request_timeout    = "86400"
 
 [cosmos]
 prefix         = "cosmos"
-denomination   = "{{gaiad_bond_denom}}"
+denomination   = "{{chain_denom}}"
 
 [testnets]
     [testnets.{{chain_id}}]

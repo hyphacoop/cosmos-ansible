@@ -1,0 +1,6 @@
+---
+# Configure a chain node
+- hosts: node
+  become: true
+  roles:
+  - node

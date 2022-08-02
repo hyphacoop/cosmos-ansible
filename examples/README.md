@@ -22,7 +22,7 @@ Set up a node to join the [theta testnet](https://github.com/cosmos/testnets/tre
 ### Run the playbook 
 
 ```
-ansible-playbook gaia.yml -i examples/inventory-theta.yml -e 'target=SERVER_IP_OR_DOMAIN'
+ansible-playbook node.yml -i examples/inventory-theta.yml -e 'target=SERVER_IP_OR_DOMAIN'
 ```
 
 This playbook obtains a trust block height and the corresponding hash ID from the first RPC server listed in the inventory file in order to use the state sync feature. 
@@ -39,7 +39,7 @@ Set up a node with a single validator account.
 ### Run the Playbook
 
 ```
-ansible-playbook gaia.yml -i examples/inventory-local.yml -e 'target=SERVER_IP_OR_DOMAIN'
+ansible-playbook node.yml -i examples/inventory-local.yml -e 'target=SERVER_IP_OR_DOMAIN'
 ```
 
 - The validator address and mnemonic will be saved to `/home/gaia/.gaia/create_validator.log` in the host.
@@ -59,7 +59,7 @@ The playbook will download the genesis file, and a private key is provided in th
 ### Run the playbook 
 
 ```
-ansible-playbook gaia.yml -i examples/inventory-local-genesis.yml -e 'target=SERVER_IP_OR_DOMAIN'
+ansible-playbook node.yml -i examples/inventory-local-genesis.yml -e 'target=SERVER_IP_OR_DOMAIN'
 ```
 
 ## Start a Three-Node Testnet
@@ -91,7 +91,7 @@ Refer to the [Multi-Node Testnet Setup](/docs/Multi-Node-Testnet-Setup.md) guide
 ### Run the Playbook
 
 ```
-ansible-playbook gaia.yml -i examples/inventory-three-node.yml
+ansible-playbook node.yml -i examples/inventory-three-node.yml
 ```
 
 ## Start a Single-Node Developer Testnet
@@ -118,7 +118,7 @@ Set up a host as a single-node developer testnet.
 ### Run the playbook 
 
 ```
-ansible-playbook gaia.yml -i examples/inventory-dev.yml -e 'target=SERVER_IP_OR_DOMAIN'
+ansible-playbook node.yml -i examples/inventory-dev.yml -e 'target=SERVER_IP_OR_DOMAIN'
 ```
 
 ## Start a Multi-Node Testnet
