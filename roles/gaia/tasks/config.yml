@@ -8,7 +8,7 @@
     gaiad unsafe-reset-all --home {{chain_home}}
   become_user: "{{node_user}}"
   tags:
-    - gaiad_reset
+    - chain_reset
 
 - name: reset gaiad database (command for >v7.0.0)
   when: node_unsafe_reset and ((major_version|int == 7 and patch_version|int >= 1) or major_version|int > 7)
@@ -18,7 +18,7 @@
     gaiad tendermint unsafe-reset-all --home {{chain_home}}
   become_user: "{{node_user}}"
   tags:
-    - gaiad_reset
+    - chain_reset
 
 - name: create validator
   when: chain_create_validator

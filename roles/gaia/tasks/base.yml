@@ -32,9 +32,9 @@
     patch_version: "{{ chain_version[5] }}"
   when: major_version is undefined and patch_version is undefined
   tags:
-    - gaiad_reset
-    - gaiad_stop
-    - gaiad_restart
+    - chain_reset
+    - chain_stop
+    - chain_restart
 
 - include_role:
     name: common
@@ -67,8 +67,8 @@
 - name: Populate service facts
   service_facts:
   tags:
-    - gaiad_stop
-    - gaiad_restart
+    - chain_stop
+    - chain_restart
 
 - name: Stop existing faucet systemd service
   when: >
@@ -78,8 +78,8 @@
     state: stopped
     name: "{{faucet_service_name}}"
   tags:
-    - gaiad_stop
-    - gaiad_restart
+    - chain_stop
+    - chain_restart
 
 - name: Stop existing gaiad systemd service
   # Check for both `SERVICE_NAME` and `SERVICE_NAME.service`
@@ -91,8 +91,8 @@
     state: stopped
     name: "{{node_service_name}}"
   tags:
-    - gaiad_stop
-    - gaiad_restart
+    - chain_stop
+    - chain_restart
 
 - name: Stop existing cosmovisor systemd service
   when: >
@@ -103,8 +103,8 @@
     state: stopped
     name: "{{cosmovisor_service_name}}"
   tags:
-    - gaiad_stop
-    - gaiad_restart
+    - chain_stop
+    - chain_restart
 
 - name: Check golang version
   shell: |

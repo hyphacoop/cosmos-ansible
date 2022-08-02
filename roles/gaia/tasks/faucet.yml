@@ -64,5 +64,5 @@
     enabled: true
     name: "{{faucet_service_name}}"
   tags:
-    - gaiad_start
-    - gaiad_restart
+    - chain_start
+    - chain_restart
