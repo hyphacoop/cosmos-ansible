@@ -5,12 +5,12 @@ nodejs_version: "14.x"
 bigdipper_user: "bigdipper"
 bigdipper_user_home: "/home/{{bigdipper_user}}"
 
-bigdipper_db: "bigdipper"
-bigdipper_db_schema: "bdjuno"
+bigdipper_db: bdjuno
 bigdipper_db_user: "bdjuno"
-bigdipper_db_password: "PASSWORD"
-bigdipper_db_host: "localhost"
-bigdipper_db_port: 5432
+# Just something random to prevent drive-by malware from guessing or in case
+# it's accidentally exposed. The DB runs on localhost so the password doesn't
+# need to be secret.
+bigdipper_db_password: "fh8XZju6cwDRRryt"
 
 bigdipper_genesis_file_path: "/home/gaia/.gaia/config/genesis.json"
 
@@ -25,14 +25,16 @@ bdjuno_bin: "{{bigdipper_user_home}}/go/bin/bdjuno"
 bdjuno_service_name: "bdjuno"
 bdjuno_version: "cosmos/v0.44.x"
 
-hasura_version: v2.2.0
-hasura_cli_version: 2.2.0
+bdjuno_hasura_actions_port: 3000
+
+hasura_version: v2.9.0
+hasura_cli_version: "2.9.0"
 hasura_port: 8080
 hasura_actions_service_name: hasura-actions
 
 bdui_dir: "{{bigdipper_user_home}}/big-dipper"
-bdui_version: "base-v1.10.1"
-bdui_port: 3000
+bdui_version: "base-v2.1.0"
+bdui_port: 3001
 bdui_graphql_url: "http://localhost:{{hasura_port}}/v1/graphql"
 bdui_graphql_ws_url: "ws://localhost:{{hasura_port}}/v1/graphql"
 bdui_rpc_websocket: "ws://localhost:26667/websocket"
@@ -40,5 +42,7 @@ bdui_rpc_websocket: "ws://localhost:26667/websocket"
 bdui_public_url: "http://{{inventory_hostname}}:{{bdui_port}}"
 bdui_chain: testnet
 bdui_service_name: bigdipper
-# bigdipper_genesis_time: 0
-# bigdipper_genesis_height: 0
+
+# TODO
+bigdipper_genesis_time: 2021-07-13T08:00:00
+bigdipper_genesis_height: 1

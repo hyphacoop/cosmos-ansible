@@ -28,16 +28,19 @@ parsing:
     parse_genesis: true
     start_height: 1
     fast_sync: true
-    genesis_file_path: {{bigdipper_genesis_file_path}}
+    genesis_file_path: {{bdjuno_home}}/genesis.json
+    average_block_time: 3s
 database:
     name: {{bigdipper_db}}
-    host: {{bigdipper_db_host}}
-    port: {{bigdipper_db_port}}
+    host: localhost
+    port: 5432
     user: {{bigdipper_db_user}}
-    password: {{bigdipper_db_host}}
-    schema: {{bigdipper_db_schema}}
+    password: {{bigdipper_db_password}}
+    schema: public
     max_open_connections: 10
     max_idle_connections: 10
+    partition_size: 100000
+    partition_batch: 1000
 logging:
     level: debug
     format: text
@@ -72,5 +75,5 @@ pricefeed:
           units:
             - denom: theta
               exponent: 0
-distribution:
-    rewards_frequency: 100
+actions:
+    port: {{bdjuno_hasura_actions_port}}

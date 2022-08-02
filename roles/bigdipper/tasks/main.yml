@@ -14,7 +14,7 @@
   include_role:
     name: gantsign.golang
   vars:
-    golang_version: 1.16.4
+    golang_version: 1.18.4
 
 - name: Ensure user exists for bigdipper
   user:
@@ -26,7 +26,7 @@
 
 - name: "Register bigdipper db URL"
   set_fact:
-    bigdipper_db_url: "postgres://{{bigdipper_db_user}}:{{bigdipper_db_password}}@{{bigdipper_db_host}}:{{bigdipper_db_port}}/{{bigdipper_db}}"
+    bigdipper_db_url: "postgres://{{bigdipper_db_user}}:{{bigdipper_db_password}}@localhost:5432/{{bigdipper_db}}"
 
 - name: "Checkout BDJuno"
   git:
@@ -45,27 +45,36 @@
   become_user: postgres
   community.postgresql.postgresql_db:
     name: "{{bigdipper_db}}"
-    port: "{{bigdipper_db_port}}"
 
-- name: Create postgres schema
-  become_user: postgres
-  community.postgresql.postgresql_schema:
-    db: "{{bigdipper_db}}"
-    name: "{{bigdipper_db_schema}}"
-
-- name: "Configure users on postgres"
+- name: Configure users on postgres
   become_user: postgres
   community.postgresql.postgresql_user:
     db: "{{bigdipper_db}}"
     name: "{{bigdipper_db_user}}"
     password: "{{bigdipper_db_password}}"
 
-# Loop through schemas one by one
-# - name: "Configure postgres schema"
+- name: Grant user access to database
+  become_user: postgres
+  community.postgresql.postgresql_privs:
+    db: "{{bigdipper_db}}"
+    privs: ALL
+    type: database
+    obj: "{{bigdipper_db}}"
+    role: "{{bigdipper_db_user}}"
+
+- name: Run postgresql bdjuno setup scripts
+  become_user: postgres
+  community.postgresql.postgresql_script:
+    db: "{{bigdipper_db}}"
+    path: "{{ item }}"
+    login_user: "{{bigdipper_db_user}}"
+    login_password: "{{bigdipper_db_password}}"
+  with_fileglob:
+    - "{{bdjuno_dir}}/database/schema/*"
+
 - name: "Install BDJuno"
   shell: |
-    PATH=$PATH:{{ansible_local.golang.general.home}}/bin:{{ ansible_env.HOME }}/go/bin
-    export PATH
+    export PATH=$PATH:{{ansible_local.golang.general.home}}/bin:{{ ansible_env.HOME }}/go/bin
     cd {{bdjuno_dir}}
     make install
     bdjuno init --home {{bdjuno_home}} --replace
@@ -78,34 +87,16 @@
     src: bdjuno-config.yaml.j2
     dest: "{{bdjuno_home}}/config.yaml"
 
-# Genesis file configuration
-# Copied from Gaia
-# TODO: Make this somewhat reusable between the roles?
-- name: download genesis file
-  when: genesis_url is defined
-  shell: |
-    wget {{genesis_url}} -O genesis.json.gz
-    gunzip -c genesis.json.gz > {{bigdipper_user_home}}/genesis.json
 - name: copy genesis.json
-  when: genesis_file is defined
   copy:
-    src: '{{genesis_file}}'
-    dest: '{{bigdipper_user_home}}/genesis.json'
-- name: verify genesis file
-  when: genesis_shasum is defined
-  # Throw an error if shasum doesn't match
-  shell: |
-    GENESIS_SHASUM="$(sha256sum {{ bigdipper_user_home }}/genesis.json)"
-    if [ $GENESIS_SHASUM != {{ genesis_shasum }} ]; then
-      exit 1
-    fi
-      exit 0
+    src: "{{bigdipper_genesis_file_path}}"
+    dest: "{{bdjuno_home}}/genesis.json"
+    remote_src: true
 
 - name: "Parse genesis file with bdjuno"
   shell: |
-    PATH=$PATH:{{ansible_local.golang.general.home}}/bin:{{ ansible_env.HOME }}/go/bin
-    export PATH
-    bdjuno parse-genesis --home {{bdjuno_home}} --genesis-file-path {{bigdipper_home}}/genesis.json
+    export PATH=$PATH:{{ansible_local.golang.general.home}}/bin:{{ ansible_env.HOME }}/go/bin
+    bdjuno parse genesis-file --home {{bdjuno_home}} --genesis-file-path {{bdjuno_home}}/genesis.json
 
 # TODO: Default to local node, expose config vars
 - name: "Set up bdjuno systemd service"
@@ -113,7 +104,7 @@
     src: bdjuno.service.j2
     dest: "/etc/systemd/system/{{bdjuno_service_name}}.service"
 
-- name: Restart journalctl so that the logs may flow
+- name: "Restart journalctl: the logs must flow"
   systemd:
     state: restarted
     name: systemd-journald
@@ -125,39 +116,31 @@
     enabled: true
     name: "{{bdjuno_service_name}}"
 
-
 - name: "Run docker image for Hasura"
   community.docker.docker_container:
     state: present
     name: big-dipper-hasura
     image: "hasura/graphql-engine:{{hasura_version}}"
-    ports:
-      - "{{hasura_port}}:{{hasura_port}}"
+    network_mode: host
+    restart_policy: "always"
     env:
       HASURA_GRAPHQL_DATABASE_URL: "{{bigdipper_db_url}}"
+      HASURA_GRAPHQL_SERVER_PORT: "{{hasura_port}}"
+      HASURA_GRAPHQL_SERVER_HOST: "localhost"
+      HASURA_GRAPHQL_UNAUTHORIZED_ROLE: "anonymous"
+      ACTION_BASE_URL: "http://localhost:{{bdjuno_hasura_actions_port}}"
 
 - name: "Set up node+npm"
   include_role:
     name: geerlingguy.nodejs
 
-# TODO: Use PG_DATABASE_URL to specify the database?
-- name: "Set up hasuna CLI"
-  shell: "npm i --global hasura-cli@{{hasura_cli_version}}"
+- name: "Set up hasura CLI"
+  shell: "npm install --global hasura-cli@{{hasura_cli_version}}"
+
 - name: "Apply metadata to hasura"
   shell: |
-    cd {{bdjuno_dir}}/hasura
+    cd "{{bdjuno_dir}}/hasura"
     hasura metadata apply --endpoint http://localhost:{{hasura_port}}
-- name: "Set up hasura-actions systemd service"
-  template:
-    src: hasura-actions.service.j2
-    dest: "/etc/systemd/system/{{hasura_actions_service_name}}.service"
-
-- name: "Run hasura-actions service"
-  systemd:
-    daemon_reload: true
-    state: restarted
-    enabled: true
-    name: "{{hasura_actions_service_name}}"
 
 - name: "Clone and checkout big-dipper-ui"
   git:
@@ -165,10 +148,36 @@
     dest: "{{bdui_dir}}"
     version: "{{bdui_version}}"
 
+- name: Install deps for big-dipper-ui
+  shell: |
+    cd "{{bdui_dir}}"
+    npm ci
+
 - name: "General config for big-dipper-ui"
   template:
-    src: chain_config.json.j2
-    dest: "{{bdui_dir}}/chain_config.json"
+    src: bigdipper-general_config.json.j2
+    dest: "{{bdui_dir}}/src/configs/general_config.json"
+
+- name: "Chain config for big-dipper-ui"
+  template:
+    src: bigdipper-chain_config.json.j2
+    dest: "{{bdui_dir}}/src/configs/chain_config.{{bdui_chain}}.json"
+
+- name: "codegen.yml config for big-dipper-ui"
+  template:
+    src: bigdipper-codegen.yml.j2
+    dest: "{{bdui_dir}}/codegen.yml"
+
+- name: Check Hasura is in sync with our graphql operations
+  shell: |
+    cd "{{bdui_dir}}"
+    npm run graphql:codegen
+
+- name: Build big-dipper-ui
+  shell: |
+    cd "{{bdui_dir}}"
+    npm run build
+
 - name: "Create systemd service for big-dipper-ui"
   template:
     src: bigdipper.service.j2

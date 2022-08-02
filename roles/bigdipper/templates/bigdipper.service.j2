@@ -1,14 +1,12 @@
 [Unit]
 Description=Bigdipper
-After=network-online.target
+After=network-online.target bdjuno.service
 
 [Service]
 User={{bigdipper_user}}
-ExecStart=TODO
+ExecStart={{ npm_config_prefix }}/bin/npm run start
+WorkingDirectory={{bdui_dir}}
 Restart=always
-RestartSec=3
-LimitNOFILE=4096
-
 Environment="NEXT_PUBLIC_GRAPHQL_URL={{bdui_graphql_url}}"
 Environment="NEXT_PUBLIC_GRAPHQL_WS={{bdui_graphql_ws_url}}"
 Environment="NEXT_PUBLIC_RPC_WEBSOCKET={{bdui_rpc_websocket}}"
@@ -19,4 +17,3 @@ Environment="NEXT_PUBLIC_CHAIN_TYPE={{bdui_chain}}"
 
 [Install]
 WantedBy=multi-user.target
-
