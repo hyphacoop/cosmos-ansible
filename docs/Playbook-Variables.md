@@ -18,11 +18,11 @@ ansible-playbook gaia.yml -i examples/inventory-local.yml --extra-vars "chain_ve
 | `go_version`          | Golang version to install                                 | `"1.18.1"`    |
 | `enable_swap`         | Enable/disable swap                                       | `false`       |
 | `swap_size`           | Swap file size in MB (8 GB default)                       | `8192`        |
-| `gaiad_use_ssl_proxy` | Enable SSL proxy for gaiad endpoints using Nginx*          | `false`       |
-| `gaiad_api_host`      | Set the subdomain for REST API (e.g. `rest.testnet.com`)* | `rest`        |
-| `gaiad_rpc_host`      | Set the subdomain for RPC (e.g. `rpc.testnet.com`)*       | `rpc`         |
-| `gaiad_grpc_host`     | Set the subdomain for GRPC (e.g. `grpc.testnet.com`)*     | `grpc`        |
-| `gaiad_p2p_host`      | Set the subdomain for P2P (e.g. `p2p.testnet.com`)*       | `p2p`         |
+| `chain_use_ssl_proxy` | Enable SSL proxy for gaiad endpoints using Nginx*          | `false`       |
+| `chain_api_host`      | Set the subdomain for REST API (e.g. `rest.testnet.com`)* | `rest`        |
+| `chain_rpc_host`      | Set the subdomain for RPC (e.g. `rpc.testnet.com`)*       | `rpc`         |
+| `chain_grpc_host`     | Set the subdomain for GRPC (e.g. `grpc.testnet.com`)*     | `grpc`        |
+| `chain_p2p_host`      | Set the subdomain for P2P (e.g. `p2p.testnet.com`)*       | `p2p`         |
 | `reboot`              | Reboot the machine after all tasks are done when `true`**  | `false`       |
 
 *Configure DNS before provisioning.  

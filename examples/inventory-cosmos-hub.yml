@@ -6,11 +6,11 @@ all:
     chain_registry: "https://registry.ping.pub/cosmoshub/chain.json"
     chain_home_clear: false
     node_unsafe_reset: true
-    gaiad_use_ssl_proxy: false
-    gaiad_api_host: "rest"
-    gaiad_rpc_host: "rpc"
-    gaiad_p2p_host: "p2p"
-    gaiad_grpc_host: "grpc"
+    chain_use_ssl_proxy: false
+    chain_api_host: "rest"
+    chain_rpc_host: "rpc"
+    chain_p2p_host: "p2p"
+    chain_grpc_host: "grpc"
     addrbook_url: "https://quicksync.io/addrbook.cosmos.json"
     minimum_gas_prices: "0.0025uatom"
     enable_swap: true

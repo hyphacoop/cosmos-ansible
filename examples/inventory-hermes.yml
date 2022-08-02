@@ -5,11 +5,11 @@ all:
     chain_home_clear: true
     chain_version: v7.0.2
     api_enabled: true
-    gaiad_use_ssl_proxy: true
-    gaiad_api_host: "rest"
-    gaiad_rpc_host: "rpc"
-    gaiad_p2p_host: "p2p"
-    gaiad_grpc_host: "grpc"
+    chain_use_ssl_proxy: true
+    chain_api_host: "rest"
+    chain_rpc_host: "rpc"
+    chain_p2p_host: "p2p"
+    chain_grpc_host: "grpc"
     letsencrypt_email: "validator@devnet.com"
     enable_swap: false
     swap_size: 8192

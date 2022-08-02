@@ -9,10 +9,10 @@ all:
     minimum_gas_prices: '0.001uatom'
     chain_home_clear: true
     chain_create_validator: false
-    gaiad_api_host: "rest"
-    gaiad_rpc_host: "rpc"
-    gaiad_p2p_host: "p2p"
-    gaiad_grpc_host: "grpc"
+    chain_api_host: "rest"
+    chain_rpc_host: "rpc"
+    chain_p2p_host: "p2p"
+    chain_grpc_host: "grpc"
     enable_swap: false
     swap_size: 8192
     p2p_persistent_peers: "9e3598aa3b09ab90a99180b3987f98d69d37ce37@validator-40.testnet.com:26656,6bf63611fd835136ee1039724d40c9989ffd180c@validator-32.testnet.com:26656,f13f0566f2052a737c402a9928d6f9a703ffd47d@validator-28.testnet.com:26656"
