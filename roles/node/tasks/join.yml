@@ -60,7 +60,7 @@
   become_user: "{{node_user}}"
 
 - name: download genesis file
-  when: genesis_url is defined
+  when: genesis_url is defined and not genesis_url == ""
   get_url:
     url: "{{genesis_url}}"
     dest: "{{ node_user_home }}/genesis.data"
@@ -68,20 +68,20 @@
   become_user: "{{node_user}}"
 
 - name: Check file type of downloaded genesis file
-  when: genesis_url is defined
+  when: genesis_url is defined and not genesis_url == ""
   stat:
     path: '{{node_user_home}}/genesis.data'
     get_mime: true
   register: file_type
 
 - name: File type of {{node_user_home}}/genesis.data
-  when: genesis_url is defined
+  when: genesis_url is defined and not genesis_url == ""
   debug:
     msg: '{{file_type.stat.mimetype}}'
 
 - name: Extract the file if genesis is gzip
   when:
-    - genesis_url is defined
+    - genesis_url is defined and not genesis_url == ""
     - file_type.stat.mimetype == "application/gzip"
   shell: |
     gunzip -c $HOME/genesis.data > {{chain_home}}/config/genesis.json
@@ -89,7 +89,7 @@
 
 - name: Copy non-zipped genesis to genesis config
   when:
-    - genesis_url is defined
+    - genesis_url is defined and not genesis_url == ""
     - file_type.stat.mimetype == "text/plain"
   copy:
     src: '{{node_user_home}}/genesis.data'

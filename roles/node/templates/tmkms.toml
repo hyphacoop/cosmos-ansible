@@ -1,0 +1,29 @@
+# Tendermint KMS configuration file
+
+## Chain Configuration
+
+### Cosmos Hub Network
+
+[[chain]]
+id = "{{chain_id}}"
+# ??? what are these values
+key_format = { type = "bech32", account_key_prefix = "osmopub", consensus_key_prefix = "osmovalconspub" }
+state_file = "{{ node_user_home }}/.tmkms/config/state/priv_validator_state.json"
+
+## Signing Provider Configuration
+
+### Software-based Signer Configuration
+
+[[providers.softsign]]
+chain_ids = ["{{chain_id}}"]
+key_type = "consensus"
+path = "{{ node_user_home }}/.tmkms/config/secrets/priv_validator_key"
+
+## Validator Configuration
+
+[[validator]]
+chain_id = "{{chain_id}}"
+addr = "{{ priv_validator_raddr }}"
+secret_key = "{{ node_user_home }}/.tmkms/config/secrets/secret_connection_key"
+protocol_version = "v0.34"
+reconnect = true

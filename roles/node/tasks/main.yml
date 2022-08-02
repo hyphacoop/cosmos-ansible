@@ -1,4 +1,10 @@
 ---
+- name: define kms listen address
+  set_fact:
+    priv_validator_laddr: "tcp://127.0.0.1:26659"
+    priv_validator_raddr: "tcp://127.0.0.1:26659"
+  when: kms is defined and kms == 'tmkms'
+
 - name: base
   import_tasks: base.yml
 
@@ -8,6 +14,15 @@
 - name: faucet
   import_tasks: faucet.yml
   when: faucet_enabled
+
+- name: install rust
+  include_role: 
+    name: rust_install
+  when: kms is defined and kms == 'tmkms'
+
+- name: kms
+  import_tasks: tmkms.yml
+  when: kms is defined and kms == 'tmkms'
 
 - name: join
   import_tasks: join.yml

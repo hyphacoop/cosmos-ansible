@@ -1,0 +1,73 @@
+---
+- name: debian prerequisits
+  apt:
+    update_cache: true
+    pkg:
+      - libusb-1.0-0-dev
+      - usbutils
+      - pkg-config
+
+- name: check if tmkms is installed
+  shell: |
+    PATH=$PATH:$HOME/.cargo/bin
+    command -v cargo
+  register: tmkms_exists
+  ignore_errors: yes
+  become_user: "{{node_user}}"
+
+- name: install tmkms
+#  when: cargo_exists is failed
+  shell: |
+    PATH=$PATH:$HOME/.cargo/bin
+    cargo install tmkms --features=softsign #--features=yubihsm --features=ledger --features=softsign
+  become_user: "{{node_user}}"
+
+- name: Create tmkms directory
+  ansible.builtin.file:
+    path: "{{ node_user_home }}/.tmkms"
+    state: directory
+    mode: '0770'
+    owner: "{{node_user}}"
+
+
+- name: init tmkms
+#  when: cargo_exists is failed
+  shell: |
+    PATH=$PATH:$HOME/.cargo/bin
+    cd "{{ node_user_home }}/.tmkms"
+    tmkms init config
+    tmkms softsign keygen {{ node_user_home }}/.tmkms/config/secrets/secret_connection_key
+  become_user: "{{node_user}}"
+
+- name: import validator pivate key into kms
+  shell: |
+    PATH=$PATH:$HOME/.cargo/bin
+    tmkms softsign import {{chain_home}}/config/priv_validator_key.json {{ node_user_home }}/.tmkms/config/secrets/priv_validator_key
+  become_user: "{{node_user}}"
+
+- name: configure tmkms
+  template:
+    dest: "{{ node_user_home }}/.tmkms/config/tmkms.toml"
+    src: tmkms.toml
+
+- name: usb permissions
+  copy:
+    content: |
+      "SUBSYSTEM==\"*\", ATTRS{idVendor}==\"2c97\", GROUP=\"{{ node_user }}\", MODE=\"0660\""
+    dest: /etc/udev/rules.d/99-ledger-usb.rules 
+
+- name: configure tmkms service
+  template:
+    src: tmkms.service.j2
+    dest: "/etc/systemd/system/tmkms.service"
+
+- name: Start faucet service
+  systemd:
+    daemon_reload: true
+    state: restarted
+    enabled: true
+    name: "tmkms"
+  tags:
+    - gaiad_start
+    - gaiad_restart
+

@@ -32,8 +32,8 @@
     enabled: true
     name: "{{node_service_name}}"
   tags:
-    - chain_start
-    - chain_restart
+    - gaiad_start
+    - gaiad_restart
 
 - name: Enable cosmovisor systemd service
   when: use_cosmovisor
@@ -51,5 +51,5 @@
     enabled: true
     name: "{{cosmovisor_service_name}}"
   tags:
-    - chain_start
-    - chain_restart
+    - gaiad_start
+    - gaiad_restart

@@ -1,0 +1,12 @@
+ [Unit]
+Description="Tendermint KMS Service"
+Before={{node_service_name}}.service cosmovisor.service
+
+
+[Service]
+User={{node_user}}
+WorkingDirectory={{node_user_home}}/.tmkms
+ExecStart={{node_user_home}}/.cargo/bin/tmkms start -c {{node_user_home}}/.tmkms/config/tmkms.toml
+
+[Install]
+WantedBy={{node_service_name}}.service cosmovisor.service
