@@ -33,7 +33,7 @@ ansible-playbook gaia.yml -i examples/inventory-local.yml --extra-vars "chain_ve
 |------------------------|---------------------------------------------------------------------------------|------------------------------------------------------------------------------------|
 | `node_user`            | User account to install the chain binary in                                     | `gaia`                                                                             |
 | `node_user_home`       | Path to the user account home                                                   | `/home/gaia`                                                                       |
-| `chain_home`           | Path to Gaia home folder home                                                   | `/home/gaia/.gaia`                                                                 |
+| `chain_home`           | Path to chain home folder home                                                   | `/home/gaia/.gaia`                                                                 |
 | `chain_home_clear`     | Clear the `chain_home` folder before install when `true`                        | `false`                                                                            |
 | `node_unsafe_reset`    | Clear the chain database before install when `true`                             | `true`                                                                             |
 | `chain_registry`       | Define `chain_version`, `chain_id` and `genesis_url` using the chain registry   | `https://registry.ping.pub/testnets/theta/chain.json`                              |
