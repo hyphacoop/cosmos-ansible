@@ -3,8 +3,15 @@
   set_fact:
     priv_validator_laddr: "tcp://127.0.0.1:26659"
     priv_validator_raddr: "tcp://127.0.0.1:26659"
-  when: kms is defined and kms="tmkms" and kms_ip is undefined
+  when: kms is defined and kms=="tmkms" and kms_ip is undefined
 
+- name: Ensure kms user exists
+  user:
+    name: "{{kms_user}}"
+    append: true
+    shell: /bin/nologin
+    comment: KMS user
+    
 - name: define kms listen address
   set_fact:
     rust_user: "{{kms_user}}" 
@@ -13,13 +20,6 @@
   include_role: 
     name: rust_install
  
-- name: Ensure kms user exists
-  user:
-    name: "{{kms_user}}"
-    append: true
-    shell: /bin/nologin
-    comment: KMS user
-
 # http://ftp.us.debian.org/debian/pool/main/s/systemd/libudev-dev_250.4-1~bpo11+1_amd64.deb
 - name: debian prerequisits
   apt:

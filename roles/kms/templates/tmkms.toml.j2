@@ -8,7 +8,7 @@
 id = "{{chain_id}}"
 # ??? what are these values
 key_format = { type = "bech32", account_key_prefix = "{{ account_key_prefix }}", consensus_key_prefix = "{{ consensus_key_prefix }}" }
-state_file = "{{ node_user_home }}/.tmkms/config/state/priv_validator_state.json"
+state_file = "{{ kms_home }}/.tmkms/config/state/priv_validator_state.json"
 
 ## Signing Provider Configuration
 
@@ -17,7 +17,7 @@ state_file = "{{ node_user_home }}/.tmkms/config/state/priv_validator_state.json
 [[providers.softsign]]
 chain_ids = ["{{chain_id}}"]
 key_type = "consensus"
-path = "{{ node_user_home }}/.tmkms/config/secrets/priv_validator_key"
+path = "{{ kms_home }}/.tmkms/config/secrets/priv_validator_key"
 {% endif %}
 
 ### KMS Signer Configuration
@@ -33,6 +33,6 @@ auth = { key = {{kms_hsm_id | default(1) }}, password = "{{kms_hsm_pass}} | defa
 [[validator]]
 chain_id = "{{chain_id}}"
 addr = "{{ priv_validator_raddr }}"
-secret_key = "{{ node_user_home }}/.tmkms/config/secrets/secret_connection_key"
+secret_key = "{{ kms_home }}/.tmkms/config/secrets/secret_connection_key"
 protocol_version = "v0.34"
 reconnect = true

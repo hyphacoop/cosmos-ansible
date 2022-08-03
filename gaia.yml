@@ -3,5 +3,5 @@
 - hosts: gaia
   become: true
   roles:
-  - tmkms
+  - kms
   - gaia
