@@ -55,15 +55,6 @@
 		"statesync.chunk_fetchers": {{ statesync_chunk_fetchers | to_json }},
 		"instrumentation.prometheus": {{ prometheus_enabled | to_json }},
 		"instrumentation.prometheus_listen_addr": {{ prometheus_listen_addr | to_json }},
-		"instrumentation.namespace": {{ instrumentation_namespace | to_json }},
-{% if priv_validator_laddr is defined %}
-		"priv_validator_laddr": {{ priv_validator_laddr | to_json }},
-		"priv_validator_key_file": "",
-		"priv_validator_state_file": ""
-{% else %}
-		"priv_validator_laddr": "",
-		"priv_validator_key_file": "config/priv_validator_key.json",
-		"priv_validator_state_file": "data/priv_validator_state.json"
-{% endif %}
+		"instrumentation.namespace": {{ instrumentation_namespace | to_json }}
 	}
 }

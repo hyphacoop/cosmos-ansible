@@ -5,6 +5,14 @@
     priv_validator_raddr: "tcp://127.0.0.1:26659"
   when: kms is defined and kms="tmkms" and kms_ip is undefined
 
+- name: define kms listen address
+  set_fact:
+    rust_user: "{{kms_user}}" 
+
+- name: install rust
+  include_role: 
+    name: rust_install
+ 
 - name: Ensure kms user exists
   user:
     name: "{{kms_user}}"
@@ -44,7 +52,6 @@
     owner: "{{kms_user}}"
 
 - name: init tmkms
-  #  when: cargo_exists is failed
   shell: |
     PATH=$PATH:$HOME/.cargo/bin
     cd "{{ kms_home }}/.tmkms"
@@ -52,10 +59,47 @@
     tmkms softsign keygen {{ kms_home }}/.tmkms/config/secrets/secret_connection_key
   become_user: "{{kms_user}}"
 
+- name: init tmkms softsign
+  when: kms == "softsign"
+  shell: |
+    PATH=$PATH:$HOME/.cargo/bin
+    cd "{{ kms_home }}/.tmkms"
+  become_user: "{{kms_user}}"
+
+- name: init tmkms yubihsm
+  when: kms == "yubihsm"
+  shell: |
+    PATH=$PATH:$HOME/.cargo/bin
+    cd "{{ kms_home }}/.tmkms/config"
+    echo y | tmkms yubihsm setup > hsmconfig.txt
+    nmonics=$(cat hsmconfig.txt | head -n 10 | tail -n 2 | sed 'N;s/\n/ /' | sed 's/    //g')
+    password=$(cat hsmconfig.txt | grep validator | head -n 1 | awk '{print $5}')
+    tmkms yubihsm keys import -t json -i 1  ~/.gaia/config/priv_validator_key.json
+  become_user: "{{kms_user}}"
+
+- name: init tmkms yubihsm
+  when: kms == "yubihsm"
+  shell: |
+    PATH=$PATH:$HOME/.cargo/bin
+    cd "{{ kms_home }}/.tmkms/config"
+    echo y | tmkms yubihsm setup > hsmconfig.txt
+    nmonics=$(cat hsmconfig.txt | head -n 10 | tail -n 2 | sed 'N;s/\n/ /' | sed 's/    //g')
+  become_user: "{{kms_user}}"
+
 - name: import validator pivate key into kms
+  when: kms == "softsign"
   shell: |
     PATH=$PATH:$HOME/.cargo/bin
     tmkms softsign import {{chain_home}}/config/priv_validator_key.json {{ kms_home }}/.tmkms/config/secrets/priv_validator_key
+  become_user: "{{kms_user}}"
+
+
+- name: import validator pivate key into kms
+  when: kms == "yubihsm"
+  shell: |
+    PATH=$PATH:$HOME/.cargo/bin
+    cd "{{ kms_home }}/.tmkms/config"
+    tmkms yubihsm keys import -t json -i 1  {{chain_home}}/config/priv_validator_key.json
   become_user: "{{kms_user}}"
 
 - name: configure tmkms
@@ -74,6 +118,12 @@
     content: |
       SUBSYSTEM=="*", ATTRS{idVendor}=="1050", GROUP="{{ kms_user }}", MODE="0660"
     dest: /etc/udev/rules.d/99-yubikey-usb.rules
+
+
+- name: reload dev permissions
+  shell: |
+    udevadm control-reload-rules
+    udevadm trigger
 
 - name: configure tmkms service
   template:
