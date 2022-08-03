@@ -7,17 +7,26 @@
 [[chain]]
 id = "{{chain_id}}"
 # ??? what are these values
-key_format = { type = "bech32", account_key_prefix = "osmopub", consensus_key_prefix = "osmovalconspub" }
+key_format = { type = "bech32", account_key_prefix = "{{ account_key_prefix }}", consensus_key_prefix = "{{ consensus_key_prefix }}" }
 state_file = "{{ node_user_home }}/.tmkms/config/state/priv_validator_state.json"
 
 ## Signing Provider Configuration
 
 ### Software-based Signer Configuration
-
+{% if kms_mode == softsign %}
 [[providers.softsign]]
 chain_ids = ["{{chain_id}}"]
 key_type = "consensus"
 path = "{{ node_user_home }}/.tmkms/config/secrets/priv_validator_key"
+{% endif %}
+
+### KMS Signer Configuration
+{% if kms_mode == yubihsm %}
+[[providers.yubihsm]]
+adapter = { type = "usb" }
+auth = { key = {{kms_hsm_id | default(1) }}, password = "{{kms_hsm_pass}} | default("password")" }
+{% endif %}
+
 
 ## Validator Configuration
 

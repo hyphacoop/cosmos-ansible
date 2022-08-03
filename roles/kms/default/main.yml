@@ -1,0 +1,7 @@
+---
+kms_user: kms
+kms: none
+kms_mode: none
+kms_home: "/home/{{kms_user}}"
+account_key_prefix: "cosmopub"
+consensus_key_prefix: "cosmovalconspub" 

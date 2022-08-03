@@ -1,0 +1,99 @@
+---
+- name: define kms listen address
+  set_fact:
+    priv_validator_laddr: "tcp://127.0.0.1:26659"
+    priv_validator_raddr: "tcp://127.0.0.1:26659"
+  when: kms is defined and kms="tmkms" and kms_ip is undefined
+
+- name: Ensure kms user exists
+  user:
+    name: "{{kms_user}}"
+    append: true
+    shell: /bin/nologin
+    comment: KMS user
+
+# http://ftp.us.debian.org/debian/pool/main/s/systemd/libudev-dev_250.4-1~bpo11+1_amd64.deb
+- name: debian prerequisits
+  apt:
+    update_cache: true
+    pkg:
+      - libusb-1.0-0-dev
+      - usbutils
+      - pkg-config
+
+- name: check if tmkms is installed
+  shell: |
+    PATH=$PATH:$HOME/.cargo/bin
+    command -v cargo
+  register: tmkms_exists
+  ignore_errors: true
+  become_user: "{{kms_user}}"
+
+- name: install tmkms
+  #  when: cargo_exists is failed
+  shell: |
+    PATH=$PATH:$HOME/.cargo/bin
+    cargo install tmkms --features=softsign #--features=yubihsm --features=ledger --features=softsign --features=yubihsm-server
+  become_user: "{{kms_user}}"
+
+- name: Create tmkms directory
+  ansible.builtin.file:
+    path: "{{ kms_home }}/.tmkms"
+    state: directory
+    mode: "0770"
+    owner: "{{kms_user}}"
+
+- name: init tmkms
+  #  when: cargo_exists is failed
+  shell: |
+    PATH=$PATH:$HOME/.cargo/bin
+    cd "{{ kms_home }}/.tmkms"
+    tmkms init config
+    tmkms softsign keygen {{ kms_home }}/.tmkms/config/secrets/secret_connection_key
+  become_user: "{{kms_user}}"
+
+- name: import validator pivate key into kms
+  shell: |
+    PATH=$PATH:$HOME/.cargo/bin
+    tmkms softsign import {{chain_home}}/config/priv_validator_key.json {{ kms_home }}/.tmkms/config/secrets/priv_validator_key
+  become_user: "{{kms_user}}"
+
+- name: configure tmkms
+  template:
+    dest: "{{ kms_home }}/.tmkms/config/tmkms.toml"
+    src: tmkms.toml.j2
+
+- name: usb permissions - Ledger
+  copy:
+    content: |
+      SUBSYSTEM=="*", ATTRS{idVendor}=="2c97", GROUP="{{ kms_user }}", MODE="0660"
+    dest: /etc/udev/rules.d/99-ledger-usb.rules
+
+- name: usb permissions - Yubikey
+  copy:
+    content: |
+      SUBSYSTEM=="*", ATTRS{idVendor}=="1050", GROUP="{{ kms_user }}", MODE="0660"
+    dest: /etc/udev/rules.d/99-yubikey-usb.rules
+
+- name: configure tmkms service
+  template:
+    src: tmkms.service.j2
+    dest: "/etc/systemd/system/tmkms.service"
+
+- name: Start faucet service
+  systemd:
+    daemon_reload: true
+    state: restarted
+    enabled: true
+    name: "tmkms"
+  tags:
+    - node_start
+    - node_restart
+
+
+#auth = { key = 1, password = "password" }
+#stable orchard practice hollow aspect unusual donkey student sail suggest gold labor that one put topic ginger figure lucky vocal have lock name pulse
+
+# tmkms yubihsm keys import -t json -i 1  ~/.gaia/config/priv_validator_key.json
+# tmkms yubihsm setup
+# tmkms yubihsm setup -r <nmemo>
