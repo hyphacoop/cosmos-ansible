@@ -122,6 +122,16 @@
     remote_src: yes
   become: true
 
+- name: Test go install version
+  shell: |
+    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+    which go
+    gover="$(go version)"
+    echo $gover
+    if [ "$gover" != "{{go_version}}" ]; then
+      exit 1
+    fi
+
 # TODO: Firewall
 # - name: set up firewall (block by default?)
 
