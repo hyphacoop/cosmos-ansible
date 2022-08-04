@@ -26,7 +26,7 @@
 
 - name: "Register bigdipper db URL"
   set_fact:
-    bigdipper_db_url: "postgres://{{bigdipper_db_user}}:{{bigdipper_db_password}}@localhost:5432/{{bigdipper_db}}"
+    bigdipper_db_url: "postgres://{{bigdipper_db_user}}:{{bigdipper_db_password}}@127.0.0.1:5432/{{bigdipper_db}}"
 
 - name: "Checkout BDJuno"
   git:
@@ -62,15 +62,31 @@
     obj: "{{bigdipper_db}}"
     role: "{{bigdipper_db_user}}"
 
+# - name: Copy schema files to tmp dir
+#   copy:
+#     src: "{{bdjuno_dir}}/database/schema"
+#     dest: /tmp
+#     remote_src: yes
+#     mode: '0755'
+#
+# - name: Find bdjuno schema files
+#   find:
+#     paths: "/tmp/schema"
+#   register: bdjuno_schemas
+
+- name: Find bdjuno schema files
+  find:
+    paths: "{{bdjuno_dir}}/database/schema"
+  register: bdjuno_schemas
+
 - name: Run postgresql bdjuno setup scripts
-  become_user: postgres
   community.postgresql.postgresql_script:
     db: "{{bigdipper_db}}"
-    path: "{{ item }}"
+    path: "{{ item.path }}"
     login_user: "{{bigdipper_db_user}}"
     login_password: "{{bigdipper_db_password}}"
-  with_fileglob:
-    - "{{bdjuno_dir}}/database/schema/*"
+    login_host: "127.0.0.1"
+  with_items: "{{ bdjuno_schemas.files | sort(attribute='path') }}"
 
 - name: "Install BDJuno"
   shell: |
