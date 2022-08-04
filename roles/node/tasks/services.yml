@@ -1,5 +1,5 @@
 ---
-- name: configure systemd service for gaiad
+- name: configure systemd service for chain
   when: not use_cosmovisor
   template:
     src: gaiad.service.j2
@@ -16,7 +16,7 @@
     state: restarted
     name: systemd-journald
 
-- name: Enable gaiad systemd service
+- name: Enable chain systemd service
   when: not use_cosmovisor
   systemd:
     daemon_reload: true
@@ -24,7 +24,7 @@
     enabled: true
     name: "{{node_service_name}}"
 
-- name: Start gaiad systemd service
+- name: Start chain systemd service
   when: (not use_cosmovisor) and (not reboot | default(false) | bool)
   systemd:
     daemon_reload: true

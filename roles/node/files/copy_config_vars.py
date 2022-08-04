@@ -9,7 +9,7 @@ import json
 import toml
 
 parser = argparse.ArgumentParser(
-    description="Patch gaiad config files")
+    description="Patch chain config files")
 
 parser.add_argument('--chain_home')
 parser.add_argument('--config_file')

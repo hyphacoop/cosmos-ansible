@@ -49,7 +49,7 @@ if operation == "start":
 
 if operation == "reset":
     answer = input(
-        "This will reset gaiad database on all nodes in inventory. "
+        "This will reset chain database on all nodes in inventory. "
         "Are you sure you want to continue (yes/no)? ")
     if answer.lower() in ["yes"]:
         print(os.popen("ansible-playbook node.yml -i " +

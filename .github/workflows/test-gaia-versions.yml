@@ -90,7 +90,7 @@ jobs:
         run: tests/test_block_production.sh 127.0.0.1 26657 10
       - name: Happy path - transaction testing
         run: tests/test_tx_fresh.sh
-      - name: Get RAM usage while gaiad is running
+      - name: Get RAM usage while chain is running
         run: free -m
 
   test-upgrade:

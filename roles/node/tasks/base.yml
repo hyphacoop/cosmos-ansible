@@ -39,7 +39,7 @@
 - include_role:
     name: common
 
-- name: Set value to enable gaiad prometheus
+- name: Set value to enable chain prometheus
   set_fact:
     prometheus_enabled: true
   when: monitoring_prometheus | default(false) | bool
@@ -55,13 +55,13 @@
       - toml
       - github3.py
 
-- name: Ensure user exists for gaiad
+- name: Ensure user exists for chain
   user:
     name: "{{node_user}}"
     append: true
     groups: adm
     shell: /bin/bash
-    comment: User for gaiad and cosmovisor services
+    comment: User for chain and cosmovisor services
 
 # Stop existing services
 - name: Populate service facts
@@ -81,7 +81,7 @@
     - chain_stop
     - chain_restart
 
-- name: Stop existing gaiad systemd service
+- name: Stop existing chain systemd service
   # Check for both `SERVICE_NAME` and `SERVICE_NAME.service`
   when: >
     not use_cosmovisor and (
@@ -125,12 +125,12 @@
 # TODO: Firewall
 # - name: set up firewall (block by default?)
 
-- name: Check gaiad version
+- name: Check chain version
   shell: |
     PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
     gaiad version
   become_user: "{{node_user}}"
-  register: gaiad_current_version
+  register: chain_current_version
   ignore_errors: true
 
 ## Create go bin directory
@@ -144,8 +144,8 @@
     group: '{{node_user}}'
 
 
-- name: Download gaiad binary from release
-  when: not chain_version in gaiad_current_version.stdout and chain_binary_source == "release"
+- name: Download chain binary from release
+  when: not chain_version in chain_current_version.stdout and chain_binary_source == "release"
   get_url:
     url: "{{ chain_binary_release }}"
     dest: "{{node_user_home}}/go/bin/gaiad"
@@ -172,19 +172,19 @@
   become_user: "{{node_user}}"
 
   # Clear chain_home if it exists
-- name: Check if gaiad home folder exists
+- name: Check if chain home folder exists
   stat:
     path: "{{chain_home}}"
   register: chain_home_exists
 
-- name: Clear gaiad home
+- name: Clear chain home
   when: chain_home_clear
   file:
     state: absent
     path: "{{chain_home}}"
 
-# Initialize gaiad home
-- name: initialize gaiad
+# Initialize chain home
+- name: initialize chain
   when: chain_home_clear or not chain_home_exists.stat.exists
   # TODO: should we overwrite?
   shell: |
@@ -193,13 +193,13 @@
     gaiad init {{inventory_hostname}} --home {{chain_home}} --chain-id {{chain_id}}
   become_user: "{{node_user}}"
 
-- name: Add gaiad bin from go/bin to .bashrc PATH
+- name: Add chain bin from go/bin to .bashrc PATH
   when: not use_cosmovisor
   blockinfile:
     dest: '{{ node_user_home }}/.bashrc'
     block: |
       export PATH="$PATH:{{ node_user_home }}/go/bin"
-    marker: '# {mark} ANSIBLE MANAGED BLOCK - GAIAD PATH'
+    marker: '# {mark} ANSIBLE MANAGED BLOCK - CHAIN PATH'
     insertbefore: EOF
     create: yes
 
@@ -226,7 +226,7 @@
     owner: '{{node_user}}'
     group: '{{node_user}}'
 
-- name: Copy gaiad bin for cosmovisor genesis
+- name: Copy chain bin for cosmovisor genesis
   copy:
     # force: false
     remote_src: true
@@ -236,11 +236,11 @@
     group: '{{node_user}}'
     mode: '0755'
 
-- name: Add gaiad bin from cosmovisor to .bashrc PATH
+- name: Add chain bin from cosmovisor to .bashrc PATH
   blockinfile:
     dest: '{{ node_user_home }}/.bashrc'
     block: |
       export PATH="$PATH:{{ cosmovisor_home }}/current/bin"
-    marker: '# {mark} ANSIBLE MANAGED BLOCK - GAIAD PATH'
+    marker: '# {mark} ANSIBLE MANAGED BLOCK - CHAIN PATH'
     insertbefore: EOF
     create: yes

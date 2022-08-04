@@ -1,7 +1,7 @@
 ---
 
 - name: reset gaiad database (command for <v7.0.1)
-  when: node_unsafe_reset and ((major_version|int == 7 and patch_version|int == 0) or major_version|int < 7)
+  when: chain_binary_name == "gaiad" and node_unsafe_reset and ((major_version|int == 7 and patch_version|int == 0) or major_version|int < 7)
   shell: |
     cd $HOME
     PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
@@ -11,7 +11,7 @@
     - chain_reset
 
 - name: reset gaiad database (command for >v7.0.0)
-  when: node_unsafe_reset and ((major_version|int == 7 and patch_version|int >= 1) or major_version|int > 7)
+  when: chain_binary_name == "gaiad" and node_unsafe_reset and ((major_version|int == 7 and patch_version|int >= 1) or major_version|int > 7)
   shell: |
     cd $HOME
     PATH=$PATH:/usr/local/go/bin:$HOME/go/bin

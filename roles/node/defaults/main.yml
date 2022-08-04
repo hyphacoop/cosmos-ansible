@@ -1,5 +1,7 @@
 ---
-# General Gaiad settings
+# General settings
+
+chain_binary_name: gaiad
 node_user: gaia
 node_user_home: "/home/{{node_user}}"
 chain_home: "{{node_user_home}}/.gaia"
@@ -9,7 +11,7 @@ chain_version: v7.0.0
 chain_repository: https://github.com/cosmos/gaia.git
 chain_binary_release: "https://github.com/cosmos/gaia/releases/download/{{ chain_version }}/gaiad-{{ chain_version }}-{{binary_arch_map[ansible_architecture]}}"
 chain_binary_source: "build"
-chain_bin: "{{ node_user_home }}/go/bin/gaiad"
+chain_bin: "{{ node_user_home }}/go/bin/{{chain_binary_name}}"
 node_service_name: "gaiad"
 chain_gov_testing: false
 chain_voting_period: 10s
