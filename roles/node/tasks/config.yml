@@ -4,8 +4,7 @@
   when: chain_binary_name == "gaiad" and node_unsafe_reset and ((major_version|int == 7 and patch_version|int == 0) or major_version|int < 7)
   shell: |
     cd $HOME
-    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
-    gaiad unsafe-reset-all --home {{chain_home}}
+    {{chain_bin}} unsafe-reset-all --home {{chain_home}}
   become_user: "{{node_user}}"
   tags:
     - chain_reset
@@ -14,8 +13,7 @@
   when: chain_binary_name == "gaiad" and node_unsafe_reset and ((major_version|int == 7 and patch_version|int >= 1) or major_version|int > 7)
   shell: |
     cd $HOME
-    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
-    gaiad tendermint unsafe-reset-all --home {{chain_home}}
+    {{chain_bin}} tendermint unsafe-reset-all --home {{chain_home}}
   become_user: "{{node_user}}"
   tags:
     - chain_reset
@@ -24,9 +22,8 @@
   when: chain_create_validator
   shell: |
     cd $HOME
-    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
-    gaiad keys add validator --keyring-backend {{node_keyring}} --home {{chain_home}} --output json
-    gaiad add-genesis-account validator {{chain_validator_coins}} --home {{chain_home}} --keyring-backend="{{node_keyring}}"
+    {{chain_bin}} keys add validator --keyring-backend {{node_keyring}} --home {{chain_home}} --output json
+    {{chain_bin}} add-genesis-account validator {{chain_validator_coins}} --home {{chain_home}} --keyring-backend="{{node_keyring}}"
   register: chain_create_validator_output
   become_user: "{{node_user}}"
 
@@ -41,8 +38,7 @@
   when: chain_airdrop and chain_create_validator
   shell: |
     cd $HOME
-    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
-    gaiad add-genesis-account {{ item }} {{chain_airdrop_coins}} --home {{chain_home}}
+    {{chain_bin}} add-genesis-account {{ item }} {{chain_airdrop_coins}} --home {{chain_home}}
   become_user: "{{node_user}}"
   loop: "{{ chain_airdrop_accounts }}"
 
@@ -50,9 +46,8 @@
   when: chain_create_validator
   shell: |
     cd $HOME
-    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
-    gaiad gentx validator {{chain_gentx_validator}} --keyring-backend="{{node_keyring}}" --home {{chain_home}} --chain-id {{chain_id}}
-    gaiad collect-gentxs --home {{chain_home}}
+    {{chain_bin}} gentx validator {{chain_gentx_validator}} --keyring-backend="{{node_keyring}}" --home {{chain_home}} --chain-id {{chain_id}}
+    {{chain_bin}} collect-gentxs --home {{chain_home}}
   become_user: "{{node_user}}"
 
 - name: patch genesis file with minimum deposit and short voting period
