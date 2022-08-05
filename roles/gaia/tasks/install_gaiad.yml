@@ -1,6 +1,11 @@
 ---
 
-- name: Remove system Go installation
+- name: Remove golang apt package
+  ansible.builtin.apt:
+    name: golang
+    state: absent
+
+- name: Remove system Go files
   file:
     state: absent
     path: "{{ item }}"
