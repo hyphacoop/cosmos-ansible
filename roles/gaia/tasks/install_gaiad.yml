@@ -1,4 +1,13 @@
 ---
+
+- name: Remove system Go installation
+  file:
+    state: absent
+    path: "{{ item }}"
+  loop:
+    - /usr/bin/go
+    - /usr/lib/go
+
 - name: Check golang version
   shell: |
     PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
