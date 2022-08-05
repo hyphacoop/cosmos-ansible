@@ -87,7 +87,7 @@
   become_user: "{{kms_user}}"
 
 - name: import validator pivate key into kms
-  when: kms == "softsign"
+  when: kms_mode == "softsign"
   shell: |
     PATH=$PATH:$HOME/.cargo/bin
     tmkms softsign import {{chain_home}}/config/priv_validator_key.json {{ kms_home }}/.tmkms/config/secrets/priv_validator_key
