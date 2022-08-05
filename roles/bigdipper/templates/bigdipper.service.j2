@@ -4,16 +4,10 @@ After=network-online.target bdjuno.service
 
 [Service]
 User={{bigdipper_user}}
-ExecStart={{ npm_config_prefix }}/bin/npm run start
+Group={{bigdipper_user}}
+ExecStart=/usr/bin/npm run start
 WorkingDirectory={{bdui_dir}}
 Restart=always
-Environment="NEXT_PUBLIC_GRAPHQL_URL={{bdui_graphql_url}}"
-Environment="NEXT_PUBLIC_GRAPHQL_WS={{bdui_graphql_ws_url}}"
-Environment="NEXT_PUBLIC_RPC_WEBSOCKET={{bdui_rpc_websocket}}"
-Environment="NODE_ENV=production"
-Environment="PORT={{bdui_port}}"
-Environment="NEXT_PUBLIC_URL={{bdui_public_url}}"
-Environment="NEXT_PUBLIC_CHAIN_TYPE={{bdui_chain}}"
 
 [Install]
 WantedBy=multi-user.target

@@ -1,6 +1,7 @@
 chain:
     bech32_prefix: cosmos
     modules: 
+        - actions
         - modules
         - messages
         - auth
@@ -77,3 +78,11 @@ pricefeed:
               exponent: 0
 actions:
     port: {{bdjuno_hasura_actions_port}}
+    node:
+        rpc:
+            client_name: juno
+            address: {{bigdipper_rpc_address}}
+            max_connections: 20
+        grpc:
+            address: {{bigdipper_grpc_address}}
+            insecure: true

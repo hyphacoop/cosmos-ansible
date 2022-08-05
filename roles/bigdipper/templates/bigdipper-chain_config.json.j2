@@ -11,8 +11,8 @@
     "account": "cosmos"
   },
   "genesis": {
-    "time": "{{bigdipper_genesis_time | json}}",
-    "height": "{{bigdipper_genesis_height | json}}"
+    "time": {{ bigdipper_genesis_time | to_json }},
+    "height": {{ bigdipper_genesis_height | to_json }}
   },
   "primaryTokenUnit": "uatom",
   "votingPowerTokenUnit": "uatom",

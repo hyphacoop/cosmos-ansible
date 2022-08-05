@@ -31,6 +31,8 @@ hasura_version: v2.9.0
 hasura_cli_version: "2.9.0"
 hasura_port: 8080
 hasura_actions_service_name: hasura-actions
+# TODO: I think this can be publicly known?
+hasura_admin_secret: "yTFSxxMLwor8owr9"
 
 bdui_dir: "{{bigdipper_user_home}}/big-dipper"
 bdui_version: "base-v2.1.0"

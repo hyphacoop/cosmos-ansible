@@ -28,7 +28,28 @@
   set_fact:
     bigdipper_db_url: "postgres://{{bigdipper_db_user}}:{{bigdipper_db_password}}@127.0.0.1:5432/{{bigdipper_db}}"
 
+- name: Get the list of services
+  service_facts:
+
+- name: "Stop bdjuno systemd service"
+  systemd:
+    state: stopped
+    name: "{{bdjuno_service_name}}"
+  when: "'{{bdjuno_service_name}}.service' in services"
+
+- name: "Stop big-dipper-ui systemd service"
+  systemd:
+    state: stopped
+    name: "{{bdui_service_name}}"
+  when: "'{{bdui_service_name}}.service' in services"
+
+- name: Remove hasura docker container
+  community.docker.docker_container:
+    name: big-dipper-hasura
+    state: absent
+
 - name: "Checkout BDJuno"
+  become_user: "{{bigdipper_user}}"
   git:
     repo: 'https://github.com/forbole/bdjuno.git'
     dest: "{{bdjuno_dir}}"
@@ -40,6 +61,12 @@
     pkg:
       - postgresql
       - postgresql-contrib
+
+- name: Remove old database
+  become_user: postgres
+  community.postgresql.postgresql_db:
+    name: "{{bigdipper_db}}"
+    state: absent
 
 - name: Create postgres database
   become_user: postgres
@@ -62,18 +89,6 @@
     obj: "{{bigdipper_db}}"
     role: "{{bigdipper_db_user}}"
 
-# - name: Copy schema files to tmp dir
-#   copy:
-#     src: "{{bdjuno_dir}}/database/schema"
-#     dest: /tmp
-#     remote_src: yes
-#     mode: '0755'
-#
-# - name: Find bdjuno schema files
-#   find:
-#     paths: "/tmp/schema"
-#   register: bdjuno_schemas
-
 - name: Find bdjuno schema files
   find:
     paths: "{{bdjuno_dir}}/database/schema"
@@ -89,8 +104,9 @@
   with_items: "{{ bdjuno_schemas.files | sort(attribute='path') }}"
 
 - name: "Install BDJuno"
+  become_user: "{{bigdipper_user}}"
   shell: |
-    export PATH=$PATH:{{ansible_local.golang.general.home}}/bin:{{ ansible_env.HOME }}/go/bin
+    export PATH=$PATH:{{ansible_local.golang.general.home}}/bin:/home/{{bigdipper_user}}/go/bin
     cd {{bdjuno_dir}}
     make install
     bdjuno init --home {{bdjuno_home}} --replace
@@ -99,6 +115,7 @@
 
 # Copy config over from template?
 - name: "Generate bdjuno config"
+  become_user: "{{bigdipper_user}}"
   template:
     src: bdjuno-config.yaml.j2
     dest: "{{bdjuno_home}}/config.yaml"
@@ -108,10 +125,13 @@
     src: "{{bigdipper_genesis_file_path}}"
     dest: "{{bdjuno_home}}/genesis.json"
     remote_src: true
+    owner: "{{bigdipper_user}}"
+    group: "{{bigdipper_user}}"
 
 - name: "Parse genesis file with bdjuno"
+  become_user: "{{bigdipper_user}}"
   shell: |
-    export PATH=$PATH:{{ansible_local.golang.general.home}}/bin:{{ ansible_env.HOME }}/go/bin
+    export PATH=$PATH:{{ansible_local.golang.general.home}}/bin:/home/{{bigdipper_user}}/go/bin
     bdjuno parse genesis-file --home {{bdjuno_home}} --genesis-file-path {{bdjuno_home}}/genesis.json
 
 # TODO: Default to local node, expose config vars
@@ -134,65 +154,81 @@
 
 - name: "Run docker image for Hasura"
   community.docker.docker_container:
-    state: present
+    state: started
     name: big-dipper-hasura
     image: "hasura/graphql-engine:{{hasura_version}}"
     network_mode: host
     restart_policy: "always"
     env:
       HASURA_GRAPHQL_DATABASE_URL: "{{bigdipper_db_url}}"
-      HASURA_GRAPHQL_SERVER_PORT: "{{hasura_port}}"
-      HASURA_GRAPHQL_SERVER_HOST: "localhost"
+      HASURA_GRAPHQL_SERVER_PORT: "{{ hasura_port | string }}"
+      HASURA_GRAPHQL_SERVER_HOST: "127.0.0.1"
       HASURA_GRAPHQL_UNAUTHORIZED_ROLE: "anonymous"
       ACTION_BASE_URL: "http://localhost:{{bdjuno_hasura_actions_port}}"
+      HASURA_GRAPHQL_ADMIN_SECRET: "{{hasura_admin_secret}}"
 
 - name: "Set up node+npm"
   include_role:
     name: geerlingguy.nodejs
 
 - name: "Set up hasura CLI"
-  shell: "npm install --global hasura-cli@{{hasura_cli_version}}"
+  shell: "npm install --unsafe-perm --global hasura-cli@{{hasura_cli_version}}"
 
 - name: "Apply metadata to hasura"
+  become_user: "{{bigdipper_user}}"
   shell: |
     cd "{{bdjuno_dir}}/hasura"
-    hasura metadata apply --endpoint http://localhost:{{hasura_port}}
+    hasura metadata apply --endpoint http://localhost:{{hasura_port}} --admin-secret {{hasura_admin_secret}}
 
 - name: "Clone and checkout big-dipper-ui"
+  become_user: "{{bigdipper_user}}"
   git:
     repo: 'https://github.com/forbole/big-dipper-2.0-cosmos.git'
     dest: "{{bdui_dir}}"
     version: "{{bdui_version}}"
+    force: yes
 
 - name: Install deps for big-dipper-ui
+  become_user: "{{bigdipper_user}}"
   shell: |
     cd "{{bdui_dir}}"
     npm ci
 
 - name: "General config for big-dipper-ui"
+  become_user: "{{bigdipper_user}}"
   template:
     src: bigdipper-general_config.json.j2
     dest: "{{bdui_dir}}/src/configs/general_config.json"
 
 - name: "Chain config for big-dipper-ui"
+  become_user: "{{bigdipper_user}}"
   template:
     src: bigdipper-chain_config.json.j2
     dest: "{{bdui_dir}}/src/configs/chain_config.{{bdui_chain}}.json"
 
 - name: "codegen.yml config for big-dipper-ui"
+  become_user: "{{bigdipper_user}}"
   template:
     src: bigdipper-codegen.yml.j2
     dest: "{{bdui_dir}}/codegen.yml"
 
 - name: Check Hasura is in sync with our graphql operations
+  become_user: "{{bigdipper_user}}"
   shell: |
     cd "{{bdui_dir}}"
     npm run graphql:codegen
 
 - name: Build big-dipper-ui
+  become_user: "{{bigdipper_user}}"
   shell: |
     cd "{{bdui_dir}}"
     npm run build
+
+- name: Install .env for big-dipper-ui
+  become_user: "{{bigdipper_user}}"
+  template:
+    src: bigdipper.env.j2
+    dest: "{{bdui_dir}}/.env"
 
 - name: "Create systemd service for big-dipper-ui"
   template:
