@@ -37,6 +37,16 @@
     dest="{{chain_home}}/validator.json"
   become_user: "{{node_user}}"
 
+- name: import key into KMS
+  set_fact:
+    kms_validator_key_path: "{{chain_home}/config/priv_validator_key.json"
+
+- name: import key into KMS
+  include_role:
+    name: kms
+    tasks_from: import_key
+  when: kms_user is defined
+
 - name: create genesis accounts
   when: chain_airdrop and chain_create_validator
   shell: |

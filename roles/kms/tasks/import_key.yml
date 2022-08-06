@@ -1,0 +1,15 @@
+---
+- name: Import validator pivate key into kms
+  when: kms == "softsign" and kms_validator_key_path is defined
+  shell: |
+    PATH=$PATH:$HOME/.cargo/bin
+    tmkms softsign import {{ kms_validator_key_path }} {{ kms_home }}/.tmkms/config/secrets/priv_validator_key
+  become_user: "{{kms_user}}"
+
+- name: import validator pivate key into kms
+  when: kms == "yubihsm"  and kms_validator_key is defined
+  shell: |
+    PATH=$PATH:$HOME/.cargo/bin
+    cd "{{ kms_home }}/.tmkms/config"
+    tmkms yubihsm keys import -t json -i 1 {{ kms_validator_key_path }}
+  become_user: "{{kms_user}}"

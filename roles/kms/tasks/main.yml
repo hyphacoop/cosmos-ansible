@@ -11,34 +11,35 @@
     append: true
     shell: /bin/nologin
     comment: KMS user
-    
-- name: define kms listen address
-  set_fact:
-    rust_user: "{{kms_user}}" 
 
-- name: install rust
-  include_role: 
+- name: Set rust install user
+  set_fact:
+    rust_user: "{{kms_user}}"
+
+- name: Install rust
+  include_role:
     name: rust_install
- 
+
 # http://ftp.us.debian.org/debian/pool/main/s/systemd/libudev-dev_250.4-1~bpo11+1_amd64.deb
-- name: debian prerequisits
+- name: Debian prerequisits
   apt:
     update_cache: true
     pkg:
       - libusb-1.0-0-dev
       - usbutils
       - pkg-config
+      - gcc
 
-- name: check if tmkms is installed
+- name: Check if tmkms is installed
   shell: |
     PATH=$PATH:$HOME/.cargo/bin
-    command -v cargo
+    command -v tmkms
   register: tmkms_exists
   ignore_errors: true
   become_user: "{{kms_user}}"
 
-- name: install tmkms
-  #  when: cargo_exists is failed
+- name: Install tmkms
+  when: tmkms_exists is failed
   shell: |
     PATH=$PATH:$HOME/.cargo/bin
     cargo install tmkms --features=softsign #--features=yubihsm --features=ledger --features=softsign --features=yubihsm-server
@@ -51,55 +52,20 @@
     mode: "0770"
     owner: "{{kms_user}}"
 
-- name: init tmkms
+- name: Init tmkms
+  when: tmkms_exists is failed
   shell: |
     PATH=$PATH:$HOME/.cargo/bin
     cd "{{ kms_home }}/.tmkms"
     tmkms init config
-    tmkms softsign keygen {{ kms_home }}/.tmkms/config/secrets/secret_connection_key
   become_user: "{{kms_user}}"
 
-- name: init tmkms softsign
-  when: kms == "softsign"
+- name: Init tmkms softsign
+  when: kms == "softsign" and tmkms_exists is failed
   shell: |
     PATH=$PATH:$HOME/.cargo/bin
     cd "{{ kms_home }}/.tmkms"
-  become_user: "{{kms_user}}"
-
-- name: init tmkms yubihsm
-  when: kms == "yubihsm"
-  shell: |
-    PATH=$PATH:$HOME/.cargo/bin
-    cd "{{ kms_home }}/.tmkms/config"
-    echo y | tmkms yubihsm setup > hsmconfig.txt
-    nmonics=$(cat hsmconfig.txt | head -n 10 | tail -n 2 | sed 'N;s/\n/ /' | sed 's/    //g')
-    password=$(cat hsmconfig.txt | grep validator | head -n 1 | awk '{print $5}')
-    tmkms yubihsm keys import -t json -i 1  ~/.gaia/config/priv_validator_key.json
-  become_user: "{{kms_user}}"
-
-- name: init tmkms yubihsm
-  when: kms == "yubihsm"
-  shell: |
-    PATH=$PATH:$HOME/.cargo/bin
-    cd "{{ kms_home }}/.tmkms/config"
-    echo y | tmkms yubihsm setup > hsmconfig.txt
-    nmonics=$(cat hsmconfig.txt | head -n 10 | tail -n 2 | sed 'N;s/\n/ /' | sed 's/    //g')
-  become_user: "{{kms_user}}"
-
-- name: import validator pivate key into kms
-  when: kms_mode == "softsign"
-  shell: |
-    PATH=$PATH:$HOME/.cargo/bin
-    tmkms softsign import {{chain_home}}/config/priv_validator_key.json {{ kms_home }}/.tmkms/config/secrets/priv_validator_key
-  become_user: "{{kms_user}}"
-
-
-- name: import validator pivate key into kms
-  when: kms == "yubihsm"
-  shell: |
-    PATH=$PATH:$HOME/.cargo/bin
-    cd "{{ kms_home }}/.tmkms/config"
-    tmkms yubihsm keys import -t json -i 1  {{chain_home}}/config/priv_validator_key.json
+    tmkms softsign keygen {{ kms_home }}/.tmkms/config/secrets/secret_connection_key
   become_user: "{{kms_user}}"
 
 - name: configure tmkms
@@ -107,30 +73,29 @@
     dest: "{{ kms_home }}/.tmkms/config/tmkms.toml"
     src: tmkms.toml.j2
 
-- name: usb permissions - Ledger
+- name: Usb permissions - Ledger
   copy:
     content: |
       SUBSYSTEM=="*", ATTRS{idVendor}=="2c97", GROUP="{{ kms_user }}", MODE="0660"
     dest: /etc/udev/rules.d/99-ledger-usb.rules
 
-- name: usb permissions - Yubikey
+- name: Usb permissions - Yubikey
   copy:
     content: |
       SUBSYSTEM=="*", ATTRS{idVendor}=="1050", GROUP="{{ kms_user }}", MODE="0660"
     dest: /etc/udev/rules.d/99-yubikey-usb.rules
 
-
-- name: reload dev permissions
+- name: Reload dev permissions
   shell: |
     udevadm control-reload-rules
     udevadm trigger
 
-- name: configure tmkms service
+- name: Configure tmkms service
   template:
     src: tmkms.service.j2
     dest: "/etc/systemd/system/tmkms.service"
 
-- name: Start faucet service
+- name: Start tmkms service
   systemd:
     daemon_reload: true
     state: restarted
