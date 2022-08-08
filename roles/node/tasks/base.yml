@@ -1,0 +1,256 @@
+---
+# Save JSON data from RPC API
+- name: Get JSON from registry
+  uri:
+    url: "{{ chain_registry }}"
+    method: GET
+    return_content: yes
+    status_code: 200
+    body_format: json
+  when: chain_registry is defined
+  register: chain_registry_json
+
+- name: Set chain_id to {{ chain_registry_json.json.chain_id }}
+  when: chain_registry is defined
+  set_fact:
+    chain_id: '{{ chain_registry_json.json.chain_id }}'
+
+- name: Set chain_version to {{ chain_registry_json.json.codebase.recommended_version }}
+  when: chain_registry is defined
+  set_fact:
+    chain_version: '{{ chain_registry_json.json.codebase.recommended_version }}'
+
+- name: Set genesis_url to {{ chain_registry_json.json.genesis.genesis_url }}
+  when: chain_registry is defined
+  set_fact:
+    genesis_url: '{{ chain_registry_json.json.genesis.genesis_url }}'
+
+# Get chain_version number
+- name: parse version
+  set_fact:
+    major_version: "{{ chain_version[1] }}"
+    patch_version: "{{ chain_version[5] }}"
+  when: major_version is undefined and patch_version is undefined
+  tags:
+    - chain_reset
+    - chain_stop
+    - chain_restart
+
+- include_role:
+    name: common
+
+- name: Set value to enable chain prometheus
+  set_fact:
+    prometheus_enabled: true
+  when: monitoring_prometheus | default(false) | bool
+
+- name: Setup and enable swap
+  include_role:
+    name: mkswap
+  when: enable_swap | default(false) | bool
+
+- name: Set up pip dependencies
+  pip:
+    name:
+      - toml
+      - github3.py
+
+- name: Ensure user exists for chain
+  user:
+    name: "{{node_user}}"
+    append: true
+    groups: adm
+    shell: /bin/bash
+    comment: User for chain and cosmovisor services
+
+# Stop existing services
+- name: Populate service facts
+  service_facts:
+  tags:
+    - chain_stop
+    - chain_restart
+
+- name: Stop existing faucet systemd service
+  when: >
+    (faucet_service_name in ansible_facts.services) or
+    ((faucet_service_name + '.service') in ansible_facts.services)
+  systemd:
+    state: stopped
+    name: "{{faucet_service_name}}"
+  tags:
+    - chain_stop
+    - chain_restart
+
+- name: Stop existing chain systemd service
+  # Check for both `SERVICE_NAME` and `SERVICE_NAME.service`
+  when: >
+    not use_cosmovisor and (
+    (node_service_name in ansible_facts.services) or
+    ((node_service_name + '.service') in ansible_facts.services))
+  systemd:
+    state: stopped
+    name: "{{node_service_name}}"
+  tags:
+    - chain_stop
+    - chain_restart
+
+- name: Stop existing cosmovisor systemd service
+  when: >
+    use_cosmovisor and (
+    (cosmovisor_service_name in ansible_facts.services) or
+    ((cosmovisor_service_name + '.service') in ansible_facts.services))
+  systemd:
+    state: stopped
+    name: "{{cosmovisor_service_name}}"
+  tags:
+    - chain_stop
+    - chain_restart
+
+- name: Remove golang apt package
+  ansible.builtin.apt:
+    name: golang
+    state: absent
+
+- name: Remove system Go files
+  file:
+    state: absent
+    path: "{{ item }}"
+  loop:
+    - /usr/bin/go
+    - /usr/lib/go
+
+- name: Check golang version
+  shell: |
+    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+    go version
+  register: go_current_version
+  ignore_errors: true
+
+- name: Extract golang
+  # TODO: Auto-detect go_arch
+  when: not go_version in go_current_version.stdout
+  unarchive:
+    src: "https://golang.org/dl/go{{go_version}}.{{go_arch}}.tar.gz"
+    dest: /usr/local
+    remote_src: yes
+  become: true
+
+# TODO: Firewall
+# - name: set up firewall (block by default?)
+
+- name: Check chain version
+  shell: "{{chain_bin}} version"
+  become_user: "{{node_user}}"
+  register: chain_current_version
+  ignore_errors: true
+
+## Create go bin directory
+- name: Prepare go folder
+  when: chain_binary_source == "release"
+  file:
+    path: '{{ node_user_home }}/go/bin'
+    state: directory
+    recurse: true
+    owner: '{{node_user}}'
+    group: '{{node_user}}'
+
+
+- name: Download chain binary from release
+  when: not chain_version in chain_current_version.stdout and chain_binary_source == "release"
+  get_url:
+    url: "{{ chain_binary_release }}"
+    dest: "{{chain_bin}}"
+    mode: "0777"
+    force: true
+  become_user: "{{node_user}}"
+
+- name: Clone chain repo
+  when: not chain_version in chain_current_version.stdout and chain_binary_source == "build"
+  git:
+    repo: "{{chain_repository}}"
+    dest: "{{chain_repo_dir}}"
+    version: "{{chain_version}}"
+    force: yes
+  become_user: "{{node_user}}"
+
+- name: Install chain
+  when: not chain_version in chain_current_version.stdout and chain_binary_source == "build"
+  shell: |
+    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+    make install
+  args:
+    chdir: "{{chain_repo_dir}}"
+  become_user: "{{node_user}}"
+
+  # Clear chain_home if it exists
+- name: Check if chain home folder exists
+  stat:
+    path: "{{chain_home}}"
+  register: chain_home_exists
+
+- name: Clear chain home
+  when: chain_home_clear
+  file:
+    state: absent
+    path: "{{chain_home}}"
+
+# Initialize chain home
+- name: initialize chain
+  when: chain_home_clear or not chain_home_exists.stat.exists
+  # TODO: should we overwrite?
+  shell: |
+    cd $HOME
+    {{chain_bin}} init {{inventory_hostname}} --home {{chain_home}} --chain-id {{chain_id}}
+  become_user: "{{node_user}}"
+
+- name: Add chain bin from go/bin to .bashrc PATH
+  when: not use_cosmovisor
+  blockinfile:
+    dest: '{{ node_user_home }}/.bashrc'
+    block: |
+      export PATH="$PATH:{{ node_user_home }}/go/bin"
+    marker: '# {mark} ANSIBLE MANAGED BLOCK - CHAIN PATH'
+    insertbefore: EOF
+    create: yes
+
+- name: Check cosmovisor version
+  shell: |
+    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+    cosmovisor --version
+  become_user: "{{node_user}}"
+  register: cosmovisor_current
+  ignore_errors: true
+
+- name: clone and install cosmovisor
+  when: not cosmovisor_version in cosmovisor_current.stdout
+  shell: |
+    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+    go install {{cosmovisor_repository}}@{{cosmovisor_version}}
+  become_user: "{{node_user}}"
+
+## Configure cosmovisor
+- name: Prepare cosmovisor folder
+  file:
+    path: '{{ cosmovisor_home }}/genesis/bin'
+    state: directory
+    owner: '{{node_user}}'
+    group: '{{node_user}}'
+
+- name: Copy chain bin for cosmovisor genesis
+  copy:
+    # force: false
+    remote_src: true
+    src: '{{ chain_bin }}'
+    dest: '{{ cosmovisor_home }}/genesis/bin/{{chain_binary_name}}'
+    owner: '{{node_user}}'
+    group: '{{node_user}}'
+    mode: '0755'
+
+- name: Add chain bin from cosmovisor to .bashrc PATH
+  blockinfile:
+    dest: '{{ node_user_home }}/.bashrc'
+    block: |
+      export PATH="$PATH:{{ cosmovisor_home }}/current/bin"
+    marker: '# {mark} ANSIBLE MANAGED BLOCK - CHAIN PATH'
+    insertbefore: EOF
+    create: yes

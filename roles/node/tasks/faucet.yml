@@ -1,0 +1,67 @@
+---
+- name: create faucet account
+  shell: |
+    {{chain_bin}} keys add faucet --home {{chain_home}} --keyring-backend {{node_keyring}} --output json
+    {{chain_bin}} add-genesis-account faucet 1000000000000{{ chain_denom }} --home {{chain_home}} --keyring-backend="{{node_keyring}}"
+  register: create_faucet_output
+  become_user: "{{node_user}}"
+
+- name: save faucet name, address, and mnemonic
+  copy:
+    content: "{{create_faucet_output.stderr}}"
+    dest: "{{chain_home}}/faucet.json"
+  become_user: "{{node_user}}"
+
+- name: checkout rest faucet repo
+  git:
+    repo: 'https://github.com/hyphacoop/cosmos-rest-faucet.git'
+    dest: "{{node_user_home}}/cosmos-rest-faucet"
+    version: "{{faucet_version}}"
+    force: yes
+  become_user: "{{node_user}}"
+
+- name: install python for faucet
+  apt:
+    pkg:
+      - python3
+      - python3-venv
+      - python3-pip
+      - python-is-python3
+
+- name: set up python virtual environment
+  shell: |
+    cd {{node_user_home}}/cosmos-rest-faucet
+    python -m venv .env
+  become_user: "{{node_user}}"
+
+- name: install faucet dependencies
+  pip:
+    requirements: "{{node_user_home}}/cosmos-rest-faucet/requirements.txt"
+    virtualenv: "{{node_user_home}}/cosmos-rest-faucet/.env"
+  become_user: "{{node_user}}"
+
+- name: set faucet address
+  shell: |
+    jq '.address' {{chain_home}}/faucet.json
+  register: faucet_address
+  become_user: "{{node_user}}"
+
+- name: configure faucet
+  template:
+    src: faucet_config.toml.j2
+    dest: "{{node_user_home}}/cosmos-rest-faucet/config.toml"
+
+- name: configure faucet service
+  template:
+    src: faucet.service.j2
+    dest: "/etc/systemd/system/{{faucet_service_name}}.service"
+
+- name: Start faucet service
+  systemd:
+    daemon_reload: true
+    state: restarted
+    enabled: true
+    name: "{{faucet_service_name}}"
+  tags:
+    - chain_start
+    - chain_restart
