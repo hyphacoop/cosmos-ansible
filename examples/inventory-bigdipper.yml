@@ -1,0 +1,22 @@
+---
+# yamllint disable rule:line-length
+all:
+  vars:
+    ansible_user: root
+    hasura_admin_secret: xw9s4qCkhvj8YpVX # CHANGE_ME
+    bdjuno_version: "chains/cosmos/testnet"
+    bigdipper_genesis_time: 2022-01-12T00:52:40
+    bigdipper_genesis_height: 9034670
+    bdui_chain: testnet # Either testnet or mainet
+    bigdipper_use_tls_proxy: false
+    bigdipper_web_scheme: http
+    bigdipper_websocket_scheme: ws
+    chain_id: theta-testnet-001
+  children:
+    gaia:
+      hosts:
+        "{{ target }}":
+
+# Theta genesis info:
+# Time: 2022-01-12 00:52:40.929812121Z 
+# Height: 9034670

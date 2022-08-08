@@ -162,7 +162,7 @@
     env:
       HASURA_GRAPHQL_DATABASE_URL: "{{bigdipper_db_url}}"
       HASURA_GRAPHQL_SERVER_PORT: "{{ hasura_port | string }}"
-      HASURA_GRAPHQL_SERVER_HOST: "127.0.0.1"
+      HASURA_GRAPHQL_SERVER_HOST: "0.0.0.0"
       HASURA_GRAPHQL_UNAUTHORIZED_ROLE: "anonymous"
       ACTION_BASE_URL: "http://localhost:{{bdjuno_hasura_actions_port}}"
       HASURA_GRAPHQL_ADMIN_SECRET: "{{hasura_admin_secret}}"
@@ -178,7 +178,29 @@
   become_user: "{{bigdipper_user}}"
   shell: |
     cd "{{bdjuno_dir}}/hasura"
-    hasura metadata apply --endpoint http://localhost:{{hasura_port}} --admin-secret {{hasura_admin_secret}}
+    hasura metadata apply --endpoint http://localhost:{{hasura_port}} --admin-secret "{{hasura_admin_secret}}"
+
+- name: Set variables for hasura endpoint
+  set_fact:
+    endpoint_port: '{{hasura_port}}'
+    site_hostname: '{{inventory_hostname}}'
+  when: bigdipper_use_tls_proxy | default(false) | bool
+
+- name: Setup nginx TLS for hasura endpoint
+  include_role:
+    name: nginx-ssl
+  when: bigdipper_use_tls_proxy | default(false) | bool
+
+- name: Set variables for rpc endpoint
+  set_fact:
+    endpoint_port: '{{bigdipper_rpc_port}}'
+    site_hostname: '{{inventory_hostname}}'
+  when: bigdipper_use_tls_proxy | default(false) | bool
+
+- name: Setup nginx TLS for rpc endpoint
+  include_role:
+    name: nginx-ssl
+  when: bigdipper_use_tls_proxy | default(false) | bool
 
 - name: "Clone and checkout big-dipper-ui"
   become_user: "{{bigdipper_user}}"
@@ -218,17 +240,17 @@
     cd "{{bdui_dir}}"
     npm run graphql:codegen
 
-- name: Build big-dipper-ui
-  become_user: "{{bigdipper_user}}"
-  shell: |
-    cd "{{bdui_dir}}"
-    npm run build
-
 - name: Install .env for big-dipper-ui
   become_user: "{{bigdipper_user}}"
   template:
     src: bigdipper.env.j2
     dest: "{{bdui_dir}}/.env"
+
+- name: Build big-dipper-ui
+  become_user: "{{bigdipper_user}}"
+  shell: |
+    cd "{{bdui_dir}}"
+    npm run build
 
 - name: "Create systemd service for big-dipper-ui"
   template:

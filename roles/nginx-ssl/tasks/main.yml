@@ -26,11 +26,11 @@
     mode: '700'
     state: directory
 
-- name: Generate 4096 bit DH parameters (this may take a long time...)
-  shell: openssl dhparam -writerand - 4096 > /etc/ssl/dhparam.pem
-  args:
-    chdir: /etc/nginx/ssl
-    creates: /etc/ssl/dhparam.pem
+- name: Download 4096-bit DH params
+  ansible.builtin.get_url:
+    url: https://ssl-config.mozilla.org/ffdhe4096.txt
+    dest: /etc/ssl/dhparam.pem
+    mode: 0644
 
 - name: Register Let's Encrypt
   command: certbot register --email {{letsencrypt_email}} --agree-tos -n
