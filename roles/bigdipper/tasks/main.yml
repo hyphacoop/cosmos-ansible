@@ -199,7 +199,7 @@
     env:
       HASURA_GRAPHQL_DATABASE_URL: "{{bigdipper_db_url}}"
       HASURA_GRAPHQL_SERVER_PORT: "{{ hasura_port | string }}"
-      HASURA_GRAPHQL_SERVER_HOST: "0.0.0.0"
+      HASURA_GRAPHQL_SERVER_HOST: "127.0.0.1"
       HASURA_GRAPHQL_UNAUTHORIZED_ROLE: "anonymous"
       ACTION_BASE_URL: "http://localhost:{{bdjuno_hasura_actions_port}}"
       HASURA_GRAPHQL_ADMIN_SECRET: "{{hasura_admin_secret}}"
