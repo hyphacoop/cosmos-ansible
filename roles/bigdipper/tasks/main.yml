@@ -156,7 +156,6 @@
     export PATH=$PATH:/usr/local/go/bin:/home/{{bigdipper_user}}/go/bin
     bdjuno parse genesis-file --home {{bdjuno_home}} --genesis-file-path {{bdjuno_home}}/genesis.json
 
-# TODO: Default to local node, expose config vars
 - name: "Set up bdjuno systemd service"
   template:
     src: bdjuno.service.j2

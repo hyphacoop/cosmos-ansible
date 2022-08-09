@@ -20,7 +20,6 @@ bigdipper_genesis_file_path: "/home/gaia/.gaia/config/genesis.json"
 
 bigdipper_rpc_port: 26657
 
-# TODO: use env vars for gaia rpc port
 bigdipper_rpc_address: "http://localhost:{{bigdipper_rpc_port}}"
 bigdipper_grpc_address: "http://localhost:9090"
 bigdipper_telemetry_port: 5000
@@ -51,6 +50,6 @@ bdui_public_url: "{{bigdipper_web_scheme}}://{{inventory_hostname}}"
 bdui_chain: testnet
 bdui_service_name: bigdipper
 
-# TODO
+# Needs to be specified by the user according to genesis info
 # bigdipper_genesis_time: 2021-07-13T08:00:00
 # bigdipper_genesis_height: 1
