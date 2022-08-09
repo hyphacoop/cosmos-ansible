@@ -1,7 +1,7 @@
 ---
 - name: create faucet account
   shell: |
-    PATH=$PATH:{{ansible_local.golang.general.home}}/bin:$HOME/go/bin
+    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
     gaiad keys add faucet --home {{gaiad_home}} --keyring-backend {{gaiad_validator_keyring}} --output json
     gaiad add-genesis-account faucet 1000000000000{{ gaiad_bond_denom }} --home {{gaiad_home}} --keyring-backend="{{gaiad_validator_keyring}}"
   register: create_faucet_output

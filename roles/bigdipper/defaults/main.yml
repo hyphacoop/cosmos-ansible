@@ -1,5 +1,9 @@
 ---
 
+# Go configuration
+go_arch: "{{binary_arch_map[ansible_architecture]}}"
+go_version: 1.18.5
+
 nodejs_version: "14.x"
 
 bigdipper_user: "bigdipper"

@@ -10,11 +10,33 @@
 - include_role:
     name: docker
 
-- name: Set up golang
-  include_role:
-    name: gantsign.golang
-  vars:
-    golang_version: 1.18.4
+- name: Remove golang apt package
+  ansible.builtin.apt:
+    name: golang
+    state: absent
+
+- name: Remove system Go files
+  file:
+    state: absent
+    path: "{{ item }}"
+  loop:
+    - /usr/bin/go
+    - /usr/lib/go
+
+- name: Check golang version
+  shell: |
+    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+    go version
+  register: go_current_version
+  ignore_errors: true
+
+- name: Extract golang
+  when: not go_version in go_current_version.stdout
+  unarchive:
+    src: "https://golang.org/dl/go{{go_version}}.{{go_arch}}.tar.gz"
+    dest: /usr/local
+    remote_src: yes
+  become: true
 
 - name: Ensure user exists for bigdipper
   user:
@@ -106,7 +128,7 @@
 - name: "Install BDJuno"
   become_user: "{{bigdipper_user}}"
   shell: |
-    export PATH=$PATH:{{ansible_local.golang.general.home}}/bin:/home/{{bigdipper_user}}/go/bin
+    export PATH=$PATH:/usr/local/go/bin:/home/{{bigdipper_user}}/go/bin
     cd {{bdjuno_dir}}
     make install
     bdjuno init --home {{bdjuno_home}} --replace
@@ -131,7 +153,7 @@
 - name: "Parse genesis file with bdjuno"
   become_user: "{{bigdipper_user}}"
   shell: |
-    export PATH=$PATH:{{ansible_local.golang.general.home}}/bin:/home/{{bigdipper_user}}/go/bin
+    export PATH=$PATH:/usr/local/go/bin:/home/{{bigdipper_user}}/go/bin
     bdjuno parse genesis-file --home {{bdjuno_home}} --genesis-file-path {{bdjuno_home}}/genesis.json
 
 # TODO: Default to local node, expose config vars

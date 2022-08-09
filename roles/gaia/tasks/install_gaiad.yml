@@ -1,24 +1,11 @@
 ---
 
-- name: Remove golang apt package
-  ansible.builtin.apt:
-    name: golang
-    state: absent
-
-- name: Remove system Go files
-  file:
-    state: absent
-    path: "{{ item }}"
-  loop:
-    - /usr/bin/go
-    - /usr/lib/go
-
 # TODO: Firewall
 # - name: set up firewall (block by default?)
 
 - name: Check gaiad version
   shell: |
-    PATH=$PATH:{{ansible_local.golang.general.home}}/bin:$HOME/go/bin
+    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
     gaiad version
   become_user: "{{gaiad_user}}"
   register: gaiad_current_version
@@ -56,7 +43,7 @@
 - name: Install gaiad
   when: not gaiad_version in gaiad_current_version.stdout and gaiad_binary_source == "build"
   shell: |
-    PATH=$PATH:{{ansible_local.golang.general.home}}/bin:$HOME/go/bin
+    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
     make install
   args:
     chdir: "{{ gaiad_user_home }}/gaia"
@@ -80,7 +67,7 @@
   # TODO: should we overwrite?
   shell: |
     cd $HOME
-    PATH=$PATH:{{ansible_local.golang.general.home}}/bin:$HOME/go/bin
+    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
     gaiad init {{inventory_hostname}} --home {{gaiad_home}} --chain-id {{chain_id}}
   become_user: "{{gaiad_user}}"
 
@@ -88,7 +75,7 @@
   when: gaiad_unsafe_reset and ((major_version|int == 7 and patch_version|int == 0) or major_version|int < 7)
   shell: |
     cd $HOME
-    PATH=$PATH:{{ansible_local.golang.general.home}}/bin:$HOME/go/bin
+    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
     gaiad unsafe-reset-all --home {{gaiad_home}}
   become_user: "{{gaiad_user}}"
   tags:
@@ -98,7 +85,7 @@
   when: gaiad_unsafe_reset and ((major_version|int == 7 and patch_version|int >= 1) or major_version|int > 7)
   shell: |
     cd $HOME
-    PATH=$PATH:{{ansible_local.golang.general.home}}/bin:$HOME/go/bin
+    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
     gaiad tendermint unsafe-reset-all --home {{gaiad_home}}
   become_user: "{{gaiad_user}}"
   tags:

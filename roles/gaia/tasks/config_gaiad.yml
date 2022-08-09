@@ -3,7 +3,7 @@
   when: gaiad_create_validator
   shell: |
     cd $HOME
-    PATH=$PATH:{{ansible_local.golang.general.home}}/bin:$HOME/go/bin
+    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
     gaiad keys add validator --keyring-backend {{gaiad_validator_keyring}} --home {{gaiad_home}} --output json
     gaiad add-genesis-account validator {{gaiad_validator_coins}} --home {{gaiad_home}} --keyring-backend="{{gaiad_validator_keyring}}"
   register: gaiad_create_validator_output
@@ -20,7 +20,7 @@
   when: gaiad_airdrop and gaiad_create_validator
   shell: |
     cd $HOME
-    PATH=$PATH:{{ansible_local.golang.general.home}}/bin:$HOME/go/bin
+    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
     gaiad add-genesis-account {{ item }} {{gaiad_airdrop_coins}} --home {{gaiad_home}}
   become_user: "{{gaiad_user}}"
   loop: "{{ gaiad_airdrop_accounts }}"
@@ -29,7 +29,7 @@
   when: gaiad_create_validator
   shell: |
     cd $HOME
-    PATH=$PATH:{{ansible_local.golang.general.home}}/bin:$HOME/go/bin
+    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
     gaiad gentx validator {{gaiad_gentx_validator_stake}} --keyring-backend="{{gaiad_validator_keyring}}" --home {{gaiad_home}} --chain-id {{chain_id}}
     gaiad collect-gentxs --home {{gaiad_home}}
   become_user: "{{gaiad_user}}"

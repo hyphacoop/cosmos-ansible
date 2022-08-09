@@ -1,7 +1,7 @@
 ---
 - name: Check cosmovisor version
   shell: |
-    PATH=$PATH:{{ansible_local.golang.general.home}}/bin:$HOME/go/bin
+    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
     cosmovisor --version
   become_user: "{{gaiad_user}}"
   register: cosmovisor_current
@@ -10,7 +10,7 @@
 - name: clone and install cosmovisor
   when: not cosmovisor_version in cosmovisor_current.stdout
   shell: |
-    PATH=$PATH:{{ansible_local.golang.general.home}}/bin:$HOME/go/bin
+    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
     go install {{cosmovisor_repository}}@{{cosmovisor_version}}
   become_user: "{{gaiad_user}}"
 

@@ -3,6 +3,5 @@ collections:
   - name: community.docker
   - name: community.postgresql
 roles:
-  - src: gantsign.golang
   - src: geerlingguy.docker
   - src: geerlingguy.nodejs
