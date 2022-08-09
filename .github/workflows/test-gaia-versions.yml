@@ -85,14 +85,14 @@ jobs:
       - name: ansible-galaxy
         run: ansible-galaxy install -r requirements.yml
       - name: Run playbook
-        run: ansible-playbook gaia.yml -i examples/inventory-local.yml --extra-vars "target=local reboot=false gaiad_version=${{ matrix.gaia_version }} gaiad_home={{ gaiad_user_home }}/.gaia gaiad_gov_testing=true gaiad_user=runner"
+        run: ansible-playbook node.yml -i examples/inventory-local.yml --extra-vars "target=local reboot=false chain_version=${{ matrix.gaia_version }} chain_home={{ node_user_home }}/.gaia chain_gov_testing=true node_user=runner"
       - name: Check cosmovisor service
         run: systemctl status cosmovisor
       - name: Check blocks are being produced
         run: tests/test_block_production.sh 127.0.0.1 26657 10
       - name: Happy path - transaction testing
         run: tests/test_tx_fresh.sh
-      - name: Get RAM usage while gaiad is running
+      - name: Get RAM usage while chain is running
         run: free -m
 
   test-upgrade:
@@ -119,7 +119,7 @@ jobs:
       - name: ansible-galaxy
         run: ansible-galaxy install -r requirements.yml
       - name: Run playbook
-        run: ansible-playbook gaia.yml -i examples/inventory-local.yml --extra-vars "target=local reboot=false gaiad_version=${{ matrix.gaia_version }} gaiad_home={{ gaiad_user_home }}/.gaia gaiad_gov_testing=true gaiad_user=runner"
+        run: ansible-playbook node.yml -i examples/inventory-local.yml --extra-vars "target=local reboot=false chain_version=${{ matrix.gaia_version }} chain_home={{ node_user_home }}/.gaia chain_gov_testing=true node_user=runner"
       - name: Check cosmovisor service
         run: systemctl status cosmovisor
       - name: Check blocks are being produced

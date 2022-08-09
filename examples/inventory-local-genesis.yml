@@ -2,12 +2,12 @@
 # yamllint disable rule:line-length
 all:
   vars:
-    gaiad_home_autoclear: true
-    gaiad_version: v7.0.2
+    chain_home_clear: true
+    chain_version: v7.0.2
     genesis_url: "https://github.com/cosmos/testnets/raw/master/v7-theta/local-testnet/genesis.json.gz"
     ansible_user: root
   children:
-    gaia:
+    node:
       hosts:
         "{{ target }}":
           fast_sync: false

@@ -2,13 +2,13 @@
 # yamllint disable rule:line-length
 all:
   vars:
-    gaiad_home_autoclear: true
-    gaiad_version: v7.0.0
-    gaiad_create_validator: true
+    chain_home_clear: true
+    chain_version: v7.0.0
+    chain_create_validator: true
     faucet_enabled: true
     ansible_user: root
   children:
-    gaia:
+    node:
       hosts:
         "{{ target }}":
           fast_sync: false

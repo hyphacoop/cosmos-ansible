@@ -33,7 +33,7 @@ To join the [Theta testnet](https://github.com/cosmos/testnets/tree/master/v7-th
 3. Set up SSH access to the target machine
 4. Run the playbook
    ```
-   ansible-playbook gaia.yml -i examples/inventory-theta.yml -e 'target=SERVER_IP_OR_DOMAIN'
+   ansible-playbook node.yml -i examples/inventory-theta.yml -e 'target=SERVER_IP_OR_DOMAIN'
    ```
 5. Log into the target machine to follow the syncing process
    ```

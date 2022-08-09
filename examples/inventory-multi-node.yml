@@ -5,15 +5,15 @@ all:
     ansible_user: root
     genesis_file: "genesis.json"
     chain_id: cosmos-testnet
-    gaiad_version: v7.0.0
-    gaiad_home_autoclear: false
-    gaiad_unsafe_reset: true
-    gaiad_create_validator: false
-    gaiad_api_host: "rest"
-    gaiad_rpc_host: "rpc"
-    gaiad_p2p_host: "p2p"
-    gaiad_grpc_host: "grpc"
-    gaiad_use_ssl_proxy: true
+    chain_version: v7.0.0
+    chain_home_clear: false
+    node_unsafe_reset: true
+    chain_create_validator: false
+    chain_api_host: "rest"
+    chain_rpc_host: "rpc"
+    chain_p2p_host: "p2p"
+    chain_grpc_host: "grpc"
+    chain_use_ssl_proxy: true
     letsencrypt_email: "validator@cosmostest.network"
     enable_swap: true
     swap_size: 8192
@@ -26,7 +26,7 @@ all:
     panic_ssh_url: root@monitor.cosmostest.network
 
   children:
-    gaia:
+    node:
       hosts:
         val1.cosmostest.network:
           node_key_file: "<val-1-node-key>"

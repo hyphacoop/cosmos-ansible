@@ -1,0 +1,161 @@
+---
+
+- name: reset gaiad database (command for <v7.0.1)
+  when: chain_binary_name == "gaiad" and node_unsafe_reset and ((major_version|int == 7 and patch_version|int == 0) or major_version|int < 7)
+  shell: |
+    cd $HOME
+    {{chain_bin}} unsafe-reset-all --home {{chain_home}}
+  become_user: "{{node_user}}"
+  tags:
+    - chain_reset
+
+- name: reset gaiad database (command for >v7.0.0)
+  when: chain_binary_name == "gaiad" and node_unsafe_reset and ((major_version|int == 7 and patch_version|int >= 1) or major_version|int > 7)
+  shell: |
+    cd $HOME
+    {{chain_bin}} tendermint unsafe-reset-all --home {{chain_home}}
+  become_user: "{{node_user}}"
+  tags:
+    - chain_reset
+
+- name: create validator
+  when: chain_create_validator
+  shell: |
+    cd $HOME
+    {{chain_bin}} keys add validator --keyring-backend {{node_keyring}} --home {{chain_home}} --output json
+    {{chain_bin}} add-genesis-account validator {{chain_validator_coins}} --home {{chain_home}} --keyring-backend="{{node_keyring}}"
+  register: chain_create_validator_output
+  become_user: "{{node_user}}"
+
+- name: save validator name, address, and mnemonic
+  when: chain_create_validator
+  copy:
+    content="{{chain_create_validator_output.stderr}}"
+    dest="{{chain_home}}/validator.json"
+  become_user: "{{node_user}}"
+
+- name: create genesis accounts
+  when: chain_airdrop and chain_create_validator
+  shell: |
+    cd $HOME
+    {{chain_bin}} add-genesis-account {{ item }} {{chain_airdrop_coins}} --home {{chain_home}}
+  become_user: "{{node_user}}"
+  loop: "{{ chain_airdrop_accounts }}"
+
+- name: collect gentx
+  when: chain_create_validator
+  shell: |
+    cd $HOME
+    {{chain_bin}} gentx validator {{chain_gentx_validator}} --keyring-backend="{{node_keyring}}" --home {{chain_home}} --chain-id {{chain_id}}
+    {{chain_bin}} collect-gentxs --home {{chain_home}}
+  become_user: "{{node_user}}"
+
+- name: patch genesis file with minimum deposit and short voting period
+  when: chain_gov_testing
+  shell: |
+    cd {{chain_home}}/config
+    jq '.app_state.gov.deposit_params.min_deposit[0].amount |= "1"' genesis.json > temp.json
+    jq '.app_state.gov.voting_params.voting_period |= "{{ chain_voting_period }}"' temp.json > genesis.json
+    rm temp.json
+
+- name: patch genesis file with specified denom
+  replace:
+    path: '{{chain_home}}/config/genesis.json'
+    regexp: 'stake'
+    replace: '{{chain_denom}}'
+
+# Get trust height automatically
+- name: obtain trust height
+  when: statesync_enabled and statesync_auto_populate
+  script:
+    get_trust_height.sh {{ statesync_rpc_servers.split(',')[0] }}
+  register: trust_height
+
+- name: obtain trust height block hash ID
+  when: statesync_enabled and statesync_auto_populate
+  script:
+    get_trust_hash.sh {{ statesync_rpc_servers.split(',')[0] }} {{ trust_height.stdout }}
+  register: trust_hash
+
+- name: print trust height and hash ID
+  when: statesync_enabled and statesync_auto_populate
+  debug:
+    msg: 'Height {{trust_height.stdout }} has hash ID {{ trust_hash.stdout }}'
+  become_user: "{{node_user}}"
+
+- name: set state sync variables
+  when: statesync_enabled and statesync_auto_populate
+  set_fact:
+    statesync_trust_height: "{{ trust_height.stdout }}"
+    statesync_trust_hash: "{{ trust_hash.stdout }}"
+
+# Config file generation
+- name: copy app.toml
+  when: app_toml_file is defined
+  copy:
+    src: '{{app_toml_file}}'
+    dest: '{{chain_home}}/config/app.toml'
+    owner: '{{node_user}}'
+    group: '{{node_user}}'
+
+- name: copy config.toml
+  when: config_toml_file is defined
+  copy:
+    src: '{{config_toml_file}}'
+    dest: '{{chain_home}}/config/config.toml'
+    owner: '{{node_user}}'
+    group: '{{node_user}}'
+
+- name: copy node_key.json
+  when: node_key_file is defined
+  copy:
+    src: '{{node_key_file}}'
+    dest: '{{chain_home}}/config/node_key.json'
+    owner: '{{node_user}}'
+    group: '{{node_user}}'
+
+- name: copy priv_validator_key.json
+  when: priv_validator_key_file is defined
+  copy:
+    src: '{{priv_validator_key_file}}'
+    dest: '{{chain_home}}/config/priv_validator_key.json'
+    owner: '{{node_user}}'
+    group: '{{node_user}}'
+
+## Addressbook config
+- name: copy addrbook.json
+  when: addrbook_file is defined
+  copy:
+    src: '{{addrbook_file}}'
+    dest: '{{chain_home}}/config/addrbook_file.json'
+    owner: '{{node_user}}'
+    group: '{{node_user}}'
+
+- name: download addrbook.json from URL
+  when: addrbook_url is defined
+  get_url:
+    url: "{{addrbook_url}}"
+    dest: "{{chain_home}}/config/addrbook.json"
+    owner: '{{node_user}}'
+    group: '{{node_user}}'
+
+## Patching Config files
+- name: generate config json for patching toml files
+  template:
+    src: ansible_vars.json.j2
+    dest: '{{chain_home}}/config/ansible_vars.json'
+    owner: '{{node_user}}'
+    group: '{{node_user}}'
+
+- name: patch .toml configs with ansible variables
+  script: |
+    copy_config_vars.py --chain_home=$(echo {{chain_home}}) \
+      --config_file=$(echo {{chain_home}}/config/ansible_vars.json)
+  become_user: "{{node_user}}"
+
+- name: delete generated config json
+  file:
+    state: absent
+    path: '{{chain_home}}/config/ansible_vars.json'
+    owner: '{{node_user}}'
+    group: '{{node_user}}'

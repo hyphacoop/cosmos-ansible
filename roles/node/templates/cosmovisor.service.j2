@@ -1,0 +1,21 @@
+[Unit]
+Description=cosmovisor
+After=network-online.target
+
+[Service]
+User={{node_user}}
+ExecStart={{ cosmovisor_bin }} start --x-crisis-skip-assert-invariants --home {{ chain_home }}
+Restart=always
+RestartSec=3
+LimitNOFILE=4096
+Environment="DAEMON_NAME={{chain_binary_name}}"
+Environment="DAEMON_HOME={{ chain_home }}"
+Environment="DAEMON_ALLOW_DOWNLOAD_BINARIES=true"
+Environment="DAEMON_RESTART_AFTER_UPGRADE=true"
+Environment="DAEMON_LOG_BUFFER_SIZE=512"
+{% if cosmovisor_skip_backup %}
+Environment="UNSAFE_SKIP_BACKUP=true"
+{% endif %}
+
+[Install]
+WantedBy=multi-user.target

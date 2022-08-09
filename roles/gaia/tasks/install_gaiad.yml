@@ -1,5 +1,18 @@
 ---
 
+- name: Remove golang apt package
+  ansible.builtin.apt:
+    name: golang
+    state: absent
+
+- name: Remove system Go files
+  file:
+    state: absent
+    path: "{{ item }}"
+  loop:
+    - /usr/bin/go
+    - /usr/lib/go
+
 # TODO: Firewall
 # - name: set up firewall (block by default?)
 

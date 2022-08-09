@@ -48,7 +48,7 @@ gaiad_upgrade () {
     f_initial_height=$4
 
     ansible-galaxy install -r requirements.yml
-    ansible-playbook gaia.yml -i inventory.yml --extra-vars "target=local reboot=false minimum_gas_prices=0.0025uatom gaiad_version=$f_gaia_version gaiad_gov_testing=true priv_validator_key_file=examples/validator-keys/validator-40/priv_validator_key.json node_key_file=examples/validator-keys/validator-40/node_key.json genesis_file=$f_latest_genesis"
+    ansible-playbook node.yml -i inventory.yml --extra-vars "target=local reboot=false minimum_gas_prices=0.0025uatom chain_version=$f_gaia_version chain_gov_testing=true priv_validator_key_file=examples/validator-keys/validator-40/priv_validator_key.json node_key_file=examples/validator-keys/validator-40/node_key.json genesis_file=$f_latest_genesis"
     
     # Restore the validator key and store /home/gaia/.gaia/validator.json
     su gaia -c "echo \"abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon art\" | ~/.gaia/cosmovisor/current/bin/gaiad --output json keys add val --keyring-backend test --recover 2> ~/.gaia/validator.json" # Use stderr until gaiad use stdout
@@ -207,8 +207,8 @@ git checkout $gh_branch
 
 # Get version number using gaiad version
 echo "Get running gaiad version"
-gaiad_version=$( (su gaia -c "~gaia/.gaia/cosmovisor/current/bin/gaiad version") 2>&1) # Use stderr until gaiad use stdout
-echo "Installed gaiad version is $gaiad_version"
+chain_version=$( (su gaia -c "~gaia/.gaia/cosmovisor/current/bin/gaiad version") 2>&1) # Use stderr until gaiad use stdout
+echo "Installed gaiad version is $chain_version"
 
 # Export genesis
 if [ ! -d mainnet-genesis-export ]
@@ -216,25 +216,25 @@ then
     mkdir mainnet-genesis-export
 fi
 echo "Export genesis"
-su gaia -c "~gaia/.gaia/cosmovisor/current/bin/gaiad export --height $current_block" 2> "mainnet-genesis-export/mainnet-genesis_${current_block_time}_${gaiad_version}_${current_block}.json"
+su gaia -c "~gaia/.gaia/cosmovisor/current/bin/gaiad export --height $current_block" 2> "mainnet-genesis-export/mainnet-genesis_${current_block_time}_${chain_version}_${current_block}.json"
 
 echo "Tinkering exported genesis"
 pip3 install -r requirements.txt
-ln -s "$PWD/mainnet-genesis-export/mainnet-genesis_${current_block_time}_${gaiad_version}_${current_block}.json" "tests/mainnet_genesis.json"
+ln -s "$PWD/mainnet-genesis-export/mainnet-genesis_${current_block_time}_${chain_version}_${current_block}.json" "tests/mainnet_genesis.json"
 python3 ./example_mainnet_genesis.py
 rm tests/mainnet_genesis.json
 if [ ! -d mainnet-genesis-tinkered ]
 then
     mkdir mainnet-genesis-tinkered
 fi
-mv tinkered_genesis.json "mainnet-genesis-tinkered/tinkered-genesis_${current_block_time}_${gaiad_version}_${current_block}.json"
+mv tinkered_genesis.json "mainnet-genesis-tinkered/tinkered-genesis_${current_block_time}_${chain_version}_${current_block}.json"
 
 
 # Compress files
-echo "Compressing mainnet-genesis-export/mainnet-genesis_${current_block_time}_${gaiad_version}_${current_block}.json"
-gzip "mainnet-genesis-export/mainnet-genesis_${current_block_time}_${gaiad_version}_${current_block}.json"
-echo "Compressing mainnet-genesis-tinkered/tinkered-genesis_${current_block_time}_${gaiad_version}_${current_block}.json"
-gzip "mainnet-genesis-tinkered/tinkered-genesis_${current_block_time}_${gaiad_version}_${current_block}.json"
+echo "Compressing mainnet-genesis-export/mainnet-genesis_${current_block_time}_${chain_version}_${current_block}.json"
+gzip "mainnet-genesis-export/mainnet-genesis_${current_block_time}_${chain_version}_${current_block}.json"
+echo "Compressing mainnet-genesis-tinkered/tinkered-genesis_${current_block_time}_${chain_version}_${current_block}.json"
+gzip "mainnet-genesis-tinkered/tinkered-genesis_${current_block_time}_${chain_version}_${current_block}.json"
 
 # Push to github
 echo "push to github"
@@ -267,7 +267,7 @@ jq -r .include[].gaia_version <<< "$upgrade" | while read -r gaia_start_version
 do
     gaia_upgrade_version=$(jq -r ".include[$i].upgrade_version" <<< "$upgrade")
     echo "Run test on $gaia_start_version to $gaia_upgrade_version"
-    gaiad_upgrade "$gaia_start_version" "$gaia_upgrade_version" ~/cosmos-genesis-tinkerer/mainnet-genesis-tinkered/tinkered-genesis_"${current_block_time}"_"${gaiad_version}"_"${current_block}".json.gz "$current_block"
+    gaiad_upgrade "$gaia_start_version" "$gaia_upgrade_version" ~/cosmos-genesis-tinkerer/mainnet-genesis-tinkered/tinkered-genesis_"${current_block_time}"_"${chain_version}"_"${current_block}".json.gz "$current_block"
     let i=$i+1
 done
 
@@ -291,7 +291,7 @@ fi
 # wait for log to be written
 echo "End of log"
 sleep 120
-cp /root/export_genesis.log "logs/mainnet-export/mainnet-genesis_${start_date}_${gaiad_version}_${current_block}.log"
+cp /root/export_genesis.log "logs/mainnet-export/mainnet-genesis_${start_date}_${chain_version}_${current_block}.log"
 git add -A
 git commit -m "Adding export log file"
 git push origin main

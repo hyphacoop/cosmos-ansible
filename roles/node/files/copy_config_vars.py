@@ -9,14 +9,14 @@ import json
 import toml
 
 parser = argparse.ArgumentParser(
-    description="Patch gaiad config files")
+    description="Patch chain config files")
 
-parser.add_argument('--gaiad_home')
+parser.add_argument('--chain_home')
 parser.add_argument('--config_file')
 
 args = vars(parser.parse_args())
 
-gaiad_home = args["gaiad_home"]
+chain_home = args["chain_home"]
 config_file = args["config_file"]
 
 
@@ -67,4 +67,4 @@ def set_nested(nested_dict, path, value):
     current_val[final_field] = value
 
 
-update_config_files(config_file, gaiad_home)
+update_config_files(config_file, chain_home)

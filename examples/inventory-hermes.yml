@@ -2,14 +2,14 @@
 # yamllint disable rule:line-length
 all:
   vars:
-    gaiad_home_autoclear: true
-    gaiad_version: v7.0.2
+    chain_home_clear: true
+    chain_version: v7.0.2
     api_enabled: true
-    gaiad_use_ssl_proxy: true
-    gaiad_api_host: "rest"
-    gaiad_rpc_host: "rpc"
-    gaiad_p2p_host: "p2p"
-    gaiad_grpc_host: "grpc"
+    chain_use_ssl_proxy: true
+    chain_api_host: "rest"
+    chain_rpc_host: "rpc"
+    chain_p2p_host: "p2p"
+    chain_grpc_host: "grpc"
     letsencrypt_email: "validator@devnet.com"
     enable_swap: false
     swap_size: 8192
@@ -18,20 +18,20 @@ all:
     reboot: false
     ansible_user: root
   children:
-    gaia:
+    node:
       hosts:
         my-chain-1.dev.testnet.com:
           chain_id: my-chain-1
-          gaiad_create_validator: true
-          gaiad_airdrop: true
-          gaiad_airdrop_accounts:
+          chain_create_validator: true
+          chain_airdrop: true
+          chain_airdrop_accounts:
             - cosmos*
             - cosmos*
         my-chain-2.dev.testnet.com:
           chain_id: my-chain-2
-          gaiad_create_validator: true
-          gaiad_airdrop: true
-          gaiad_airdrop_accounts:
+          chain_create_validator: true
+          chain_airdrop: true
+          chain_airdrop_accounts:
             - cosmos*
             - cosmos*
     hermes:
