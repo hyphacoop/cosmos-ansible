@@ -3,19 +3,17 @@
 all:
   vars:
     ansible_user: root
-    hasura_admin_secret: CHANGE_ME
+    hasura_admin_secret: CHANGE_ME  # Any random password will work
     bdjuno_version: "chains/cosmos/testnet"
+    bdui_chain: testnet  # Either testnet or mainet
+    bigdipper_use_tls_proxy: true  # Enables TLS, requires a domain name
+    chain_id: theta-testnet-001
+    letsencrypt_email: "example@example.com"  # Required for TLS setup
+    # Time and block height when genesis file was created
+    # For example this is the theta time and height
     bigdipper_genesis_time: 2022-01-12T00:52:40
     bigdipper_genesis_height: 9034670
-    bdui_chain: testnet  # Either testnet or mainet
-    bigdipper_use_tls_proxy: true
-    chain_id: theta-testnet-001
-    letsencrypt_email: "example@example.com"
   children:
-    gaia:
+    bigdipper:
       hosts:
         "{{ target }}":
-
-# Theta genesis info:
-# Time: 2022-01-12 00:52:40.929812121Z
-# Height: 9034670

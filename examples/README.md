@@ -5,7 +5,7 @@ Sample inventory files are provided here as reference.
 After a playbook is run, you can log into a node and see if the chain is running with one of these commands:
 
 |          Inventory file          | `journalctl` command                |
-|:--------------------------------:|-------------------------------------|
+| :------------------------------: | ----------------------------------- |
 | `use_cosmovisor: true` (default) | `journalctl -fu cosmovisor.service` |
 |     `use_cosmovisor: false`      | `journalctl -fu gaiad.service`      |
 
@@ -75,7 +75,7 @@ ansible-playbook node.yml -i examples/inventory-local-genesis.yml -e 'target=SER
 Set up a chain with three validator nodes that have the following voting power:
 
 | Validator moniker | Voting power | Self-delegating address                         |
-|:-----------------:|:------------:|-------------------------------------------------|
+| :---------------: | :----------: | ----------------------------------------------- |
 |  `validator-40`   |     40%      | `cosmos1r5v5srda7xfth3hn2s26txvrcrntldjumt8mhl` |
 |  `validator-32`   |     32%      | `cosmos1ay4dpm0kjmvtpug28vgw5w32yyjxa5sp97pjqq` |
 |  `validator-28`   |     28%      | `cosmos1v8zgdpzqfazvk6fgwhqqhzx0hfannrajezuc6t` |
@@ -146,3 +146,33 @@ Set up a Hermes relayer between two chains.
 * **Inventory file:** [`inventory-hermes.yml`](inventory-hermes.yml)
 
 Follow the [Hermes IBC Relayer Setup](/docs/Hermes-Relayer-Setup.md) guide in the `docs` folder for all the requirements and steps needed to deploy the relayer. 
+
+## Run a Big Dipper block explorer
+
+Run a block explorer for your chain using the [Big Dipper](https://bigdipper.live/) ([docs](https://docs.bigdipper.live/)) software.
+
+* **Inventory file:** [`inventory-bigdipper.yml`](inventory-bigdipper.yml)
+
+- First install dependencies: `ansible-galaxy install -r requirements.yml`.
+- Next install a chain node on the same server, for example:
+    ```
+    ansible-playbook node.yml -i examples/inventory-theta.yml -e 'target=SERVER_DOMAIN'
+    ```
+- Go and edit [`inventory-bigdipper.yml`](inventory-bigdipper.yml) to your liking. Some things like `hasura_admin_secret` and `letsencrypt_email` will need to be changed, while others are optional.
+- Setup DNS. Point your domain (or subdomain) to your server's IP, and then set up some subdomains:
+    ```
+    mydomain.com.        3600 IN A     123.123.123.123
+    hasura.mydomain.com. 3600 IN CNAME mydomain.com.
+    rpc.mydomain.com.    3600 IN CNAME mydomain.com.
+    ```
+    You can configure these subdomains if needed using other variables:
+    ```yaml
+    # Defaults: 
+    hasura_host: "hasura."
+    rpc_host: "rpc."
+    bdui_host: ""
+    ```
+- Install Big Dipper:
+    ```
+    ansible-playbook bigdipper.yml -i examples/inventory-bigdipper.yml -e 'target=SERVER_DOMAIN'
+    ```
