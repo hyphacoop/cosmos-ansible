@@ -40,16 +40,57 @@ hasura_actions_service_name: hasura-actions
 # Should be private and set by user
 # hasura_admin_secret: "something"
 
+
+bigdipper_use_tls_proxy: false
+
+# Changed based on bigdipper_use_tls_proxy var
+bigdipper_web_scheme: http
+bigdipper_websocket_scheme: ws
+
+hasura_host: "hasura."
+rpc_host: "rpc."
+bdui_host: ""
+
+
 bdui_dir: "{{bigdipper_user_home}}/big-dipper"
 bdui_version: "base-v2.1.0"
 bdui_port: 3001
-bdui_graphql_url: "{{bigdipper_web_scheme}}://{{inventory_hostname}}:{{hasura_port}}/v1/graphql"
-bdui_graphql_ws_url: "{{bigdipper_websocket_scheme}}://{{inventory_hostname}}:{{hasura_port}}/v1/graphql"
-bdui_rpc_websocket: "{{bigdipper_websocket_scheme}}://{{inventory_hostname}}:{{bigdipper_rpc_port}}/websocket"
-bdui_public_url: "{{bigdipper_web_scheme}}://{{inventory_hostname}}"
+bdui_graphql_url: "{{bigdipper_web_scheme}}://{{hasura_host}}{{inventory_hostname}}/v1/graphql"
+bdui_graphql_ws_url: "{{bigdipper_websocket_scheme}}://{{hasura_host}}{{inventory_hostname}}/v1/graphql"
+bdui_rpc_websocket: "{{bigdipper_websocket_scheme}}://{{rpc_host}}{{inventory_hostname}}/websocket"
+bdui_public_url: "{{bigdipper_web_scheme}}://{{bdui_host}}{{inventory_hostname}}"
 bdui_chain: testnet
 bdui_service_name: bigdipper
 
 # Needs to be specified by the user according to genesis info
 # bigdipper_genesis_time: 2021-07-13T08:00:00
 # bigdipper_genesis_height: 1
+
+
+### nginx configuration ###
+
+# Set dynamically based on bigdipper_use_tls_proxy
+ssl_provider: ""
+
+nginx_sites:
+  "{{hasura_host}}{{inventory_hostname}}":
+    ssl_provider: "{{ssl_provider}}"
+    web_hostname: "{{hasura_host}}{{inventory_hostname}}"
+    locations:
+      "/":
+        proxy_location: "http://127.0.0.1:{{hasura_port}}"
+        proxy_websocket: true
+  "{{rpc_host}}{{inventory_hostname}}":
+    ssl_provider: "{{ssl_provider}}"
+    web_hostname: "{{rpc_host}}{{inventory_hostname}}"
+    locations:
+      "/":
+        proxy_location: "{{bigdipper_rpc_address}}"
+        proxy_websocket: true
+  "{{bdui_host}}{{inventory_hostname}}":
+    ssl_provider: "{{ssl_provider}}"
+    web_hostname: "{{bdui_host}}{{inventory_hostname}}"
+    locations:
+      "/":
+        proxy_location: "http://127.0.0.1:{{bdui_port}}"
+        proxy_websocket: true

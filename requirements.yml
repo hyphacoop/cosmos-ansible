@@ -5,3 +5,6 @@ collections:
 roles:
   - src: geerlingguy.docker
   - src: geerlingguy.nodejs
+  - src: https://github.com/hyphacoop/ansible-common.git
+    version: "28694575c335393289d7cbeafc89aebeaca5d76e"
+    name: "hypha.common"

@@ -8,10 +8,9 @@ all:
     bigdipper_genesis_time: 2022-01-12T00:52:40
     bigdipper_genesis_height: 9034670
     bdui_chain: testnet  # Either testnet or mainet
-    bigdipper_use_tls_proxy: false
-    bigdipper_web_scheme: http
-    bigdipper_websocket_scheme: ws
+    bigdipper_use_tls_proxy: true
     chain_id: theta-testnet-001
+    letsencrypt_email: "example@example.com"
   children:
     gaia:
       hosts:

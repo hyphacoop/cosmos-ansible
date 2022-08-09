@@ -1,6 +1,22 @@
 ---
+
 - include_role:
     name: common
+
+# Set up nginx
+
+- name: Change vars for TLS
+  when: bigdipper_use_tls_proxy
+  set_fact:
+    bigdipper_web_scheme: https
+    bigdipper_websocket_scheme: wss
+    ssl_provider: "letsencrypt"
+
+- include_role:
+    name: hypha.common.nginx
+
+- include_role:
+    name: hypha.common.ssl
 
 # Set up big dipper
 - name: "Install python dependencies"
@@ -200,28 +216,6 @@
   shell: |
     cd "{{bdjuno_dir}}/hasura"
     hasura metadata apply --endpoint http://localhost:{{hasura_port}} --admin-secret "{{hasura_admin_secret}}"
-
-- name: Set variables for hasura endpoint
-  set_fact:
-    endpoint_port: '{{hasura_port}}'
-    site_hostname: '{{inventory_hostname}}'
-  when: bigdipper_use_tls_proxy | default(false) | bool
-
-- name: Setup nginx TLS for hasura endpoint
-  include_role:
-    name: nginx-ssl
-  when: bigdipper_use_tls_proxy | default(false) | bool
-
-- name: Set variables for rpc endpoint
-  set_fact:
-    endpoint_port: '{{bigdipper_rpc_port}}'
-    site_hostname: '{{inventory_hostname}}'
-  when: bigdipper_use_tls_proxy | default(false) | bool
-
-- name: Setup nginx TLS for rpc endpoint
-  include_role:
-    name: nginx-ssl
-  when: bigdipper_use_tls_proxy | default(false) | bool
 
 - name: "Clone and checkout big-dipper-ui"
   become_user: "{{bigdipper_user}}"
