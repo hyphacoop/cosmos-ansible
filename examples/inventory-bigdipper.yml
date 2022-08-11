@@ -12,7 +12,7 @@ all:
     chain_id: theta-testnet-001
     letsencrypt_email: "example@example.com"  # Required for TLS setup
     # Time and block height when genesis file was created
-    # For example this is the theta time and height
+    # For example this is the Theta testnet time and height
     bigdipper_genesis_time: 2022-01-12T00:52:40
     bigdipper_genesis_height: 9034670
   children:
