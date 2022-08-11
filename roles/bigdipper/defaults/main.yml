@@ -61,6 +61,8 @@ bdui_rpc_websocket: "{{bigdipper_websocket_scheme}}://{{rpc_host}}{{inventory_ho
 bdui_public_url: "{{bigdipper_web_scheme}}://{{bdui_host}}{{inventory_hostname}}"
 bdui_chain: testnet
 bdui_service_name: bigdipper
+bdui_icon: ""
+bdui_logo: ""
 
 # Needs to be specified by the user according to genesis info
 # bigdipper_genesis_time: 2021-07-13T08:00:00
