@@ -39,7 +39,7 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@master
 
-      - name: ansible-galaxy
+      - name: Install ansible-galaxy requirements
         run: ansible-galaxy install -r requirements.yml
 
       - name: Provision VM

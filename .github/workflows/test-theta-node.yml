@@ -26,7 +26,7 @@ jobs:
           python -m pip install ansible toml
       - name: Configure ansible.cfg
         run: echo "transport = local" >> ansible.cfg
-      - name: ansible-galaxy
+      - name: Install ansible-galaxy requirements
         run: ansible-galaxy install -r requirements.yml
       - name: Run playbook
         run: |
