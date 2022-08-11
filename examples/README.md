@@ -11,7 +11,7 @@ After a playbook is run, you can log into a node and see if the chain is running
 
 Gaia is set up for the `gaia` user by default. Log into the node and switch to the `gaia` user to run `gaiad` commands.
 
-## Install deps
+## Install dependencies
 
 Before running any playbooks, first install the Ansible dependencies:
 
@@ -149,30 +149,30 @@ Follow the [Hermes IBC Relayer Setup](/docs/Hermes-Relayer-Setup.md) guide in th
 
 ## Run a Big Dipper block explorer
 
-Run a block explorer for your chain using the [Big Dipper](https://bigdipper.live/) ([docs](https://docs.bigdipper.live/)) software.
+Run a block explorer for your chain using the Big Dipper [software](https://bigdipper.live/) ([docs](https://docs.bigdipper.live/)) software.
 
 * **Inventory file:** [`inventory-bigdipper.yml`](inventory-bigdipper.yml)
 
-- First install dependencies: `ansible-galaxy install -r requirements.yml`.
-- Next install a chain node on the same server, for example:
+1. Install ansible-galaxy dependencies: `ansible-galaxy install -r requirements.yml`.
+2. Set up a node. For example:
     ```
     ansible-playbook node.yml -i examples/inventory-theta.yml -e 'target=SERVER_DOMAIN'
     ```
-- Go and edit [`inventory-bigdipper.yml`](inventory-bigdipper.yml) to your liking. Some things like `hasura_admin_secret` and `letsencrypt_email` will need to be changed, while others are optional.
-- Setup DNS. Point your domain (or subdomain) to your server's IP, and then set up some subdomains:
+3. Go and edit [`inventory-bigdipper.yml`](inventory-bigdipper.yml) to your liking. Some things like `hasura_admin_secret` and `letsencrypt_email` will need to be changed, while others are optional.
+4. Setup DNS:
     ```
     mydomain.com.        3600 IN A     123.123.123.123
     hasura.mydomain.com. 3600 IN CNAME mydomain.com.
     rpc.mydomain.com.    3600 IN CNAME mydomain.com.
     ```
-    You can configure these subdomains if needed using other variables:
+    You can configure the subdomain names if needed using other variables:
     ```yaml
     # Defaults: 
     hasura_host: "hasura."
     rpc_host: "rpc."
     bdui_host: ""
     ```
-- Install Big Dipper:
+5. Install Big Dipper:
     ```
     ansible-playbook bigdipper.yml -i examples/inventory-bigdipper.yml -e 'target=SERVER_DOMAIN'
     ```
