@@ -211,6 +211,9 @@
 - name: "Set up hasura CLI"
   shell: "npm install --unsafe-perm --global hasura-cli@{{hasura_cli_version}}"
 
+- name: Wait for docker to be ready
+  shell: sleep 10
+
 - name: "Apply metadata to hasura"
   become_user: "{{bigdipper_user}}"
   shell: |
