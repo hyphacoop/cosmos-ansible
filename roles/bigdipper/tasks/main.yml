@@ -18,6 +18,11 @@
 - include_role:
     name: hypha.common.ssl
 
+- name: Restart nginx to apply new config
+  systemd:
+    state: restarted
+    name: nginx
+
 # Set up big dipper
 - name: "Install python dependencies"
   pip:
@@ -212,13 +217,25 @@
   shell: "npm install --unsafe-perm --global hasura-cli@{{hasura_cli_version}}"
 
 - name: Wait for docker to be ready
-  shell: sleep 10
+  wait_for:
+    port: "{{hasura_port}}"
+    delay: 10
 
 - name: "Apply metadata to hasura"
   become_user: "{{bigdipper_user}}"
   shell: |
-    cd "{{bdjuno_dir}}/hasura"
-    hasura metadata apply --endpoint http://localhost:{{hasura_port}} --admin-secret "{{hasura_admin_secret}}"
+    timeout 10s hasura metadata apply --endpoint http://localhost:{{hasura_port}} --admin-secret "{{hasura_admin_secret}}"
+    exit 0
+  args:
+    chdir: "{{bdjuno_dir}}/hasura"
+  timeout: 20
+
+- name: "Apply metadata to hasura (again)"
+  become_user: "{{bigdipper_user}}"
+  shell: hasura metadata apply --endpoint http://localhost:{{hasura_port}} --admin-secret "{{hasura_admin_secret}}"
+  args:
+    chdir: "{{bdjuno_dir}}/hasura"
+  timeout: 10
 
 - name: "Clone and checkout big-dipper-ui"
   become_user: "{{bigdipper_user}}"
