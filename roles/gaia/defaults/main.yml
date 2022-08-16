@@ -15,6 +15,7 @@ gaiad_gov_testing: false
 gaiad_voting_period: 10s
 gaiad_bond_denom: uatom
 chain_id: "theta-devnet"
+start_multinode: false
 
 # Default variables for creating a validator
 gaiad_create_validator: false

@@ -1,4 +1,74 @@
 ---
+# Config file generation
+- name: copy app.toml
+  when: app_toml_file is defined
+  copy:
+    src: '{{app_toml_file}}'
+    dest: '{{gaiad_home}}/config/app.toml'
+    owner: '{{gaiad_user}}'
+    group: '{{gaiad_user}}'
+
+- name: copy app.toml to muti-node gaia home
+  when: start_multinode and app_toml_file is defined
+  copy:
+    src: '{{ app_toml_file }}'
+    dest: '{{ gaiad_user_home }}/multinode/{{ inventory_hostname }}/config/app.toml'
+    owner: '{{ gaiad_user }}'
+    group: '{{ gaiad_user }}'
+  delegate_to: "{{ main_node }}"
+
+- name: copy config.toml
+  when: config_toml_file is defined
+  copy:
+    src: '{{config_toml_file}}'
+    dest: '{{gaiad_home}}/config/config.toml'
+    owner: '{{gaiad_user}}'
+    group: '{{gaiad_user}}'
+
+- name: copy config.toml to muti-node gaia home
+  when: start_multinode and config_toml_file is defined
+  copy:
+    src: '{{ config_toml_file }}'
+    dest: '{{ gaiad_user_home }}/multinode/{{ inventory_hostname }}/config/config.toml'
+    owner: '{{ gaiad_user }}'
+    group: '{{ gaiad_user }}'
+  delegate_to: "{{ main_node }}"
+
+- name: copy node_key.json
+  when: node_key_file is defined
+  copy:
+    src: '{{node_key_file}}'
+    dest: '{{gaiad_home}}/config/node_key.json'
+    owner: '{{gaiad_user}}'
+    group: '{{gaiad_user}}'
+
+- name: copy node_key.json to muti-node gaia home
+  when: start_multinode and node_key_file is defined
+  copy:
+    src: '{{ node_key_file }}'
+    dest: '{{ gaiad_user_home }}/multinode/{{ inventory_hostname }}/config/node_key.json'
+    owner: '{{ gaiad_user }}'
+    group: '{{ gaiad_user }}'
+  delegate_to: "{{ main_node }}"
+
+- name: copy priv_validator_key.json
+  when: priv_validator_key_file is defined
+  copy:
+    src: '{{priv_validator_key_file}}'
+    dest: '{{gaiad_home}}/config/priv_validator_key.json'
+    owner: '{{gaiad_user}}'
+    group: '{{gaiad_user}}'
+
+- name: copy priv_validator_key.json to muti-node gaia home
+  when: start_multinode and priv_validator_key_file is defined
+  copy:
+    src: '{{ priv_validator_key_file }}'
+    dest: '{{ gaiad_user_home }}/multinode/{{ inventory_hostname }}/config/priv_validator_key.json'
+    owner: '{{ gaiad_user }}'
+    group: '{{ gaiad_user }}'
+  delegate_to: "{{ main_node }}"
+
+# Create validator
 - name: create validator
   when: gaiad_create_validator
   shell: |
@@ -72,39 +142,6 @@
   set_fact:
     statesync_trust_height: "{{ trust_height.stdout }}"
     statesync_trust_hash: "{{ trust_hash.stdout }}"
-
-# Config file generation
-- name: copy app.toml
-  when: app_toml_file is defined
-  copy:
-    src: '{{app_toml_file}}'
-    dest: '{{gaiad_home}}/config/app.toml'
-    owner: '{{gaiad_user}}'
-    group: '{{gaiad_user}}'
-
-- name: copy config.toml
-  when: config_toml_file is defined
-  copy:
-    src: '{{config_toml_file}}'
-    dest: '{{gaiad_home}}/config/config.toml'
-    owner: '{{gaiad_user}}'
-    group: '{{gaiad_user}}'
-
-- name: copy node_key.json
-  when: node_key_file is defined
-  copy:
-    src: '{{node_key_file}}'
-    dest: '{{gaiad_home}}/config/node_key.json'
-    owner: '{{gaiad_user}}'
-    group: '{{gaiad_user}}'
-
-- name: copy priv_validator_key.json
-  when: priv_validator_key_file is defined
-  copy:
-    src: '{{priv_validator_key_file}}'
-    dest: '{{gaiad_home}}/config/priv_validator_key.json'
-    owner: '{{gaiad_user}}'
-    group: '{{gaiad_user}}'
 
 ## Addressbook config
 - name: copy addrbook.json

@@ -86,6 +86,25 @@
     gaiad init {{inventory_hostname}} --home {{gaiad_home}} --chain-id {{chain_id}}
   become_user: "{{gaiad_user}}"
 
+- name: create multi-node validator diectories
+  when: start_multinode
+  file:
+    path: "{{ gaiad_user_home }}/multinode/{{ inventory_hostname }}"
+    recurse: yes
+    owner: '{{gaiad_user}}'
+    group: '{{gaiad_user}}'
+  become_user: "{{gaiad_user}}"
+  delegate_to: "{{ main_node }}"
+
+- name: initialize multi-node gaiads on main node
+  when: start_multinode
+  shell: |
+    cd $HOME
+    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+    gaiad init {{ inventory_hostname }} --chain-id {{ chain_id }} --home {{ gaiad_user_home }}/multinode/{{ inventory_hostname }}
+  become_user: "{{gaiad_user}}"
+  delegate_to: "{{ main_node }}"
+
 - name: reset gaiad database (command for <v7.0.1)
   when: gaiad_unsafe_reset and ((major_version|int == 7 and patch_version|int == 0) or major_version|int < 7)
   shell: |
