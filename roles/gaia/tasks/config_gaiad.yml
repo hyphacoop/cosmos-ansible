@@ -104,6 +104,38 @@
     gaiad collect-gentxs --home {{gaiad_home}}
   become_user: "{{gaiad_user}}"
 
+- name: Create multi-node self-delegation accounts save the mnemonics shown in the output
+  when: start_multinode
+  shell: |
+    cd $HOME
+    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+    gaiad keys add {{ inventory_hostname }} --keyring-backend {{ gaiad_validator_keyring }} --home {{gaiad_home}} --output json
+    gaiad add-genesis-account {{ inventory_hostname }} 1{{ gaiad_gentx_validator_stake }} --home {{gaiad_home}} --keyring-backend="{{ gaiad_validator_keyring }}"
+  register: gaiad_create_multinode_validator_output
+  become_user: "{{ gaiad_user }}"
+  delegate_to: "{{ main_node }}"
+  throttle: 1
+
+- name: save multi-node validator name, address, and mnemonic
+  when: start_multinode
+  copy:
+    content="{{gaiad_create_multinode_validator_output.stderr}}"
+    dest="{{ gaiad_user_home }}/multinode/{{ inventory_hostname }}/validator.json"
+  delegate_to: "{{ main_node }}"
+  become_user: "{{ gaiad_user }}"
+
+- name: collect multi-node gentx
+  when: start_multinode
+  shell: |
+    cd $HOME
+    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+    nodeid=$(gaiad tendermint show-node-id --home {{ gaiad_user_home }}/multinode/{{ inventory_hostname }})
+    gaiad gentx {{ inventory_hostname }} {{ gaiad_gentx_validator_stake }} --keyring-backend="{{ gaiad_validator_keyring }}" --home {{ gaiad_home }} --chain-id {{ chain_id }} --node-id $nodeid --moniker {{ inventory_hostname }} --output-document {{ gaiad_user_home }}/multinode/{{ inventory_hostname }}/gentx.json
+    gaiad collect-gentxs --home {{ gaiad_home }}
+  become_user: "{{ gaiad_user }}"
+  delegate_to: "{{ main_node }}"
+  throttle: 1
+
 - name: patch genesis file with minimum deposit and short voting period
   when: gaiad_gov_testing
   shell: |

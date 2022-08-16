@@ -86,7 +86,13 @@
     gaiad init {{inventory_hostname}} --home {{gaiad_home}} --chain-id {{chain_id}}
   become_user: "{{gaiad_user}}"
 
-- name: create multi-node validator diectories
+- name: delete multi-node directories
+  when: gaiad_home_autoclear
+  file:
+    state: absent
+    path: "{{ gaiad_user_home }}/multinode"
+
+- name: create multi-node validator directories
   when: start_multinode
   file:
     path: "{{ gaiad_user_home }}/multinode/{{ inventory_hostname }}"
