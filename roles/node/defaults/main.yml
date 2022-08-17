@@ -18,6 +18,10 @@ chain_voting_period: 10s
 chain_denom: uatom
 chain_id: "theta-devnet"
 chain_repo_dir: "{{ node_user_home }}/chain-repo"
+chain_start: true
+
+# Interchain Security variables
+ics_consumer: false
 
 # Default variables for creating a validator
 chain_create_validator: false

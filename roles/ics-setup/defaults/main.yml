@@ -1,0 +1,7 @@
+---
+# Consumer chain proposal metadata
+consumer_chain_title: "Create consumer chain"
+consumer_chain_description: "Test consumer chain start"
+consumer_chain_id: "consumer-chain"
+consumer_proposal_deposit: "10uprov"
+provider_chain_id: "provider-chain"

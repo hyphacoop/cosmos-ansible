@@ -1,0 +1,43 @@
+---
+# yamllint disable rule:line-length
+all:
+  vars:
+    chain_home_autoclear: true
+    chain_version: main
+    chain_repository: https://github.com/cosmos/interchain-security.git
+    ansible_user: root
+    grpc_web_enabled: false
+    reboot: false
+    
+  children:
+    synchronize_group:
+      hosts:
+        provider.testnet.com:
+        consumer.testnet.com:
+        relayer.testnet.com:
+    consumer:
+      hosts:
+        consumer.testnet.com:
+
+    provider:
+      hosts:
+        provider.testnet.com:
+          consumer_chain_hostname: consumer.testnet.com
+    hermes:
+      hosts:
+        relayer.testnet.com:
+          hermes_chains:
+            consumer-chain:
+              hermes_chain_hostname: consumer.testnet.com
+              chain_denom: ucons
+              chain_home: /home/consumer/.isc
+              chain_grpc_port: 9080
+              chain_rpc_port: 26647
+              chain_p2p_port: 26646
+            provider-chain:
+              hermes_chain_hostname: provider.testnet.com
+              chain_denom: uprov
+              chain_home: /home/provider/.isp
+              chain_grpc_port: 9090
+              chain_rpc_port: 26657
+              chain_p2p_port: 26656

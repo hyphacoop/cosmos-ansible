@@ -1,0 +1,130 @@
+- name: Obtain genesis file from consumer chain
+  synchronize:
+    mode: push
+    src: "{{consumer_home}}/config/genesis.json"
+    dest: "{{provider_home}}/consumer_genesis.json"
+  delegate_to: "{{ consumer_chain_hostname }}"
+
+- name: Obtain binary file from consumer chain
+  synchronize:
+    mode: push
+    src: "{{consumer_chain_bin}}"
+    dest: "{{provider_home}}/consumer_binary"
+  delegate_to: "{{ consumer_chain_hostname }}"
+
+- name: Get checksum on consumer genesis file
+  stat:
+    path: "{{provider_home}}/consumer_genesis.json"
+    checksum_algorithm: sha256
+  register: genesis_status
+
+- name: Get checksum on consumer chain binary
+  stat:
+    path: "{{provider_home}}/consumer_binary"
+    checksum_algorithm: sha256
+  register: binary_status
+
+- name: Generate spawn time
+  set_fact:
+    spawn_time: "{{ansible_date_time.iso8601_micro}}"
+
+- name: Print genesis hash using module
+  debug:
+    msg: "Genesis hash: {{genesis_status.stat.checksum}}"
+
+- name: Print chain binary hash
+  debug:
+    msg: "Binary hash: {{binary_status.stat.checksum}}"
+
+- name: Print spawn time
+  debug:
+    msg: "Spawn time: {{spawn_time}}"
+
+- name: Generate consumer chain proposal
+  template:
+    src: consumer_proposal.json.j2
+    dest: '{{provider_home}}/consumer_proposal.json'
+    owner: 'provider'
+    group: 'provider'
+
+- name: Submit consumer chain proposal
+  shell: |
+    interchain-security-pd tx gov submit-proposal create-consumer-chain {{provider_home}}/consumer_proposal.json --keyring-backend test --chain-id {{provider_chain_id}} --from validator --home {{provider_home}} -b block -y --output json > {{provider_home}}/proposal_result.json
+  environment:
+    PATH: "{{provider_home}}/cosmovisor/current/bin:{{ ansible_env.PATH }}"
+  become_user: provider
+
+- name: Collect proposal ID
+  shell: |
+    jq -r '.logs[0].events[4].attributes[0].value' {{provider_home}}/proposal_result.json
+  register: proposal_id
+  become_user: provider
+
+- name: Pring proposal ID
+  debug:
+    msg: "Proposal ID is {{proposal_id.stdout}}"
+
+- name: Vote on proposal
+  shell: |
+    interchain-security-pd tx gov vote {{proposal_id.stdout}} yes --from validator --keyring-backend test --chain-id {{provider_chain_id}} --home {{provider_home}} -b block -y
+  environment:
+    PATH: "{{provider_home}}/cosmovisor/current/bin:{{ ansible_env.PATH }}"
+  become_user: provider
+
+- name: Wait for voting period to end
+  pause:
+    seconds: 8
+
+- name: Check proposal status
+  shell: |
+    interchain-security-pd q gov proposal {{proposal_id.stdout}} --output json | jq -r '.status'
+  register: proposal_status
+  environment:
+    PATH: "{{provider_home}}/cosmovisor/current/bin:{{ ansible_env.PATH }}"
+  become_user: provider
+
+- name: Fail if proposal does not pass
+  fail:
+    msg: 'The proposal did not reach "PROPOSAL_STATUS_PASSED" status'
+  when: proposal_status.stdout != "PROPOSAL_STATUS_PASSED"
+
+- name: Generate CCV genesis states from the provider chain
+  shell: |
+    interchain-security-pd q provider consumer-genesis {{consumer_chain_id}} --home {{provider_home}} -o json > {{provider_home}}/ccvconsumer_genesis.json
+  environment:
+    PATH: "{{provider_home}}/cosmovisor/current/bin:{{ ansible_env.PATH }}"
+  become_user: provider
+
+- name: Insert CCV states into the consumer genesis file
+  shell: |
+    jq -s '.[0].app_state.ccvconsumer = .[1] | .[0]' {{provider_home}}/consumer_genesis.json {{provider_home}}/ccvconsumer_genesis.json > {{provider_home}}/edited_consumer_genesis.json
+  environment:
+  become_user: provider
+
+- name: Push modified genesis to consumer node
+  synchronize:
+    mode: pull
+    src: "{{provider_home}}/edited_consumer_genesis.json"
+    dest: "{{consumer_home}}/config/genesis.json"
+    rsync_opts:
+      - "--chown=consumer:consumer"
+  delegate_to: "{{ consumer_chain_hostname }}"
+
+- name: Push private validator key to consumer node
+  synchronize:
+    mode: pull
+    src: "{{provider_home}}/config/priv_validator_key.json"
+    dest: "{{consumer_home}}/config/priv_validator_key.json"
+    rsync_opts:
+      - "--chown=consumer:consumer"
+  delegate_to: "{{ consumer_chain_hostname }}"
+
+- name: Push node key to consumer node
+  synchronize:
+    mode: pull
+    src: "{{provider_home}}/config/node_key.json"
+    dest: "{{consumer_home}}/config/node_key.json"
+    rsync_opts:
+      - "--chown=consumer:consumer"
+  delegate_to: "{{ consumer_chain_hostname }}"
+

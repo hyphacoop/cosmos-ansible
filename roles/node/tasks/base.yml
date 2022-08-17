@@ -30,7 +30,7 @@
   set_fact:
     major_version: "{{ chain_version[1] }}"
     patch_version: "{{ chain_version[5] }}"
-  when: major_version is undefined and patch_version is undefined
+  when: ( chain_binary_name == "gaiad" ) and (major_version is undefined and patch_version is undefined)
   tags:
     - chain_reset
     - chain_stop
@@ -93,6 +93,7 @@
   tags:
     - chain_stop
     - chain_restart
+  ignore_errors: true
 
 - name: Stop existing cosmovisor systemd service
   when: >
@@ -105,6 +106,7 @@
   tags:
     - chain_stop
     - chain_restart
+  ignore_errors: true
 
 - name: Remove golang apt package
   ansible.builtin.apt:
@@ -127,7 +129,6 @@
   ignore_errors: true
 
 - name: Extract golang
-  # TODO: Auto-detect go_arch
   when: not go_version in go_current_version.stdout
   unarchive:
     src: "https://golang.org/dl/go{{go_version}}.{{go_arch}}.tar.gz"
@@ -135,16 +136,13 @@
     remote_src: yes
   become: true
 
-# TODO: Firewall
-# - name: set up firewall (block by default?)
-
 - name: Check chain version
   shell: "{{chain_bin}} version"
   become_user: "{{node_user}}"
   register: chain_current_version
   ignore_errors: true
 
-## Create go bin directory
+# Create go bin directory
 - name: Prepare go folder
   when: chain_binary_source == "release"
   file:
@@ -153,7 +151,6 @@
     recurse: true
     owner: '{{node_user}}'
     group: '{{node_user}}'
-
 
 - name: Download chain binary from release
   when: not chain_version in chain_current_version.stdout and chain_binary_source == "release"

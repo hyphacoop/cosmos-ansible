@@ -27,10 +27,17 @@
   register: chain_create_validator_output
   become_user: "{{node_user}}"
 
-- name: save validator name, address, and mnemonic
-  when: chain_create_validator
+- name: save validator name, address, and mnemonic for gaiad
+  when: chain_create_validator and chain_binary_name == "gaiad"
   copy:
     content="{{chain_create_validator_output.stderr}}"
+    dest="{{chain_home}}/validator.json"
+  become_user: "{{node_user}}"
+
+- name: save validator name, address, and mnemonic for non-gaiad chains
+  when: chain_create_validator and chain_binary_name != "gaiad"
+  copy:
+    content="{{chain_create_validator_output.stdout}}"
     dest="{{chain_home}}/validator.json"
   become_user: "{{node_user}}"
 
@@ -43,12 +50,14 @@
   loop: "{{ chain_airdrop_accounts }}"
 
 - name: collect gentx
-  when: chain_create_validator
+  when: chain_create_validator and not ics_consumer
   shell: |
     cd $HOME
     {{chain_bin}} gentx validator {{chain_gentx_validator}} --keyring-backend="{{node_keyring}}" --home {{chain_home}} --chain-id {{chain_id}}
     {{chain_bin}} collect-gentxs --home {{chain_home}}
   become_user: "{{node_user}}"
+  # collect gentxs doesn't work in interchain-security-cd binary
+
 
 - name: patch genesis file with minimum deposit and short voting period
   when: chain_gov_testing

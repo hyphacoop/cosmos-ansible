@@ -25,7 +25,7 @@
     name: "{{node_service_name}}"
 
 - name: Start chain systemd service
-  when: (not use_cosmovisor) and (not reboot | default(false) | bool)
+  when: ((not use_cosmovisor) and (not reboot | default(false) | bool)) and chain_start
   systemd:
     daemon_reload: true
     state: restarted
@@ -44,7 +44,7 @@
     name: "{{cosmovisor_service_name}}"
 
 - name: Start cosmovisor systemd service
-  when: (use_cosmovisor) and (not reboot | default(false) | bool)
+  when: ((use_cosmovisor) and (not reboot | default(false) | bool)) and chain_start
   systemd:
     daemon_reload: true
     state: restarted

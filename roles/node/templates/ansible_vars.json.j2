@@ -21,20 +21,24 @@
 		"telemetry.prometheus-retention-time": {{ prometheus_retention_time | to_json }},
 		"api.enable": {{ api_enabled | to_json }},
 		"api.swagger": {{ api_swagger | to_json }},
-		"api.adddress": "0.0.0.0:{{ api_port }}",
+		"api.address": "0.0.0.0:{{ api_port }}",
 		"grpc.enable": {{ grpc_enabled | to_json  }},
 		"grpc.address": "0.0.0.0:{{ grpc_port }}",
+		"grpc-web.enable": {{ grpc_web_enabled | to_json  }},
 		"state-sync.snapshot-interval": {{ statesync_snapshot_interval | to_json }},
 		"state-sync.snapshot-keep-recent": {{ statesync_snapshot_keep_recent | to_json }}
 	},
 	"config.toml": {
-		{% if major_version|int >= 8 %}
-		"blocksync.enable": {{ fast_sync | to_json }},
-		"blocksync.version": {{ fastsync_version | to_json }},
-		{% else %}
-		"fast_sync": {{ fast_sync | to_json }},
-		"fastsync.version": {{ fastsync_version | to_json }},
+		{% if chain_binary_name == 'gaiad' %}
+			{% if major_version|int >= 8 %}
+			"blocksync.enable": {{ fast_sync | to_json }},
+			"blocksync.version": {{ fastsync_version | to_json }},
+			{% else %}
+			"fast_sync": {{ fast_sync | to_json }},
+			"fastsync.version": {{ fastsync_version | to_json }},
+			{% endif %}
 		{% endif %}
+		"moniker": "{{ moniker }}",
 		"abci": {{ abci | to_json }},
 		"rpc.laddr": "tcp://0.0.0.0:{{ rpc_port }}",
 		"p2p.laddr": "tcp://0.0.0.0:{{ p2p_port }}",

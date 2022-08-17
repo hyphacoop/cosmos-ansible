@@ -1,0 +1,97 @@
+---
+- name: Exchange keys between servers
+  hosts: synchronize_group
+  tasks:
+    - name: Generate SSH keys
+      tags: run
+      shell: > 
+        ssh-keygen -q -b 2048 -t rsa -N "" -C "creating SSH" -f ~/.ssh/id_rsa
+        creates="~/.ssh/id_rsa"
+
+    - name: Copy the keyfile from target to control node
+      tags: run
+      fetch: 
+        src: "~/.ssh/id_rsa.pub"
+        dest: "buffer/{{ ansible_ssh_host }}-id_rsa.pub"
+        flat: yes
+
+    - name: Add the key to authorized_keys
+      tags: runcd
+      authorized_key:
+        user: root
+        state: present
+        key: "{{ lookup('file','buffer/{{item}}-id_rsa.pub')}}"
+      when: item != ansible_ssh_host
+      with_items: 
+        - "{{ groups['synchronize_group'] }}"
+
+- name: Generate the consumer node genesis
+  hosts: consumer
+  vars:
+    chain_binary_name: interchain-security-cd
+    node_user: consumer
+    chain_home: "{{node_user_home}}/.isc"
+    ics_consumer: true
+    moniker: consumer-node
+    chain_id: consumer-chain
+    chain_start: false
+    chain_denom: ucons
+    chain_create_validator: true
+    rpc_port: 26647
+    grpc_port: 9080
+    p2p_port: 26646
+    chain_home_clear: true
+    cosmovisor_service_name: "cosmovisor-consumer"
+  become: true
+  roles:
+  - node
+
+- name: Start the provider chain
+  hosts: provider
+  vars:
+    chain_binary_name: interchain-security-pd
+    node_user: provider
+    chain_home: "{{node_user_home}}/.isp"
+    moniker: provider-node
+    chain_id: provider-chain
+    chain_denom: uprov
+    chain_create_validator: true
+    chain_gov_testing: true
+    rpc_port: 26657
+    grpc_port: 9090
+    p2p_port: 26656
+    chain_home_clear: true
+    chain_start: true
+    cosmovisor_service_name: "cosmovisor-provider"
+  become: true
+  roles:
+  - node
+
+- name: Generate the CCV states in the provider chain
+  hosts: provider
+  vars:
+    provider_home: /home/provider/.isp
+    consumer_home: /home/consumer/.isc
+    consumer_chain_bin: "/home/consumer/go/bin/interchain-security-cd"
+  become: true
+  roles:
+  - ics-setup
+
+- name: Start the consumer chain
+  hosts: consumer
+  vars:
+    chain_start: true
+    ics_consumer: true
+    node_user: consumer
+    chain_binary_name: interchain-security-cd
+    chain_home: "{{node_user_home}}/.isc"
+    cosmovisor_service_name: "cosmovisor-consumer"
+  become: true
+  roles:
+  - node
+
+- name: Create the IBC channel between chains
+  hosts: hermes
+  become: true
+  roles:
+  - hermes

@@ -34,28 +34,15 @@
     group: "{{ hermes_group }}"
     mode: '0755'
 
-- name: Get latest gaiad version
-  uri:
-    url: https://api.github.com/repos/cosmos/gaia/releases/latest
-    return_content: true
-  register: json_reponse
-
-- name: Download gaiad
-  get_url:
-    url: https://github.com/cosmos/gaia/releases/download/{{ json_reponse.json.tag_name }}/gaiad-{{ json_reponse.json.tag_name }}-linux-amd64
-    dest: /home/{{ hermes_user }}/bin/gaiad
-    mode: 0755
-  become_user: "{{ hermes_user }}"
-
-- name: Get latest hermes version
-  uri:
-    url: https://api.github.com/repos/informalsystems/ibc-rs/releases/latest
-    return_content: true
-  register: json_reponse
+# - name: Get latest hermes version
+#   uri:
+#     url: https://api.github.com/repos/informalsystems/ibc-rs/releases/latest
+#     return_content: true
+#   register: json_response
 
 - name: Download and Extract hermes
   unarchive:
-    src: https://github.com/informalsystems/ibc-rs/releases/download/{{ json_reponse.json.tag_name }}/hermes-{{ json_reponse.json.tag_name }}-x86_64-unknown-linux-gnu.tar.gz
+    src: https://github.com/informalsystems/ibc-rs/releases/download/{{ release_version }}/hermes-{{ release_version }}-x86_64-unknown-linux-gnu.tar.gz
     dest: /home/{{ hermes_user }}/.hermes/bin/
     remote_src: yes
   become_user: "{{ hermes_user }}"
@@ -73,6 +60,50 @@
     src: config.toml.j2
     dest: /home/{{ hermes_user }}/.hermes/config.toml
 
+- name: Get chain IDs
+  set_fact:
+    chain_ids: "{{ hermes_chains.keys() | list }}"
+
+- name: Collect key file from first chain
+  synchronize:
+    mode: push
+    src: "{{ hermes_chains[chain_ids[0]].chain_home}}/validator.json"
+    dest: "/home/{{hermes_user}}/.hermes/{{ chain_ids[0] }}-validator.json"
+    rsync_opts:
+      - "--chown=hermes:users"
+  delegate_to: "{{hermes_chains[chain_ids[0]].hermes_chain_hostname}}"
+
+- name: Collect key file from second chain
+  synchronize:
+    mode: push
+    src: "{{ hermes_chains[chain_ids[1]].chain_home}}/validator.json"
+    dest: "/home/{{hermes_user}}/.hermes/{{chain_ids[1]}}-validator.json"
+    rsync_opts:
+      - "--chown=hermes:users"
+  delegate_to: "{{hermes_chains[chain_ids[1]].hermes_chain_hostname}}"
+
+- name: Add relayer keys
+  shell: |
+    hermes keys add --key-file /home/{{ hermes_user }}/.hermes/{{ chain_ids[0] }}-validator.json --chain {{ chain_ids[0] }} --overwrite
+    hermes keys add --key-file /home/{{ hermes_user }}/.hermes/{{ chain_ids[1] }}-validator.json --chain {{ chain_ids[1] }} --overwrite
+  environment:
+    PATH: "/home/{{hermes_user}}/bin:{{ ansible_env.PATH }}"
+  become_user: hermes
+
+- name: Create connection
+  shell: |
+    hermes create connection --a-chain {{ chain_ids[0] }} --a-client 07-tendermint-0 --b-client 07-tendermint-0
+  environment:
+    PATH: "/home/{{hermes_user}}/bin:{{ ansible_env.PATH }}"
+  become_user: hermes
+
+- name: Create channel
+  shell: |
+    hermes create channel --a-chain {{ chain_ids[0] }} --a-port consumer --b-port provider --order ordered --channel-version 1 --a-connection connection-0
+  environment:
+    PATH: "/home/{{hermes_user}}/bin:{{ ansible_env.PATH }}"
+  become_user: hermes
+  
 - name: Installing Hermes systemd service
   template:
     src: hermes.service.j2

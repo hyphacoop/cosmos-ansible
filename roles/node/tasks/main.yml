@@ -1,13 +1,15 @@
 ---
 - name: base
   import_tasks: base.yml
+  when: (ics_consumer and not chain_start) or not ics_consumer
 
 - name: config
   import_tasks: config.yml
+  when: (ics_consumer and not chain_start) or not ics_consumer
 
 - name: faucet
   import_tasks: faucet.yml
-  when: faucet_enabled
+  when: faucet_enabled and ((ics_consumer and not chain_start) or not ics_consumer)
 
 - name: join
   import_tasks: join.yml
