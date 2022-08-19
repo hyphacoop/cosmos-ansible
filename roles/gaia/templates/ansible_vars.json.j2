@@ -21,7 +21,7 @@
 		"telemetry.prometheus-retention-time": {{ prometheus_retention_time | to_json }},
 		"api.enable": {{ api_enabled | to_json }},
 		"api.swagger": {{ api_swagger | to_json }},
-		"api.adddress": "0.0.0.0:{{ api_port }}",
+		"api.address": "0.0.0.0:{{ api_port }}",
 		"grpc.enable": {{ grpc_enabled | to_json  }},
 		"grpc.address": "0.0.0.0:{{ grpc_port }}",
 		"state-sync.snapshot-interval": {{ statesync_snapshot_interval | to_json }},
