@@ -13,3 +13,4 @@ all:
         "{{ target }}":
           fast_sync: false
           chain_id: my-testnet
+          chain_moniker: cosmos-node

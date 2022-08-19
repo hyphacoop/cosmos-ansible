@@ -33,6 +33,7 @@ Set up a node with a single validator account.
 
 * **Inventory file:** [`inventory-local.yml`](inventory-local.yml)
 * **Chain ID:** `my-testnet`
+* **Moniker:** `cosmos-node`
 * **Gaia version:** `v7.0.0`
 * **Faucet REST server**
 
