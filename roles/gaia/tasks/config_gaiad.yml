@@ -158,10 +158,20 @@
   become_user: "{{ gaiad_user }}"
   delegate_to: "{{ main_node }}"
 
-- name: print muti node IDs
+- name: store multi node pubkeys
+  when: start_multinode
+  shell: |
+    cd $HOME
+    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+    gaiad tendermint show-validator --home {{ gaiad_user_home }}/multinode/{{ inventory_hostname }} | jq -r '.key'
+  register: gaiad_multinode_pubkey
+  become_user: "{{ gaiad_user }}"
+  delegate_to: "{{ main_node }}"
+
+- name: print muti node IDs and pubkeys
   when: start_multinode
   debug:
-    msg: 'Node ID for {{ inventory_hostname }} is {{ gaiad_multinode_id.stdout }}'
+    msg: 'Node ID for {{ inventory_hostname }} is {{ gaiad_multinode_id.stdout }} and public key is {{ gaiad_multinode_pubkey.stdout }}'
   become_user: "{{gaiad_user}}"
 
 - name: create multi-node validators
@@ -169,7 +179,7 @@
   shell: |
     cd $HOME
     PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
-    gaiad gentx {{ inventory_hostname }} {{ gaiad_gentx_validator_stake }} --keyring-backend="{{ gaiad_validator_keyring }}" --home {{ gaiad_home }} --chain-id {{ chain_id }} --node-id {{ gaiad_multinode_id.stdout }} --moniker {{ inventory_hostname }} --output-document {{ gaiad_home }}/config/gentx/{{ inventory_hostname }}.json
+    gaiad gentx {{ inventory_hostname }} {{ gaiad_gentx_validator_stake }} --pubkey $(gaiad tendermint show-validator --home {{ gaiad_user_home }}/multinode/{{ inventory_hostname }}) --keyring-backend="{{ gaiad_validator_keyring }}" --home {{ gaiad_home }} --chain-id {{ chain_id }} --node-id {{ gaiad_multinode_id.stdout }} --moniker {{ inventory_hostname }} --output-document {{ gaiad_home }}/config/gentx/{{ inventory_hostname }}.json
   become_user: "{{ gaiad_user }}"
   delegate_to: "{{ main_node }}"
   throttle: 1
@@ -209,7 +219,7 @@
   when: start_multinode
   synchronize:
     mode: push
-    src: "{{ gaiad_home }}/config/node_key.json"
+    src: "{{ gaiad_user_home }}/multinode/{{ inventory_hostname }}/config/node_key.json"
     dest: "{{ gaiad_home }}/config/node_key.json"
     delete: yes
     rsync_opts:
@@ -220,7 +230,7 @@
   when: start_multinode
   synchronize:
     mode: push
-    src: "{{ gaiad_home }}/config/priv_validator_key.json"
+    src: "{{ gaiad_user_home }}/multinode/{{ inventory_hostname }}/config/priv_validator_key.json"
     dest: "{{ gaiad_home }}/config/priv_validator_key.json"
     delete: yes
     rsync_opts:
