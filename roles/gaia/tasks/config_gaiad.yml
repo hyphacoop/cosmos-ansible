@@ -8,7 +8,32 @@
     owner: '{{gaiad_user}}'
     group: '{{gaiad_user}}'
 
-- name: copy app.toml to muti-node gaia home
+- name: Get home directory of Ansible runner
+  shell: "echo $HOME"
+  register: ansible_runner_home
+
+- name: create SSH keypair for multi node sync
+  when: start_multinode
+  community.crypto.openssh_keypair:
+    path: "{{ ansible_runner_home.stdout }}/.ssh/id_rsa"
+    type: rsa
+    comment: "{{ inventory_hostname }}"
+  delegate_to: "{{ main_node }}"
+
+- name: store SSH pupkey in variable
+  when: start_multinode
+  shell: "cat {{ ansible_runner_home.stdout }}/.ssh/id_rsa.pub"
+  register: ssh_pub_key
+  delegate_to: "{{ main_node }}"
+
+- name: add generated SSH key to multi nodes
+  when: start_multinode
+  authorized_key:
+    user: "{{ ansible_user }}"
+    state: present
+    key: "{{ ssh_pub_key.stdout }}"
+
+- name: copy app.toml to multi-node gaia home
   when: start_multinode and app_toml_file is defined
   copy:
     src: '{{ app_toml_file }}'
@@ -95,16 +120,15 @@
   become_user: "{{gaiad_user}}"
   loop: "{{ gaiad_airdrop_accounts }}"
 
-- name: collect gentx
+- name: create validator
   when: gaiad_create_validator
   shell: |
     cd $HOME
     PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
     gaiad gentx validator {{gaiad_gentx_validator_stake}} --keyring-backend="{{gaiad_validator_keyring}}" --home {{gaiad_home}} --chain-id {{chain_id}}
-    gaiad collect-gentxs --home {{gaiad_home}}
   become_user: "{{gaiad_user}}"
 
-- name: Create multi-node self-delegation accounts save the mnemonics shown in the output
+- name: create multi-node self-delegation accounts save the mnemonics shown in the output
   when: start_multinode
   shell: |
     cd $HOME
@@ -124,17 +148,84 @@
   delegate_to: "{{ main_node }}"
   become_user: "{{ gaiad_user }}"
 
-- name: collect multi-node gentx
+- name: store multi node IDs
   when: start_multinode
   shell: |
     cd $HOME
     PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
-    nodeid=$(gaiad tendermint show-node-id --home {{ gaiad_user_home }}/multinode/{{ inventory_hostname }})
-    gaiad gentx {{ inventory_hostname }} {{ gaiad_gentx_validator_stake }} --keyring-backend="{{ gaiad_validator_keyring }}" --home {{ gaiad_home }} --chain-id {{ chain_id }} --node-id $nodeid --moniker {{ inventory_hostname }} --output-document {{ gaiad_user_home }}/multinode/{{ inventory_hostname }}/gentx.json
-    gaiad collect-gentxs --home {{ gaiad_home }}
+    gaiad tendermint show-node-id --home {{ gaiad_user_home }}/multinode/{{ inventory_hostname }}
+  register: gaiad_multinode_id
+  become_user: "{{ gaiad_user }}"
+  delegate_to: "{{ main_node }}"
+
+- name: print muti node IDs
+  when: start_multinode
+  debug:
+    msg: 'Node ID for {{ inventory_hostname }} is {{ gaiad_multinode_id.stdout }}'
+  become_user: "{{gaiad_user}}"
+
+- name: create multi-node validators
+  when: start_multinode
+  shell: |
+    cd $HOME
+    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+    gaiad gentx {{ inventory_hostname }} {{ gaiad_gentx_validator_stake }} --keyring-backend="{{ gaiad_validator_keyring }}" --home {{ gaiad_home }} --chain-id {{ chain_id }} --node-id {{ gaiad_multinode_id.stdout }} --moniker {{ inventory_hostname }} --output-document {{ gaiad_home }}/config/gentx/{{ inventory_hostname }}.json
   become_user: "{{ gaiad_user }}"
   delegate_to: "{{ main_node }}"
   throttle: 1
+
+- name: collect gentx
+  when: gaiad_create_validator
+  shell: |
+    cd $HOME
+    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+    gaiad collect-gentxs --home {{gaiad_home}}
+  become_user: "{{gaiad_user}}"
+
+# - name: Transfer multi-node gaia homes to their machines
+#   when: start_multinode
+#   synchronize:
+#     mode: push
+#     src: "{{ gaiad_user_home }}/multinode/{{ inventory_hostname }}/"
+#     dest: "{{ gaiad_home }}"
+#     delete: yes
+#     recursive: yes
+#     rsync_opts:
+#       - "--chown={{ gaiad_user }}:{{ gaiad_user }}"
+#   delegate_to: "{{ main_node }}"
+
+- name: Transfer multi-node config/genesis.json
+  when: start_multinode
+  synchronize:
+    mode: push
+    src: "{{ gaiad_home }}/config/genesis.json"
+    dest: "{{ gaiad_home }}/config/genesis.json"
+    delete: yes
+    rsync_opts:
+      - "--chown={{ gaiad_user }}:{{ gaiad_user }}"
+  delegate_to: "{{ main_node }}"
+
+- name: Transfer multi-node config/node_key.json
+  when: start_multinode
+  synchronize:
+    mode: push
+    src: "{{ gaiad_home }}/config/node_key.json"
+    dest: "{{ gaiad_home }}/config/node_key.json"
+    delete: yes
+    rsync_opts:
+      - "--chown={{ gaiad_user }}:{{ gaiad_user }}"
+  delegate_to: "{{ main_node }}"
+
+- name: Transfer multi-node config/priv_validator_key.json
+  when: start_multinode
+  synchronize:
+    mode: push
+    src: "{{ gaiad_home }}/config/priv_validator_key.json"
+    dest: "{{ gaiad_home }}/config/priv_validator_key.json"
+    delete: yes
+    rsync_opts:
+      - "--chown={{ gaiad_user }}:{{ gaiad_user }}"
+  delegate_to: "{{ main_node }}"
 
 - name: patch genesis file with minimum deposit and short voting period
   when: gaiad_gov_testing
