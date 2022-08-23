@@ -1,5 +1,30 @@
 ---
 
+- name: get home directory of Ansible runner
+  shell: "echo $HOME"
+  register: ansible_runner_home
+
+- name: create SSH keypair for multi node sync
+  when: start_multinode
+  community.crypto.openssh_keypair:
+    path: "{{ ansible_runner_home.stdout }}/.ssh/id_rsa"
+    type: rsa
+    comment: "{{ inventory_hostname }}"
+  delegate_to: "{{ main_node }}"
+
+- name: store SSH pupkey in variable
+  when: start_multinode
+  shell: "cat {{ ansible_runner_home.stdout }}/.ssh/id_rsa.pub"
+  register: ssh_pub_key
+  delegate_to: "{{ main_node }}"
+
+- name: add generated SSH key to multi nodes
+  when: start_multinode
+  authorized_key:
+    user: "{{ ansible_user }}"
+    state: present
+    key: "{{ ssh_pub_key.stdout }}"
+
 - name: reset gaiad database (command for <v7.0.1)
   when: chain_binary_name == "gaiad" and node_unsafe_reset and ((major_version|int == 7 and patch_version|int == 0) or major_version|int < 7)
   shell: |
@@ -18,6 +43,76 @@
   tags:
     - chain_reset
 
+# Config file generation
+- name: copy app.toml
+  when: app_toml_file is defined
+  copy:
+    src: '{{app_toml_file}}'
+    dest: '{{chain_home}}/config/app.toml'
+    owner: '{{node_user}}'
+    group: '{{node_user}}'
+
+- name: copy app.toml to multi-node home
+  when: start_multinode and app_toml_file is defined
+  copy:
+    src: '{{ app_toml_file }}'
+    dest: '{{ node_user_home }}/multinode/{{ inventory_hostname }}/config/app.toml'
+    owner: '{{ node_user }}'
+    group: '{{ node_user }}'
+  delegate_to: "{{ main_node }}"
+
+- name: copy config.toml
+  when: config_toml_file is defined
+  copy:
+    src: '{{config_toml_file}}'
+    dest: '{{chain_home}}/config/config.toml'
+    owner: '{{node_user}}'
+    group: '{{node_user}}'
+
+- name: copy config.toml to muti-node home
+  when: start_multinode and config_toml_file is defined
+  copy:
+    src: '{{ config_toml_file }}'
+    dest: '{{ node_user_home }}/multinode/{{ inventory_hostname }}/config/config.toml'
+    owner: '{{ node_user }}'
+    group: '{{ node_user }}'
+  delegate_to: "{{ main_node }}"
+
+- name: copy node_key.json
+  when: node_key_file is defined
+  copy:
+    src: '{{node_key_file}}'
+    dest: '{{chain_home}}/config/node_key.json'
+    owner: '{{node_user}}'
+    group: '{{node_user}}'
+
+- name: copy node_key.json to muti-node home
+  when: start_multinode and node_key_file is defined
+  copy:
+    src: '{{ node_key_file }}'
+    dest: '{{ node_user_home }}/multinode/{{ inventory_hostname }}/config/node_key.json'
+    owner: '{{ node_user }}'
+    group: '{{ node_user }}'
+  delegate_to: "{{ main_node }}"
+
+- name: copy priv_validator_key.json
+  when: priv_validator_key_file is defined
+  copy:
+    src: '{{priv_validator_key_file}}'
+    dest: '{{chain_home}}/config/priv_validator_key.json'
+    owner: '{{node_user}}'
+    group: '{{node_user}}'
+
+- name: copy priv_validator_key.json to muti-node home
+  when: start_multinode and priv_validator_key_file is defined
+  copy:
+    src: '{{ priv_validator_key_file }}'
+    dest: '{{ node_user_home }}/multinode/{{ inventory_hostname }}/config/priv_validator_key.json'
+    owner: '{{ node_user }}'
+    group: '{{ node_user }}'
+  delegate_to: "{{ main_node }}"
+
+# Create validator
 - name: create validator
   when: chain_create_validator
   shell: |
@@ -42,13 +137,76 @@
   become_user: "{{node_user}}"
   loop: "{{ chain_airdrop_accounts }}"
 
-- name: collect gentx
+- name: gentx validator
   when: chain_create_validator
   shell: |
     cd $HOME
     {{chain_bin}} gentx validator {{chain_gentx_validator}} --keyring-backend="{{node_keyring}}" --home {{chain_home}} --chain-id {{chain_id}}
-    {{chain_bin}} collect-gentxs --home {{chain_home}}
   become_user: "{{node_user}}"
+
+- name: create multi-node self-delegation accounts save the mnemonics shown in the output
+  when: start_multinode
+  shell: |
+    cd $HOME
+    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+    {{chain_bin}} keys add {{ inventory_hostname }} --keyring-backend {{ node_keyring }} --home {{chain_home}} --output json
+    {{chain_bin}} add-genesis-account {{ inventory_hostname }} 1{{ chain_gentx_validator }} --home {{chain_home}} --keyring-backend="{{ node_keyring }}"
+  register: node_create_multinode_validator_output
+  become_user: "{{ node_user }}"
+  delegate_to: "{{ main_node }}"
+  throttle: 1
+
+- name: save multi-node validator name, address, and mnemonic
+  when: start_multinode
+  copy:
+    content="{{node_create_multinode_validator_output.stderr}}"
+    dest="{{ node_user_home }}/multinode/{{ inventory_hostname }}/validator.json"
+  delegate_to: "{{ main_node }}"
+  become_user: "{{ node_user }}"
+
+- name: store multi node IDs
+  when: start_multinode
+  shell: |
+    cd $HOME
+    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+    {{chain_bin}} tendermint show-node-id --home {{ node_user_home }}/multinode/{{ inventory_hostname }}
+  register: node_multinode_id
+  become_user: "{{ node_user }}"
+  delegate_to: "{{ main_node }}"
+
+- name: store multi node pubkeys
+  when: start_multinode
+  shell: |
+    cd $HOME
+    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+    {{chain_bin}} tendermint show-validator --home {{ node_user_home }}/multinode/{{ inventory_hostname }} | jq -r '.key'
+  register: node_multinode_pubkey
+  become_user: "{{ node_user }}"
+  delegate_to: "{{ main_node }}"
+
+- name: print muti node IDs and pubkeys
+  when: start_multinode
+  debug:
+    msg: 'Node ID for {{ inventory_hostname }} is {{ node_multinode_id.stdout }} and public key is {{ node_multinode_pubkey.stdout }}'
+  become_user: "{{node_user}}"
+
+- name: create multi-node validators
+  when: start_multinode
+  shell: |
+    cd $HOME
+    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+    {{chain_bin}} gentx {{ inventory_hostname }} {{ chain_gentx_validator }} --pubkey $({{chain_bin}} tendermint show-validator --home {{ node_user_home }}/multinode/{{ inventory_hostname }}) --keyring-backend="{{ node_keyring }}" --home {{ chain_home }} --chain-id {{ chain_id }} --node-id {{ node_multinode_id.stdout }} --moniker {{ inventory_hostname }} --output-document {{ chain_home }}/config/gentx/{{ inventory_hostname }}.json
+  become_user: "{{ node_user }}"
+  delegate_to: "{{ main_node }}"
+  throttle: 1
+
+- name: collect gentx
+  when: chain_create_validator
+  shell: |
+    cd $HOME
+    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+    {{chain_bin}} collect-gentxs --home {{ chain_home }}
+  become_user: "{{ node_user }}"
 
 - name: patch genesis file with minimum deposit and short voting period
   when: chain_gov_testing
@@ -63,6 +221,40 @@
     path: '{{chain_home}}/config/genesis.json'
     regexp: 'stake'
     replace: '{{chain_denom}}'
+
+# Transfer genesis files to multi-node
+- name: Transfer multi-node config/genesis.json
+  when: start_multinode
+  synchronize:
+    mode: push
+    src: "{{ chain_home }}/config/genesis.json"
+    dest: "{{ chain_home }}/config/genesis.json"
+    delete: yes
+    rsync_opts:
+      - "--chown={{ node_user }}:{{ node_user }}"
+  delegate_to: "{{ main_node }}"
+
+- name: Transfer multi-node config/node_key.json
+  when: start_multinode
+  synchronize:
+    mode: push
+    src: "{{ node_user_home }}/multinode/{{ inventory_hostname }}/config/node_key.json"
+    dest: "{{ chain_home }}/config/node_key.json"
+    delete: yes
+    rsync_opts:
+      - "--chown={{ node_user }}:{{ node_user }}"
+  delegate_to: "{{ main_node }}"
+
+- name: Transfer multi-node config/priv_validator_key.json
+  when: start_multinode
+  synchronize:
+    mode: push
+    src: "{{ node_user_home }}/multinode/{{ inventory_hostname }}/config/priv_validator_key.json"
+    dest: "{{ chain_home }}/config/priv_validator_key.json"
+    delete: yes
+    rsync_opts:
+      - "--chown={{ node_user }}:{{ node_user }}"
+  delegate_to: "{{ main_node }}"
 
 # Get trust height automatically
 - name: obtain trust height
@@ -88,39 +280,6 @@
   set_fact:
     statesync_trust_height: "{{ trust_height.stdout }}"
     statesync_trust_hash: "{{ trust_hash.stdout }}"
-
-# Config file generation
-- name: copy app.toml
-  when: app_toml_file is defined
-  copy:
-    src: '{{app_toml_file}}'
-    dest: '{{chain_home}}/config/app.toml'
-    owner: '{{node_user}}'
-    group: '{{node_user}}'
-
-- name: copy config.toml
-  when: config_toml_file is defined
-  copy:
-    src: '{{config_toml_file}}'
-    dest: '{{chain_home}}/config/config.toml'
-    owner: '{{node_user}}'
-    group: '{{node_user}}'
-
-- name: copy node_key.json
-  when: node_key_file is defined
-  copy:
-    src: '{{node_key_file}}'
-    dest: '{{chain_home}}/config/node_key.json'
-    owner: '{{node_user}}'
-    group: '{{node_user}}'
-
-- name: copy priv_validator_key.json
-  when: priv_validator_key_file is defined
-  copy:
-    src: '{{priv_validator_key_file}}'
-    dest: '{{chain_home}}/config/priv_validator_key.json'
-    owner: '{{node_user}}'
-    group: '{{node_user}}'
 
 ## Addressbook config
 - name: copy addrbook.json

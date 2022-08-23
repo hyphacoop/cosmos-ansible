@@ -154,3 +154,6 @@ reboot: true
 binary_arch_map:
   aarch64: "linux-arm64"
   x86_64: "linux-amd64"
+
+# Default settings for multi-node
+start_multinode: false
