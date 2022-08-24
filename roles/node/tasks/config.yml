@@ -222,7 +222,7 @@
     regexp: 'stake'
     replace: '{{chain_denom}}'
 
-# Transfer genesis files to multi-node
+# Transfer genesis and required files to multi-node machines
 - name: Transfer multi-node config/genesis.json
   when: start_multinode
   synchronize:
@@ -299,6 +299,11 @@
     group: '{{node_user}}'
 
 ## Patching Config files
+- name: set dynamic p2p_persistent_peers
+  when: dynamic_p2p_persistent_peers
+  set_fact:
+    p2p_persistent_peers: ""
+
 - name: generate config json for patching toml files
   template:
     src: ansible_vars.json.j2

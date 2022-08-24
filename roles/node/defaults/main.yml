@@ -158,3 +158,4 @@ binary_arch_map:
 
 # Default settings for multi-node
 start_multinode: false
+dynamic_p2p_persistent_peers: false
