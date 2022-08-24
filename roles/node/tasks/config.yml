@@ -118,7 +118,7 @@
   shell: |
     cd $HOME
     {{chain_bin}} keys add validator --keyring-backend {{node_keyring}} --home {{chain_home}} --output json
-    {{chain_bin}} add-genesis-account validator {{chain_validator_coins}} --home {{chain_home}} --keyring-backend="{{node_keyring}}"
+    {{chain_bin}} add-genesis-account validator {{chain_validator_coins}}{{ chain_denom }} --home {{chain_home}} --keyring-backend="{{node_keyring}}"
   register: chain_create_validator_output
   become_user: "{{node_user}}"
 
@@ -133,7 +133,7 @@
   when: chain_airdrop and chain_create_validator
   shell: |
     cd $HOME
-    {{chain_bin}} add-genesis-account {{ item }} {{chain_airdrop_coins}} --home {{chain_home}}
+    {{chain_bin}} add-genesis-account {{ item }} {{chain_airdrop_coins}}{{ chain_denom }} --home {{chain_home}}
   become_user: "{{node_user}}"
   loop: "{{ chain_airdrop_accounts }}"
 
@@ -141,7 +141,7 @@
   when: chain_create_validator
   shell: |
     cd $HOME
-    {{chain_bin}} gentx validator {{chain_gentx_validator}} --keyring-backend="{{node_keyring}}" --home {{chain_home}} --chain-id {{chain_id}}
+    {{chain_bin}} gentx validator {{chain_gentx_validator}}{{ chain_denom }} --keyring-backend="{{node_keyring}}" --home {{chain_home}} --moniker {{ node_moniker }} --chain-id {{chain_id}}
   become_user: "{{node_user}}"
 
 - name: create multi-node self-delegation accounts save the mnemonics shown in the output
@@ -150,7 +150,7 @@
     cd $HOME
     PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
     {{chain_bin}} keys add {{ inventory_hostname }} --keyring-backend {{ node_keyring }} --home {{chain_home}} --output json
-    {{chain_bin}} add-genesis-account {{ inventory_hostname }} 1{{ chain_gentx_validator }} --home {{chain_home}} --keyring-backend="{{ node_keyring }}"
+    {{chain_bin}} add-genesis-account {{ inventory_hostname }} {{ chain_validator_coins }}{{ chain_denom }} --home {{chain_home}} --keyring-backend="{{ node_keyring }}"
   register: node_create_multinode_validator_output
   become_user: "{{ node_user }}"
   delegate_to: "{{ main_node }}"
@@ -195,7 +195,7 @@
   shell: |
     cd $HOME
     PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
-    {{chain_bin}} gentx {{ inventory_hostname }} {{ chain_gentx_validator }} --pubkey $({{chain_bin}} tendermint show-validator --home {{ node_user_home }}/multinode/{{ inventory_hostname }}) --keyring-backend="{{ node_keyring }}" --home {{ chain_home }} --chain-id {{ chain_id }} --node-id {{ node_multinode_id.stdout }} --moniker {{ inventory_hostname }} --output-document {{ chain_home }}/config/gentx/{{ inventory_hostname }}.json
+    {{chain_bin}} gentx {{ inventory_hostname }} {{ chain_gentx_validator }}{{ chain_denom }} --pubkey $({{chain_bin}} tendermint show-validator --home {{ node_user_home }}/multinode/{{ inventory_hostname }}) --keyring-backend="{{ node_keyring }}" --home {{ chain_home }} --chain-id {{ chain_id }} --node-id {{ node_multinode_id.stdout }} --moniker {{ node_moniker }} --output-document {{ chain_home }}/config/gentx/{{ inventory_hostname }}.json
   become_user: "{{ node_user }}"
   delegate_to: "{{ main_node }}"
   throttle: 1
