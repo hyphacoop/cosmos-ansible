@@ -149,30 +149,40 @@ Follow the [Hermes IBC Relayer Setup](/docs/Hermes-Relayer-Setup.md) guide in th
 
 ## Run a Big Dipper block explorer
 
-Run a block explorer for your chain using the Big Dipper [software](https://bigdipper.live/) ([docs](https://docs.bigdipper.live/)) software.
+Run a block explorer for your chain using the Big Dipper [software](https://bigdipper.live/) ([docs](https://docs.bigdipper.live/)).
 
 * **Inventory file:** [`inventory-bigdipper.yml`](inventory-bigdipper.yml)
 
 1. Install ansible-galaxy dependencies: `ansible-galaxy install -r requirements.yml`.
-2. Set up a node. For example:
+2. Set up a node on your Big Dipper machine. For example:
     ```
     ansible-playbook node.yml -i examples/inventory-theta.yml -e 'target=SERVER_DOMAIN'
     ```
-3. Go and edit [`inventory-bigdipper.yml`](inventory-bigdipper.yml) to your liking. Some things like `hasura_admin_secret` and `letsencrypt_email` will need to be changed, while others are optional.
+3. Go and edit [`inventory-bigdipper.yml`](inventory-bigdipper.yml). Certain variables need to be set.
+    - `hasura_admin_secret`: a random password to protect the Hasura service
+    - `bdjuno_version`: a branch of [bdjuno](https://github.com/forbole/bdjuno/branches). It needs to match the chain you are deploying, for example `chains/cosmos/testnet` for the Cosmos Hub testnet (aka Theta). You can also put a commit here, but it must be a commit on the correct branch.
+    - `bdui_chain`: whether the chain is `testnet` or `mainnet`
+    - `chain_id`: ID of chain
+    - `bigdipper_genesis_time`: the time of the chain's genesis in UTC in RFC3339 format
+    - `bigdipper_genesis_height`: the height of the chain at genesis
+  
+    To set up TLS `bigdipper_use_tls_proxy: true` must be set, and `letsencrypt_email` must be a valid email.
+
+    Other variables are listed [here](../roles/bigdipper/defaults/main.yml).
 4. Setup DNS:
     ```
     mydomain.com.        3600 IN A     123.123.123.123
     hasura.mydomain.com. 3600 IN CNAME mydomain.com.
     rpc.mydomain.com.    3600 IN CNAME mydomain.com.
     ```
-    You can configure the subdomain names if needed using other variables:
+    You can configure the subdomain names if needed by setting other vars in the inventory file:
     ```yaml
-    # Defaults: 
+    # Defaults
     hasura_host: "hasura."
     rpc_host: "rpc."
     bdui_host: ""
     ```
-5. Install Big Dipper:
+5. On the same machine as the blockchain node, install Big Dipper:
     ```
     ansible-playbook bigdipper.yml -i examples/inventory-bigdipper.yml -e 'target=SERVER_DOMAIN'
     ```
