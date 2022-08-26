@@ -298,12 +298,50 @@
     owner: '{{node_user}}'
     group: '{{node_user}}'
 
-## Patching Config files
-- name: set dynamic p2p_persistent_peers
+## Dynamic P2P persistent peers
+- name: collect node IDs
+  when: dynamic_p2p_persistent_peers
+  shell: |
+    cd $HOME
+    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+    {{chain_bin}} tendermint show-node-id --home {{ chain_home }}
+  register: dynamic_p2p_id
+  become_user: "{{ node_user }}"
+
+- name: Get P2P port variable for hosts
+  when: dynamic_p2p_persistent_peers
+  set_fact:
+    dynamic_p2p_port: "{{ p2p_port }}"
+
+- name: collected Node IDs and P2P ports
+  when: dynamic_p2p_persistent_peers
+  debug:
+    msg: 'Node ID for {{ inventory_hostname }} is {{ dynamic_p2p_id.stdout }} P2P port set to: {{ dynamic_p2p_port }}'
+  become_user: "{{ node_user }}"
+
+- name: clear p2p_persistent_peers
   when: dynamic_p2p_persistent_peers
   set_fact:
     p2p_persistent_peers: ""
 
+- name: set dynamic p2p_persistent_peers
+  when: dynamic_p2p_persistent_peers
+  set_fact:
+    p2p_persistent_peers: "{{ p2p_persistent_peers }}{{ hostvars[item]['dynamic_p2p_id']['stdout'] }}@{{ item }}:{{ hostvars[item]['dynamic_p2p_port'] }},"
+  with_items: "{{ groups['node'] }}"
+
+- name: remove ending , from p2p_persistent_peers
+  when: dynamic_p2p_persistent_peers
+  set_fact:
+    p2p_persistent_peers: "{{ p2p_persistent_peers[:-1] }}"
+
+- name: p2p_persistent_peers string
+  when: dynamic_p2p_persistent_peers
+  debug:
+    msg: 'p2p_persistent_peers string: {{ p2p_persistent_peers }}'
+  become_user: "{{ p2p_persistent_peers }}"
+
+## Patching Config files
 - name: generate config json for patching toml files
   template:
     src: ansible_vars.json.j2
