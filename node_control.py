@@ -34,7 +34,7 @@ target = args.t
 
 if operation == "restart":
     print(os.popen("ansible-playbook node.yml -i " +
-                   inventory + " -e 'target=" + target + "' --tags 'chain_restart'").read())
+                   inventory + " -e 'target=" + target + " reboot=false' --tags 'chain_restart'").read())
     sys.exit(0)
 
 if operation == "stop":
@@ -44,7 +44,7 @@ if operation == "stop":
 
 if operation == "start":
     print(os.popen("ansible-playbook node.yml -i " +
-                   inventory + " -e 'target=" + target + "' --tags 'chain_start'").read())
+                   inventory + " -e 'target=" + target + " reboot=false' --tags 'chain_start'").read())
     sys.exit(0)
 
 if operation == "reset":

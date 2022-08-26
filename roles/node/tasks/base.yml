@@ -200,7 +200,7 @@
   # TODO: should we overwrite?
   shell: |
     cd $HOME
-    {{chain_bin}} init {{inventory_hostname}} --home {{chain_home}} --chain-id {{chain_id}}
+    {{chain_bin}} init {{ chain_moniker }} --home {{chain_home}} --chain-id {{chain_id}}
   become_user: "{{node_user}}"
 
 - name: Add chain bin from go/bin to .bashrc PATH
