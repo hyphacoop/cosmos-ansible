@@ -9,7 +9,7 @@
   community.crypto.openssh_keypair:
     path: "{{ ansible_runner_home.stdout }}/.ssh/id_rsa"
     type: rsa
-    comment: "{{ inventory_hostname }}"
+    comment: "Ansible temp SSH key to synchronize nodes"
   delegate_to: "{{ main_node }}"
 
 - name: store SSH pupkey in variable
@@ -361,3 +361,11 @@
     path: '{{chain_home}}/config/ansible_vars.json'
     owner: '{{node_user}}'
     group: '{{node_user}}'
+
+## Remove SSH key
+- name: Remove generated SSH key from multi nodes
+  when: start_multinode
+  authorized_key:
+    user: "{{ ansible_user }}"
+    state: absent
+    key: "{{ ssh_pub_key.stdout }}"
