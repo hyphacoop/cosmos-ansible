@@ -67,24 +67,22 @@ ansible-playbook node.yml -i examples/inventory-local-genesis.yml -e 'target=SER
 
 Set up a chain with three validator nodes that have the following voting power:
 
-| Validator moniker | Voting power | Self-delegating address                         |
-|:-----------------:|:------------:|-------------------------------------------------|
-|  `validator-40`   |     40%      | `cosmos1r5v5srda7xfth3hn2s26txvrcrntldjumt8mhl` |
-|  `validator-32`   |     32%      | `cosmos1ay4dpm0kjmvtpug28vgw5w32yyjxa5sp97pjqq` |
-|  `validator-28`   |     28%      | `cosmos1v8zgdpzqfazvk6fgwhqqhzx0hfannrajezuc6t` |
-
-Each of the validators has a balance of 100 000 000 uatom.
+| Validator moniker | Voting power |
+|:-----------------:|:------------:|
+|  `validator-40`   |     40%      |
+|  `validator-32`   |     32%      |
+|  `validator-28`   |     28%      |
 
 - **Inventory file:** [`inventory-three-node.yml`](inventory-three-node.yml)
 - **Chain ID:** `cosmos-testnet`
-- **Gaia version:** `v7.0.0`
+- **Gaia version:** `v7.0.3`
 
-Refer to the [Multi-Node Testnet Setup](/docs/Multi-Node-Testnet-Setup.md) guide in the `docs` folder to learn how these accounts were created and how you can set up a genesis file and private keys if you want to further customize your testnet.
+Refer to the [Multi-Node Testnet Setup](/docs/Multi-Node-Testnet-Setup.md) guide in the `docs` folder to learn how to set up the nodes and if you want to further customize your testnet.
 
 ### Requirements
 
 - Inventory file
-  - Replace the addresses below with your own in the `p2p_persistent_peers` and `hosts` variables.
+  - Replace the addresses below with your own in the `main_node` and `hosts` variables.
     - `validator-40.testnet.com`
     - `validator-32.testnet.com`
     - `validator-28.testnet.com`
