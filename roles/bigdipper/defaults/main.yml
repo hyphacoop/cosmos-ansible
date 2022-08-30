@@ -9,24 +9,27 @@ go_version: 1.18.5
 
 nodejs_version: "14.x"
 
+# Big Dipper
 bigdipper_user: "bigdipper"
 bigdipper_user_home: "/home/{{bigdipper_user}}"
-
 bigdipper_db: bdjuno
 bigdipper_db_user: "bdjuno"
 # Just something random to prevent drive-by malware from guessing or in case
 # it's accidentally exposed. The DB runs on localhost so the password doesn't
 # need to be secret.
 bigdipper_db_password: "fh8XZju6cwDRRryt"
-
-bigdipper_genesis_file_path: "/home/gaia/.gaia/config/genesis.json"
-
-bigdipper_rpc_port: 26657
-
-bigdipper_rpc_address: "http://localhost:{{bigdipper_rpc_port}}"
-bigdipper_grpc_address: "http://localhost:9090"
 bigdipper_telemetry_port: 5000
 
+# Target chain
+bigdipper_rpc_port: 26657
+bigdipper_grpc_port: 9090
+bigdipper_rpc_address: "http://localhost:{{bigdipper_rpc_port}}"
+bigdipper_grpc_address: "http://localhost:{{bigdipper_grpc_port}}"
+# Needs to be specified by the user according to genesis info
+# bigdipper_genesis_time: 2021-07-13T08:00:00
+# bigdipper_genesis_height: 1
+
+# bdjuno
 bdjuno_home: "{{bigdipper_user_home}}/.bdjuno"
 bdjuno_dir: "{{bigdipper_user_home}}/bdjuno"
 bdjuno_bin: "{{bigdipper_user_home}}/go/bin/bdjuno"
@@ -36,25 +39,18 @@ bdjuno_service_name: "bdjuno"
 
 bdjuno_hasura_actions_port: 3000
 
+# Hasura
 hasura_version: v2.9.0
 hasura_cli_version: "2.9.0"
 hasura_port: 8080
 hasura_actions_service_name: hasura-actions
 # Should be private and set by user
 # hasura_admin_secret: "something"
-
-
-bigdipper_use_tls_proxy: false
-
-# Changed based on bigdipper_use_tls_proxy var
-bigdipper_web_scheme: http
-bigdipper_websocket_scheme: ws
-
 hasura_host: "hasura."
 rpc_host: "rpc."
+
+# Big Dipper UI
 bdui_host: ""
-
-
 bdui_dir: "{{bigdipper_user_home}}/big-dipper"
 bdui_version: "base-v2.1.0"
 bdui_port: 3001
@@ -67,12 +63,14 @@ bdui_service_name: bigdipper
 bdui_icon: ""
 bdui_logo: ""
 
-# Needs to be specified by the user according to genesis info
-# bigdipper_genesis_time: 2021-07-13T08:00:00
-# bigdipper_genesis_height: 1
-
-
 ### nginx configuration ###
+
+bigdipper_use_tls_proxy: false
+
+# Changed based on bigdipper_use_tls_proxy var
+bigdipper_web_scheme: http
+bigdipper_websocket_scheme: ws
+
 
 # Set dynamically based on bigdipper_use_tls_proxy
 ssl_provider: ""
