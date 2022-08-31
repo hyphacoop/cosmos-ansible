@@ -90,7 +90,7 @@ We must provide the SSH address for the PANIC monitor host. For this example we 
 Follow the instructions in the [Testnet Monitoring Setup Guide](/docs/Testnet-Monitoring-Setup.md) page to set up the monitor host.
 
 ### Prepare the Gaia Assets
-*By default this is now done with the ansible playbook. Follow these steps for advanced set up*
+*These steps can now be done automatically with our ansible playbook please refer to [/examples/README.md](/examples/README.md#start-a-three-node-testnet-from-scratch)*
 
 We will use a stand-alone install of gaia to generate a genesis file and keys for the three validator nodes. You can do this on a development machine.
 
