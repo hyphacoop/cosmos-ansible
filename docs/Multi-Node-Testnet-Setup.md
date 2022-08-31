@@ -12,7 +12,7 @@ The set of hosts includes several chain nodes and a monitoring host. Once these 
 
 ### Chain settings
 
-* **Gaia version**: `v7.0.0`
+* **Gaia version**: `v7.0.3`
 * **Chain ID**: `cosmos-testnet`
 * **Stake denom**: `uatom`
 
@@ -31,9 +31,10 @@ Two sentry nodes are responsible for protecting the validators from DDoS attacks
 
 ### State sync node
 
-A state sync node will serve chain snapshots every 1000 blocks.
+State sync nodes will serve chain snapshots every 1000 blocks.
 
-* `sync.cosmostest.network`
+* `sync1.cosmostest.network`
+* `sync2.cosmostest.network`
 
 ### Monitoring
 
@@ -57,7 +58,7 @@ We can divide the deployment into the following stages:
 Each host must have an `A` and `AAAA` record.
 All hosts except for the monitor must have a set of CNAMEs to the host to provide the relevant interface.
 
-In the table below, `<host>` acts as a placeholder for `val1`, `val2`, `val3`, `sen1`, `sen2`, and `sync`.
+In the table below, `<host>` acts as a placeholder for `val1`, `val2`, `val3`, `sen1`, `sen2`, `sync1` and `sync2`.
   
 
 |  Host  | Subdomain  |  DNS records |
@@ -88,7 +89,8 @@ We must provide the SSH address for the PANIC monitor host. For this example we 
 
 Follow the instructions in the [Testnet Monitoring Setup Guide](/docs/Testnet-Monitoring-Setup.md) page to set up the monitor host.
 
-### Prepare the Gaia Assets 
+### Prepare the Gaia Assets
+*By default this is now done with the ansible playbook. Follow these steps for advanced set up*
 
 We will use a stand-alone install of gaia to generate a genesis file and keys for the three validator nodes. You can do this on a development machine.
 
@@ -180,7 +182,10 @@ Collect the following files:
 
 Make the following modifications to [inventory-multi-node.yml](/examples/inventory-multi-node.yml):
 - Addresses for the validator, sentry, sync, and monitor hosts.
-- Filenames for the genesis and key files.
+- `genesis_node` defines the node where the secondary validators are initialized before being transferred to the validators nodes.
+- `bonded_tokens_pool` for the chain.
+- `voting_power` for each validator.
+- `validator_moniker` defines the moniker for the validator.
 
 ### Run the playbook 
 
