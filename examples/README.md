@@ -92,7 +92,7 @@ Refer to the [Multi-Node Testnet Setup](/docs/Multi-Node-Testnet-Setup.md) guide
 ### Run the Playbook
 
 ```
-ansible-playbook gaia.yml -i examples/inventory-three-node.yml
+ansible-playbook node.yml -i examples/inventory-three-node.yml
 ```
 
 ## Start a three-node testnet from scratch
@@ -121,7 +121,7 @@ Refer to the [Multi-Node Testnet Setup](/docs/Multi-Node-Testnet-Setup.md) guide
 ### Run the Playbook
 
 ```
-ansible-playbook gaia.yml -i examples/inventory-three-node-scratch.yml
+ansible-playbook node.yml -i examples/inventory-three-node-scratch.yml
 ```
 
 ## Start a Single-Node Developer Testnet
