@@ -158,7 +158,7 @@ Run a block explorer for the Theta testnet using [Big Dipper](https://bigdipper.
 
 * A full node must be running for Big Dipper to collect data from. You can set up an archive node for the Theta testnet as follows:
     ```
-    ansible-playbook node.yml -i examples/inventory-theta.yml -e 'target=ARCHIVE_NODE_ADDRESS pruning=nothing statesync_rpc_servers="" statesync_enabled='
+    ansible-playbook node.yml -i examples/inventory-theta.yml -e 'target=ARCHIVE_NODE_ADDRESS chain_version=v6.0.4 pruning=nothing statesync_rpc_servers="" statesync_enabled=false api_enabled=true'
     ```
 
 * Set up DNS for root domain and Hasura subdomain:
