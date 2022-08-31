@@ -11,7 +11,7 @@ all:
     bdui_chain: testnet  # Either testnet or mainnet
     bigdipper_use_tls_proxy: false  # Enables TLS, requires a domain name
     # letsencrypt_email: "example@example.com"  # Required for TLS setup
-    
+
     # Time and block height when genesis file was created
     # For example this is the Theta testnet time and height
     # genesis_file: "examples/genesis.json"
