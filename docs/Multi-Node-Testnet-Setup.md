@@ -31,7 +31,7 @@ Two sentry nodes are responsible for protecting the validators from DDoS attacks
 
 ### State sync node
 
-A state sync nodes will serve chain snapshots every 1000 blocks.
+State sync nodes will serve chain snapshots every 1000 blocks.
 
 * `sync1.cosmostest.network`
 * `sync2.cosmostest.network`
@@ -182,10 +182,10 @@ Collect the following files:
 
 Make the following modifications to [inventory-multi-node.yml](/examples/inventory-multi-node.yml):
 - Addresses for the validator, sentry, sync, and monitor hosts.
-- `main_node` defines the main node where the secondary validators are initialized before being transferred to the validators nodes.
+- `genesis_node` defines the node where the secondary validators are initialized before being transferred to the validators nodes.
 - `bonded_tokens_pool` for the chain.
 - `voting_power` for each validator.
-- `node_moniker` defines the moniker for the validator.
+- `validator_moniker` defines the moniker for the validator.
 
 ### Run the playbook 
 

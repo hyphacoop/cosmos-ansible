@@ -207,7 +207,7 @@
     owner: '{{node_user}}'
     group: '{{node_user}}'
   become_user: "{{node_user}}"
-  delegate_to: "{{ main_node }}"
+  delegate_to: "{{ genesis_node }}"
 
 - name: initialize multi-node on main node
   when: start_multinode
@@ -216,7 +216,7 @@
     PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
     {{chain_bin}} init {{ inventory_hostname }} --chain-id {{ chain_id }} --home {{ node_user_home }}/multinode/{{ inventory_hostname }}
   become_user: "{{node_user}}"
-  delegate_to: "{{ main_node }}"
+  delegate_to: "{{ genesis_node }}"
 
 # Initialize chain home
 - name: initialize chain

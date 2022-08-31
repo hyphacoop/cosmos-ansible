@@ -10,13 +10,13 @@
     path: "{{ ansible_runner_home.stdout }}/.ssh/id_rsa"
     type: rsa
     comment: "Ansible temp SSH key to synchronize nodes"
-  delegate_to: "{{ main_node }}"
+  delegate_to: "{{ genesis_node }}"
 
 - name: store SSH pupkey in variable
   when: start_multinode
   shell: "cat {{ ansible_runner_home.stdout }}/.ssh/id_rsa.pub"
   register: ssh_pub_key
-  delegate_to: "{{ main_node }}"
+  delegate_to: "{{ genesis_node }}"
 
 - name: add generated SSH key to multi nodes
   when: start_multinode
@@ -59,7 +59,7 @@
     dest: '{{ node_user_home }}/multinode/{{ inventory_hostname }}/config/app.toml'
     owner: '{{ node_user }}'
     group: '{{ node_user }}'
-  delegate_to: "{{ main_node }}"
+  delegate_to: "{{ genesis_node }}"
 
 - name: copy config.toml
   when: config_toml_file is defined
@@ -76,7 +76,7 @@
     dest: '{{ node_user_home }}/multinode/{{ inventory_hostname }}/config/config.toml'
     owner: '{{ node_user }}'
     group: '{{ node_user }}'
-  delegate_to: "{{ main_node }}"
+  delegate_to: "{{ genesis_node }}"
 
 - name: copy node_key.json
   when: node_key_file is defined
@@ -93,7 +93,7 @@
     dest: '{{ node_user_home }}/multinode/{{ inventory_hostname }}/config/node_key.json'
     owner: '{{ node_user }}'
     group: '{{ node_user }}'
-  delegate_to: "{{ main_node }}"
+  delegate_to: "{{ genesis_node }}"
 
 - name: copy priv_validator_key.json
   when: priv_validator_key_file is defined
@@ -110,7 +110,7 @@
     dest: '{{ node_user_home }}/multinode/{{ inventory_hostname }}/config/priv_validator_key.json'
     owner: '{{ node_user }}'
     group: '{{ node_user }}'
-  delegate_to: "{{ main_node }}"
+  delegate_to: "{{ genesis_node }}"
 
 # Create validator
 - name: create validator
@@ -141,7 +141,7 @@
   when: chain_create_validator
   shell: |
     cd $HOME
-    {{chain_bin}} gentx validator {{chain_gentx_validator}}{{ chain_denom }} --keyring-backend="{{node_keyring}}" --home {{chain_home}} --moniker {{ node_moniker }} --chain-id {{chain_id}}
+    {{chain_bin}} gentx validator {{chain_gentx_validator}}{{ chain_denom }} --keyring-backend="{{node_keyring}}" --home {{chain_home}} --moniker {{ validator_moniker }} --chain-id {{chain_id}}
   become_user: "{{node_user}}"
 
 - name: create multi-node self-delegation accounts save the mnemonics shown in the output
@@ -153,7 +153,7 @@
     {{chain_bin}} add-genesis-account {{ inventory_hostname }} {{ chain_validator_coins }}{{ chain_denom }} --home {{chain_home}} --keyring-backend="{{ node_keyring }}"
   register: node_create_multinode_validator_output
   become_user: "{{ node_user }}"
-  delegate_to: "{{ main_node }}"
+  delegate_to: "{{ genesis_node }}"
   throttle: 1
 
 - name: save multi-node validator name, address, and mnemonic
@@ -161,7 +161,7 @@
   copy:
     content="{{node_create_multinode_validator_output.stderr}}"
     dest="{{ node_user_home }}/multinode/{{ inventory_hostname }}/validator.json"
-  delegate_to: "{{ main_node }}"
+  delegate_to: "{{ genesis_node }}"
   become_user: "{{ node_user }}"
 
 - name: store multi node IDs
@@ -172,7 +172,7 @@
     {{chain_bin}} tendermint show-node-id --home {{ node_user_home }}/multinode/{{ inventory_hostname }}
   register: node_multinode_id
   become_user: "{{ node_user }}"
-  delegate_to: "{{ main_node }}"
+  delegate_to: "{{ genesis_node }}"
 
 - name: store multi node pubkeys
   when: start_multinode
@@ -182,7 +182,7 @@
     {{chain_bin}} tendermint show-validator --home {{ node_user_home }}/multinode/{{ inventory_hostname }} | jq -r '.key'
   register: node_multinode_pubkey
   become_user: "{{ node_user }}"
-  delegate_to: "{{ main_node }}"
+  delegate_to: "{{ genesis_node }}"
 
 - name: print muti node IDs and pubkeys
   when: start_multinode
@@ -195,9 +195,9 @@
   shell: |
     cd $HOME
     PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
-    {{chain_bin}} gentx {{ inventory_hostname }} {{ chain_gentx_validator }}{{ chain_denom }} --pubkey $({{chain_bin}} tendermint show-validator --home {{ node_user_home }}/multinode/{{ inventory_hostname }}) --keyring-backend="{{ node_keyring }}" --home {{ chain_home }} --chain-id {{ chain_id }} --node-id {{ node_multinode_id.stdout }} --moniker {{ node_moniker }} --output-document {{ chain_home }}/config/gentx/{{ inventory_hostname }}.json
+    {{chain_bin}} gentx {{ inventory_hostname }} {{ chain_gentx_validator }}{{ chain_denom }} --pubkey $({{chain_bin}} tendermint show-validator --home {{ node_user_home }}/multinode/{{ inventory_hostname }}) --keyring-backend="{{ node_keyring }}" --home {{ chain_home }} --chain-id {{ chain_id }} --node-id {{ node_multinode_id.stdout }} --moniker {{ validator_moniker }} --output-document {{ chain_home }}/config/gentx/{{ inventory_hostname }}.json
   become_user: "{{ node_user }}"
-  delegate_to: "{{ main_node }}"
+  delegate_to: "{{ genesis_node }}"
   throttle: 1
 
 - name: collect gentx
@@ -232,7 +232,7 @@
     delete: yes
     rsync_opts:
       - "--chown={{ node_user }}:{{ node_user }}"
-  delegate_to: "{{ main_node }}"
+  delegate_to: "{{ genesis_node }}"
 
 - name: Transfer multi-node config/node_key.json
   when: start_multinode
@@ -243,7 +243,7 @@
     delete: yes
     rsync_opts:
       - "--chown={{ node_user }}:{{ node_user }}"
-  delegate_to: "{{ main_node }}"
+  delegate_to: "{{ genesis_node }}"
 
 - name: Transfer multi-node config/priv_validator_key.json
   when: start_multinode
@@ -254,7 +254,7 @@
     delete: yes
     rsync_opts:
       - "--chown={{ node_user }}:{{ node_user }}"
-  delegate_to: "{{ main_node }}"
+  delegate_to: "{{ genesis_node }}"
 
 # Get trust height automatically
 - name: obtain trust height

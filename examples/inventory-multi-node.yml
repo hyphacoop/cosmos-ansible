@@ -11,8 +11,7 @@ all:
     chain_rpc_host: "rpc"
     chain_p2p_host: "p2p"
     chain_grpc_host: "grpc"
-    swap_size: 8192
-    main_node: val1.cosmostest.network
+    genesis_node: val1.cosmostest.network
     dynamic_p2p_persistent_peers: true
     bonded_tokens_pool: 100000000
     bonded_supply_divider: 10
@@ -30,14 +29,14 @@ all:
       hosts:
         val1.cosmostest.network:
           chain_create_validator: true
-          node_moniker: val1
+          validator_moniker: val1
           voting_power: 40
           chain_gentx_validator: "{{ (bonded_tokens_pool|int * voting_power|int / 100)|int }}"
           chain_validator_coins: "{{ (bonded_supply_divider * chain_gentx_validator|int | int +chain_gentx_validator|int)|int }}"
           # Remove the next line if you are not setting up PANIC
           panic_is_validator: 'yes'
         val2.cosmostest.network:
-          node_moniker: val2
+          validator_moniker: val2
           start_multinode: true
           voting_power: 32
           chain_gentx_validator: "{{ (bonded_tokens_pool|int * voting_power|int / 100)|int }}"
@@ -45,7 +44,7 @@ all:
           # Remove the next line if you are not setting up PANIC
           panic_is_validator: 'yes'
         val3.cosmostest.network:
-          node_moniker: validator-28
+          validator_moniker: validator-28
           start_multinode: true
           voting_power: 28
           chain_gentx_validator: "{{ (bonded_tokens_pool|int * voting_power|int / 100)|int }}"

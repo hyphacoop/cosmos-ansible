@@ -82,7 +82,7 @@ Refer to the [Multi-Node Testnet Setup](/docs/Multi-Node-Testnet-Setup.md) guide
 ### Requirements
 
 - Inventory file
-  - Replace the addresses below with your own in the `main_node` and `hosts` variables.
+  - Replace the addresses below with your own in the `genesis_node` and `hosts` variables.
     - `validator-40.testnet.com`
     - `validator-32.testnet.com`
     - `validator-28.testnet.com`
