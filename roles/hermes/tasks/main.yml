@@ -17,7 +17,6 @@
     group: "{{ hermes_group }}"
     mode: '0755'
 
-
 - name: Create ~/.hermes/bin directory
   file:
     path: /home/{{ hermes_user }}/.hermes/bin
@@ -34,28 +33,25 @@
     group: "{{ hermes_group }}"
     mode: '0755'
 
-- name: Get latest gaiad version
-  uri:
-    url: https://api.github.com/repos/cosmos/gaia/releases/latest
-    return_content: true
-  register: json_reponse
-
-- name: Download gaiad
-  get_url:
-    url: https://github.com/cosmos/gaia/releases/download/{{ json_reponse.json.tag_name }}/gaiad-{{ json_reponse.json.tag_name }}-linux-amd64
-    dest: /home/{{ hermes_user }}/bin/gaiad
-    mode: 0755
-  become_user: "{{ hermes_user }}"
-
 - name: Get latest hermes version
+  when: hermes_version == 'latest'
   uri:
     url: https://api.github.com/repos/informalsystems/ibc-rs/releases/latest
     return_content: true
   register: json_reponse
 
-- name: Download and Extract hermes
+- name: Download and Extract latest hermes
+  when: hermes_version == 'latest'
   unarchive:
-    src: https://github.com/informalsystems/ibc-rs/releases/download/{{ json_reponse.json.tag_name }}/hermes-{{ json_reponse.json.tag_name }}-x86_64-unknown-linux-gnu.tar.gz
+    src: https://github.com/informalsystems/ibc-rs/releases/download/{{ json_reponse.json.tag_name }}/hermes-{{ json_reponse.json.tag_name }}-{{ binary_arch_map[ansible_architecture] }}.tar.gz
+    dest: /home/{{ hermes_user }}/.hermes/bin/
+    remote_src: yes
+  become_user: "{{ hermes_user }}"
+
+- name: Download and Extract hermes {{ hermes_version }}
+  when: hermes_version != 'latest'
+  unarchive:
+    src: https://github.com/informalsystems/ibc-rs/releases/download/{{ hermes_version }}/hermes-{{ hermes_version }}-{{binary_arch_map[ansible_architecture]}}.tar.gz
     dest: /home/{{ hermes_user }}/.hermes/bin/
     remote_src: yes
   become_user: "{{ hermes_user }}"

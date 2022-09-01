@@ -4,6 +4,7 @@ all:
   vars:
     chain_home_clear: true
     chain_version: v7.0.2
+    hermes_version: latest
     api_enabled: true
     chain_use_ssl_proxy: true
     chain_api_host: "rest"
@@ -15,7 +16,6 @@ all:
     swap_size: 8192
     monitoring_prometheus: true
     grafana_ssh_url: root@monitor.devnet.com
-    reboot: false
     ansible_user: root
   children:
     node:
