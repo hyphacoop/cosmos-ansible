@@ -153,7 +153,7 @@
     - file_type.stat.mimetype == "text/plain"
   copy:
     src: '{{bigdipper_user_home}}/genesis.data'
-    dest: '{{budjuno_home}}/genesis.json'
+    dest: '{{bdjuno_home}}/genesis.json'
     owner: '{{bigdipper_user}}'
     group: '{{bigdipper_user}}'
     remote_src: true
