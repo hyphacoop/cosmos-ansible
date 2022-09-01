@@ -24,6 +24,7 @@
       - haveged
       - python3-openssl
       - jq
+      - rsync
 
 - name: Install basic utils
   apt:

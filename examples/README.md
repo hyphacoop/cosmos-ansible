@@ -63,7 +63,7 @@ The playbook will download the genesis file, and a private key is provided in th
 ansible-playbook node.yml -i examples/inventory-local-genesis.yml -e 'target=SERVER_IP_OR_DOMAIN'
 ```
 
-## Start a Three-Node Testnet
+## Start a three-node testnet from existing keys and genesis file
 
 Set up a chain with three validator nodes that have the following voting power:
 
@@ -93,6 +93,35 @@ Refer to the [Multi-Node Testnet Setup](/docs/Multi-Node-Testnet-Setup.md) guide
 
 ```
 ansible-playbook node.yml -i examples/inventory-three-node.yml
+```
+
+## Start a three-node testnet from scratch
+Set up a chain with three validator nodes that have the following voting power:
+
+| Validator moniker | Voting power |
+|:-----------------:|:------------:|
+|  `validator-40`   |     40%      |
+|  `validator-32`   |     32%      |
+|  `validator-28`   |     28%      |
+
+- **Inventory file:** [`inventory-three-node-scratch.yml`](inventory-three-node-scratch.yml)
+- **Chain ID:** `cosmos-testnet`
+- **Gaia version:** `v7.0.3`
+
+Refer to the [Multi-Node Testnet Setup](/docs/Multi-Node-Testnet-Setup.md) guide in the `docs` folder if you want to further customize your testnet.
+
+### Requirements
+
+- Inventory file
+  - Replace the addresses below with your own in the genesis_node and hosts variables.
+    - `validator-40.testnet.com`
+    - `validator-32.testnet.com`
+    - `validator-28.testnet.com`
+
+### Run the Playbook
+
+```
+ansible-playbook node.yml -i examples/inventory-three-node-scratch.yml
 ```
 
 ## Start a Single-Node Developer Testnet
