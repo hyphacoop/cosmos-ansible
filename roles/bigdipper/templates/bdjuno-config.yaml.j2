@@ -25,11 +25,11 @@ node:
             insecure: true
 parsing:
     workers: {{ bdjuno_workers }}
-    listen_new_blocks: {{ bdjuno_listen_new_blocks | to_json }}
-    parse_old_blocks: {{ bdjuno_parse_new_blocks | to_json }}
-    parse_genesis: {{ bdjuno_parse_genesis | to_json }}
+    listen_new_blocks: {{ bdjuno_listen_new_blocks | to_yaml }}
+    parse_old_blocks: {{ bdjuno_parse_new_blocks | to_yaml }}
+    parse_genesis: {{ bdjuno_parse_genesis | to_yaml }}
     start_height: {{ bigdipper_genesis_height }}
-    fast_sync: {{ bdjuno_fast_sync | to_json }}
+    fast_sync: {{ bdjuno_fast_sync | to_yaml }}
     genesis_file_path: {{bdjuno_home}}/genesis.json
     average_block_time: {{ bdjuno_avg_block_time }}
 database:
