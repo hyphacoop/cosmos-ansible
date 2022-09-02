@@ -123,16 +123,19 @@ ansible-playbook node.yml -i examples/inventory-local.yml --extra-vars "chain_ve
 
 ## Big Dipper
 
-| Variable                   | Description                                               | Example Value            |
-|----------------------------|-----------------------------------------------------------|--------------------------|
-| `hasura_admin_secret`      | A password to protect the Hasura service                  |                          |
-| `bdjuno_version`           | A `bdjuno` branch that matches the tracked chain          | `chains/cosmmos/testnet` |
-| `bdui_chain`               | Specifies whether the chain is mainnet or testnet         | `testnet`                |
-| `chain_id`                 |                                                           | `theta-testnet-001`      |
-| `bigdipper_genesis_time`   | The time of the chain's genesis in UTC, RFC3339 format    | `2022-01-12T00:52:40`    |
-| `bigdipper_genesis_height` | The height of the chain at genesis                        | `9034670`                |
-| `bigdipper_use_tls_proxy`  | Enable TLS                                                | `true`                   |
-| `letsencrypt_email`        | A valid email address must be entered when TLS is enabled |                          |
-| `hasura_host`              | Subdomain for Hasura service                              | `"hasura."`              |
-| `rpc_host`                 | Subdomain for RPC service                                 | `"rpc."`                 |
-| `bdui_host`                | Subdomain for Big Dipper UI                               | `"explorer."`            |
+| Variable                   | Description                                                       | Example Value                      |
+|----------------------------|-------------------------------------------------------------------|------------------------------------|
+| `chain_id`                 |                                                                   | `theta-testnet-001`                |
+| `bdjuno_version`           | A `bdjuno` branch that matches the tracked chain                  | `chains/cosmmos/testnet`           |
+| `bdjuno_rpc_address`       | The RPC address `bdjuno` will collect block data from             | `http://archive.testnet.com:26657` |
+| `bdjuno_grpc_address`      | The gRPC address `bdjuno` will collect block data from            | `http://archive.testnet.com:9090`  |
+| `bdjuno_fast_sync`         | Blocks close to genesis time will not be parsed if set to `true` | `false`                            |
+| `bdui_chain`               | Specifies whether the chain is mainnet or testnet                 | `testnet`                          |
+| `bigdipper_genesis_time`   | The time of the chain's genesis in UTC, RFC3339 format            | `2022-01-12T00:52:40`              |
+| `bigdipper_genesis_height` | The height of the chain at genesis                                | `9034670`                          |
+| `bigdipper_use_tls_proxy`  | Enable TLS                                                        | `true`                             |
+| `letsencrypt_email`        | A valid email address must be entered when TLS is enabled         |                                    |
+| `hasura_admin_secret`      | A password to protect the Hasura service                          |                                    |
+| `hasura_host`              | Subdomain for Hasura service                                      | `"hasura."`                        |
+| `rpc_host`                 | Subdomain for RPC service                                         | `"rpc."`                           |
+| `bdui_host`                | Subdomain for Big Dipper UI                                       | `"explorer."`                      |
