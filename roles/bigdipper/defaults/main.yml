@@ -1,55 +1,61 @@
 ---
-
-# Go configuration
+### Golang ###
 binary_arch_map:
   aarch64: "linux-arm64"
   x86_64: "linux-amd64"
 go_arch: "{{binary_arch_map[ansible_architecture]}}"
 go_version: 1.18.5
 
+### Node.js ###
 nodejs_version: "14.x"
 
-# Big Dipper
+### Big Dipper ###
 bigdipper_user: "bigdipper"
 bigdipper_user_home: "/home/{{bigdipper_user}}"
 bigdipper_db: bdjuno
 bigdipper_db_user: "bdjuno"
-# Just something random to prevent drive-by malware from guessing or in case
-# it's accidentally exposed. The DB runs on localhost so the password doesn't
-# need to be secret.
+# This password prevents drive-by malware
+# from guessing or in case it's accidentally exposed.
+# The DB runs on localhost so the password doesn't need to be secret:
 bigdipper_db_password: "fh8XZju6cwDRRryt"
 bigdipper_telemetry_port: 5000
-
-# Target chain
 bigdipper_rpc_port: 26657
-bigdipper_grpc_port: 9090
-bigdipper_rpc_address: "http://localhost:{{bigdipper_rpc_port}}"
-bigdipper_grpc_address: "http://localhost:{{bigdipper_grpc_port}}"
-# Needs to be specified by the user according to genesis info
-# bigdipper_genesis_time: 2021-07-13T08:00:00
-# bigdipper_genesis_height: 1
 
-# bdjuno
+### bdjuno ###
 bdjuno_home: "{{bigdipper_user_home}}/.bdjuno"
 bdjuno_dir: "{{bigdipper_user_home}}/bdjuno"
 bdjuno_bin: "{{bigdipper_user_home}}/go/bin/bdjuno"
 bdjuno_service_name: "bdjuno"
-# Should be set by user depending on the chain they want
+bdjuno_client_name: gaia
+bdjuno_rpc_port: 26657
+bdjuno_grpc_port: 9090
+bdjuno_rpc_address: "http://localhost:{{ bdjuno_rpc_port }}"
+bdjuno_grpc_address: "http://localhost:{{ bdjuno_grpc_port }}"
+bdjuno_fast_sync: false
+bdjuno_workers: 5
+bdjuno_listen_new_blocks: true
+bdjuno_parse_new_blocks: true
+bdjuno_parse_genesis: true
+bdjuno_avg_block_time: 5s
+# Set depending on the chain:
 # bdjuno_version: "chains/cosmos/testnet"
+# Set to match genesis info:
+# bigdipper_genesis_time: 2021-07-13T08:00:00
+# bigdipper_genesis_height: 1
 
 bdjuno_hasura_actions_port: 3000
 
-# Hasura
+### Hasura ###
 hasura_version: v2.9.0
 hasura_cli_version: "2.9.0"
 hasura_port: 8080
 hasura_actions_service_name: hasura-actions
-# Should be private and set by user
+# The following should be private:
 # hasura_admin_secret: "something"
 hasura_host: "hasura."
 rpc_host: "rpc."
 
-# Big Dipper UI
+### Big Dipper UI ###
 bdui_host: ""
 bdui_dir: "{{bigdipper_user_home}}/big-dipper"
 bdui_version: "base-v2.1.0"
@@ -66,13 +72,10 @@ bdui_logo: ""
 ### nginx configuration ###
 
 bigdipper_use_tls_proxy: false
-
-# Changed based on bigdipper_use_tls_proxy var
+# The following variables are set automatically
+# based on bigdipper_use_tls_proxy
 bigdipper_web_scheme: http
 bigdipper_websocket_scheme: ws
-
-
-# Set dynamically based on bigdipper_use_tls_proxy
 ssl_provider: ""
 
 nginx_sites:
@@ -88,7 +91,7 @@ nginx_sites:
     web_hostname: "{{rpc_host}}{{inventory_hostname}}"
     locations:
       "/":
-        proxy_location: "{{bigdipper_rpc_address}}"
+        proxy_location: "http://127.0.0.1:{{bigdipper_rpc_port}}"
         proxy_websocket: true
   "{{bdui_host}}{{inventory_hostname}}":
     ssl_provider: "{{ssl_provider}}"

@@ -17,21 +17,21 @@ node:
     type: remote
     config:
         rpc:
-            client_name: juno
-            address: {{bigdipper_rpc_address}}
+            client_name: {{ bdjuno_client_name }}
+            address: {{ bdjuno_rpc_address }}
             max_connections: 20
         grpc:
-            address: {{bigdipper_grpc_address}}
+            address: {{ bdjuno_grpc_address }}
             insecure: true
 parsing:
-    workers: 1
-    listen_new_blocks: true
-    parse_old_blocks: true
-    parse_genesis: true
+    workers: {{ bdjuno_workers }}
+    listen_new_blocks: {{ bdjuno_listen_new_blocks }}
+    parse_old_blocks: {{ bdjuno_parse_new_blocks }}
+    parse_genesis: {{ bdjuno_parse_genesis }}
     start_height: {{bigdipper_genesis_height}}
-    fast_sync: true
+    fast_sync: {{ bdjuno_fast_sync }}
     genesis_file_path: {{bdjuno_home}}/genesis.json
-    average_block_time: 3s
+    average_block_time: {{ bdjuno_avg_block_time }}
 database:
     name: {{bigdipper_db}}
     host: 127.0.0.1
