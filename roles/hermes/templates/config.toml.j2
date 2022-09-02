@@ -4,48 +4,48 @@ log_level = 'info'
 [mode]
 
 [mode.clients]
-enabled = true
-refresh = true
-misbehaviour = true
+enabled = {{ mode_clients }}
+refresh = {{ mode_clients_refresh }}
+misbehaviour = {{ mode_clients_misbehaviour }}
 
 [mode.connections]
-enabled = false
+enabled = {{ mode_connections}}
 
 [mode.channels]
-enabled = false
+enabled = {{ mode_channels}}
 
 [mode.packets]
-enabled = true
-clear_interval = 100
-clear_on_start = true
-tx_confirmation = true
+enabled = {{ mode_packets}}
+clear_interval = {{ mode_packets_clear_interval }}
+clear_on_start = {{ mode_packets_clear_on_start }}
+tx_confirmation = {{ mode_packets_tx_confirmation }}
 
 [rest]
-enabled = true
-host = '127.0.0.1'
-port = 3000
+enabled = {{ hermes_rest_api }}
+host = '{{ hermes_rest_api_bindhost }}'
+port = {{ hermes_rest_api_port }}
 
 [telemetry]
-enabled = true
-host = '127.0.0.1'
-port = 3001
+enabled = {{ hermes_telemetry }}
+host = '{{ hermes_telemetry_bindhost }}'
+port = {{ hermes_telemetry_port }}
 
 {% for id, chaindata in hermes_chains.items() %}
 [[chains]]
 id = '{{ id }}'
-rpc_addr = 'http://{{ chaindata.hermes_chain_hostname }}:26657'
-grpc_addr = 'http://{{ chaindata.hermes_chain_hostname }}:9090'
-websocket_addr = 'ws://{{ chaindata.hermes_chain_hostname }}:26657/websocket'
-rpc_timeout = '10s'
-account_prefix = 'cosmos'
-key_name = 'testkey'
-store_prefix = 'ibc'
-max_gas = 2000000
-fee_granter = ''
-gas_price = { price = 0.001, denom = 'uatom' }
-gas_adjustment = 0.1
-clock_drift = '5s'
-trusting_period = '1days'
-trust_threshold = { numerator = '1', denominator = '3' }
+rpc_addr = '{{ chaindata.hermes_chain_rpc_url_schema }}://{{ chaindata.hermes_chain_rpc_hostname }}:{{ chaindata.hermes_chain_rpc_port }}'
+grpc_addr = '{{ chaindata.hermes_chain_grpc_url_schema }}://{{ chaindata.hermes_chain_grpc_hostname }}:{{ chaindata.hermes_chain_grpc_port }}'
+websocket_addr = '{{ chaindata.hermes_chain_websocket_url_schema }}://{{ chaindata.hermes_chain_rpc_hostname }}:{{ chaindata.hermes_chain_rpc_port }}/websocket'
+rpc_timeout = '{{ chaindata.hermes_chain_rpc_timeout }}'
+account_prefix = '{{ chaindata.hermes_chain_account_prefix }}'
+key_name = '{{ chaindata.hermes_chain_key_name }}'
+store_prefix = '{{ chaindata.hermes_chain_store_prefix }}'
+max_gas = {{ chaindata.hermes_chain_max_gas }}
+fee_granter = '{{ chaindata.hermes_chain_fee_granter }}'
+gas_price = {{ chaindata.gas_price }}
+gas_adjustment = {{ chaindata.hermes_chain_gas_adjustment }}
+clock_drift = '{{ chaindata.hermes_chain_clock_drift }}'
+trusting_period = '{{ chaindata.hermes_chain_trusting_period }}'
+trust_threshold = {{ chaindata.hermes_chain_trust_threshold }}
 
 {% endfor %}
