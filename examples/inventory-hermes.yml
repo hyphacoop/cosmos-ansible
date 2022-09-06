@@ -53,7 +53,7 @@ all:
               hermes_chain_max_gas: 2000000
               hermes_chain_fee_granter: ''
               gas_price: "{ price = 0.001, denom = 'uatom' }"
-              hermes_chain_gas_adjustment: 0.1
+              hermes_chain_gas_multiplier: 1.1
               hermes_chain_clock_drift: '5s'
               hermes_chain_trusting_period: '1days'
               hermes_chain_trust_threshold: "{ numerator = '1', denominator = '3' }"
@@ -72,7 +72,7 @@ all:
               hermes_chain_max_gas: 2000000
               hermes_chain_fee_granter: ''
               gas_price: "{ price = 0.001, denom = 'uatom' }"
-              hermes_chain_gas_adjustment: 0.1
+              hermes_chain_gas_multiplier: 1.1
               hermes_chain_clock_drift: '5s'
               hermes_chain_trusting_period: '1days'
               hermes_chain_trust_threshold: "{ numerator = '1', denominator = '3' }"
