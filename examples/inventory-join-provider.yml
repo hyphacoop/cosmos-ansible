@@ -1,0 +1,22 @@
+---
+# yamllint disable rule:line-length
+all:
+  vars:
+    ansible_user: root
+    node_user: provider
+    chain_home: "{{node_user_home}}/.isp"
+    chain_binary_name: interchain-security-pd
+    chain_version: tags/v0.1.2
+    chain_repository: https://github.com/cosmos/interchain-security.git
+    chain_denom: stake
+    genesis_url: "https://paste.c-net.org/FleasStands"
+    chain_id: provider
+    chain_home_clear: true
+    node_service_name: "provider"
+    p2p_persistent_peers: 	"1b032cd4633b9e923fb411ec0d5c9354cfb0498e@167.172.190.207:26656"
+    reboot: false
+  children:
+    node:
+      hosts:
+        "{{ target }}":
+          fast_sync: false

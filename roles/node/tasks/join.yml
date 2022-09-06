@@ -98,6 +98,17 @@
     group: '{{node_user}}'
     remote_src: true
 
+- name: Copy non-zipped genesis to genesis config
+  when:
+    - genesis_url is defined
+    - file_type.stat.mimetype == "application/json"
+  copy:
+    src: '{{node_user_home}}/genesis.data'
+    dest: '{{chain_home}}/config/genesis.json'
+    owner: '{{node_user}}'
+    group: '{{node_user}}'
+    remote_src: true
+
 - name: verify genesis file
   when: genesis_shasum is defined
   # Throw an error if shasum doesn't match
