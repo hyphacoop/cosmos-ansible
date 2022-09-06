@@ -68,6 +68,7 @@
   template:
     src: config.toml.j2
     dest: /home/{{ hermes_user }}/.hermes/config.toml
+  become_user: "{{ hermes_user }}"
 
 - name: Installing Hermes systemd service
   template:
