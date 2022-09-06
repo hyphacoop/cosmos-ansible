@@ -44,7 +44,7 @@ cosmovisor_skip_backup: true
 
 # Go configuration
 go_arch: "{{binary_arch_map[ansible_architecture]}}"
-go_version: "1.18.5"
+go_version: 1.18.5
 
 ## config.toml variables
 fast_sync: true

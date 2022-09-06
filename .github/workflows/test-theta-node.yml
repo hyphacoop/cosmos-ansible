@@ -26,6 +26,8 @@ jobs:
           python -m pip install ansible toml
       - name: Configure ansible.cfg
         run: echo "transport = local" >> ansible.cfg
+      - name: Install ansible-galaxy requirements
+        run: ansible-galaxy install -r requirements.yml
       - name: Run playbook
         run: |
           chain_version=$(curl -s https://rpc.state-sync-01.theta-testnet.polypore.xyz/abci_info? | jq -r '.result.response.version')

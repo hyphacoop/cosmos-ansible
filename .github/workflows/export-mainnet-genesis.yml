@@ -39,6 +39,9 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@master
 
+      - name: Install ansible-galaxy requirements
+        run: ansible-galaxy install -r requirements.yml
+
       - name: Provision VM
         run: ansible-playbook gaia-mainnet-export.yml -i examples/inventory-exporting-genesis-do.yml --extra-vars "digitalocean_api_key=${{ secrets.DO_API_KEY }}"
 

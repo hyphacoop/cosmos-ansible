@@ -29,12 +29,13 @@ Use this toolkit to:
 To join the [Theta testnet](https://github.com/cosmos/testnets/tree/master/v7-theta/public-testnet):
 
 1. Clone this repository
-2. Set up SSH access to the target machine
-3. Run the playbook
+2. Run `ansible-galaxy install -r requirements.yml` to install dependencies 
+3. Set up SSH access to the target machine
+4. Run the playbook
    ```
    ansible-playbook node.yml -i examples/inventory-theta.yml -e 'target=SERVER_IP_OR_DOMAIN'
    ```
-4. Log into the target machine to follow the syncing process
+5. Log into the target machine to follow the syncing process
    ```
    journalctl -fu cosmovisor
    ```

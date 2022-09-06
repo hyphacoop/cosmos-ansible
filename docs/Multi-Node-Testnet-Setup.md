@@ -191,6 +191,7 @@ Make the following modifications to [inventory-multi-node.yml](/examples/invento
 ### Run the playbook 
 
 ```
+ansible-galaxy install -r requirements.yml
 ansible-playbook node.yml -i inventory-multi-node.yml
 ```
 

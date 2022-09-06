@@ -8,7 +8,7 @@ then
 	autopep8 --in-place --recursive .
 fi
 echo "Linting python"
-find . -type f -name "*.py" | xargs pylint --rcfile=.config/pylintrc
+find . -type f -name "*.py" | xargs python -m pylint --rcfile=.config/pylintrc
 if [ $? -ne 0 ]
 then
 	pylint=1

@@ -1,0 +1,102 @@
+---
+### Golang ###
+binary_arch_map:
+  aarch64: "linux-arm64"
+  x86_64: "linux-amd64"
+go_arch: "{{binary_arch_map[ansible_architecture]}}"
+go_version: 1.18.5
+
+### Node.js ###
+nodejs_version: "14.x"
+
+### Big Dipper ###
+bigdipper_user: "bigdipper"
+bigdipper_user_home: "/home/{{bigdipper_user}}"
+bigdipper_db: bdjuno
+bigdipper_db_user: "bdjuno"
+# This password prevents drive-by malware
+# from guessing or in case it's accidentally exposed.
+# The DB runs on localhost so the password doesn't need to be secret:
+bigdipper_db_password: "fh8XZju6cwDRRryt"
+bigdipper_telemetry_port: 5000
+bigdipper_rpc_port: 26657
+
+### bdjuno ###
+bdjuno_home: "{{bigdipper_user_home}}/.bdjuno"
+bdjuno_dir: "{{bigdipper_user_home}}/bdjuno"
+bdjuno_bin: "{{bigdipper_user_home}}/go/bin/bdjuno"
+bdjuno_service_name: "bdjuno"
+bdjuno_client_name: gaia
+bdjuno_rpc_port: 26657
+bdjuno_grpc_port: 9090
+bdjuno_rpc_address: "http://localhost:{{ bdjuno_rpc_port }}"
+bdjuno_grpc_address: "http://localhost:{{ bdjuno_grpc_port }}"
+bdjuno_fast_sync: false
+bdjuno_workers: 5
+bdjuno_listen_new_blocks: true
+bdjuno_parse_new_blocks: true
+bdjuno_parse_genesis: true
+bdjuno_avg_block_time: 5s
+# Set depending on the chain:
+# bdjuno_version: "chains/cosmos/testnet"
+# Set to match genesis info:
+# bigdipper_genesis_time: 2021-07-13T08:00:00
+# bigdipper_genesis_height: 1
+
+bdjuno_hasura_actions_port: 3000
+
+### Hasura ###
+hasura_version: v2.9.0
+hasura_cli_version: "2.9.0"
+hasura_port: 8080
+hasura_actions_service_name: hasura-actions
+# The following should be private:
+# hasura_admin_secret: "something"
+hasura_host: "hasura."
+rpc_host: "rpc."
+
+### Big Dipper UI ###
+bdui_host: ""
+bdui_dir: "{{bigdipper_user_home}}/big-dipper"
+bdui_version: "base-v2.1.0"
+bdui_port: 3001
+bdui_graphql_url: "{{bigdipper_web_scheme}}://{{hasura_host}}{{inventory_hostname}}/v1/graphql"
+bdui_graphql_ws_url: "{{bigdipper_websocket_scheme}}://{{hasura_host}}{{inventory_hostname}}/v1/graphql"
+bdui_rpc_websocket: "{{bigdipper_websocket_scheme}}://{{rpc_host}}{{inventory_hostname}}/websocket"
+bdui_public_url: "{{bigdipper_web_scheme}}://{{bdui_host}}{{inventory_hostname}}"
+bdui_chain: testnet
+bdui_service_name: bigdipper
+bdui_icon: ""
+bdui_logo: ""
+
+### nginx configuration ###
+
+bigdipper_use_tls_proxy: false
+# The following variables are set automatically
+# based on bigdipper_use_tls_proxy
+bigdipper_web_scheme: http
+bigdipper_websocket_scheme: ws
+ssl_provider: ""
+
+nginx_sites:
+  "{{hasura_host}}{{inventory_hostname}}":
+    ssl_provider: "{{ssl_provider}}"
+    web_hostname: "{{hasura_host}}{{inventory_hostname}}"
+    locations:
+      "/":
+        proxy_location: "http://127.0.0.1:{{hasura_port}}"
+        proxy_websocket: true
+  "{{rpc_host}}{{inventory_hostname}}":
+    ssl_provider: "{{ssl_provider}}"
+    web_hostname: "{{rpc_host}}{{inventory_hostname}}"
+    locations:
+      "/":
+        proxy_location: "http://127.0.0.1:{{bigdipper_rpc_port}}"
+        proxy_websocket: true
+  "{{bdui_host}}{{inventory_hostname}}":
+    ssl_provider: "{{ssl_provider}}"
+    web_hostname: "{{bdui_host}}{{inventory_hostname}}"
+    locations:
+      "/":
+        proxy_location: "http://127.0.0.1:{{bdui_port}}"
+        proxy_websocket: true

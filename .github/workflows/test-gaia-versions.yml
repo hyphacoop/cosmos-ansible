@@ -82,6 +82,8 @@ jobs:
 
       - name: Configure ansible.cfg
         run: echo "transport = local" >> ansible.cfg
+      - name: Install ansible-galaxy requirements
+        run: ansible-galaxy install -r requirements.yml
       - name: Run playbook
         run: ansible-playbook node.yml -i examples/inventory-local.yml --extra-vars "target=local reboot=false chain_version=${{ matrix.gaia_version }} chain_home={{ node_user_home }}/.gaia chain_gov_testing=true node_user=runner"
       - name: Check cosmovisor service
@@ -114,6 +116,8 @@ jobs:
 
       - name: Configure ansible.cfg
         run: echo "transport = local" >> ansible.cfg
+      - name: Install ansible-galaxy requirements
+        run: ansible-galaxy install -r requirements.yml
       - name: Run playbook
         run: ansible-playbook node.yml -i examples/inventory-local.yml --extra-vars "target=local reboot=false chain_version=${{ matrix.gaia_version }} chain_home={{ node_user_home }}/.gaia chain_gov_testing=true node_user=runner"
       - name: Check cosmovisor service

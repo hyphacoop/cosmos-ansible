@@ -1,0 +1,63 @@
+---
+
+- name: "Clone and checkout big-dipper-ui"
+  become_user: "{{bigdipper_user}}"
+  git:
+    repo: 'https://github.com/forbole/big-dipper-2.0-cosmos.git'
+    dest: "{{bdui_dir}}"
+    version: "{{bdui_version}}"
+    force: yes
+
+- name: Install deps for big-dipper-ui
+  become_user: "{{bigdipper_user}}"
+  shell: |
+    cd "{{bdui_dir}}"
+    npm ci
+
+- name: "General config for big-dipper-ui"
+  become_user: "{{bigdipper_user}}"
+  template:
+    src: bigdipper-general_config.json.j2
+    dest: "{{bdui_dir}}/src/configs/general_config.json"
+
+- name: "Chain config for big-dipper-ui"
+  become_user: "{{bigdipper_user}}"
+  template:
+    src: bigdipper-chain_config.json.j2
+    dest: "{{bdui_dir}}/src/configs/chain_config.{{bdui_chain}}.json"
+
+- name: "codegen.yml config for big-dipper-ui"
+  become_user: "{{bigdipper_user}}"
+  template:
+    src: bigdipper-codegen.yml.j2
+    dest: "{{bdui_dir}}/codegen.yml"
+
+- name: Check Hasura is in sync with our graphql operations
+  become_user: "{{bigdipper_user}}"
+  shell: |
+    cd "{{bdui_dir}}"
+    npm run graphql:codegen
+
+- name: Install .env for big-dipper-ui
+  become_user: "{{bigdipper_user}}"
+  template:
+    src: bigdipper.env.j2
+    dest: "{{bdui_dir}}/.env"
+
+- name: Build big-dipper-ui
+  become_user: "{{bigdipper_user}}"
+  shell: |
+    cd "{{bdui_dir}}"
+    npm run build
+
+- name: "Create systemd service for big-dipper-ui"
+  template:
+    src: bigdipper.service.j2
+    dest: "/etc/systemd/system/{{bdui_service_name}}.service"
+
+- name: "Run big-dipper-ui"
+  systemd:
+    daemon_reload: true
+    state: restarted
+    enabled: true
+    name: "{{bdui_service_name}}"
