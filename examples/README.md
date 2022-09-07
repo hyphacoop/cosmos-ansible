@@ -35,6 +35,40 @@ ansible-playbook node.yml -i examples/inventory-theta.yml -e 'target=SERVER_IP_O
 
 This playbook obtains a trust block height and the corresponding hash ID from the first RPC server listed in the inventory file in order to use the state sync feature. 
 
+## Join the Interchain Security Mini-Testnets
+
+Set up nodes to join the [Interchain Security Testnet](https://informalsystems.notion.site/Interchain-Security-Testnet-cc65af3d57724c2bab52a04f3f3d3a7d).
+
+### Provider chain
+
+* **Inventory file:** [`inventory-join-provider.yml`](inventory-join-provider.yml)
+* **Chain ID:** `provider`
+* **Gaia version:** `tags/v0.1.3`
+
+Run the playbook:
+```
+ansible-playbook node.yml -i examples/inventory-join-provider.yml -e 'target=SERVER_IP_OR_DOMAIN'
+```
+
+After the play has finished running, copy the keys from the `/home/provider/.isp/config` folder in the target machine:
+- `priv_validator_key.json`
+- `node_key.json`
+
+### Consumer chain
+
+* **Inventory file:** [`inventory-join-consumer.yml`](inventory-join-consumer.yml)
+* **Chain ID:** `provider`
+* **Gaia version:** `tags/v0.1.3`
+
+Run the playbook using the keys collected from the provider chain node:
+```
+ansible-playbook node.yml -i examples/inventory-join-consumer.yml -e 'target=SERVER_IP_OR_DOMAIN node_key_file=node_key.json priv_validator_key_file=priv_validator_key.json"
+```
+
+### Run the playbook 
+
+This playbook obtains a trust block height and the corresponding hash ID from the first RPC server listed in the inventory file in order to use the state sync feature. 
+
 ## Start a Local Testnet
 
 Set up a node with a single validator account.
