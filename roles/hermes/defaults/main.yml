@@ -35,3 +35,6 @@ hermes_telemetry_port: 3001
 binary_arch_map:
   aarch64: "aarch64-unknown-linux-gnu"
   x86_64: "x86_64-unknown-linux-gnu"
+
+### Reboot after setup
+reboot: true
