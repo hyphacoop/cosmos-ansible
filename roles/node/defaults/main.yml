@@ -158,7 +158,7 @@ instrumentation_namespace: tendermint
 client_keyring_backend: test
 client_output_format: text
 client_rpc_interface: "tcp://localhost:{{ rpc_port }}"
-client_broadcast_mode: block
+client_broadcast_mode: sync
 
 # Faucet settings
 faucet_enabled: false
