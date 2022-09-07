@@ -79,7 +79,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install ansible toml
-          pip uninstall pyOpenSSL
+          pip install cryptography==36.0.2
 
       - name: Configure ansible.cfg
         run: echo "transport = local" >> ansible.cfg
