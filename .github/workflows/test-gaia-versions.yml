@@ -78,8 +78,9 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
+          apt remove python3-openssl -y apt autoremove
           python -m pip install ansible toml
-          pip install cryptography==36.0.2
+          python -m pip install pyOpenSSL
 
       - name: Configure ansible.cfg
         run: echo "transport = local" >> ansible.cfg
