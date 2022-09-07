@@ -147,10 +147,21 @@
     gunzip -c $HOME/genesis.data > {{bdjuno_home}}/genesis.json
   become_user: "{{bigdipper_user}}"
 
-- name: Copy non-zipped genesis to genesis config
+- name: Copy non-zipped genesis to genesis config (plain text)
   when:
     - genesis_url is defined
     - file_type.stat.mimetype == "text/plain"
+  copy:
+    src: '{{bigdipper_user_home}}/genesis.data'
+    dest: '{{bdjuno_home}}/genesis.json'
+    owner: '{{bigdipper_user}}'
+    group: '{{bigdipper_user}}'
+    remote_src: true
+
+- name: Copy non-zipped genesis to genesis config (json)
+  when:
+    - genesis_url is defined
+    - file_type.stat.mimetype == "application/json"
   copy:
     src: '{{bigdipper_user_home}}/genesis.data'
     dest: '{{bdjuno_home}}/genesis.json'
