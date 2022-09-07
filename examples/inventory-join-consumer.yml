@@ -13,7 +13,7 @@ all:
     chain_id: consumer
     chain_home_clear: true
     node_service_name: "consumer"
-    p2p_persistent_peers: "9faf27cc60a3f65e1f247b1d3fe1b4f60d42a232@167.172.190.207:26656"
+    p2p_persistent_peers: "9faf27cc60a3f65e1f247b1d3fe1b4f60d42a232@167.172.190.207:26646"
     cosmovisor_service_name: "cosmovisor-consumer"
     reboot: false
   children:
