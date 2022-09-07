@@ -101,8 +101,8 @@ abci: socket
 rpc_port: 26657
 rpc_laddr: tcp://0.0.0.0:{{ rpc_port }}
 rpc_cors_allowed_origins: []
-rpc_cors_allowed_methods: ["HEAD", "GET", "POST"]
-rpc_cors_allowed_headers: ["Origin", "Accept", "Content-Type", "X-Requested-With", "X-Server-Time"]
+rpc_cors_allowed_methods: ["HEAD","GET","POST"]
+rpc_cors_allowed_headers: ["Origin", "Accept", "Content-Type", "X-Requested-With", "X-Server-Time",]
 grpc_laddr: ''
 grpc_max_open_connections: 900
 rpc_unsafe: false
