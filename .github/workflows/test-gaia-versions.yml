@@ -18,7 +18,7 @@ on:
       - 'README.md'
 jobs:
   generate-matrices:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       # Get system info
       - run: ifconfig
@@ -62,7 +62,7 @@ jobs:
       upgrade_versions: ${{ steps.generate-upgrade.outputs.upgrade_versions }}
 
   test-start:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     needs: generate-matrices
     strategy:
       matrix:
@@ -94,7 +94,7 @@ jobs:
         run: free -m
 
   test-upgrade:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     needs: generate-matrices
     strategy:
       matrix:

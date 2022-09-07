@@ -12,7 +12,7 @@ on:
       - closed
 jobs:
   test-theta-testnet:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3
