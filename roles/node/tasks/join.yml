@@ -87,10 +87,21 @@
     gunzip -c $HOME/genesis.data > {{chain_home}}/config/genesis.json
   become_user: "{{node_user}}"
 
-- name: Copy non-zipped genesis to genesis config
+- name: Copy non-zipped genesis to genesis config (plain text)
   when:
     - genesis_url is defined
     - file_type.stat.mimetype == "text/plain"
+  copy:
+    src: '{{node_user_home}}/genesis.data'
+    dest: '{{chain_home}}/config/genesis.json'
+    owner: '{{node_user}}'
+    group: '{{node_user}}'
+    remote_src: true
+
+- name: Copy non-zipped genesis to genesis config (json)
+  when:
+    - genesis_url is defined
+    - file_type.stat.mimetype == "application/json"
   copy:
     src: '{{node_user_home}}/genesis.data'
     dest: '{{chain_home}}/config/genesis.json'
