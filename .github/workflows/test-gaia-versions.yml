@@ -74,6 +74,7 @@ jobs:
       - name: Remove Python
         run: |
           sudo apt remove python3
+          sudo rm -rf /usr/lib/python3
       - name: Set up Python
         uses: actions/setup-python@v3
         with:
