@@ -4,7 +4,7 @@ After=network-online.target
 
 [Service]
 User={{ hermes_user }}
-ExecStart=/home/{{ hermes_user }}/bin/hermes -c /home/{{ hermes_user }}/.hermes/config.toml start
+ExecStart=/home/{{ hermes_user }}/bin/hermes --config /home/{{ hermes_user }}/.hermes/config.toml start
 Restart=always
 RestartSec=3
 LimitNOFILE=4096

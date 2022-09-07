@@ -20,6 +20,7 @@ Once the relayer is operational, you will be able to send messages between both 
 
 * **Gaia version:** `v7.0.0`
 * **Chain IDs:** `my-chain-1` and `my-chain-2`
+* **Hermes version:** `v1.0.0`
 
 ## Workflow
 
@@ -65,30 +66,29 @@ Run the following commands in the Hermes host after running the playbook.
 Switch to the `hermes` user.
 ```
 su hermes
+cd ~
 ```
 
-Restore the account key for the chains you want to relay to. Each key name must match the chain ID, in this example they are `my-chain-1` and `my-chain-2`.
-```
-~/bin/hermes -c ~/.hermes/config.toml keys restore my-chain-1 -m "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon art"
+For each chain, copy the mnemonic of the relayer account to a text file:
+- `my-chain-1-relayer-mnemonic.txt`
+- `my-chain-2-relayer-mnemonic.txt`
 
-~/bin/hermes -c ~/.hermes/config.toml keys restore my-chain-2 -m "abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon garage"
+Restore the relayer account key for both chains.
 ```
-
-Create a client between the chains.
-```
-~/bin/hermes -c ~/.hermes/config.toml create client my-chain-1 my-chain-2
+~/bin/hermes keys add --chain my-chain-1 --mnemonic-file my-chain-1-relayer-mnemonic.txt
+~/bin/hermes keys add --chain my-chain-2 --mnemonic-file my-chain-2-relayer-mnemonic.txt
 ```
 
 Create a connection between the chains.
 ```
-~/bin/hermes -c ~/.hermes/config.toml create connection my-chain-1 my-chain-2
+~/bin/hermes create connection --a-chain my-chain-1 --b-chain my-chain-2
 ```
 
 Note down the `ConnectionId` returned.
 
 Create a channel between the chains using the chain name and `ConnectionID` above for this example we use `connection-0`
 ```
-~/bin/hermes -c ~/.hermes/config.toml create channel --port-a transfer --port-b transfer my-chain-1 connection-0
+~/bin/hermes create channel --a-chain my-chain-1 --a-port transfer --b-port transfer --order unordered --a-connection connection-0
 ```
 
 Note down and save the `ChannelId` for both chains. You will need it whenever you want to make IBC transfers, as shown below.
@@ -103,7 +103,7 @@ Restart the hermes service.
 systemctl restart hermes
 ```
 
-You can now send messages between `my-chain-1` and `my-chain-2` using the `gaiad tx ibc-transfer` command. In the example below, `hermes` created `channel-329`.
+You can now send messages between `my-chain-1` and `my-chain-2` using the `gaiad tx ibc-transfer` command. In the example below, `hermes` created `channel-0`.
 ```
-gaiad tx ibc-transfer transfer transfer channel-329 [cosmos address of receiver] 1000uatom --chain-id [chain we are sending from] --from [cosmos address of sender] --fees 500uatom --gas auto -y
+gaiad tx ibc-transfer transfer transfer channel-0 [cosmos address of receiver] 1000uatom --chain-id [chain we are sending from] --from [cosmos address of sender] --fees 500uatom --gas auto -y
 ```

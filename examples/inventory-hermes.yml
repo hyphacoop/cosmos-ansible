@@ -4,6 +4,7 @@ all:
   vars:
     chain_home_clear: true
     chain_version: v7.0.2
+    hermes_version: latest
     api_enabled: true
     chain_use_ssl_proxy: true
     chain_api_host: "rest"
@@ -15,7 +16,6 @@ all:
     swap_size: 8192
     monitoring_prometheus: true
     grafana_ssh_url: root@monitor.devnet.com
-    reboot: false
     ansible_user: root
   children:
     node:
@@ -39,6 +39,40 @@ all:
         hermes.dev.testnet.com:
           hermes_chains:
             my-chain-1:
-              hermes_chain_hostname: my-chain-1.dev.testnet.com
+              hermes_chain_rpc_url_schema: http
+              hermes_chain_rpc_hostname: my-chain-1.dev.testnet.com
+              hermes_chain_rpc_port: 26657
+              hermes_chain_grpc_url_schema: http
+              hermes_chain_grpc_hostname: my-chain-1.dev.testnet.com
+              hermes_chain_grpc_port: 9090
+              hermes_chain_websocket_url_schema: ws
+              hermes_chain_rpc_timeout: '10s'
+              hermes_chain_account_prefix: 'cosmos'
+              hermes_chain_key_name: 'testkey'
+              hermes_chain_store_prefix: 'ibc'
+              hermes_chain_max_gas: 2000000
+              hermes_chain_fee_granter: ''
+              gas_price: "{ price = 0.001, denom = 'uatom' }"
+              hermes_chain_gas_multiplier: 1.1
+              hermes_chain_clock_drift: '5s'
+              hermes_chain_trusting_period: '1days'
+              hermes_chain_trust_threshold: "{ numerator = '1', denominator = '3' }"
             my-chain-2:
-              hermes_chain_hostname: my-chain-2.dev.testnet.com
+              hermes_chain_rpc_url_schema: http
+              hermes_chain_rpc_hostname: my-chain-2.dev.testnet.com
+              hermes_chain_rpc_port: 26657
+              hermes_chain_grpc_url_schema: http
+              hermes_chain_grpc_hostname: my-chain-2.dev.testnet.com
+              hermes_chain_grpc_port: 9090
+              hermes_chain_websocket_url_schema: ws
+              hermes_chain_rpc_timeout: '10s'
+              hermes_chain_account_prefix: 'cosmos'
+              hermes_chain_key_name: 'testkey'
+              hermes_chain_store_prefix: 'ibc'
+              hermes_chain_max_gas: 2000000
+              hermes_chain_fee_granter: ''
+              gas_price: "{ price = 0.001, denom = 'uatom' }"
+              hermes_chain_gas_multiplier: 1.1
+              hermes_chain_clock_drift: '5s'
+              hermes_chain_trusting_period: '1days'
+              hermes_chain_trust_threshold: "{ numerator = '1', denominator = '3' }"
