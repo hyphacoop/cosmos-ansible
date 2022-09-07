@@ -37,7 +37,7 @@ This playbook obtains a trust block height and the corresponding hash ID from th
 
 ## Join the Interchain Security Mini-Testnets
 
-Set up nodes to join the [Interchain Security Testnet](https://informalsystems.notion.site/Interchain-Security-Testnet-cc65af3d57724c2bab52a04f3f3d3a7d).
+Set up nodes to join the [Interchain Security Testnet](https://informalsystems.notion.site/Interchain-Security-Testnet-cc65af3d57724c2bab52a04f3f3d3a7d) and run a validator.
 
 ### Provider chain
 
@@ -50,9 +50,15 @@ Run the playbook:
 ansible-playbook node.yml -i examples/inventory-join-provider.yml -e 'target=SERVER_IP_OR_DOMAIN'
 ```
 
-After the play has finished running, copy the keys from the `/home/provider/.isp/config` folder in the target machine:
+After the play has finished running:
+1. Copy the keys from the `/home/provider/.isp/config` folder in the target machine:
 - `priv_validator_key.json`
 - `node_key.json`
+
+2. Generate a keypair for your validator:
+```
+interchain-security-pd keys add <validator_keypair_name> --home ~/.isp --keyring-backend test --output json > ~/validator-keypair.json 2>&1
+```
 
 ### Consumer chain
 
@@ -63,6 +69,13 @@ After the play has finished running, copy the keys from the `/home/provider/.isp
 Run the playbook using the keys collected from the provider chain node:
 ```
 ansible-playbook node.yml -i examples/inventory-join-consumer.yml -e 'target=SERVER_IP_OR_DOMAIN node_key_file=node_key.json priv_validator_key_file=priv_validator_key.json"
+```
+
+After the play has finished running:
+3. Get tokens for your validator address.
+4. Bond the validator on the provider chain:
+```
+interchain-security-pd tx staking create-validator --amount 1000000stake --pubkey <validator_public_key> --from <validator_keypair_name> --keyring-backend test --home ~/.isp --chain-id provider --commission-max-change-rate 0.01 --commission-max-rate 0.2 --commission-rate 0.1 --moniker <validator_moniker> --min-self-delegation 1 -b block -y
 ```
 
 ### Run the playbook 
