@@ -63,7 +63,7 @@ interchain-security-pd keys add <validator_keypair_name> --home ~/.isp --keyring
 ### Consumer chain
 
 * **Inventory file:** [`inventory-join-consumer.yml`](inventory-join-consumer.yml)
-* **Chain ID:** `provider`
+* **Chain ID:** `consumer`
 * **Gaia version:** `tags/v0.1.3`
 
 Run the playbook using the keys collected from the provider chain node:
