@@ -1,0 +1,23 @@
+---
+# yamllint disable rule:line-length
+
+all:
+  vars:
+    ansible_user: root
+    hasura_admin_secret: CHANGE_ME  # Any random password will work
+    # Change if not running a cosmos hub testnet, see branches of bdjuno:
+    bdjuno_version: "chains/cosmos/testnet"
+    bdui_chain: testnet  # Either testnet or mainnet
+    bigdipper_use_tls_proxy: false  # Enables TLS, requires a domain name
+    # letsencrypt_email: "example@example.com"  # Required for TLS setup
+    genesis_url: "https://github.com/cosmos/testnets/raw/master/v7-theta/public-testnet/genesis.json.gz"
+    # genesis_file: "genesis.json" # Alternative to genesis_url
+    chain_id: theta-testnet-001
+    bigdipper_genesis_time: "2019-12-11T16:11:34Z"
+    bigdipper_genesis_height: 9034670
+  children:
+    bigdipper:
+      hosts:
+        "{{ target }}":
+          bdjuno_rpc_address: "http://archive.theta-testnet.com:{{ bdjuno_rpc_port }}"
+          bdjuno_grpc_address: "http://archive.theta-testnet.com:{{ bdjuno_grpc_port }}"

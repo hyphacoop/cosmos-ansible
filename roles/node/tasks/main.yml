@@ -1,0 +1,30 @@
+---
+- name: base
+  import_tasks: base.yml
+
+- name: config
+  import_tasks: config.yml
+
+- name: faucet
+  import_tasks: faucet.yml
+  when: faucet_enabled
+
+- name: join
+  import_tasks: join.yml
+  when: genesis_file is defined or genesis_url is defined
+
+- name: setup systemd services
+  import_tasks: services.yml
+
+- name: setup APIs
+  import_tasks: apis.yml
+
+- name: setup monitoring
+  import_tasks: monitoring.yml
+
+- name: Rebooting the machine
+  include_role:
+    name: reboot
+  when: reboot | default(false) | bool
+  tags:
+    - reboot

@@ -1,3 +1,37 @@
 ---
 hermes_user: hermes
 hermes_group: users
+hermes_version: latest
+
+# Mode
+# mode.clients
+mode_clients: 'true'
+mode_clients_refresh: 'true'
+mode_clients_misbehaviour: 'true'
+
+# mode.connections
+mode_connections: 'false'
+
+# mode.channels
+mode_channels: 'false'
+
+# mode.packets
+mode_packets: 'true'
+mode_packets_clear_interval: 100
+mode_packets_clear_on_start: 'true'
+mode_packets_tx_confirmation: 'true'
+
+# REST API
+hermes_rest_api: 'true'
+hermes_rest_api_bindhost: "127.0.0.1"
+hermes_rest_api_port: 3000
+
+# Telemetry
+hermes_telemetry: 'true'
+hermes_telemetry_bindhost: "127.0.0.1"
+hermes_telemetry_port: 3001
+
+# Architecture mapping
+binary_arch_map:
+  aarch64: "aarch64-unknown-linux-gnu"
+  x86_64: "x86_64-unknown-linux-gnu"

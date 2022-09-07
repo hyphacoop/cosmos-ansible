@@ -1,0 +1,13 @@
+[Unit]
+Description=BDJuno Parser
+After=network-online.target
+
+[Service]
+User={{bigdipper_user}}
+ExecStart={{bdjuno_bin}} start --home {{bdjuno_home}}
+Restart=always
+RestartSec=3
+LimitNOFILE=4096
+
+[Install]
+WantedBy=multi-user.target

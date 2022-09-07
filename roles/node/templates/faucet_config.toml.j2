@@ -1,0 +1,19 @@
+# Cosmos REST Faucet configuration
+
+gaia_home_folder = "{{chain_home}}"
+transactions_log = "transactions.csv"
+request_timeout    = "86400"
+
+[cosmos]
+prefix         = "cosmos"
+denomination   = "{{chain_denom}}"
+
+[testnets]
+    [testnets.{{chain_id}}]
+    node_url = "http://localhost:26657"
+    chain_id = "{{chain_id}}"
+    faucet_address = {{faucet_address.stdout}}
+    daily_cap = "500000000"
+    amount_to_send = "1000000"
+    tx_fees = "500"
+

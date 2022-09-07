@@ -2,15 +2,15 @@
 # yamllint disable rule:line-length
 all:
   vars:
-    gaiad_home_autoclear: true
-    gaiad_version: v7.0.0
+    chain_home_clear: true
+    chain_version: v7.0.0
     api_enabled: true
     chain_id: "my-devnet"
-    gaiad_use_ssl_proxy: true
-    gaiad_api_host: "rest"
-    gaiad_rpc_host: "rpc"
-    gaiad_grpc_host: "grpc"
-    gaiad_p2p_host: "p2p"
+    chain_use_ssl_proxy: true
+    chain_api_host: "rest"
+    chain_rpc_host: "rpc"
+    chain_grpc_host: "grpc"
+    chain_p2p_host: "p2p"
     letsencrypt_email: "validator@devnet.com"
     enable_swap: false
     swap_size: 8192
@@ -18,12 +18,12 @@ all:
     grafana_ssh_url: root@monitor.devnet.com
     reboot: false
   children:
-    gaia:
+    node:
       hosts:
         "{{ target }}":
           ansible_user: root
-          gaiad_create_validator: true
-          gaiad_airdrop: true
-          gaiad_airdrop_accounts:
+          chain_create_validator: true
+          chain_airdrop: true
+          chain_airdrop_accounts:
             - cosmos*
             - cosmos*

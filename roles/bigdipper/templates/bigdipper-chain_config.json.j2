@@ -1,0 +1,44 @@
+{
+  "title": "Theta Block Explorer",
+  "network": "{{chain_id}}",
+  "icon": {{ bdui_icon | to_json }},
+  "logo": {
+    "default": {{ bdui_logo | to_json }}
+  },
+  "prefix": {
+    "consensus": "cosmosvalcons",
+    "validator": "cosmosvaloper",
+    "account": "cosmos"
+  },
+  "genesis": {
+    "time": {{ bigdipper_genesis_time | to_json }},
+    "height": {{ bigdipper_genesis_height | to_json }}
+  },
+  "primaryTokenUnit": "uatom",
+  "votingPowerTokenUnit": "uatom",
+  "tokenUnits": {
+    "uatom": {
+      "display": "atom",
+      "exponent": 6
+    },
+    "rho": {
+      "display": "rho",
+      "exponent": 0
+    },
+    "lambda": {
+      "display": "lambda",
+      "exponent": 0
+    },
+    "epsilon": {
+      "display": "epsilon",
+      "exponent": 0
+    },
+    "theta": {
+      "display": "theta",
+      "exponent": 0
+    }
+  },
+  "extra": {
+    "profile": true
+  }
+}
