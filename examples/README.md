@@ -45,7 +45,7 @@ Before running the commands below, make sure you have installed Ansible as per [
 
 * **Inventory file:** [`inventory-join-provider.yml`](inventory-join-provider.yml)
 * **Chain ID:** `provider`
-* **Gaia version:** `tags/v0.1.3`
+* **Chain version:** `tags/v0.1.3`
 
 Run the playbook:
 ```
@@ -67,7 +67,7 @@ interchain-security-pd keys add <validator_keypair_name> --home ~/.isp --keyring
 
 * **Inventory file:** [`inventory-join-consumer.yml`](inventory-join-consumer.yml)
 * **Chain ID:** `consumer`
-* **Gaia version:** `tags/v0.1.3`
+* **Chain version:** `tags/v0.1.3`
 
 Run the playbook using the keys collected from the provider chain node:
 ```
