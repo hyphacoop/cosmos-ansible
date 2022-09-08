@@ -51,7 +51,8 @@ ansible-playbook node.yml -i examples/inventory-join-provider.yml -e 'target=SER
 ```
 
 After the play has finished running:
-1. Copy the keys from the `/home/provider/.isp/config` folder in the target machine:
+
+1. Make a copy keys from the `/home/provider/.isp/config` folder in the target machine. You will need them to set up the consumer chain validator:
 - `priv_validator_key.json`
 - `node_key.json`
 
@@ -72,6 +73,7 @@ ansible-playbook node.yml -i examples/inventory-join-consumer.yml -e 'target=SER
 ```
 
 After the play has finished running:
+
 3. Get tokens for your validator address.
 4. Bond the validator on the provider chain:
 ```
