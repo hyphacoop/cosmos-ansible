@@ -68,32 +68,35 @@ ansible-playbook node.yml -i examples/inventory-local.yml --extra-vars "chain_ve
 
 ## Chain Configuration: `config.toml`
 
-| Variable                | Example Value                                                                       |
-|-------------------------|-------------------------------------------------------------------------------------|
-| `fast_sync`             | `true`                                                                              |
-| `rpc_port`              | `26657`                                                                             |
-| `p2p_port`              | `26656`                                                                             |
-| `p2p_seeds`             | `"node-id@http://seed-1.testnet.com:26656,node-id@http://seed-2.testnet.com:26656"` |
-| `p2p_persistent_peers`  | `"node-id@http://p2p-1.testnet.com:26656,node-id@http://p2p-2.testnet.com:26656`"   |
-| `statesync_enabled`     | `true`                                                                              |
-| `statesync_rpc_servers` | `"http://rpc.sentry-1.testnet.com:26657,http://rpc.sentry-2.testnet.com"`           |
+| Variable                 | Example Value                                                                       |
+|--------------------------|-------------------------------------------------------------------------------------|
+| `fast_sync`              | `true`                                                                              |
+| `rpc_port`               | `26657`                                                                             |
+| `p2p_port`               | `26656`                                                                             |
+| `p2p_seeds`              | `"node-id@http://seed-1.testnet.com:26656,node-id@http://seed-2.testnet.com:26656"` |
+| `p2p_persistent_peers`   | `"node-id@http://p2p-1.testnet.com:26656,node-id@http://p2p-2.testnet.com:26656`"   |
+| `p2p_allow_duplicate_ip` | `true`                                                                              |
+| `statesync_enabled`      | `true`                                                                              |
+| `statesync_rpc_servers`  | `"http://rpc.sentry-1.testnet.com:26657,http://rpc.sentry-2.testnet.com"`           |
 
 ## Chain Configuration: `app.toml`
 
-| Variable             | Example Value |
-|----------------------|---------------|
-| `minimum_gas_prices` | `"10uatom"`   |
-| `api_enabled`        | `true`        |
-| `api_port`           | `1317`        |
-| `grpc_enabled`       | `true`        |
-| `grpc_port`          | `9090`        |
+| Variable             | Example Value  |
+|----------------------|----------------|
+| `minimum_gas_prices` | `"0.001uatom"` |
+| `api_enabled`        | `true`         |
+| `api_port`           | `1317`         |
+| `grpc_enabled`       | `true`         |
+| `grpc_port`          | `9090`         |
+| `grpc_web_enabled`   | `true`         |
+| `grpc_web_port`      | `9091`         |
 
 ## Chain Configuration: `client.toml`
 
 | Variable                 | Example Value |
 |--------------------------|---------------|
-| `client_keyring_backend` | `os`          |
-| `client_broadcast_mode`  | `sync`        |
+| `client_keyring_backend` | `test`        |
+| `client_broadcast_mode`  | `block`       |
 
 ## Faucet
 
