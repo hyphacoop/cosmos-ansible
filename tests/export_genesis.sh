@@ -8,9 +8,6 @@ gh_user="hypha-bot"
 # get cosmos-ansible from $1
 gh_ansible_branch=$1
 
-# Gaiad versions to start upgrade
-start_version="v6.0.4"
-
 # Store current date and time
 start_date=$(date +"%Y%m%d_%H-%M-%S")
 
@@ -157,9 +154,13 @@ gzip "mainnet-genesis-tinkered/tinkered-genesis_${current_block_time}_${chain_ve
 
 # Upload to files.polypore.xyz
 echo "Uploading exported Mainnet genesis to files.polypore.xyz"
-scp mainnet-genesis-export/mainnet-genesis_${current_block_time}_${chain_version}_${current_block}.json gh-actions@files.polypore.xyz:/var/www/html/genesis/mainnet-genesis-export/
+scp mainnet-genesis-export/mainnet-genesis_${current_block_time}_${chain_version}_${current_block}.json.gz gh-actions@files.polypore.xyz:/var/www/html/genesis/mainnet-genesis-export/
 echo "Uploading Tinkered Mainnet genesis to files.polypore.xyz"
-scp mainnet-genesis-tinkered/tinkered-genesis_${current_block_time}_${chain_version}_${current_block}.json gh-actions@files.polypore.xyz:/var/www/html/genesis/mainnet-genesis-tinkered/
+scp mainnet-genesis-tinkered/tinkered-genesis_${current_block_time}_${chain_version}_${current_block}.json.gz gh-actions@files.polypore.xyz:/var/www/html/genesis/mainnet-genesis-tinkered/
+
+# Update latest file link
+ssh gh-actions@files.polypore.xyz ln -sf /var/www/html/genesis/mainnet-genesis-export/mainnet-genesis_${current_block_time}_${chain_version}_${current_block}.json.gz /var/www/html/genesis/mainnet-genesis-export/latest_v$(echo $chain_version | cut  -c 2).json.gz
+ssh gh-actions@files.polypore.xyz ln -sf /var/www/html/genesis/mainnet-genesis-tinkered/tinkered-genesis_${current_block_time}_${chain_version}_${current_block}.json.gz /var/www/html/genesis/mainnet-genesis-tinkered/latest_v$(echo $chain_version | cut  -c 2).json.gz
 
 # Print current date and time
 echo -n "Finished at: "

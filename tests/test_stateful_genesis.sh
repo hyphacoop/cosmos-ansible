@@ -1,4 +1,6 @@
 #!/bin/bash
+# Gaiad versions to start upgrade
+start_version="v6.0.4"
 
 # Gaiad Upgrade Test Function
 gaiad_upgrade () {
