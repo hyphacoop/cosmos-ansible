@@ -85,6 +85,7 @@ jobs:
       # Get system info
       - run: ifconfig
       - run: arp -a
+      - run: lscpu
       - run: sudo dmidecode
       - run: df -h
       - run: free -m
