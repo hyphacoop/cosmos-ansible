@@ -117,7 +117,7 @@ jobs:
       - name: Modify examples/inventory-local-genesis.yml
         run: sed -e '/genesis_url:/d' examples/inventory-local-genesis.yml > inventory.yml
       - name: Run playbook
-        run: ansible-playbook node.yml -i inventory.yml --extra-vars "target=local reboot=false chain_version=${{ matrix.gaia_version }} chain_home={{ node_user_home }}/.gaia chain_gov_testing=true minimum_gas_prices=0.0025uatom node_user=runner priv_validator_key_file=examples/validator-keys/validator-40/priv_validator_key.json node_key_file=examples/validator-keys/validator-40/node_key.json genesis_url=${{ env.tinkered_genesis_url }}/latest_v${{ env.current_chain_version_major }}.json.gz"
+        run: ansible-playbook node.yml -i inventory.yml --extra-vars "target=local reboot=false chain_version=${{ matrix.gaia_version }} chain_home={{ node_user_home }}/.gaia chain_gov_testing=true minimum_gas_prices=0.0025uatom node_user=runner priv_validator_key_file=examples/validator-keys/validator-40/priv_validator_key.json node_key_file=examples/validator-keys/validator-40/node_key.json enable_swap=true swap_size=16384 genesis_url=${{ env.tinkered_genesis_url }}/latest_v${{ env.current_chain_version_major }}.json.gz"
       - name: Check cosmovisor service
         run: systemctl status cosmovisor
       - name: Get genesis height
