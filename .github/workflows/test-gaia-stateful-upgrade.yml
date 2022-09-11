@@ -1,0 +1,45 @@
+---
+
+name: Test Gaia Versions
+on:
+  schedule:
+    # At 15:30 on Monday.
+    - cron: '30 15 * * 1'
+  pull_request:
+    types:
+      - opened
+      - closed
+  push:
+    paths-ignore:
+      - 'docs/**'
+      - 'examples/**'
+      - 'logs/**'
+      - '!examples/inventory-local.yml'
+      - 'README.md'
+jobs:
+  generate-matrices:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install requests
+
+      - name: Get chain and repo release versions
+        run: |
+          chain_registry="https://files.polypore.xyz/chain.json"
+          gh_repo_name="cosmos/gaia"
+          current_chain_version=$(curl -s ${chain_registry} | jq -r '.codebase.recommended_version')
+          current_github_version=$(curl -s "https://api.github.com/repos/${gh_repo_name}/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+          current_chain_version_major=$(echo $current_chain_version | cut -c 2)
+          current_github_version_major=$(echo $current_github_version | cut -c 2)
+          echo "Chain major version is: $current_chain_version_major"
+          echo "GitHub major version is: $current_github_version_major"

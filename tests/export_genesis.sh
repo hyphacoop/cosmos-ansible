@@ -137,7 +137,7 @@ time su gaia -c "~gaia/.gaia/cosmovisor/current/bin/gaiad export --height $curre
 echo "Tinkering exported genesis"
 pip3 install -r requirements.txt
 ln -s "$PWD/mainnet-genesis-export/mainnet-genesis_${current_block_time}_${chain_version}_${current_block}.json" "tests/mainnet_genesis.json"
-python3 ./example_mainnet_genesis.py
+time python3 ./example_mainnet_genesis.py
 rm tests/mainnet_genesis.json
 if [ ! -d mainnet-genesis-tinkered ]
 then
@@ -158,7 +158,7 @@ scp mainnet-genesis-export/mainnet-genesis_${current_block_time}_${chain_version
 echo "Uploading Tinkered Mainnet genesis to files.polypore.xyz"
 scp mainnet-genesis-tinkered/tinkered-genesis_${current_block_time}_${chain_version}_${current_block}.json.gz gh-actions@files.polypore.xyz:/var/www/html/genesis/mainnet-genesis-tinkered/
 
-# Update latest file link
+# Update latest file symlinks
 ssh gh-actions@files.polypore.xyz ln -sf /var/www/html/genesis/mainnet-genesis-export/mainnet-genesis_${current_block_time}_${chain_version}_${current_block}.json.gz /var/www/html/genesis/mainnet-genesis-export/latest_v$(echo $chain_version | cut  -c 2).json.gz
 ssh gh-actions@files.polypore.xyz ln -sf /var/www/html/genesis/mainnet-genesis-tinkered/tinkered-genesis_${current_block_time}_${chain_version}_${current_block}.json.gz /var/www/html/genesis/mainnet-genesis-tinkered/latest_v$(echo $chain_version | cut  -c 2).json.gz
 
@@ -166,15 +166,16 @@ ssh gh-actions@files.polypore.xyz ln -sf /var/www/html/genesis/mainnet-genesis-t
 echo -n "Finished at: "
 date
 
-# Run test_stateful_genesis.sh script
-echo "Run test_stateful_genesis.sh script"
+# # Clone cosmos-ansible
+# echo "Clone git@github.com:hyphacoop/cosmos-ansible.git"
+# cd ~
+# pip3 install ansible
+# git clone git@github.com:hyphacoop/cosmos-ansible.git
+# # checkout running branch
+# git checkout "$gh_ansible_branch"
 
-# # Push status to cosmos-ansible repo
-# echo "Push log to cosmos-configurations-private repo"
-# cd ~/cosmos-ansible
-# git add logs/*
-# git commit -m "Adding tinkered genesis test results"
-# git push origin "$gh_ansible_branch"
+# # Run test_stateful_genesis.sh script
+# echo "Run test_stateful_genesis.sh script"
 
 # Push log to cosmos-configurations-private repo
 echo "Push log to cosmos-configurations-private repo"

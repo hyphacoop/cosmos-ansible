@@ -1,6 +1,39 @@
 #!/bin/bash
+# This script assumes https://github.com/hyphacoop/cosmos-ansible.git is cloned to the home directory ~/cosmos-ansible .
+# This script will run upgrade tests on gaia versions that have not been offically upgraded on cosmoshub-4
+
+# Chain registry URL
+chain_registry="https://files.polypore.xyz/chain.json"
+
+# Gaia repo API URL
+gh_repo_name="cosmos/gaia"
+
+# Tinkered genesis directory URL
+tinkered_genesis_url="https://files.polypore.xyz/genesis/mainnet-genesis-tinkered"
+
+# Get version number from chain registry
+current_chain_version=$(curl -s ${chain_registry} | jq -r '.codebase.recommended_version')
+
+# Get version number from repo
+current_github_version=$(curl -s "https://api.github.com/repos/${gh_repo_name}/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+
+# Check if there is new major gaia version
+current_chain_version_major=$(echo $current_chain_version | cut -c 2)
+current_github_version_major=$(echo $current_github_version | cut -c 2)
+
+echo "Chain major version is: $current_chain_version_major"
+echo "GitHub major version is: $current_github_version_major"
+if [ $current_github_version_major -gt $current_chain_version_major ]
+then
+    echo "Proceeding to test upgrades"
+else
+    echo "Major versions match skipping upgrade tests"
+    exit 0
+fi
+
 # Gaiad versions to start upgrade
-start_version="v6.0.4"
+start_version="$current_chain_version"
+cd ~/cosmos-ansible/
 
 # Gaiad Upgrade Test Function
 gaiad_upgrade () {
@@ -9,11 +42,10 @@ gaiad_upgrade () {
     
     f_gaia_version=$1
     f_upgrade_version=$2
-    f_latest_genesis=$3
-    f_initial_height=$4
+
     sed -e '/genesis_url:/d' examples/inventory-local-genesis.yml > inventory.yml
     ansible-galaxy install -r requirements.yml
-    ansible-playbook node.yml -i inventory.yml --extra-vars "target=local reboot=false minimum_gas_prices=0.0025uatom chain_version=$f_gaia_version chain_gov_testing=true priv_validator_key_file=examples/validator-keys/validator-40/priv_validator_key.json node_key_file=examples/validator-keys/validator-40/node_key.json genesis_file=$f_latest_genesis"
+    ansible-playbook node.yml -i inventory.yml --extra-vars "target=local reboot=false minimum_gas_prices=0.0025uatom chain_version=$f_gaia_version chain_gov_testing=true priv_validator_key_file=examples/validator-keys/validator-40/priv_validator_key.json node_key_file=examples/validator-keys/validator-40/node_key.json genesis_url=$tinkered_genesis_url/latest_v$current_chain_version_major.json.gz"
     
     # Restore the validator key and store /home/gaia/.gaia/validator.json
     su gaia -c "echo \"abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon art\" | ~/.gaia/cosmovisor/current/bin/gaiad --output json keys add val --keyring-backend test --recover 2> ~/.gaia/validator.json" # Use stderr until gaiad use stdout
@@ -81,15 +113,6 @@ gaiad_upgrade () {
     set -e
 }
 
-# Test upgrade using exported genesis
-echo "Test upgrades using export genesis"
-cd ~
-pip3 install ansible
-git clone git@github.com:hyphacoop/cosmos-ansible.git
-cd cosmos-ansible/
-# checkout running branch
-git checkout "$gh_ansible_branch"
-
 echo "transport = local" >> ansible.cfg
 python3 tests/generate_version_matrix.py $start_version
 upgrade=$(python3 tests/generate_upgrade_matrix.py $start_version)
@@ -100,6 +123,13 @@ jq -r .include[].gaia_version <<< "$upgrade" | while read -r gaia_start_version
 do
     gaia_upgrade_version=$(jq -r ".include[$i].upgrade_version" <<< "$upgrade")
     echo "Run test on $gaia_start_version to $gaia_upgrade_version"
-    gaiad_upgrade "$gaia_start_version" "$gaia_upgrade_version" ~/cosmos-genesis-tinkerer/mainnet-genesis-tinkered/tinkered-genesis_"${current_block_time}"_"${chain_version}"_"${current_block}".json.gz "$current_block"
+    gaiad_upgrade "$gaia_start_version" "$gaia_upgrade_version"
     let i=$i+1
 done
+
+# # Push status to cosmos-ansible repo
+# echo "Push log to cosmos-configurations-private repo"
+# cd ~/cosmos-ansible
+# git add logs/*
+# git commit -m "Adding tinkered genesis test results"
+# git push origin "$gh_ansible_branch"
