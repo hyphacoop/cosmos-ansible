@@ -166,17 +166,6 @@ ssh gh-actions@files.polypore.xyz ln -sf /var/www/html/genesis/mainnet-genesis-t
 echo -n "Finished at: "
 date
 
-# # Clone cosmos-ansible
-# echo "Clone git@github.com:hyphacoop/cosmos-ansible.git"
-# cd ~
-# pip3 install ansible
-# git clone git@github.com:hyphacoop/cosmos-ansible.git
-# # checkout running branch
-# git checkout "$gh_ansible_branch"
-
-# # Run test_stateful_genesis.sh script
-# echo "Run test_stateful_genesis.sh script"
-
 # Push log to cosmos-configurations-private repo
 echo "Push log to cosmos-configurations-private repo"
 cd ~
@@ -196,4 +185,4 @@ git commit -m "Adding export log file"
 git push origin main
 
 # DESTROY the droplet from itself
-# curl -X DELETE -H "Authorization: Bearer {{ digitalocean_api_key }}" "https://api.digitalocean.com/v2/droplets/{{ droplet_id }}"
+curl -X DELETE -H "Authorization: Bearer {{ digitalocean_api_key }}" "https://api.digitalocean.com/v2/droplets/{{ droplet_id }}"
