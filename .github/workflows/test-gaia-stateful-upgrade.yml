@@ -120,8 +120,12 @@ jobs:
         run: ansible-playbook node.yml -i inventory.yml --extra-vars "target=local reboot=false chain_version=${{ matrix.gaia_version }} chain_home={{ node_user_home }}/.gaia chain_gov_testing=true minimum_gas_prices=0.0025uatom node_user=runner priv_validator_key_file=examples/validator-keys/validator-40/priv_validator_key.json node_key_file=examples/validator-keys/validator-40/node_key.json genesis_url=${{ env.tinkered_genesis_url }}/latest_v${{ env.current_chain_version_major }}.json.gz"
       - name: Check cosmovisor service
         run: systemctl status cosmovisor
+      - name: Get genesis height
+        run: |
+          echo "genesis_height=$(jq -r '.initial_height' ~/.gaia/config/genesis.json)" >> $GITHUB_ENV
+          echo "Genesis height: $genesis_height"
       - name: Check blocks are being produced
-        run: tests/test_block_production.sh 127.0.0.1 26657 10
+        run: tests/test_block_production.sh 127.0.0.1 26657 $[ ${{ env.genesis_height }} + 10]
       - name: Test software upgrade
         run: tests/test_software_upgrade.sh 127.0.0.1 26657 ${{ matrix.upgrade_version }}
       - name: Happy path - transaction testing
