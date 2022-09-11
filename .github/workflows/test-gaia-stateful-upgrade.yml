@@ -35,13 +35,15 @@ jobs:
 
       - name: Get chain and repo release versions
         run: |
-          #chain_registry="https://files.polypore.xyz/chain.json"
-          chain_registry="https://registry.ping.pub/cosmoshub/chain.json"
+          chain_registry="https://files.polypore.xyz/chain.json"
+          #chain_registry="https://registry.ping.pub/cosmoshub/chain.json"
           gh_repo_name="cosmos/gaia"
           current_chain_version=$(curl -s ${chain_registry} | jq -r '.codebase.recommended_version')
           current_github_version=$(curl -s "https://api.github.com/repos/${gh_repo_name}/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
           current_chain_version_major=$(echo $current_chain_version | cut -c 2)
           current_github_version_major=$(echo $current_github_version | cut -c 2)
+          echo "current_chain_version=$current_chain_version" >> $GITHUB_ENV
+          echo "current_github_version=$current_github_version" >> $GITHUB_ENV
           echo "current_chain_version_major=$current_chain_version_major" >> $GITHUB_ENV
           echo "current_github_version_major=$current_github_version_major" >> $GITHUB_ENV
 
@@ -54,14 +56,14 @@ jobs:
         if: ${{ env.current_github_version_major > env.current_chain_version_major }}
         id: generate-start
         run: |
-          start=$(tests/generate_version_matrix.py v6.0.4)
+          start=$(tests/generate_version_matrix.py ${{ env.current_chain_version }})
           echo $start
           echo ::set-output name=start_versions::$start
       - name: Generate upgrade versions
         if: ${{ env.current_github_version_major > env.current_chain_version_major }}
         id: generate-upgrade
         run: |
-          upgrade=$(tests/generate_upgrade_matrix.py v6.0.4)
+          upgrade=$(tests/generate_upgrade_matrix.py ${{ env.current_chain_version }})
           echo $upgrade
           echo ::set-output name=upgrade_versions::$upgrade
     outputs:
