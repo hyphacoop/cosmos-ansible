@@ -109,8 +109,9 @@ jobs:
         run: free -m
 
   test-upgrade:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     needs: generate-matrices
+    if: ${{ needs.generate-matrices.outputs.upgrade_versions != '[]' && needs.generate-matrices.outputs.upgrade_versions != '' }}
     strategy:
       matrix:
         ${{ fromJSON(needs.generate-matrices.outputs.upgrade_versions) }}
