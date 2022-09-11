@@ -35,13 +35,17 @@ jobs:
 
       - name: Get chain and repo release versions
         run: |
-          chain_registry="https://files.polypore.xyz/chain.json"
-          #chain_registry="https://registry.ping.pub/cosmoshub/chain.json"
+          #chain_registry="https://files.polypore.xyz/chain.json"
+          chain_registry="https://registry.ping.pub/cosmoshub/chain.json"
+          tinkered_genesis_url="https://files.polypore.xyz/genesis/mainnet-genesis-tinkered"
+
           gh_repo_name="cosmos/gaia"
           current_chain_version=$(curl -s ${chain_registry} | jq -r '.codebase.recommended_version')
           current_github_version=$(curl -s "https://api.github.com/repos/${gh_repo_name}/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
           current_chain_version_major=$(echo $current_chain_version | cut -c 2)
           current_github_version_major=$(echo $current_github_version | cut -c 2)
+          # Set Actions variables
+          echo "tinkered_genesis_url=$tinkered_genesis_url"
           echo "current_chain_version=$current_chain_version" >> $GITHUB_ENV
           echo "current_github_version=$current_github_version" >> $GITHUB_ENV
           echo "current_chain_version_major=$current_chain_version_major" >> $GITHUB_ENV
@@ -69,3 +73,71 @@ jobs:
     outputs:
       start_versions: ${{ steps.generate-start.outputs.start_versions }}
       upgrade_versions: ${{ steps.generate-upgrade.outputs.upgrade_versions }}
+
+  test-start:
+    runs-on: ubuntu-22.04
+    needs: generate-matrices
+    strategy:
+      matrix:
+        ${{ fromJSON(needs.generate-matrices.outputs.start_versions) }}
+    steps:
+      - run: echo "Test ${{matrix.gaia_version}}"
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.10'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install ansible toml
+
+      - name: Configure ansible.cfg
+        run: echo "transport = local" >> ansible.cfg
+      - name: Install ansible-galaxy requirements
+        run: ansible-galaxy install -r requirements.yml
+      - name: Run playbook
+        run: ansible-playbook node.yml -i examples/inventory-local.yml --extra-vars "target=local reboot=false chain_version=${{ matrix.gaia_version }} chain_home={{ node_user_home }}/.gaia chain_gov_testing=true minimum_gas_prices=0.0025uatom node_user=runner priv_validator_key_file=examples/validator-keys/validator-40/priv_validator_key.json node_key_file=examples/validator-keys/validator-40/node_key.json genesis_url=${{ env.tinkered_genesis_url }}/latest_v${{ env.current_chain_version_major }}.json.gz"
+      - name: Check cosmovisor service
+        run: systemctl status cosmovisor
+      - name: Check blocks are being produced
+        run: tests/test_block_production.sh 127.0.0.1 26657 10
+      - name: Happy path - transaction testing
+        run: tests/test_tx_fresh.sh
+      - name: Get RAM usage while chain is running
+        run: free -m
+
+  test-upgrade:
+    runs-on: ubuntu-latest
+    needs: generate-matrices
+    strategy:
+      matrix:
+        ${{ fromJSON(needs.generate-matrices.outputs.upgrade_versions) }}
+    steps:
+      - run: echo "Test upgrading ${{matrix.gaia_version}} to ${{matrix.upgrade_version}}"
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.10'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install ansible toml
+
+      - name: Configure ansible.cfg
+        run: echo "transport = local" >> ansible.cfg
+      - name: Install ansible-galaxy requirements
+        run: ansible-galaxy install -r requirements.yml
+      - name: Run playbook
+        run: ansible-playbook node.yml -i examples/inventory-local.yml --extra-vars "target=local reboot=false chain_version=${{ matrix.gaia_version }} chain_home={{ node_user_home }}/.gaia chain_gov_testing=true node_user=runner"
+      - name: Check cosmovisor service
+        run: systemctl status cosmovisor
+      - name: Check blocks are being produced
+        run: tests/test_block_production.sh 127.0.0.1 26657 10
+      - name: Test software upgrade
+        run: tests/test_software_upgrade.sh 127.0.0.1 26657 ${{ matrix.upgrade_version }}
+      - name: Happy path - transaction testing
+        run: tests/test_tx_fresh.sh
