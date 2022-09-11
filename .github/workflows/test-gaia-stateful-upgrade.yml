@@ -76,6 +76,7 @@ jobs:
 
   test-upgrade:
     runs-on: ubuntu-22.04
+    continue-on-error: true
     needs: generate-matrices
     if: ${{ needs.generate-matrices.outputs.upgrade_versions != '[]' && needs.generate-matrices.outputs.upgrade_versions != '' }}
     strategy:
