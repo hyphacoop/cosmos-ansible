@@ -48,3 +48,21 @@ jobs:
         run: |
           echo "Chain major version is: ${{ env.current_chain_version_major }}"
           echo "GitHub major version is: ${{ env.current_github_version_major }}"
+
+      - name: Generate starting versions
+        if: ${{ env.current_github_version_major > env.current_chain_version_major }}
+        id: generate-start
+        run: |
+          start=$(tests/generate_version_matrix.py v6.0.4)
+          echo $start
+          echo ::set-output name=start_versions::$start
+      - name: Generate upgrade versions
+        if: ${{ env.current_github_version_major > env.current_chain_version_major }}
+        id: generate-upgrade
+        run: |
+          upgrade=$(tests/generate_upgrade_matrix.py v6.0.4)
+          echo $upgrade
+          echo ::set-output name=upgrade_versions::$upgrade
+    outputs:
+      start_versions: ${{ steps.generate-start.outputs.start_versions }}
+      upgrade_versions: ${{ steps.generate-upgrade.outputs.upgrade_versions }}
