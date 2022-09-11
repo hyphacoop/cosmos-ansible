@@ -136,7 +136,7 @@ jobs:
           echo "genesis_height=$(jq -r '.initial_height' ~/.gaia/config/genesis.json)" >> $GITHUB_ENV
           echo "Genesis height: ${{ env.genesis_height }}"
       - name: Restore validator.json
-        run: echo "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon art" | ~/.gaia/cosmovisor/current/bin/gaiad --output json keys add val --keyring-backend test --recover 2> ~/.gaia/validator.json # Use stderr until gaiad use stdout
+        run: echo "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon art" | ~/.gaia/cosmovisor/current/bin/gaiad --output json keys add val --keyring-backend test --recover 2> ~/.gaia/validator.json  # Use stderr until gaiad use stdout
       - name: Check blocks are being produced
         run: tests/test_block_production.sh 127.0.0.1 26657 $[ ${{ env.genesis_height }} + 10]
       - name: Test software upgrade
