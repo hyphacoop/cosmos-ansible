@@ -45,7 +45,7 @@ jobs:
           current_chain_version_major=$(echo $current_chain_version | cut -c 2)
           current_github_version_major=$(echo $current_github_version | cut -c 2)
           # Set Actions variables
-          echo "tinkered_genesis_url=$tinkered_genesis_url"
+          echo "tinkered_genesis_url=$tinkered_genesis_url" >> $GITHUB_ENV
           echo "current_chain_version=$current_chain_version" >> $GITHUB_ENV
           echo "current_github_version=$current_github_version" >> $GITHUB_ENV
           echo "current_chain_version_major=$current_chain_version_major" >> $GITHUB_ENV
@@ -105,7 +105,7 @@ jobs:
           current_chain_version_major=$(echo $current_chain_version | cut -c 2)
           current_github_version_major=$(echo $current_github_version | cut -c 2)
           # Set Actions variables
-          echo "tinkered_genesis_url=$tinkered_genesis_url"
+          echo "tinkered_genesis_url=$tinkered_genesis_url" >> $GITHUB_ENV
           echo "current_chain_version=$current_chain_version" >> $GITHUB_ENV
           echo "current_github_version=$current_github_version" >> $GITHUB_ENV
           echo "current_chain_version_major=$current_chain_version_major" >> $GITHUB_ENV
