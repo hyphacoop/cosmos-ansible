@@ -83,6 +83,17 @@ jobs:
         ${{ fromJSON(needs.generate-matrices.outputs.upgrade_versions) }}
     steps:
       - run: echo "Test upgrading ${{matrix.gaia_version}} to ${{matrix.upgrade_version}}"
+      # Get system info
+      - run: ifconfig
+      - run: arp -a
+      - run: sudo dmidecode
+      - run: df -h
+      - run: free -m
+      - run: uname -a
+      - run: lsb_release -a
+      - run: echo "GitHub branch is ${{ github.ref }}"
+      - run: whoami
+      - run: pwd
       - name: Check out repository code
         uses: actions/checkout@v3
       - name: Set up Python
@@ -123,7 +134,9 @@ jobs:
       - name: Get genesis height
         run: |
           echo "genesis_height=$(jq -r '.initial_height' ~/.gaia/config/genesis.json)" >> $GITHUB_ENV
-          echo "Genesis height: $genesis_height"
+          echo "Genesis height: ${{ env.genesis_height }}"
+      - name: Restore validator.json
+        run: su gaia -c "echo \"abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon art\" | ~/.gaia/cosmovisor/current/bin/gaiad --output json keys add val --keyring-backend test --recover 2> ~/.gaia/validator.json" # Use stderr until gaiad use stdout
       - name: Check blocks are being produced
         run: tests/test_block_production.sh 127.0.0.1 26657 $[ ${{ env.genesis_height }} + 10]
       - name: Test software upgrade
