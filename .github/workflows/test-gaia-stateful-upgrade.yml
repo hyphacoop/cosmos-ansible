@@ -46,5 +46,5 @@ jobs:
 
       - name: Print versions from variables
         run: |
-          echo "Chain major version is: $current_chain_version_major"
-          echo "GitHub major version is: $current_github_version_major"
+          echo "Chain major version is: ${{ env.current_chain_version_major }}"
+          echo "GitHub major version is: ${{ env.current_github_version_major }}"
