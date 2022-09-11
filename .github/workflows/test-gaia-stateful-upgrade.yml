@@ -142,4 +142,4 @@ jobs:
       - name: Test software upgrade
         run: tests/test_software_upgrade.sh 127.0.0.1 26657 ${{ matrix.upgrade_version }}
       - name: Happy path - transaction testing
-        run: tests/test_tx_fresh.sh
+        run: tests/test_tx_stateful.sh
