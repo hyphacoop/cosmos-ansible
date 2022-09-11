@@ -35,8 +35,8 @@ jobs:
 
       - name: Get chain and repo release versions
         run: |
-          #chain_registry="https://files.polypore.xyz/chain.json"
-          chain_registry="https://registry.ping.pub/cosmoshub/chain.json"
+          chain_registry="https://files.polypore.xyz/chain.json"
+          #chain_registry="https://registry.ping.pub/cosmoshub/chain.json"
           tinkered_genesis_url="https://files.polypore.xyz/genesis/mainnet-genesis-tinkered"
 
           gh_repo_name="cosmos/gaia"
