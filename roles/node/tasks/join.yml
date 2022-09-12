@@ -30,7 +30,7 @@
 - name: gzip the file if not zipped
   when:
     - genesis_file is defined
-    - file_type.stat.mimetype == "text/plain"
+    - file_type.stat.mimetype != "application/gzip"
   archive:
     path: '{{genesis_file}}'
     dest: '{{genesis_file}}.gz'
@@ -41,7 +41,7 @@
 - name: set genesis_file to include .gz
   when:
     - genesis_file is defined
-    - file_type.stat.mimetype == "text/plain"
+    - file_type.stat.mimetype != "application/gzip"
   set_fact:
     genesis_file: '{{ genesis_file }}.gz'
 
@@ -90,7 +90,7 @@
 - name: Copy non-zipped genesis to genesis config (plain text)
   when:
     - genesis_url is defined
-    - file_type.stat.mimetype == "text/plain"
+    - file_type.stat.mimetype != "application/gzip"
   copy:
     src: '{{node_user_home}}/genesis.data'
     dest: '{{chain_home}}/config/genesis.json'
