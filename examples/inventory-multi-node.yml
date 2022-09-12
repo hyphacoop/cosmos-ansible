@@ -53,15 +53,19 @@ all:
           panic_is_validator: 'yes'
         sen1.cosmostest.network:
           api_enabled: true
+          sync_multinode_genesis: true
         sen2.cosmostest.network:
           api_enabled: true
+          sync_multinode_genesis: true
         sync1.cosmostest.network:
           statesync_snapshot_interval: 1000
           statesync_snapshot_keep_recent: 2
           p2p_upnp: true
           api_enabled: true
+          sync_multinode_genesis: true
         sync2.cosmostest.network:
           statesync_snapshot_interval: 1000
           statesync_snapshot_keep_recent: 2
           p2p_upnp: true
           api_enabled: true
+          sync_multinode_genesis: true

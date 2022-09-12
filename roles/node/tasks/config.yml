@@ -5,7 +5,7 @@
   register: ansible_runner_home
 
 - name: create SSH keypair for multi node sync
-  when: start_multinode
+  when: start_multinode or sync_multinode_genesis
   community.crypto.openssh_keypair:
     path: "{{ ansible_runner_home.stdout }}/.ssh/id_rsa"
     type: rsa
@@ -13,13 +13,13 @@
   delegate_to: "{{ genesis_node }}"
 
 - name: store SSH pubkey in variable
-  when: start_multinode
+  when: start_multinode or sync_multinode_genesis
   shell: "cat {{ ansible_runner_home.stdout }}/.ssh/id_rsa.pub"
   register: ssh_pub_key
   delegate_to: "{{ genesis_node }}"
 
 - name: add generated SSH key to multi nodes
-  when: start_multinode
+  when: start_multinode or sync_multinode_genesis
   authorized_key:
     user: "{{ ansible_user }}"
     state: present
@@ -224,7 +224,7 @@
 
 # Transfer genesis and required files to multi-node machines
 - name: Transfer multi-node config/genesis.json
-  when: start_multinode
+  when: start_multinode or sync_multinode_genesis
   synchronize:
     mode: push
     src: "{{ chain_home }}/config/genesis.json"

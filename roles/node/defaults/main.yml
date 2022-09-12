@@ -199,4 +199,5 @@ binary_arch_map:
 
 # Multi-validator deployment
 start_multinode: false
+sync_multinode_genesis: false
 dynamic_p2p_persistent_peers: false
