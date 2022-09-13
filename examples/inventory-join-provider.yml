@@ -20,4 +20,4 @@ all:
     node:
       hosts:
         "{{ target }}":
-          fast_sync: true
+          fast_sync: false
