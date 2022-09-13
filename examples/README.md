@@ -45,7 +45,7 @@ Before running the commands below, make sure you have installed Ansible as per [
 
 * **Inventory file:** [`inventory-join-provider.yml`](inventory-join-provider.yml)
 * **Chain ID:** `provider`
-* **Chain version:** `tags/v0.1.3`
+* **Chain version:** `tags/v0.1.4`
 
 Run the playbook:
 ```
@@ -67,7 +67,7 @@ interchain-security-pd keys add <validator_keypair_name> --home ~/.isp --keyring
 
 * **Inventory file:** [`inventory-join-consumer.yml`](inventory-join-consumer.yml)
 * **Chain ID:** `consumer`
-* **Chain version:** `tags/v0.1.3`
+* **Chain version:** `tags/v0.1.4`
 
 Run the playbook using the keys collected from the provider chain node:
 ```
@@ -79,7 +79,7 @@ After the play has finished running:
 3. Get tokens for your validator address.
 4. Bond the validator on the provider chain:
 ```
-interchain-security-pd tx staking create-validator --amount 1000000stake --pubkey <validator_public_key> --from <validator_keypair_name> --keyring-backend test --home ~/.isp --chain-id provider --commission-max-change-rate 0.01 --commission-max-rate 0.2 --commission-rate 0.1 --moniker <validator_moniker> --min-self-delegation 1 -b block -y
+interchain-security-pd tx staking create-validator --amount 2000000stake --pubkey <validator_public_key> --from <validator_keypair_name> --keyring-backend test --home ~/.isp --chain-id provider --commission-max-change-rate 0.01 --commission-max-rate 0.2 --commission-rate 0.1 --moniker <validator_moniker> --min-self-delegation 1 -b block -y
 ```
 
 ### Run the playbook 

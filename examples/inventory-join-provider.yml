@@ -6,14 +6,14 @@ all:
     node_user: provider
     chain_home: "{{node_user_home}}/.isp"
     chain_binary_name: interchain-security-pd
-    chain_version: tags/v0.1.3
+    chain_version: tags/v0.1.4
     chain_repository: https://github.com/cosmos/interchain-security.git
     chain_denom: stake
-    genesis_url: "https://paste.c-net.org/LevonShowcase"
+    genesis_url: "https://paste.c-net.org/ScarringAiming"
     chain_id: provider
     chain_home_clear: true
     node_service_name: "provider"
-    p2p_persistent_peers: "9faf27cc60a3f65e1f247b1d3fe1b4f60d42a232@167.172.190.207:26656"
+    p2p_persistent_peers: "b060c4ad12ade4114a87f9cb1c6bdaf0f4e9db2b@167.172.190.207:26656"
     cosmovisor_service_name: "cosmovisor-provider"
     reboot: false
   children:
