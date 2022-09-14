@@ -1,0 +1,6 @@
+---
+- name: Base setup
+  import_tasks: base.yml
+
+- name: Consensus monitor setup
+  import_tasks: consensus.yml

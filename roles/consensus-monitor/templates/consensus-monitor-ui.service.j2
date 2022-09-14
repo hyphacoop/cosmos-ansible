@@ -1,0 +1,13 @@
+[Unit]
+Description="Cosmos Monitor UI Service"
+After=network-online.target
+
+[Service]
+User={{ consensus_user }}
+WorkingDirectory={{ consensus_repo_path }}/client
+ExecStart={{ consensus_repo_path }}/.env/bin/python -m http.server {{ consensus_ui_port }}
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
