@@ -1,0 +1,37 @@
+---
+# Chain settings
+chain_binary_name: gaiad
+node_user: gaia
+node_user_home: "/home/{{node_user}}"
+chain_home: "{{node_user_home}}/.gaia"
+chain_denom: uatom
+chain_id: "my-testnet"
+node_keyring: "test"
+faucet_chain_env: "PATH={{chain_home}}/cosmovisor/current/bin"
+
+# Faucet settings
+faucet_version: v1.0.0
+faucet_service_name: token-faucet
+faucet_address: cosmosabc123
+transactions_log_path: "transactions.csv"
+request_timeout: 86400
+node_url: "http://localhost:26657"
+daily_cap: 500000000
+amount_to_send: 1000000
+tx_fees: 500
+faucet_port: 8000
+
+# Nginx / SSL settings
+faucet_setup_nginx: true
+faucet_host: ""
+faucet_use_tls_proxy: false
+ssl_provider: ""
+# nginx_sites: {}
+nginx_sites:
+  "{{ faucet_host }}{{ inventory_hostname }}":
+    ssl_provider: "{{ ssl_provider }}"
+    web_hostname: "{{ faucet_host }}{{inventory_hostname}}"
+    locations:
+      "/":
+        proxy_location: "http://127.0.0.1:{{ faucet_port }}"
+        proxy_websocket: true

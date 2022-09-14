@@ -1,0 +1,6 @@
+---
+- name: Base setup
+  import_tasks: base.yml
+
+- name: Faucet setup
+  import_tasks: faucet.yml

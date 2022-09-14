@@ -1,0 +1,13 @@
+---
+# yamllint disable rule:line-length
+all:
+  vars:
+    ansible_user: root
+    chain_id: "my-testnet"
+    faucet_address: cosmosabc123
+    faucet_use_tls_proxy: false
+    # letsencrypt_email: "user@example.com"  # Required for TLS setup
+  children:
+    faucet:
+      hosts:
+        "{{ target }}":

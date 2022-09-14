@@ -121,8 +121,6 @@ client_broadcast_mode: sync
 
 ### Faucet settings
 faucet_enabled: false
-faucet_version: v0.2.1
-faucet_service_name: token-faucet
 
 ### node exporter config
 node_exporter_port: 9100
