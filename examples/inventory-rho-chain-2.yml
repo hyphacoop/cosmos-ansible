@@ -1,0 +1,22 @@
+---
+# yamllint disable rule:line-length
+all:
+  vars:
+    ansible_user: root
+    chain_version: main
+    major_version: 8
+    patch_version: 0
+    genesis_url: "https://github.com/hyphacoop/testnets/raw/v8-upgrade/devnet/rho-chain-2-genesis.json.gz"
+    chain_id: rho-chain-2
+    chain_home_clear: true
+    chain_use_ssl_proxy: false
+    chain_api_host: "rest"
+    chain_rpc_host: "rpc"
+    chain_p2p_host: "p2p"
+    chain_grpc_host: "grpc"
+    p2p_persistent_peers: "c45efb232d01df3b2399ef9b4b801fd41f6a89fc@sentry.chain-2.rho-devnet.polypore.xyz:26656"
+  children:
+    node:
+      hosts:
+        "{{ target }}":
+          fast_sync: true
