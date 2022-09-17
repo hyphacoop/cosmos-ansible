@@ -108,15 +108,18 @@ ansible-playbook node.yml -i examples/inventory-local.yml -e 'target=SERVER_IP_O
 
 ## Start a Local Testnet Using a Modified Genesis File
 
-Set up a node with a single validator account and a modified genesis file that makes the chain start at a non-zero block height. The resulting node will be similar to [this configuration](https://github.com/cosmos/testnets/tree/master/v7-theta/local-testnet).
+Set up a node with a single validator account and a modified genesis file that makes the chain start at a non-zero block height. The resulting node will be similar to [this configuration](https://github.com/cosmos/testnets/tree/master/local).
 
-The playbook will download the genesis file, and a private key is provided in this folder.
+The playbook will download the genesis file, and the validator keys are listed below.
 
 * **Inventory file:** [`inventory-local-genesis.yml`](inventory-local-genesis.yml)
-* **Chain ID:** `theta-localnet`
-* **Gaia version:** `v7.0.0`
+* **Chain ID:** `local-testnet`
+* **Gaia version:** `v7.0.3`
+* **Validator mnemonic:** [self-delegation-wallet-mnemonic.txt](validator-keys/validator-40/self-delegation-wallet-mnemonic.txt)
+* **Validator key:** [priv_validator_key.json](validator-keys/validator-40/priv_validator_key.json)
+* **Node key:** [node_key.json](validator-keys/validator-40/node_key.json)
 
-### Run the playbook 
+### Run the playbook
 
 ```
 ansible-playbook node.yml -i examples/inventory-local-genesis.yml -e 'target=SERVER_IP_OR_DOMAIN'
