@@ -1,0 +1,18 @@
+# Cosmos REST Faucet configuration
+
+gaia_home_folder = "{{ chain_home }}"
+transactions_log = "{{ transactions_log_path }}"
+request_timeout    = "{{ request_timeout }}"
+
+[cosmos]
+prefix         = "cosmos"
+denomination   = "{{ chain_denom }}"
+
+[testnets]
+    [testnets.{{ chain_id }}]
+    node_url = "{{ node_url }}"
+    chain_id = "{{ chain_id }}"
+    faucet_address = "{{ faucet_address }}"
+    daily_cap = "{{ daily_cap  }}"
+    amount_to_send = "{{ amount_to_send }}"
+    tx_fees = "{{ tx_fees }}"

@@ -105,6 +105,7 @@ ansible-playbook node.yml -i examples/inventory-local.yml --extra-vars "chain_ve
 | `faucet_enabled`      | Create faucet account and install REST server for it | `true`         |
 | `faucet_version`      | Cosmos REST faucet version to install                | `v0.2.1`       |
 | `faucet_service_name` | Service name for faucet REST server                  | `token-faucet` |
+| `faucet_port`         | Port for the faucet REST server to listen on         | `8000`         |
 
 ## Cosmovisor
 

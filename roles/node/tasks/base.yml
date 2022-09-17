@@ -70,17 +70,6 @@
     - chain_stop
     - chain_restart
 
-- name: Stop existing faucet systemd service
-  when: >
-    (faucet_service_name in ansible_facts.services) or
-    ((faucet_service_name + '.service') in ansible_facts.services)
-  systemd:
-    state: stopped
-    name: "{{faucet_service_name}}"
-  tags:
-    - chain_stop
-    - chain_restart
-
 - name: Stop existing chain systemd service
   # Check for both `SERVICE_NAME` and `SERVICE_NAME.service`
   when: >

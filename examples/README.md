@@ -102,9 +102,9 @@ Set up a node with a single validator account.
 ansible-playbook node.yml -i examples/inventory-local.yml -e 'target=SERVER_IP_OR_DOMAIN'
 ```
 
-- The validator address and mnemonic will be saved to `/home/gaia/.gaia/create_validator.log` in the host.
+- The validator address and mnemonic will be saved to `/home/gaia/.gaia/validator.json` in the host.
 - The faucet address and mnemonic will be saved to `/home/gaia/.gaia/faucet.json` in the host.
-- The faucet REST server will listen on port `8000` by default. This can be adjusted in the [faucet.service.j2](/roles/gaia/templates/faucet.service.j2) template.
+- The faucet REST server will listen on port `8000` by default, this can be changed with the `faucet_port` variable.
 
 ## Start a Local Testnet Using a Modified Genesis File
 

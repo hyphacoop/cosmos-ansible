@@ -2,6 +2,7 @@
 
 name: Test Gaia Versions
 on:
+  workflow_dispatch:
   schedule:
     # At 15:30 on Monday.
     - cron: '30 15 * * 1'

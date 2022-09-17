@@ -5,9 +5,9 @@
 - name: config
   import_tasks: config.yml
 
-- name: faucet
+- name: Create faucet account
   import_tasks: faucet.yml
-  when: faucet_enabled
+  when: faucet_enabled | default(false) | bool
 
 - name: join
   import_tasks: join.yml
@@ -18,6 +18,10 @@
 
 - name: setup APIs
   import_tasks: apis.yml
+
+- include_role:
+    name: faucet
+  when: faucet_enabled | default(false) | bool
 
 - name: setup monitoring
   import_tasks: monitoring.yml
