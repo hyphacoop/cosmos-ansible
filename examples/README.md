@@ -86,6 +86,21 @@ interchain-security-pd tx staking create-validator --amount 2000000stake --pubke
 
 This playbook obtains a trust block height and the corresponding hash ID from the first RPC server listed in the inventory file in order to use the state sync feature. 
 
+## Join the Rho Devnet
+
+Set up a node to join the [rho devnet](https://github.com/cosmos/testnets/tree/master/devnet) chains.
+
+* **Inventory files:** [`inventory-rho-devnet-chain-1.yml`](inventory-rho-devnet-chain-1.yml) and [`inventory-rho-devnet-chain-2.yml`](inventory-rho-devnet-chain-2.yml)
+* **Chain IDs:** `rho-chain-1` and `rho-chain-2`
+* **Gaia version:** `main` branch
+
+### Run the playbooks
+
+```
+ansible-playbook node.yml -i examples/inventory-rho-devnet-chain-1.yml -e 'target=SERVER_IP_OR_DOMAIN_CHAIN_1'
+ansible-playbook node.yml -i examples/inventory-rho-devnet-chain-2.yml -e 'target=SERVER_IP_OR_DOMAIN_CHAIN_2'
+```
+
 ## Start a Local Testnet
 
 Set up a node with a single validator account.
