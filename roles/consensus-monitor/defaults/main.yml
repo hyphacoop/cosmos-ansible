@@ -1,0 +1,33 @@
+---
+# User and repo settings
+consensus_user: consensus
+consensus_user_home: "/home/{{ consensus_user }}"
+consensus_repo_path: "{{ consensus_user_home }}/cosmos-consensus-monitor"
+consensus_repo_url: "https://github.com/hyphacoop/cosmos-consensus-monitor.git"
+consensus_monitor_version: v1.0.0
+
+# Consensus monitor settings
+consensus_api_node_url: "http://localhost:1317"
+consensus_rpc_node_url: "http://localhost:26657"
+consensus_ws_port: 9001
+consensus_ui_port: 8000
+consensus_ws_service_name: consensus-monitor-ws
+consensus_ui_service_name: consensus-monitor-ui
+
+# Nginx / SSL settings
+consensus_setup_nginx: true
+consensus_host: ""
+consensus_use_tls_proxy: false
+ssl_provider: ""
+# nginx_sites: {}
+nginx_sites:
+  "{{ consensus_host }}{{ inventory_hostname }}":
+    ssl_provider: "{{ ssl_provider }}"
+    web_hostname: "{{ consensus_host }}{{inventory_hostname}}"
+    locations:
+      "/":
+        proxy_location: "http://127.0.0.1:{{ consensus_ui_port }}"
+        proxy_websocket: true
+      "/ws/":
+        proxy_location: "http://127.0.0.1:{{ consensus_ws_port }}"
+        proxy_websocket: true

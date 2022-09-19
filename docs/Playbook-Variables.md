@@ -130,7 +130,7 @@ ansible-playbook node.yml -i examples/inventory-local.yml --extra-vars "chain_ve
 | Variable                   | Description                                                      | Example Value                      |
 |----------------------------|------------------------------------------------------------------|------------------------------------|
 | `chain_id`                 |                                                                  | `theta-testnet-001`                |
-| `bdjuno_version`           | A `bdjuno` branch that matches the tracked chain                 | `chains/cosmmos/testnet`           |
+| `bdjuno_version`           | A `bdjuno` branch that matches the tracked chain                 | `chains/cosmos/testnet`            |
 | `bdjuno_rpc_address`       | The RPC address `bdjuno` will collect block data from            | `http://archive.testnet.com:26657` |
 | `bdjuno_grpc_address`      | The gRPC address `bdjuno` will collect block data from           | `http://archive.testnet.com:9090`  |
 | `bdjuno_fast_sync`         | Blocks close to genesis time will not be parsed if set to `true` | `false`                            |
@@ -145,3 +145,14 @@ ansible-playbook node.yml -i examples/inventory-local.yml --extra-vars "chain_ve
 | `bdui_host`                | Subdomain for Big Dipper UI                                      | `"explorer."`                      |
 | `bdui_icon`                | URL for the chain icon                                           |                                    |
 | `bdui_logo`                | URL for the splash logo                                          |                                    |
+
+## Consensus Monitor
+
+| Variable                    | Description                                                    | Example Value                   |
+|-----------------------------|----------------------------------------------------------------|---------------------------------|
+| `consensus_monitor_version` | `cosmos-consensus-monitor` version to use                      | `v1.0.0`                        |
+| `consensus_api_node_url`    | Node API endpoint                           | `http://node.testnet.com:26657` |
+| `consensus_rpc_node_url`    | Node RPC endpoint                           | `http://node.testnet.com:1317`  |
+| `consensus_ws_node_url`     | Port for the Websockets server                                 | `9002`                          |
+| `consensus_ui_node_url`     | Port for the web UI server                                     | `8000`                          |
+| `consensus_host`            | Subdomain to prefix the inventory hostname, requires DNS setup | `consensus.`                    |

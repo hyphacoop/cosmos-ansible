@@ -1,0 +1,14 @@
+---
+# yamllint disable rule:line-length
+
+all:
+  vars:
+    ansible_user: root
+    consensus_use_tls_proxy: false  # Enables TLS, requires a domain name
+    # letsencrypt_email: "example@example.com"  # Required for TLS setup
+  children:
+    consensus:
+      hosts:
+        "{{ target }}":
+          consensus_api_node_url: "http://online-node.example.com:1317"
+          consensus_rpc_node_url: "http://online-node.example.com:26657"

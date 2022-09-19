@@ -278,3 +278,22 @@ ansible-playbook bigdipper.yml -i examples/inventory-bigdipper.yml -e 'target=BI
 
 - See the Big Dipper section in the [Playbook Variables](/docs/Playbook-Variables.md) page for additional configuration options.
 - Visit the Big Dipper [docs site](https://docs.bigdipper.live/) if you want to modify the role and are looking for more information.
+
+## Set up a Consensus Monitor
+
+Deploy a node that monitors the consensus process on an existing chain. 
+
+* **Inventory file:** [`inventory-consensus.yml`](inventory-consensus.yml)
+
+### Requirements
+
+* An online node with RPC and API endpoints available (usually ports 26657 and 1317, respectively).
+
+### Run the playbook 
+
+```
+ansible-playbook consensus-monitor.yml -i examples/inventory-consensus.yml -e 'target=SERVER_IP_OR_DOMAIN consensus_api_node_url=NODE_ADDRESS:API_PORT consensus_rpc_node_url=NODE_ADDRESS:RPC_PORT'
+```
+
+- The consensus monitor interface can now be reached at `SERVER_IP_OR_DOMAIN`.
+- The Websockets server can now be reached at `SERVER_IP_OR_DOMAIN/ws/`.
