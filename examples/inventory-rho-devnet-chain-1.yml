@@ -6,7 +6,7 @@ all:
     chain_version: main
     major_version: 8
     patch_version: 0
-    genesis_url: "https://github.com/hyphacoop/testnets/raw/v8-upgrade/devnet/rho-chain-1-genesis.json.gz"
+    genesis_url: "https://github.com/cosmos/testnets/raw/master/devnet/rho-chain-1-genesis.json.gz"
     chain_id: rho-chain-1
     chain_home_clear: true
     chain_use_ssl_proxy: false
