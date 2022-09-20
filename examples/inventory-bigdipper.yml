@@ -10,7 +10,7 @@ all:
     bdui_chain: testnet  # Either testnet or mainnet
     bigdipper_use_tls_proxy: false  # Enables TLS, requires a domain name
     # letsencrypt_email: "example@example.com"  # Required for TLS setup
-    genesis_url: "https://github.com/cosmos/testnets/raw/master/v7-theta/public-testnet/genesis.json.gz"
+    genesis_url: "https://github.com/cosmos/testnets/raw/master/public/genesis.json.gz"
     # genesis_file: "genesis.json" # Alternative to genesis_url
     chain_id: theta-testnet-001
     bigdipper_genesis_time: "2019-12-11T16:11:34Z"

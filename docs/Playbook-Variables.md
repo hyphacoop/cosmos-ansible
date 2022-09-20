@@ -51,7 +51,7 @@ ansible-playbook node.yml -i examples/inventory-local.yml --extra-vars "chain_ve
 
 | Variable                 | Description                                                                               | Example Value                                                                             |
 |--------------------------|-------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------|
-| `genesis_url`            | URL to download the gzipped genesis file from                                             | `"https://github.com/cosmos/testnets/raw/master/v7-theta/public-testnet/genesis.json.gz"` |
+| `genesis_url`            | URL to download the gzipped genesis file from                                             | `"https://github.com/cosmos/testnets/raw/master/public/genesis.json.gz"` |
 | `genesis_file`           | File path to the genesis file***                                                          | `"examples/genesis-three-node.json"`                                                      |
 | `chain_voting_period`    | Voting period for gov proposals                                                           | `60s`                                                                                     |
 | `chain_gov_testing`      | Set minimum deposit to `1`<br> and voting period to <br>`chain_voting_period` when `true` | `false`                                                                                   |

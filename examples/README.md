@@ -19,18 +19,18 @@ Before running any playbooks, first install the Ansible dependencies:
 ansible-galaxy install -r requirements.yml
 ```
 
-## Join the Theta Testnet
+## Join the Cosmos Hub Public Testnet
 
-Set up a node to join the [theta testnet](https://github.com/cosmos/testnets/tree/master/v7-theta/public-testnet) using state sync.
+Set up a node to join the Cosmos Hub [public testnet](https://github.com/cosmos/testnets/tree/master/public) using state sync.
 
-* **Inventory file:** [`inventory-theta.yml`](inventory-theta.yml)
+* **Inventory file:** [`inventory-public-testnet.yml`](inventory-public-testnet.yml)
 * **Chain ID:** `theta-testnet-001`
 * **Gaia version:** `v7.0.0`
 
 ### Run the playbook 
 
 ```
-ansible-playbook node.yml -i examples/inventory-theta.yml -e 'target=SERVER_IP_OR_DOMAIN'
+ansible-playbook node.yml -i examples/inventory-public-testnet.yml -e 'target=SERVER_IP_OR_DOMAIN'
 ```
 
 This playbook obtains a trust block height and the corresponding hash ID from the first RPC server listed in the inventory file in order to use the state sync feature. 
