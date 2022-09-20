@@ -1,7 +1,7 @@
 ---
 hermes_user: hermes
 hermes_group: users
-hermes_version: latest
+hermes_version: v1.0.0
 
 # Node connections
 hermes_relayer_keys: false

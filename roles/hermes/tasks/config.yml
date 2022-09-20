@@ -1,13 +1,13 @@
 ---
+- name: Get chain IDs
+  set_fact:
+    chain_ids: "{{ hermes_chains.keys() | list }}"
+
 - name: Configure Hermes
   template:
     src: config.toml.j2
     dest: /home/{{ hermes_user }}/.hermes/config.toml
   become_user: "{{ hermes_user }}"
-
-- name: Get chain IDs
-  set_fact:
-    chain_ids: "{{ hermes_chains.keys() | list }}"
 
 - name: Upload key file from first chain
   copy:
@@ -66,12 +66,38 @@
     PATH: "/home/{{hermes_user}}/bin:{{ ansible_env.PATH }}"
   become_user: hermes
 
-- name: Create channel
+- name: Obtain last connection
+  shell: |
+    hermes --json query connections --chain {{ chain_ids[0] }} | jq -r '.result[-1]'
+  environment:
+    PATH: "/home/{{hermes_user}}/bin:{{ ansible_env.PATH }}"
+  register: connection_id
+  become_user: hermes
+
+- name: Display last connection
+  debug:
+    msg: 
+    - "Last connection: {{ connection_id.stdout }}"
+
+- name: Create channel using last connection
   shell: |
     hermes create channel --a-chain {{ chain_ids[0] }} \
     --a-port {{ hermes_chains[chain_ids[0]].hermes_port_name}} \
     --b-port {{ hermes_chains[chain_ids[1]].hermes_port_name}} \
-    --order {{ hermes_order }} --a-connection connection-0
+    --order {{ hermes_order }} --a-connection {{ connection_id.stdout }}
+  environment:
+    PATH: "/home/{{hermes_user}}/bin:{{ ansible_env.PATH }}"
+  register: channel_creation
+  become_user: hermes
+
+- name: Display channel creation output
+  debug:
+    msg: "{{ channel_creation.stdout }}"
+
+- name: Save channel ids for last connection
+  shell: |
+    hermes --json query connection channels --chain {{ chain_ids[0] }} --connection {{ connection_id.stdout }} | jq -r '.result' > /home/{{ hermes_user }}/{{ chain_ids[0] }}-{{ connection_id.stdout }}.txt
+    hermes --json query connection channels --chain {{ chain_ids[1] }} --connection {{ connection_id.stdout }} | jq -r '.result' > /home/{{ hermes_user }}/{{ chain_ids[1] }}-{{ connection_id.stdout }}.txt
   environment:
     PATH: "/home/{{hermes_user}}/bin:{{ ansible_env.PATH }}"
   become_user: hermes

@@ -63,3 +63,12 @@
     owner: "{{ hermes_user }}"
     group: "{{ hermes_group }}"
     state: link
+
+- name: Add hermes bin from ~/bin to .bashrc PATH
+  blockinfile:
+    dest: '/home/{{ hermes_user }}/.bashrc'
+    block: |
+      export PATH="$PATH:/home/{{ hermes_user }}/bin"
+    marker: '# {mark} ANSIBLE MANAGED BLOCK - HERMES PATH'
+    insertbefore: EOF
+    create: yes

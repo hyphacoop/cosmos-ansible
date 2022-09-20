@@ -60,7 +60,7 @@ all:
               hermes_chain_trusting_period: '1days'
               hermes_chain_trust_threshold: "{ numerator = '1', denominator = '3' }"
             my-chain-2:
-              hermes_relayer_key: 'chain2-relayer.json'
+              hermes_relayer_key: 'my-chain2-relayer.json'
               hermes_chain_rpc_url_schema: http
               hermes_chain_rpc_hostname: my-chain-2.dev.testnet.com
               hermes_chain_rpc_port: 26657
