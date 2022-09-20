@@ -1,76 +1,11 @@
 ---
-- include_role:
-    name: common
-
-- name: Create hermes user
-  user:
-    name: "{{ hermes_user }}"
-    group: "{{ hermes_group }}"
-    shell: /bin/bash
-    append: no
-
-- name: chown hermes home directory
-  file:
-    path: /home/{{ hermes_user }}
-    state: directory
-    owner: "{{ hermes_user }}"
-    group: "{{ hermes_group }}"
-    mode: '0755'
-
-- name: Create ~/.hermes/bin directory
-  file:
-    path: /home/{{ hermes_user }}/.hermes/bin
-    state: directory
-    owner: "{{ hermes_user }}"
-    group: "{{ hermes_group }}"
-    mode: '0755'
-
-- name: Create ~/bin directory
-  file:
-    path: /home/{{ hermes_user }}/bin
-    state: directory
-    owner: "{{ hermes_user }}"
-    group: "{{ hermes_group }}"
-    mode: '0755'
-
-- name: Get latest hermes version
-  when: hermes_version == 'latest'
-  uri:
-    url: https://api.github.com/repos/informalsystems/ibc-rs/releases/latest
-    return_content: true
-  register: json_reponse
-
-- name: Download and Extract latest hermes
-  when: hermes_version == 'latest'
-  unarchive:
-    src: https://github.com/informalsystems/ibc-rs/releases/download/{{ json_reponse.json.tag_name }}/hermes-{{ json_reponse.json.tag_name }}-{{ binary_arch_map[ansible_architecture] }}.tar.gz
-    dest: /home/{{ hermes_user }}/.hermes/bin/
-    remote_src: yes
-  become_user: "{{ hermes_user }}"
-
-- name: Download and Extract hermes {{ hermes_version }}
-  when: hermes_version != 'latest'
-  unarchive:
-    src: https://github.com/informalsystems/ibc-rs/releases/download/{{ hermes_version }}/hermes-{{ hermes_version }}-{{binary_arch_map[ansible_architecture]}}.tar.gz
-    dest: /home/{{ hermes_user }}/.hermes/bin/
-    remote_src: yes
-  become_user: "{{ hermes_user }}"
-
-- name: ln -s /home/{{ hermes_user }}/.hermes/bin/hermes /home/{{ hermes_user }}/bin/hermes
-  ansible.builtin.file:
-    src: /home/{{ hermes_user }}/.hermes/bin/hermes
-    dest: /home/{{ hermes_user }}/bin/hermes
-    owner: "{{ hermes_user }}"
-    group: "{{ hermes_group }}"
-    state: link
-
+- name: Base
+  import_tasks: base.yml
+  
 - name: Configure Hermes
-  template:
-    src: config.toml.j2
-    dest: /home/{{ hermes_user }}/.hermes/config.toml
-  become_user: "{{ hermes_user }}"
+  import_tasks: config.yml
 
-- name: Installing Hermes systemd service
+- name: Install Hermes systemd service
   template:
     src: hermes.service.j2
     dest: /etc/systemd/system/hermes.service

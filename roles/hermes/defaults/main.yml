@@ -3,6 +3,11 @@ hermes_user: hermes
 hermes_group: users
 hermes_version: latest
 
+# Node connections
+hermes_relayer_keys: false
+hermes_relayer_mnemonics: false
+hermes_order: unordered
+
 # Mode
 # mode.clients
 mode_clients: 'true'
