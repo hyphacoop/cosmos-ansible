@@ -76,8 +76,8 @@
 
 - name: Display last connection
   debug:
-    msg: 
-    - "Last connection: {{ connection_id.stdout }}"
+    msg:
+      - "Last connection: {{ connection_id.stdout }}"
 
 - name: Create channel using last connection
   shell: |

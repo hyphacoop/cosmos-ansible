@@ -1,7 +1,7 @@
 ---
 - name: Base
   import_tasks: base.yml
-  
+
 - name: Configure Hermes
   import_tasks: config.yml
 
