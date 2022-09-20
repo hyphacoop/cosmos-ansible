@@ -31,14 +31,10 @@ Once the relayer is operational, you will be able to send messages between both 
 
 ## Prerequisites
 
-### DNS
-
-- Set up appropriate `A` and `AAAA` records for Let's Encrypt.
-
 ### Chains
 
 - Both chains being connected must be online.
-- The mnemonic for an account with tokens in it must be available for both chains.
+- The key or mnemonic file for an account with tokens in it must be available for both chains.
 
 ## Deployment
 
@@ -47,61 +43,19 @@ Once the relayer is operational, you will be able to send messages between both 
 Make the following modifications to [inventory-hermes.yml](/examples/inventory-hermes.yml):
   - Replace the `dev.testnet.com` address with your own in the `hosts` variable.
   - Replace the chain IDs in the `hermes_chains` variable with the IDs of the chains being relayed to.
-  - Replace the hosts in the `hermes_chain_hostname` variables with the endpoints that Hermes will connect to.
-  - Replace the `validator@devnet.com` address with your own in the `letsencrypt_email` variable.
-  - Add the addresses of the accounts you want to airdrop tokens to in the `chain_airdrop_accounts` variable.
+  - Replace the default key file paths in `hermes_relayer_key` for both chains. You can replace those with `hermes_relayer_mnemonic` and `hermes_relayer_keys` with `hermes_relayer_mnemonics` if you want to use mnemonic files instead.
+  - Replace the hosts in the `hermes_chain_rpc_*` and `hermes_chain_grpc_*` variables with the endpoints that Hermes will connect to.
 
-
-### Run the playbook 
+### Run the Playbook 
 
 ```
 ansible-galaxy install -r requirements.yml
 ansible-playbook hermes.yml -i examples/inventory-hermes.yml
 ```
 
-### Connect the chains
+By default, the channels that are created as part of the play will be saved under `/home/hermes/<chain_id>-<connection_id>.txt` for each chain.
 
-Run the following commands in the Hermes host after running the playbook.
-
-Switch to the `hermes` user.
-```
-su hermes
-cd ~
-```
-
-For each chain, copy the mnemonic of the relayer account to a text file:
-- `my-chain-1-relayer-mnemonic.txt`
-- `my-chain-2-relayer-mnemonic.txt`
-
-Restore the relayer account key for both chains.
-```
-~/bin/hermes keys add --chain my-chain-1 --mnemonic-file my-chain-1-relayer-mnemonic.txt
-~/bin/hermes keys add --chain my-chain-2 --mnemonic-file my-chain-2-relayer-mnemonic.txt
-```
-
-Create a connection between the chains.
-```
-~/bin/hermes create connection --a-chain my-chain-1 --b-chain my-chain-2
-```
-
-Note down the `ConnectionId` returned.
-
-Create a channel between the chains using the chain name and `ConnectionID` above for this example we use `connection-0`
-```
-~/bin/hermes create channel --a-chain my-chain-1 --a-port transfer --b-port transfer --order unordered --a-connection connection-0
-```
-
-Note down and save the `ChannelId` for both chains. You will need it whenever you want to make IBC transfers, as shown below.
-
-Log out as the `hermes` user.
-```
-exit
-```
-
-Restart the hermes service.
-```
-systemctl restart hermes
-```
+### Test the Relayer
 
 You can now send messages between `my-chain-1` and `my-chain-2` using the `gaiad tx ibc-transfer` command. In the example below, `hermes` created `channel-0`.
 ```

@@ -244,7 +244,26 @@ Set up a Hermes relayer between two chains.
 
 * **Inventory file:** [`inventory-hermes.yml`](inventory-hermes.yml)
 
-Follow the [Hermes IBC Relayer Setup](/docs/Hermes-Relayer-Setup.md) guide in the `docs` folder for all the requirements and steps needed to deploy the relayer. 
+### Requirements
+
+- Inventory file
+  - Replace the `hermes.dev.testnet.com` address with your own in the `hosts` section.
+  - Chains
+    - Replace `my-chain-1` and `my-chain-2` in the `hermes_chains` key with the chain IDs that the relayer will connect.
+    - Enter the address for each node in the `hermes_chain_rpc_hostname` and `hermes_chain_grpc_hostname` variables, as well as the relevant ports in the `_port` variables.
+  - Relayer accounts: key files
+    - Enter the local path of the relayer key files in the `hermes_relayer_key` for each chain.
+  - Relayer accounts: mnemonic files
+    - If you want to use mnemonic files instead of key files, replace `hermes_relayer_keys: true` with `hermes_relayer_mnemonics`.
+    - Replace `hermes_relayer_key` with `hermes_relayer_mnemonic` for both chains and add the paths to the mnemonic files.
+
+### Run the playbook 
+
+```
+ansible-playbook hermes.yml -i examples/inventory-hermes.yml
+```
+
+- The channels that are created as part of the play will be saved under `/home/hermes/<chain_id>-<connection_id>.txt` for each chain.
 
 ## Set up a Big Dipper 2.0 Block Explorer
 
