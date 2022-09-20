@@ -4,7 +4,7 @@ all:
   vars:
     ansible_user: root
     chain_version: v7.0.2
-    genesis_url: "https://github.com/cosmos/testnets/raw/master/v7-theta/public-testnet/genesis.json.gz"
+    genesis_url: "https://github.com/cosmos/testnets/raw/master/public/genesis.json.gz"
     chain_id: theta-testnet-001
     chain_home_clear: false
     node_unsafe_reset: true

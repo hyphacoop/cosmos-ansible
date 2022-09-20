@@ -3,7 +3,7 @@
 [![Lint](https://github.com/hyphacoop/cosmos-ansible/actions/workflows/lint.yml/badge.svg?branch=main)](https://github.com/hyphacoop/cosmos-ansible/actions/workflows/lint.yml)
 [![Test Gaia Versions](https://github.com/hyphacoop/cosmos-ansible/actions/workflows/test-gaia-versions.yml/badge.svg?branch=main)](https://github.com/hyphacoop/cosmos-ansible/actions/workflows/test-gaia-versions.yml)
 [![Test Gaia Versions with Stateful Genesis](https://github.com/hyphacoop/cosmos-ansible/actions/workflows/export-mainnet-status-badge.yml/badge.svg?branch=main)](https://github.com/hyphacoop/cosmos-ansible/actions/workflows/export-mainnet-status-badge.yml)
-[![Join Theta Testnet](https://github.com/hyphacoop/cosmos-ansible/actions/workflows/test-theta-node.yml/badge.svg?branch=main)](https://github.com/hyphacoop/cosmos-ansible/actions/workflows/test-theta-node.yml)
+[![Join Public Testnet](https://github.com/hyphacoop/cosmos-ansible/actions/workflows/test-theta-node.yml/badge.svg?branch=main)](https://github.com/hyphacoop/cosmos-ansible/actions/workflows/test-theta-node.yml)
 
 ✨ An Ansible toolkit for Cosmos networks 💫
 
@@ -26,14 +26,14 @@ Use this toolkit to:
 
 ## 🌱 Quick Start
 
-To join the [Theta testnet](https://github.com/cosmos/testnets/tree/master/v7-theta/public-testnet):
+To join the Cosmos Hub [public testnet](https://github.com/cosmos/testnets/tree/master/public):
 
 1. Clone this repository
 2. Run `ansible-galaxy install -r requirements.yml` to install dependencies 
 3. Set up SSH access to the target machine
 4. Run the playbook
    ```
-   ansible-playbook node.yml -i examples/inventory-theta.yml -e 'target=SERVER_IP_OR_DOMAIN'
+   ansible-playbook node.yml -i examples/inventory-public-testnet.yml -e 'target=SERVER_IP_OR_DOMAIN'
    ```
 5. Log into the target machine to follow the syncing process
    ```
@@ -42,7 +42,7 @@ To join the [Theta testnet](https://github.com/cosmos/testnets/tree/master/v7-th
 
 Watch the video below to see the playbook in action:
 
-[![Join the Cosmos Theta Testnet](https://img.youtube.com/vi/SYt0EC5pcY0/0.jpg)](https://www.youtube.com/watch?v=SYt0EC5pcY0)
+[![Join the Cosmos Hub Public Testnet](https://img.youtube.com/vi/SYt0EC5pcY0/0.jpg)](https://www.youtube.com/watch?v=SYt0EC5pcY0)
 
 ## 🌳 Explore Further
 
@@ -92,9 +92,9 @@ The stateful test is run using an exported mainnet genesis file that is modified
 
 Due to limited resources on GitHub Actions these tests are run on a remote virtual machine. The test results are saved to this repository's [log directory](logs/) and a badge is displayed at the top of this readme.
 
-### Joining the Theta Testnet (weekly)
+### Joining the Public Testnet (weekly)
 
-We test joining the Theta Testnet weekly using GitHub Actions and a badge is displayed at the top of this readme.
+We test joining the Cosmos Hub public testnet weekly using GitHub Actions and a badge is displayed at the top of this readme.
 
 ## 🔎 Code Standards
 

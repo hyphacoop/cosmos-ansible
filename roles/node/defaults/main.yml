@@ -15,7 +15,7 @@ node_service_name: "gaiad"
 chain_gov_testing: false
 chain_voting_period: 10s
 chain_denom: uatom
-chain_id: "theta-devnet"
+chain_id: "cosmos-testnet"
 chain_repo_dir: "{{ node_user_home }}/chain-repo"
 chain_moniker: "{{inventory_hostname}}"
 validator_moniker: "{{inventory_hostname}}"
