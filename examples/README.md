@@ -251,10 +251,8 @@ Deploy two single-validator chains connected through a Hermes relayer.
   - Chains
     - Replace `my-chain-1` and `my-chain-2` in the `hermes_chains` key with the chain IDs that the relayer will connect.
     - Enter the address for each node in the `hermes_chain_rpc_hostname` and `hermes_chain_grpc_hostname` variables, as well as the relevant ports in the `_port` variables.
-  - Relayer accounts: mnemonic files
-    - Enter the local path of the mnemonic files in the `hermes_mnemonic_file` variable for each chain.
-  - Relayer accounts: key files
-    - If you want to use mnemonic files instead of key files, replace `hermes_relayer_mnemonics: true` with `hermes_relayer_keys: true`.
+  - (Optional) Key files for relayer accounts
+    - If you want to use key files instead of mnemonic ones, replace `hermes_relayer_mnemonics: true` with `hermes_relayer_keys: true`.
     - Replace `hermes_relayer_mnemonic` with `hermes_relayer_key` for both chains and add the paths to the key files.
     - The key file is the output from `gaiad keys add <wallet_name> --output json`.
 
