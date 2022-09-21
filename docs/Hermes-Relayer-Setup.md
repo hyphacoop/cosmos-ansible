@@ -1,6 +1,6 @@
 # Hermes IBC Relayer Setup Guide
 
-This guide will assist you in setting up a relayer host between two chains.
+This guide will assist you in setting up two chains connected through an IBC relayer.
 
 - It is recommended Debian 11 is used for all host machines.
 
@@ -15,6 +15,7 @@ The hosts listed in the example [inventory file](/examples/inventory-hermes.yml)
 
 Once the relayer is operational, you will be able to send messages between both chains using the `ibc transfer` command.
 
+See the [Hermes Guide](https://hermes.informal.systems/index.html) for additional information.
 
 ## Chains Settings
 
@@ -26,15 +27,13 @@ Once the relayer is operational, you will be able to send messages between both 
 
 1. Configure the inventory file.
 2. Run the `hermes.yml` playbook.
-3. Connect the chains.
-
+3. Test the relayer.
 
 ## Prerequisites
 
-### Chains
+### DNS
 
-- Both chains being connected must be online.
-- The key or mnemonic file for an account with tokens in it must be available for both chains.
+- A/AAAA records must be set up for both chains and the relayer prior to running the playbook.
 
 ## Deployment
 
@@ -43,17 +42,19 @@ Once the relayer is operational, you will be able to send messages between both 
 Make the following modifications to [inventory-hermes.yml](/examples/inventory-hermes.yml):
   - Replace the `dev.testnet.com` address with your own in the `hosts` variable.
   - Replace the chain IDs in the `hermes_chains` variable with the IDs of the chains being relayed to.
-  - Replace the default key file paths in `hermes_relayer_key` for both chains. You can replace those with `hermes_relayer_mnemonic` and `hermes_relayer_keys` with `hermes_relayer_mnemonics` if you want to use mnemonic files instead.
+  - Replace the default mnemonic file paths in `hermes_relayer_mnemonic` for both chains. You can replace those with `hermes_relayer_key` and `hermes_relayer_mnemonics` with `hermes_relayer_keys` if you want to use key files instead.
   - Replace the hosts in the `hermes_chain_rpc_*` and `hermes_chain_grpc_*` variables with the endpoints that Hermes will connect to.
+  - A key file in this case is the output from `gaiad keys add <wallet_name> --output json`.
 
 ### Run the Playbook 
 
+If the chains are already set up and you only want to install the relayer, you can comment or delete the `Set up chains` task in the `hermes.yml` play:
 ```
 ansible-galaxy install -r requirements.yml
 ansible-playbook hermes.yml -i examples/inventory-hermes.yml
 ```
 
-By default, the channels that are created as part of the play will be saved under `/home/hermes/<chain_id>-<connection_id>.txt` for each chain.
+The channels that are created as part of the play will be saved under `/home/hermes/<chain_id>-<connection_id>.txt` for each chain in the `hermes` machine.
 
 ### Test the Relayer
 

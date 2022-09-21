@@ -10,7 +10,9 @@ ansible-playbook node.yml -i examples/inventory-local.yml --extra-vars "chain_ve
 - Default values and less commonly used variables can be found in the defaults [main.yml file](/roles/gaia/defaults/main.yml).
 - Update the [ansible_vars template](/roles/gaia/templates/ansible_vars.json.j2) to modify additional variables in the gaia config files.
 
-## Target
+## `node` role
+
+### Target
 
 | Variable              | Description                                               | Example Value |
 |-----------------------|-----------------------------------------------------------|---------------|
@@ -28,7 +30,7 @@ ansible-playbook node.yml -i examples/inventory-local.yml --extra-vars "chain_ve
 *Configure DNS before provisioning.  
 **Recommended for initial deployment: this makes sure all services start up and pending system updates are applied.
 
-## Chain Binary Installation
+### Chain Binary Installation
 | Variable               | Description                                                                     | Example Value                                                                      |
 |------------------------|---------------------------------------------------------------------------------|------------------------------------------------------------------------------------|
 | `node_user`            | User account to install the chain binary in                                     | `gaia`                                                                             |
@@ -47,7 +49,7 @@ ansible-playbook node.yml -i examples/inventory-local.yml --extra-vars "chain_ve
 | `addrbook_url`         | URL to download the addrbook.json file from                                     | `"https://quicksync.io/addrbook.cosmos.json"`                                      |
 | `addrbook_file`        | File path to the addrbook.json file to use                                      | `"addresses.json"`                                                                 |
 
-## Chain Configuration: `genesis.json`
+### Chain Configuration: `genesis.json`
 
 | Variable                 | Description                                                                               | Example Value                                                                             |
 |--------------------------|-------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------|
@@ -66,7 +68,7 @@ ansible-playbook node.yml -i examples/inventory-local.yml --extra-vars "chain_ve
 
 ***The file will not be copied if there already is an existing file with the same length.  
 
-## Chain Configuration: `config.toml`
+### Chain Configuration: `config.toml`
 
 | Variable                 | Example Value                                                                       |
 |--------------------------|-------------------------------------------------------------------------------------|
@@ -79,7 +81,7 @@ ansible-playbook node.yml -i examples/inventory-local.yml --extra-vars "chain_ve
 | `statesync_enabled`      | `true`                                                                              |
 | `statesync_rpc_servers`  | `"http://rpc.sentry-1.testnet.com:26657,http://rpc.sentry-2.testnet.com"`           |
 
-## Chain Configuration: `app.toml`
+### Chain Configuration: `app.toml`
 
 | Variable             | Example Value  |
 |----------------------|----------------|
@@ -91,30 +93,22 @@ ansible-playbook node.yml -i examples/inventory-local.yml --extra-vars "chain_ve
 | `grpc_web_enabled`   | `true`         |
 | `grpc_web_port`      | `9091`         |
 
-## Chain Configuration: `client.toml`
+### Chain Configuration: `client.toml`
 
 | Variable                 | Example Value |
 |--------------------------|---------------|
 | `client_keyring_backend` | `test`        |
 | `client_broadcast_mode`  | `block`       |
 
-## Faucet
-
-| Variable              | Description                                          | Example Value  |
-|-----------------------|------------------------------------------------------|----------------|
-| `faucet_enabled`      | Create faucet account and install REST server for it | `true`         |
-| `faucet_version`      | Cosmos REST faucet version to install                | `v0.2.1`       |
-| `faucet_service_name` | Service name for faucet REST server                  | `token-faucet` |
-| `faucet_port`         | Port for the faucet REST server to listen on         | `8000`         |
-
-## Cosmovisor
+### Cosmovisor
 
 | Variable                 | Description                                                            | Example Value |
 |--------------------------|------------------------------------------------------------------------|---------------|
 | `use_cosmovisor`         | Use cosmovisor service when `true`, standalone binary one when `false` | `true`        |
 | `cosmovisor_skip_backup` | Skip Cosmovisor backups                                                | `true`        |
 
-## Monitoring and Alerting
+
+### Monitoring and Alerting
 
 | Variable                | Description                               | Example Value                                           |
 |-------------------------|-------------------------------------------|---------------------------------------------------------|
@@ -124,8 +118,17 @@ ansible-playbook node.yml -i examples/inventory-local.yml --extra-vars "chain_ve
 | `panic_config_file`     | Path on PANIC server                      | `/home/panic/panic_cosmos/config/user_config_nodes.ini` |
 | `panic_is_validator`    | Set host as a validator for PANIC         | `no`                                                    |
 
+## `faucet` role
 
-## Big Dipper
+| Variable              | Description                                          | Example Value  |
+|-----------------------|------------------------------------------------------|----------------|
+| `faucet_enabled`      | Create faucet account and install REST server for it | `true`         |
+| `faucet_version`      | Cosmos REST faucet version to install                | `v0.2.1`       |
+| `faucet_service_name` | Service name for faucet REST server                  | `token-faucet` |
+| `faucet_port`         | Port for the faucet REST server to listen on         | `8000`         |
+
+
+## `bigdipper` role
 
 | Variable                   | Description                                                      | Example Value                      |
 |----------------------------|------------------------------------------------------------------|------------------------------------|
@@ -146,13 +149,24 @@ ansible-playbook node.yml -i examples/inventory-local.yml --extra-vars "chain_ve
 | `bdui_icon`                | URL for the chain icon                                           |                                    |
 | `bdui_logo`                | URL for the splash logo                                          |                                    |
 
-## Consensus Monitor
+
+## `hermes` role
+
+| Variable                   | Description                           | Example Value |
+|----------------------------|---------------------------------------|---------------|
+| `hermes_version`           | Hermes repo release                   | `v1.0.0`      |
+| `hermes_relayer_keys`      | Set to `true` if using key files      | `true`        |
+| `hermes_relayer_mnemonics` | Set to `true` if using mnemonic files | `false`       |
+| `hermes_order`             | Channel ordering                      | `unordered`   |
+
+
+## `consensus-monitor` role
 
 | Variable                    | Description                                                    | Example Value                   |
 |-----------------------------|----------------------------------------------------------------|---------------------------------|
 | `consensus_monitor_version` | `cosmos-consensus-monitor` version to use                      | `v1.0.0`                        |
-| `consensus_api_node_url`    | Node API endpoint                           | `http://node.testnet.com:26657` |
-| `consensus_rpc_node_url`    | Node RPC endpoint                           | `http://node.testnet.com:1317`  |
+| `consensus_api_node_url`    | Node API endpoint                                              | `http://node.testnet.com:26657` |
+| `consensus_rpc_node_url`    | Node RPC endpoint                                              | `http://node.testnet.com:1317`  |
 | `consensus_ws_node_url`     | Port for the Websockets server                                 | `9002`                          |
 | `consensus_ui_node_url`     | Port for the web UI server                                     | `8000`                          |
 | `consensus_host`            | Subdomain to prefix the inventory hostname, requires DNS setup | `consensus.`                    |

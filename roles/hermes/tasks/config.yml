@@ -15,7 +15,7 @@
     dest: '/home/{{ hermes_user }}/.hermes/{{ chain_ids[0] }}-relayer.json'
     owner: '{{hermes_user}}'
     group: '{{hermes_group}}'
-  when: hermes_relayer_keys is defined
+  when: hermes_relayer_keys
 
 - name: Upload key file from second chain
   copy:

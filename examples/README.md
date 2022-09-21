@@ -238,9 +238,9 @@ Follow the [Multi-Node Testnet Setup](/docs/Multi-Node-Testnet-Setup.md) guide i
 
 If you want to set up a monitoring host, the [Testnet Monitoring Setup](/docs/Testnet-Monitoring-Setup.md) guide includes instructions for setting up dashboards and alert services using the multi-node testnet as an example.
 
-## Set up a Hermes IBC Relayer
+## Set up an IBC Testnet
 
-Set up a Hermes relayer between two chains.
+Deploy two single-validator chains connected through a Hermes relayer.
 
 * **Inventory file:** [`inventory-hermes.yml`](inventory-hermes.yml)
 
@@ -251,11 +251,12 @@ Set up a Hermes relayer between two chains.
   - Chains
     - Replace `my-chain-1` and `my-chain-2` in the `hermes_chains` key with the chain IDs that the relayer will connect.
     - Enter the address for each node in the `hermes_chain_rpc_hostname` and `hermes_chain_grpc_hostname` variables, as well as the relevant ports in the `_port` variables.
-  - Relayer accounts: key files
-    - Enter the local path of the relayer key files in the `hermes_relayer_key` for each chain.
   - Relayer accounts: mnemonic files
-    - If you want to use mnemonic files instead of key files, replace `hermes_relayer_keys: true` with `hermes_relayer_mnemonics`.
-    - Replace `hermes_relayer_key` with `hermes_relayer_mnemonic` for both chains and add the paths to the mnemonic files.
+    - Enter the local path of the mnemonic files in the `hermes_mnemonic_file` variable for each chain.
+  - Relayer accounts: key files
+    - If you want to use mnemonic files instead of key files, replace `hermes_relayer_mnemonics: true` with `hermes_relayer_keys: true`.
+    - Replace `hermes_relayer_mnemonic` with `hermes_relayer_key` for both chains and add the paths to the key files.
+    - The key file is the output from `gaiad keys add <wallet_name> --output json`.
 
 ### Run the playbook 
 
@@ -264,6 +265,7 @@ ansible-playbook hermes.yml -i examples/inventory-hermes.yml
 ```
 
 - The channels that are created as part of the play will be saved under `/home/hermes/<chain_id>-<connection_id>.txt` for each chain.
+- See the [Hermes Guide](https://hermes.informal.systems/index.html) for additional information.
 
 ## Set up a Big Dipper 2.0 Block Explorer
 
