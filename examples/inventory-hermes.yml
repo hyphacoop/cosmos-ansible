@@ -28,6 +28,7 @@ all:
           hermes_chains:
             my-chain-1:
               hermes_relayer_mnemonic: 'examples/validator-keys/validator-40/self-delegation-wallet-mnemonic.txt'
+              hermes_port_name: transfer
               hermes_chain_rpc_url_schema: http
               hermes_chain_rpc_hostname: my-chain-1.dev.testnet.com
               hermes_chain_rpc_port: 26657
@@ -48,6 +49,7 @@ all:
               hermes_chain_trust_threshold: "{ numerator = '1', denominator = '3' }"
             my-chain-2:
               hermes_relayer_mnemonic: 'examples/validator-keys/validator-40/self-delegation-wallet-mnemonic.txt'
+              hermes_port_name: transfer
               hermes_chain_rpc_url_schema: http
               hermes_chain_rpc_hostname: my-chain-2.dev.testnet.com
               hermes_chain_rpc_port: 26657
