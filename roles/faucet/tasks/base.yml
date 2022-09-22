@@ -1,0 +1,46 @@
+---
+- name: Populate service facts
+  service_facts:
+
+- include_role:
+    name: common
+
+# Set up nginx
+- name: Change vars for TLS
+  when: faucet_setup_nginx and faucet_use_tls_proxy
+  set_fact:
+    ssl_provider: "letsencrypt"
+
+- include_role:
+    name: hypha.common.nginx
+  when: faucet_setup_nginx
+
+- include_role:
+    name: hypha.common.ssl
+  when: faucet_setup_nginx and faucet_use_tls_proxy
+
+- name: Restart nginx to apply new config
+  systemd:
+    state: restarted
+    name: nginx
+  when: faucet_setup_nginx
+
+- name: Stop existing faucet systemd service
+  when: >
+    (faucet_service_name in ansible_facts.services) or
+    ((faucet_service_name + '.service') in ansible_facts.services)
+  systemd:
+    state: stopped
+    name: "{{faucet_service_name}}"
+  tags:
+    - faucet_stop
+    - faucet_restart
+  ignore_errors: true
+
+- name: Install python
+  apt:
+    pkg:
+      - python3
+      - python3-venv
+      - python3-pip
+      - python-is-python3

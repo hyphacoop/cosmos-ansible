@@ -11,7 +11,7 @@ on:
       - 'logs/tinkered-genesis**'
 jobs:
   generate-matrices:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3
@@ -43,7 +43,7 @@ jobs:
       upgrade_versions: ${{ steps.generate-upgrade.outputs.upgrade_versions }}
 
   parse-log:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     needs: generate-matrices
     strategy:
       matrix:

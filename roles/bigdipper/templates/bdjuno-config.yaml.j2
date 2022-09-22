@@ -1,0 +1,81 @@
+chain:
+    bech32_prefix: cosmos
+    modules: 
+        - modules
+        - messages
+        - auth
+        - bank
+        - consensus
+        - gov
+        - mint
+        - slashing
+        - staking
+        - distribution
+        - actions
+
+node:
+    type: remote
+    config:
+        rpc:
+            client_name: {{ bdjuno_client_name }}
+            address: {{ bdjuno_rpc_address }}
+            max_connections: 20
+        grpc:
+            address: {{ bdjuno_grpc_address }}
+            insecure: true
+parsing:
+    workers: {{ bdjuno_workers }}
+    listen_new_blocks: {{ bdjuno_listen_new_blocks | to_json }}
+    parse_old_blocks: {{ bdjuno_parse_new_blocks | to_json }}
+    parse_genesis: {{ bdjuno_parse_genesis | to_json }}
+    start_height: {{ bigdipper_genesis_height }}
+    fast_sync: {{ bdjuno_fast_sync | to_json }}
+    genesis_file_path: {{bdjuno_home}}/genesis.json
+    average_block_time: {{ bdjuno_avg_block_time }}
+database:
+    name: {{bigdipper_db}}
+    host: 127.0.0.1
+    port: 5432
+    user: {{bigdipper_db_user}}
+    password: {{bigdipper_db_password}}
+    schema: public
+    max_open_connections: 10
+    max_idle_connections: 10
+    partition_size: 100000
+    partition_batch: 1000
+logging:
+    level: debug
+    format: text
+telemetry:
+    port: {{bigdipper_telemetry_port}}
+pruning:
+    keep_recent: 100
+    keep_every: 500
+    interval: 10
+pricefeed:
+    tokens:
+        - name: Atom
+          units:
+            - denom: uatom
+              exponent: 0
+            - denom: atom
+              exponent: 6
+              price_id: cosmos
+        - name: Rho
+          units:
+            - denom: rho
+              exponent: 0
+        - name: Lambda
+          units:
+            - denom: lambda
+              exponent: 0
+        - name: Epsilon
+          units:
+            - denom: epsilon
+              exponent: 0
+        - name: Theta
+          units:
+            - denom: theta
+              exponent: 0
+actions:
+    port: {{bdjuno_hasura_actions_port}}

@@ -1,6 +1,6 @@
 # Hermes IBC Relayer Setup Guide
 
-This guide will assist you in setting up a relayer host between two chains.
+This guide will assist you in setting up two chains connected through an IBC relayer.
 
 - It is recommended Debian 11 is used for all host machines.
 
@@ -15,29 +15,25 @@ The hosts listed in the example [inventory file](/examples/inventory-hermes.yml)
 
 Once the relayer is operational, you will be able to send messages between both chains using the `ibc transfer` command.
 
+See the [Hermes Guide](https://hermes.informal.systems/index.html) for additional information.
 
 ## Chains Settings
 
 * **Gaia version:** `v7.0.0`
 * **Chain IDs:** `my-chain-1` and `my-chain-2`
+* **Hermes version:** `v1.0.0`
 
 ## Workflow
 
 1. Configure the inventory file.
 2. Run the `hermes.yml` playbook.
-3. Connect the chains.
-
+3. Test the relayer.
 
 ## Prerequisites
 
 ### DNS
 
-- Set up appropriate `A` and `AAAA` records for Let's Encrypt.
-
-### Chains
-
-- Both chains being connected must be online.
-- The mnemonic for an account with tokens in it must be available for both chains.
+- A/AAAA records must be set up for both chains and the relayer prior to running the playbook.
 
 ## Deployment
 
@@ -46,63 +42,23 @@ Once the relayer is operational, you will be able to send messages between both 
 Make the following modifications to [inventory-hermes.yml](/examples/inventory-hermes.yml):
   - Replace the `dev.testnet.com` address with your own in the `hosts` variable.
   - Replace the chain IDs in the `hermes_chains` variable with the IDs of the chains being relayed to.
-  - Replace the hosts in the `hermes_chain_hostname` variables with the endpoints that Hermes will connect to.
-  - Replace the `validator@devnet.com` address with your own in the `letsencrypt_email` variable.
-  - Add the addresses of the accounts you want to airdrop tokens to in the `gaiad_airdrop_accounts` variable.
+  - Replace the default mnemonic file paths in `hermes_relayer_mnemonic` for both chains. You can replace those with `hermes_relayer_key` and `hermes_relayer_mnemonics` with `hermes_relayer_keys` if you want to use key files instead.
+  - Replace the hosts in the `hermes_chain_rpc_*` and `hermes_chain_grpc_*` variables with the endpoints that Hermes will connect to.
+  - A key file in this case is the output from `gaiad keys add <wallet_name> --output json`.
 
+### Run the Playbook 
 
-### Run the playbook 
-
+If the chains are already set up and you only want to install the relayer, you can comment or delete the `Set up chains` task in the `hermes.yml` play:
 ```
+ansible-galaxy install -r requirements.yml
 ansible-playbook hermes.yml -i examples/inventory-hermes.yml
 ```
 
-### Connect the chains
+The channels that are created as part of the play will be saved under `/home/hermes/<chain_id>-<connection_id>.txt` for each chain in the `hermes` machine.
 
-Run the following commands in the Hermes host after running the playbook.
+### Test the Relayer
 
-Switch to the `hermes` user.
+You can now send messages between `my-chain-1` and `my-chain-2` using the `gaiad tx ibc-transfer` command. In the example below, `hermes` created `channel-0`.
 ```
-su hermes
-```
-
-Restore the account key for the chains you want to relay to. Each key name must match the chain ID, in this example they are `my-chain-1` and `my-chain-2`.
-```
-~/bin/hermes -c ~/.hermes/config.toml keys restore my-chain-1 -m "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon art"
-
-~/bin/hermes -c ~/.hermes/config.toml keys restore my-chain-2 -m "abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon garage"
-```
-
-Create a client between the chains.
-```
-~/bin/hermes -c ~/.hermes/config.toml create client my-chain-1 my-chain-2
-```
-
-Create a connection between the chains.
-```
-~/bin/hermes -c ~/.hermes/config.toml create connection my-chain-1 my-chain-2
-```
-
-Note down the `ConnectionId` returned.
-
-Create a channel between the chains using the chain name and `ConnectionID` above for this example we use `connection-0`
-```
-~/bin/hermes -c ~/.hermes/config.toml create channel --port-a transfer --port-b transfer my-chain-1 connection-0
-```
-
-Note down and save the `ChannelId` for both chains. You will need it whenever you want to make IBC transfers, as shown below.
-
-Log out as the `hermes` user.
-```
-exit
-```
-
-Restart the hermes service.
-```
-systemctl restart hermes
-```
-
-You can now send messages between `my-chain-1` and `my-chain-2` using the `gaiad tx ibc-transfer` command. In the example below, `hermes` created `channel-329`.
-```
-gaiad tx ibc-transfer transfer transfer channel-329 [cosmos address of receiver] 1000uatom --chain-id [chain we are sending from] --from [cosmos address of sender] --fees 500uatom --gas auto -y
+gaiad tx ibc-transfer transfer transfer channel-0 [cosmos address of receiver] 1000uatom --chain-id [chain we are sending from] --from [cosmos address of sender] --fees 500uatom --gas auto -y
 ```

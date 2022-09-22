@@ -105,3 +105,31 @@
   tags:
     - gaiad_stop
     - gaiad_restart
+
+- name: Remove golang apt package
+  ansible.builtin.apt:
+    name: golang
+    state: absent
+
+- name: Remove system Go files
+  file:
+    state: absent
+    path: "{{ item }}"
+  loop:
+    - /usr/bin/go
+    - /usr/lib/go
+
+- name: Check golang version
+  shell: |
+    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+    go version
+  register: go_current_version
+  ignore_errors: true
+
+- name: Extract golang
+  when: not go_version in go_current_version.stdout
+  unarchive:
+    src: "https://golang.org/dl/go{{go_version}}.{{go_arch}}.tar.gz"
+    dest: /usr/local
+    remote_src: yes
+  become: true

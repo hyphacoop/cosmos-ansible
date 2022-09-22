@@ -1,0 +1,92 @@
+---
+
+- include_role:
+    name: common
+
+# Set up nginx
+
+- name: Change vars for TLS
+  when: bigdipper_use_tls_proxy
+  set_fact:
+    bigdipper_web_scheme: https
+    bigdipper_websocket_scheme: wss
+    ssl_provider: "letsencrypt"
+
+- include_role:
+    name: hypha.common.nginx
+
+- include_role:
+    name: hypha.common.ssl
+
+- name: Restart nginx to apply new config
+  systemd:
+    state: restarted
+    name: nginx
+
+# Set up big dipper
+- name: "Install python dependencies"
+  pip:
+    name: psycopg2-binary
+
+- include_role:
+    name: docker
+
+- name: Remove golang apt package
+  ansible.builtin.apt:
+    name: golang
+    state: absent
+
+- name: Remove system Go files
+  file:
+    state: absent
+    path: "{{ item }}"
+  loop:
+    - /usr/bin/go
+    - /usr/lib/go
+
+- name: Check golang version
+  shell: |
+    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+    go version
+  register: go_current_version
+  ignore_errors: true
+
+- name: Extract golang
+  when: not go_version in go_current_version.stdout
+  unarchive:
+    src: "https://golang.org/dl/go{{go_version}}.{{go_arch}}.tar.gz"
+    dest: /usr/local
+    remote_src: yes
+  become: true
+
+- name: Ensure user exists for bigdipper
+  user:
+    name: "{{bigdipper_user}}"
+    append: true
+    groups: adm
+    shell: /bin/bash
+    comment: User for bigdipper block explorer services
+
+- name: "Register bigdipper db URL"
+  set_fact:
+    bigdipper_db_url: "postgres://{{bigdipper_db_user}}:{{bigdipper_db_password}}@127.0.0.1:5432/{{bigdipper_db}}"
+
+- name: Get the list of services
+  service_facts:
+
+- name: "Stop bdjuno systemd service"
+  systemd:
+    state: stopped
+    name: "{{bdjuno_service_name}}"
+  when: "'{{bdjuno_service_name}}.service' in services"
+
+- name: "Stop big-dipper-ui systemd service"
+  systemd:
+    state: stopped
+    name: "{{bdui_service_name}}"
+  when: "'{{bdui_service_name}}.service' in services"
+
+- name: Remove hasura docker container
+  community.docker.docker_container:
+    name: big-dipper-hasura
+    state: absent

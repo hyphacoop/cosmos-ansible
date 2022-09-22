@@ -1,4 +1,9 @@
 ---
+
+# Go configuration
+go_arch: "{{binary_arch_map[ansible_architecture]}}"
+go_version: 1.18.5
+
 # General Gaiad settings
 gaiad_user: gaia
 gaiad_user_home: "/home/{{gaiad_user}}"
@@ -36,10 +41,6 @@ cosmovisor_bin: "{{gaiad_user_home}}/go/bin/cosmovisor"
 cosmovisor_home: "{{ gaiad_home }}/cosmovisor"
 cosmovisor_service_name: "cosmovisor"
 cosmovisor_skip_backup: true
-
-# Go configuration
-go_arch: "{{binary_arch_map[ansible_architecture]}}"
-go_version: "1.18.1"
 
 ## config.toml variables
 fast_sync: true

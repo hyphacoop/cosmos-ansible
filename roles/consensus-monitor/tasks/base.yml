@@ -1,0 +1,66 @@
+---
+- name: Populate service facts
+  service_facts:
+
+- include_role:
+    name: common
+
+# Set up nginx
+- name: Change vars for TLS
+  when: consensus_setup_nginx and consensus_use_tls_proxy
+  set_fact:
+    ssl_provider: "letsencrypt"
+
+- include_role:
+    name: hypha.common.nginx
+  when: consensus_setup_nginx
+
+- include_role:
+    name: hypha.common.ssl
+  when: consensus_setup_nginx and consensus_use_tls_proxy
+
+- name: Restart nginx to apply new config
+  systemd:
+    state: restarted
+    name: nginx
+  when: consensus_setup_nginx
+
+- name: Stop existing Websockets service
+  when: >
+    (consensus_ws_service_name in ansible_facts.services) or
+    ((consensus_ws_service_name + '.service') in ansible_facts.services)
+  systemd:
+    state: stopped
+    name: "{{consensus_ws_service_name}}"
+  tags:
+    - consensus_stop
+    - consensus_restart
+  ignore_errors: true
+
+- name: Stop existing UI service
+  when: >
+    (consensus_ui_service_name in ansible_facts.services) or
+    ((consensus_ui_service_name + '.service') in ansible_facts.services)
+  systemd:
+    state: stopped
+    name: "{{consensus_ui_service_name}}"
+  tags:
+    - consensus_stop
+    - consensus_restart
+  ignore_errors: true
+
+- name: Install python
+  apt:
+    pkg:
+      - python3
+      - python3-venv
+      - python3-pip
+      - python-is-python3
+
+- name: Create consensus user
+  user:
+    name: "{{ consensus_user }}"
+    append: true
+    groups: adm
+    shell: /bin/bash
+    comment: User for consensus monitor services

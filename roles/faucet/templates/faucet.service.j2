@@ -1,0 +1,11 @@
+[Unit]
+Description="Cosmos REST faucet"
+
+[Service]
+User={{ node_user }}
+Environment="{{ faucet_chain_env }}"
+WorkingDirectory={{node_user_home}}/cosmos-rest-faucet
+ExecStart={{node_user_home}}/cosmos-rest-faucet/.env/bin/hypercorn cosmos_rest_faucet:app -b [::]:{{ faucet_port }}
+
+[Install]
+WantedBy=multi-user.target

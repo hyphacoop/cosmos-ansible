@@ -1,0 +1,146 @@
+---
+
+name: Test Gaia Versions using Stateful Genesis
+on:
+  workflow_dispatch:
+  schedule:
+    # At 15:30 on Monday.
+    - cron: '30 15 * * 1'
+  pull_request:
+    types:
+      - opened
+      - closed
+  push:
+    paths-ignore:
+      - 'docs/**'
+      - 'examples/**'
+      - 'logs/**'
+      - '!examples/inventory-local.yml'
+      - 'README.md'
+jobs:
+  generate-matrices:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install requests
+
+      - name: Get chain and repo release versions
+        run: |
+          chain_registry="https://registry.ping.pub/cosmoshub/chain.json"
+          tinkered_genesis_url="https://files.polypore.xyz/genesis/mainnet-genesis-tinkered"
+          gh_repo_name="cosmos/gaia"
+          current_chain_version=$(curl -s ${chain_registry} | jq -r '.codebase.recommended_version')
+          current_github_version=$(curl -s "https://api.github.com/repos/${gh_repo_name}/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+          current_chain_version_major=$(echo $current_chain_version | cut -c 2)
+          current_github_version_major=$(echo $current_github_version | cut -c 2)
+          # Set Actions variables
+          echo "tinkered_genesis_url=$tinkered_genesis_url" >> $GITHUB_ENV
+          echo "current_chain_version=$current_chain_version" >> $GITHUB_ENV
+          echo "current_github_version=$current_github_version" >> $GITHUB_ENV
+          echo "current_chain_version_major=$current_chain_version_major" >> $GITHUB_ENV
+          echo "current_github_version_major=$current_github_version_major" >> $GITHUB_ENV
+
+      - name: Print versions from variables
+        run: |
+          echo "Chain major version is: ${{ env.current_chain_version_major }}"
+          echo "GitHub major version is: ${{ env.current_github_version_major }}"
+
+      - name: Generate starting versions
+        if: ${{ env.current_github_version_major > env.current_chain_version_major }}
+        id: generate-start
+        run: |
+          start=$(tests/generate_version_matrix.py ${{ env.current_chain_version }})
+          echo $start
+          echo ::set-output name=start_versions::$start
+      - name: Generate upgrade versions
+        if: ${{ env.current_github_version_major > env.current_chain_version_major }}
+        id: generate-upgrade
+        run: |
+          upgrade=$(tests/generate_upgrade_matrix.py ${{ env.current_chain_version }})
+          echo $upgrade
+          echo ::set-output name=upgrade_versions::$upgrade
+    outputs:
+      start_versions: ${{ steps.generate-start.outputs.start_versions }}
+      upgrade_versions: ${{ steps.generate-upgrade.outputs.upgrade_versions }}
+
+  test-upgrade:
+    runs-on: ubuntu-22.04
+    continue-on-error: true
+    needs: generate-matrices
+    if: ${{ needs.generate-matrices.outputs.upgrade_versions != '[]' && needs.generate-matrices.outputs.upgrade_versions != '' }}
+    strategy:
+      matrix:
+        ${{ fromJSON(needs.generate-matrices.outputs.upgrade_versions) }}
+    steps:
+      - run: echo "Test upgrading ${{matrix.gaia_version}} to ${{matrix.upgrade_version}}"
+      # Get system info
+      - run: ifconfig
+      - run: arp -a
+      - run: lscpu
+      - run: sudo dmidecode
+      - run: df -h
+      - run: free -m
+      - run: uname -a
+      - run: lsb_release -a
+      - run: echo "GitHub branch is ${{ github.ref }}"
+      - run: whoami
+      - run: pwd
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.10'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install ansible toml
+      - name: Get chain and repo release versions
+        run: |
+          chain_registry="https://files.polypore.xyz/chain.json"
+          #chain_registry="https://registry.ping.pub/cosmoshub/chain.json"
+          tinkered_genesis_url="https://files.polypore.xyz/genesis/mainnet-genesis-tinkered"
+
+          gh_repo_name="cosmos/gaia"
+          current_chain_version=$(curl -s ${chain_registry} | jq -r '.codebase.recommended_version')
+          current_github_version=$(curl -s "https://api.github.com/repos/${gh_repo_name}/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+          current_chain_version_major=$(echo $current_chain_version | cut -c 2)
+          current_github_version_major=$(echo $current_github_version | cut -c 2)
+          # Set Actions variables
+          echo "tinkered_genesis_url=$tinkered_genesis_url" >> $GITHUB_ENV
+          echo "current_chain_version=$current_chain_version" >> $GITHUB_ENV
+          echo "current_github_version=$current_github_version" >> $GITHUB_ENV
+          echo "current_chain_version_major=$current_chain_version_major" >> $GITHUB_ENV
+          echo "current_github_version_major=$current_github_version_major" >> $GITHUB_ENV
+      - name: Configure ansible.cfg
+        run: echo "transport = local" >> ansible.cfg
+      - name: Install ansible-galaxy requirements
+        run: ansible-galaxy install -r requirements.yml
+      - name: Modify examples/inventory-local-genesis.yml
+        run: sed -e '/genesis_url:/d' examples/inventory-local-genesis.yml > inventory.yml
+      - name: Run playbook
+        run: ansible-playbook node.yml -i inventory.yml --extra-vars "target=local reboot=false chain_version=${{ matrix.gaia_version }} chain_home={{ node_user_home }}/.gaia chain_gov_testing=true minimum_gas_prices=0.0025uatom node_user=runner priv_validator_key_file=examples/validator-keys/validator-40/priv_validator_key.json node_key_file=examples/validator-keys/validator-40/node_key.json enable_swap=true swap_size=16384 genesis_url=${{ env.tinkered_genesis_url }}/latest_v${{ env.current_chain_version_major }}.json.gz"
+      - name: Check cosmovisor service
+        run: systemctl status cosmovisor
+      - name: Get genesis height
+        run: |
+          echo "genesis_height=$(jq -r '.initial_height' ~/.gaia/config/genesis.json)" >> $GITHUB_ENV
+          echo "Genesis height: ${{ env.genesis_height }}"
+      - name: Restore validator.json
+        run: echo "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon art" | ~/.gaia/cosmovisor/current/bin/gaiad --output json keys add val --keyring-backend test --recover 2> ~/.gaia/validator.json  # Use stderr until gaiad use stdout
+      - name: Check blocks are being produced
+        run: tests/test_block_production.sh 127.0.0.1 26657 $[ ${{ env.genesis_height }} + 10]
+      - name: Test software upgrade
+        run: tests/test_software_upgrade.sh 127.0.0.1 26657 ${{ matrix.upgrade_version }}
+      - name: Happy path - transaction testing
+        run: tests/test_tx_stateful.sh

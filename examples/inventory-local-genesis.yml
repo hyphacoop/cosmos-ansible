@@ -2,13 +2,16 @@
 # yamllint disable rule:line-length
 all:
   vars:
-    gaiad_home_autoclear: true
-    gaiad_version: v7.0.2
-    genesis_url: "https://github.com/cosmos/testnets/raw/master/v7-theta/local-testnet/genesis.json.gz"
+    chain_home_clear: true
+    chain_version: v7.0.3
+    genesis_url: "https://files.polypore.xyz/genesis/mainnet-genesis-tinkered/tinkered-genesis_2022-09-11T07%3A43%3A05.6452382Z_v7.0.3_12010083.json.gz"
     ansible_user: root
+    enable_swap: true  # Set this for machines with <32GB RAM
+    swap_size: 8192
   children:
-    gaia:
+    node:
       hosts:
         "{{ target }}":
           fast_sync: false
-          priv_validator_key_file: "examples/validator-keys/local-genesis/priv_validator_key.json"
+          node_key_file: "examples/validator-keys/validator-40/node_key.json"
+          priv_validator_key_file: "examples/validator-keys/validator-40/priv_validator_key.json"

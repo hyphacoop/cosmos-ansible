@@ -2,43 +2,69 @@
 # yamllint disable rule:line-length
 all:
   vars:
-    gaiad_home_autoclear: true
-    gaiad_version: v7.0.2
-    api_enabled: true
-    gaiad_use_ssl_proxy: true
-    gaiad_api_host: "rest"
-    gaiad_rpc_host: "rpc"
-    gaiad_p2p_host: "p2p"
-    gaiad_grpc_host: "grpc"
-    letsencrypt_email: "validator@devnet.com"
-    enable_swap: false
-    swap_size: 8192
-    monitoring_prometheus: true
-    grafana_ssh_url: root@monitor.devnet.com
-    reboot: false
+    chain_home_clear: true
+    chain_version: v7.0.2
+    hermes_version: v1.0.0
     ansible_user: root
   children:
-    gaia:
+    node:
       hosts:
         my-chain-1.dev.testnet.com:
           chain_id: my-chain-1
-          gaiad_create_validator: true
-          gaiad_airdrop: true
-          gaiad_airdrop_accounts:
-            - cosmos*
-            - cosmos*
+          chain_create_validator: true
+          chain_airdrop: true
+          chain_airdrop_accounts:
+            - cosmos1r5v5srda7xfth3hn2s26txvrcrntldjumt8mhl  # relayer account
         my-chain-2.dev.testnet.com:
           chain_id: my-chain-2
-          gaiad_create_validator: true
-          gaiad_airdrop: true
-          gaiad_airdrop_accounts:
-            - cosmos*
-            - cosmos*
+          chain_create_validator: true
+          chain_airdrop: true
+          chain_airdrop_accounts:
+            - cosmos1r5v5srda7xfth3hn2s26txvrcrntldjumt8mhl  # relayer account
     hermes:
       hosts:
         hermes.dev.testnet.com:
+          hermes_relayer_mnemonics: true
           hermes_chains:
             my-chain-1:
-              hermes_chain_hostname: my-chain-1.dev.testnet.com
+              hermes_relayer_mnemonic: 'examples/validator-keys/validator-40/self-delegation-wallet-mnemonic.txt'
+              hermes_port_name: transfer
+              hermes_chain_rpc_url_schema: http
+              hermes_chain_rpc_hostname: my-chain-1.dev.testnet.com
+              hermes_chain_rpc_port: 26657
+              hermes_chain_grpc_url_schema: http
+              hermes_chain_grpc_hostname: my-chain-1.dev.testnet.com
+              hermes_chain_grpc_port: 9090
+              hermes_chain_websocket_url_schema: ws
+              hermes_chain_rpc_timeout: '10s'
+              hermes_chain_account_prefix: 'cosmos'
+              hermes_chain_key_name: 'testkey'
+              hermes_chain_store_prefix: 'ibc'
+              hermes_chain_max_gas: 2000000
+              hermes_chain_fee_granter: ''
+              gas_price: "{ price = 0.001, denom = 'uatom' }"
+              hermes_chain_gas_multiplier: 1.1
+              hermes_chain_clock_drift: '5s'
+              hermes_chain_trusting_period: '1days'
+              hermes_chain_trust_threshold: "{ numerator = '1', denominator = '3' }"
             my-chain-2:
-              hermes_chain_hostname: my-chain-2.dev.testnet.com
+              hermes_relayer_mnemonic: 'examples/validator-keys/validator-40/self-delegation-wallet-mnemonic.txt'
+              hermes_port_name: transfer
+              hermes_chain_rpc_url_schema: http
+              hermes_chain_rpc_hostname: my-chain-2.dev.testnet.com
+              hermes_chain_rpc_port: 26657
+              hermes_chain_grpc_url_schema: http
+              hermes_chain_grpc_hostname: my-chain-2.dev.testnet.com
+              hermes_chain_grpc_port: 9090
+              hermes_chain_websocket_url_schema: ws
+              hermes_chain_rpc_timeout: '10s'
+              hermes_chain_account_prefix: 'cosmos'
+              hermes_chain_key_name: 'testkey'
+              hermes_chain_store_prefix: 'ibc'
+              hermes_chain_max_gas: 2000000
+              hermes_chain_fee_granter: ''
+              gas_price: "{ price = 0.001, denom = 'uatom' }"
+              hermes_chain_gas_multiplier: 1.1
+              hermes_chain_clock_drift: '5s'
+              hermes_chain_trusting_period: '1days'
+              hermes_chain_trust_threshold: "{ numerator = '1', denominator = '3' }"

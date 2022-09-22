@@ -1,0 +1,121 @@
+---
+# Genesis file configuration
+# - name: Check stat of local genesis file
+#   when: genesis_file is defined
+#   local_action:
+#     module: stat
+#     path: "{{genesis_file}}"
+#     get_checksum: false
+#   register: local_genesis_file_exists
+# - name: Check if remote genesis file exists
+#   when: genesis_file is defined
+#   stat:
+#     path: "{{chain_home}}/config/genesis.json"
+#     get_checksum: false
+#   register: genesis_file_exists
+- name: check if genesis_file is gz or not
+  when: genesis_file is defined
+  stat:
+    path: '{{genesis_file}}'
+    get_mime: true
+  delegate_to: localhost
+  become: false
+  register: file_type
+
+- name: File type of {{genesis_file}}
+  when: genesis_file is defined
+  debug:
+    msg: '{{file_type.stat.mimetype}}'
+
+- name: gzip the file if not zipped
+  when:
+    - genesis_file is defined
+    - file_type.stat.mimetype != "application/gzip"
+  archive:
+    path: '{{genesis_file}}'
+    dest: '{{genesis_file}}.gz'
+    format: gz
+  delegate_to: localhost
+  become: false
+
+- name: set genesis_file to include .gz
+  when:
+    - genesis_file is defined
+    - file_type.stat.mimetype != "application/gzip"
+  set_fact:
+    genesis_file: '{{ genesis_file }}.gz'
+
+- name: copy {{genesis_file}} to remote server
+  when: genesis_file is defined
+  copy:
+    src: '{{genesis_file}}'
+    dest: '{{node_user_home}}/genesis.json.gz'
+    owner: '{{node_user}}'
+    group: '{{node_user}}'
+
+- name: extract {{genesis_file}} to {{chain_home}}/config/genesis.json
+  when: genesis_file is defined
+  shell: |
+    gunzip -c $HOME/genesis.json.gz > {{chain_home}}/config/genesis.json
+  become_user: "{{node_user}}"
+
+- name: download genesis file
+  when: genesis_url is defined
+  get_url:
+    url: "{{genesis_url}}"
+    dest: "{{ node_user_home }}/genesis.data"
+    mode: 0644
+  become_user: "{{node_user}}"
+
+- name: Check file type of downloaded genesis file
+  when: genesis_url is defined
+  stat:
+    path: '{{node_user_home}}/genesis.data'
+    get_mime: true
+  register: file_type
+
+- name: File type of {{node_user_home}}/genesis.data
+  when: genesis_url is defined
+  debug:
+    msg: '{{file_type.stat.mimetype}}'
+
+- name: Extract the file if genesis is gzip
+  when:
+    - genesis_url is defined
+    - file_type.stat.mimetype == "application/gzip"
+  shell: |
+    gunzip -c $HOME/genesis.data > {{chain_home}}/config/genesis.json
+  become_user: "{{node_user}}"
+
+- name: Copy non-zipped genesis to genesis config (plain text)
+  when:
+    - genesis_url is defined
+    - file_type.stat.mimetype != "application/gzip"
+  copy:
+    src: '{{node_user_home}}/genesis.data'
+    dest: '{{chain_home}}/config/genesis.json'
+    owner: '{{node_user}}'
+    group: '{{node_user}}'
+    remote_src: true
+
+- name: Copy non-zipped genesis to genesis config (json)
+  when:
+    - genesis_url is defined
+    - file_type.stat.mimetype == "application/json"
+  copy:
+    src: '{{node_user_home}}/genesis.data'
+    dest: '{{chain_home}}/config/genesis.json'
+    owner: '{{node_user}}'
+    group: '{{node_user}}'
+    remote_src: true
+
+- name: verify genesis file
+  when: genesis_shasum is defined
+  # Throw an error if shasum doesn't match
+  shell: |
+    GENESIS_SHASUM="$(sha256sum {{ chain_home }}/config/genesis.json)"
+    if [ $GENESIS_SHASUM != {{ genesis_shasum }} ]; then
+      exit 1
+    fi
+      exit 0
+  become_user: "{{node_user}}"

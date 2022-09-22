@@ -1,0 +1,23 @@
+---
+# yamllint disable rule:line-length
+all:
+  vars:
+    ansible_user: root
+    node_user: consumer
+    chain_home: "{{node_user_home}}/.isc"
+    chain_binary_name: interchain-security-cd
+    chain_version: tags/v0.1.4
+    chain_repository: https://github.com/cosmos/interchain-security.git
+    chain_denom: stake
+    genesis_url: "https://paste.c-net.org/SonnyLimos"
+    chain_id: consumer
+    chain_home_clear: true
+    node_service_name: "consumer"
+    p2p_persistent_peers: "b060c4ad12ade4114a87f9cb1c6bdaf0f4e9db2b@167.172.190.207:26646"
+    cosmovisor_service_name: "cosmovisor-consumer"
+    reboot: false
+  children:
+    node:
+      hosts:
+        "{{ target }}":
+          fast_sync: false

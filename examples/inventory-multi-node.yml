@@ -3,22 +3,21 @@
 all:
   vars:
     ansible_user: root
-    genesis_file: "genesis.json"
+    chain_version: v7.0.3
     chain_id: cosmos-testnet
-    gaiad_version: v7.0.0
-    gaiad_home_autoclear: false
-    gaiad_unsafe_reset: true
-    gaiad_create_validator: false
-    gaiad_api_host: "rest"
-    gaiad_rpc_host: "rpc"
-    gaiad_p2p_host: "p2p"
-    gaiad_grpc_host: "grpc"
-    gaiad_use_ssl_proxy: true
+    minimum_gas_prices: '0.001uatom'
+    chain_home_clear: true
+    chain_api_host: "rest"
+    chain_rpc_host: "rpc"
+    chain_p2p_host: "p2p"
+    chain_grpc_host: "grpc"
+    genesis_node: val1.cosmostest.network
+    dynamic_p2p_persistent_peers: true
+    bonded_tokens_pool: 100000000
+    bonded_supply_divider: 10
     letsencrypt_email: "validator@cosmostest.network"
     enable_swap: true
     swap_size: 8192
-    p2p_persistent_peers: "<val1-node-id>@val1.cosmostest.network:26656,<val2-node-id>@val2.cosmostest.network:26656,<val3-node-id>@val3.cosmostest.network:26656"
-    reboot: false
     # Remove the next four lines if you are not setting up monitoring
     monitoring_prometheus: true
     grafana_ssh_url: root@monitor.cosmostest.network
@@ -26,29 +25,47 @@ all:
     panic_ssh_url: root@monitor.cosmostest.network
 
   children:
-    gaia:
+    node:
       hosts:
         val1.cosmostest.network:
-          node_key_file: "<val-1-node-key>"
-          priv_validator_key_file: "<val-1-priv-validator-key>"
+          chain_create_validator: true
+          validator_moniker: val1
+          voting_power: 40
+          chain_gentx_validator: "{{ (bonded_tokens_pool|int * voting_power|int / 100)|int }}"
+          chain_validator_coins: "{{ (bonded_supply_divider * chain_gentx_validator|int | int +chain_gentx_validator|int)|int }}"
           # Remove the next line if you are not setting up PANIC
           panic_is_validator: 'yes'
         val2.cosmostest.network:
-          node_key_file: "<val-2-node-key>"
-          priv_validator_key_file: "<val-2-priv-validator-key>"
+          validator_moniker: val2
+          start_multinode: true
+          voting_power: 32
+          chain_gentx_validator: "{{ (bonded_tokens_pool|int * voting_power|int / 100)|int }}"
+          chain_validator_coins: "{{ (bonded_supply_divider * chain_gentx_validator|int | int +chain_gentx_validator|int)|int }}"
           # Remove the next line if you are not setting up PANIC
           panic_is_validator: 'yes'
         val3.cosmostest.network:
-          node_key_file: "<val-3-node-key>"
-          priv_validator_key_file: "<val-3-priv-validator-key>"
+          validator_moniker: validator-28
+          start_multinode: true
+          voting_power: 28
+          chain_gentx_validator: "{{ (bonded_tokens_pool|int * voting_power|int / 100)|int }}"
+          chain_validator_coins: "{{ (bonded_supply_divider * chain_gentx_validator|int | int +chain_gentx_validator|int)|int }}"
           # Remove the next line if you are not setting up PANIC
           panic_is_validator: 'yes'
         sen1.cosmostest.network:
           api_enabled: true
+          sync_multinode_genesis: true
         sen2.cosmostest.network:
           api_enabled: true
-        sync.cosmostest.network:
+          sync_multinode_genesis: true
+        sync1.cosmostest.network:
           statesync_snapshot_interval: 1000
           statesync_snapshot_keep_recent: 2
           p2p_upnp: true
           api_enabled: true
+          sync_multinode_genesis: true
+        sync2.cosmostest.network:
+          statesync_snapshot_interval: 1000
+          statesync_snapshot_keep_recent: 2
+          p2p_upnp: true
+          api_enabled: true
+          sync_multinode_genesis: true

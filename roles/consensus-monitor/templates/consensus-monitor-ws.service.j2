@@ -1,0 +1,13 @@
+[Unit]
+Description="Cosmos Monitor Websockets Service"
+After=network-online.target
+
+[Service]
+User={{ consensus_user }}
+WorkingDirectory={{ consensus_repo_path }}/server
+ExecStart={{ consensus_repo_path }}/.env/bin/python consensus_monitor_server.py -a {{ consensus_api_node_url }} -r {{ consensus_rpc_node_url }} -p {{ consensus_ws_port }}
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

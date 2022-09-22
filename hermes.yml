@@ -1,6 +1,12 @@
 ---
-# Configure a hermes node
-- hosts: hermes
+- name: Set up chains
+  hosts: node
+  become: true
+  roles:
+  - node
+
+- name: Set up relayer
+  hosts: hermes
   become: true
   roles:
   - hermes

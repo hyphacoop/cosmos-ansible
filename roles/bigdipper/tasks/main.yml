@@ -1,0 +1,12 @@
+---
+- name: base
+  import_tasks: base.yml
+
+- name: Set up bdjuno
+  import_tasks: bdjuno.yml
+
+- name: Set up Hasura
+  import_tasks: hasura.yml
+
+- name: Set up Big Dipper UI
+  import_tasks: bdui.yml

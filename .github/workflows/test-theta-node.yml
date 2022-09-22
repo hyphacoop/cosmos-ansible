@@ -1,6 +1,6 @@
 ---
 
-name: Join Theta Testnet
+name: Join Public Testnet
 on:
   workflow_dispatch:
   schedule:
@@ -11,8 +11,8 @@ on:
       - opened
       - closed
 jobs:
-  test-theta-testnet:
-    runs-on: ubuntu-latest
+  test-public-testnet:
+    runs-on: ubuntu-22.04
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3
@@ -26,10 +26,12 @@ jobs:
           python -m pip install ansible toml
       - name: Configure ansible.cfg
         run: echo "transport = local" >> ansible.cfg
+      - name: Install ansible-galaxy requirements
+        run: ansible-galaxy install -r requirements.yml
       - name: Run playbook
         run: |
-          gaiad_version=$(curl -s https://rpc.state-sync-01.theta-testnet.polypore.xyz/abci_info? | jq -r '.result.response.version')
-          ansible-playbook gaia.yml -i examples/inventory-theta.yml --extra-vars "target=local reboot=false gaiad_version=$gaiad_version gaiad_home={{ gaiad_user_home }}/.gaia gaiad_user=runner enable_swap=true swap_size=16384"
+          chain_version=$(curl -s https://rpc.state-sync-01.theta-testnet.polypore.xyz/abci_info? | jq -r '.result.response.version')
+          ansible-playbook node.yml -i examples/inventory-public-testnet.yml --extra-vars "target=local reboot=false chain_version=$chain_version chain_home={{ node_user_home }}/.gaia node_user=runner enable_swap=true swap_size=16384"
       - name: Check cosmovisor service
         run: systemctl status cosmovisor
       - name: Check blocks are being produced

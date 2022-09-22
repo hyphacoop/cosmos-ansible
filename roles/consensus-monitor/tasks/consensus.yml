@@ -1,0 +1,71 @@
+---
+- name: Checkout cosmos-consensus-monitor repo
+  git:
+    repo: "{{ consensus_repo_url }}"
+    dest: "{{ consensus_repo_path }}"
+    version: "{{ consensus_monitor_version }}"
+    force: yes
+  become_user: "{{ consensus_user }}"
+
+- name: Set up python virtual environment
+  shell: |
+    cd {{ consensus_repo_path }}
+    python -m venv .env
+  become_user: "{{ consensus_user }}"
+
+- name: Install consensus dependencies
+  pip:
+    requirements: "{{ consensus_repo_path }}/requirements.txt"
+    virtualenv: "{{ consensus_repo_path }}/.env"
+  become_user: "{{ consensus_user }}"
+
+- name: Configure Websockets endpoint in client Javascript
+  replace:
+    path: "{{ consensus_repo_path }}/client/js/consensus.js"
+    regexp: '":" \+ \"9001\" \+ \"/\"'
+    replace: '"/ws/"'
+  become_user: "{{ consensus_user }}"
+
+- name: Configure Websockets service
+  template:
+    src: consensus-monitor-ws.service.j2
+    dest: "/etc/systemd/system/{{ consensus_ws_service_name }}.service"
+
+- name: Configure UI service
+  template:
+    src: consensus-monitor-ui.service.j2
+    dest: "/etc/systemd/system/{{ consensus_ui_service_name }}.service"
+
+- name: Enable Websockets service
+  systemd:
+    daemon_reload: true
+    state: stopped
+    enabled: true
+    name: "{{ consensus_ws_service_name }}"
+
+- name: Start Websockets service
+  systemd:
+    daemon_reload: true
+    state: started
+    enabled: true
+    name: "{{ consensus_ws_service_name }}"
+  tags:
+    - consensus_start
+    - consensus_restart
+
+- name: Enable UI service
+  systemd:
+    daemon_reload: true
+    state: stopped
+    enabled: true
+    name: "{{ consensus_ui_service_name }}"
+
+- name: Start UI service
+  systemd:
+    daemon_reload: true
+    state: started
+    enabled: true
+    name: "{{ consensus_ui_service_name }}"
+  tags:
+    - consensus_start
+    - consensus_restart

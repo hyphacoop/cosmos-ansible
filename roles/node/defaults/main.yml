@@ -1,0 +1,201 @@
+---
+# General settings
+chain_binary_name: gaiad
+node_user: gaia
+node_user_home: "/home/{{node_user}}"
+chain_home: "{{node_user_home}}/.gaia"
+chain_home_clear: false
+node_unsafe_reset: false
+chain_version: v7.0.0
+chain_repository: https://github.com/cosmos/gaia.git
+chain_binary_release: "https://github.com/cosmos/gaia/releases/download/{{ chain_version }}/gaiad-{{ chain_version }}-{{binary_arch_map[ansible_architecture]}}"
+chain_binary_source: "build"
+chain_bin: "{{ node_user_home }}/go/bin/{{chain_binary_name}}"
+node_service_name: "gaiad"
+chain_gov_testing: false
+chain_voting_period: 10s
+chain_denom: uatom
+chain_id: "cosmos-testnet"
+chain_repo_dir: "{{ node_user_home }}/chain-repo"
+chain_moniker: "{{inventory_hostname}}"
+validator_moniker: "{{inventory_hostname}}"
+
+# Default variables for creating a validator
+chain_create_validator: false
+chain_gentx_validator: "8000000000"
+node_keyring: "test"
+chain_validator_coins: "1000000000000"
+
+# Default variables for airdropping tokens
+chain_airdrop: false
+chain_airdrop_coins: "1000000000"
+chain_airdrop_accounts: []
+
+# Cosmovisor settings
+# TODO: Support arbitrary cosmovisor branches
+use_cosmovisor: true
+cosmovisor_version: v1.0.0
+cosmovisor_repository: github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor
+cosmovisor_bin: "{{node_user_home}}/go/bin/cosmovisor"
+cosmovisor_home: "{{ chain_home }}/cosmovisor"
+cosmovisor_service_name: "cosmovisor"
+cosmovisor_skip_backup: true
+
+# Go configuration
+go_arch: "{{binary_arch_map[ansible_architecture]}}"
+go_version: 1.18.5
+
+# app.toml
+## app.toml: Base Configuration
+minimum_gas_prices: '0{{ chain_denom }}'
+pruning: default
+pruning_keep_recent: '0'
+pruning_keep_every: '0'
+pruning_interval: '0'
+halt_height: '0'
+halt_time: '0'
+min_retain_blocks: '0'
+inter_block_cache: true
+index_events: []
+## app.toml: Telemetry Configuration
+telemetry_service_name: ''
+telemetry_enabled: false
+telemetry_enable_hostname: false
+telemetry_enable_hostname_label: false
+telemetry_enable_service_label: false
+prometheus_retention_time: '0'
+telemetry_global_labels: []
+## app.toml: API Configuration
+api_enabled: false
+api_swagger: false
+api_port: '1317'
+api_address: tcp://0.0.0.0:{{ api_port }}
+api_max_open_connections: 1000
+api_rpc_read_timeout: 10
+api_rpc_write_timeout: 0
+api_rpc_max_body_bytes: 1000000
+api_enabled_unsafe_cors: false
+## app.toml: gRPC Configuration
+grpc_enabled: true
+grpc_port: 9090
+## app.toml: gRPC Web Configuration
+grpc_web_enabled: true
+grpc_web_port: 9091
+grpc_web_enable_unsafe_cors: false
+## app.toml: State Sync Configuration
+statesync_snapshot_interval: 0
+statesync_snapshot_keep_recent: 2
+
+# config.toml
+# config.toml: Base Config
+config_proxy_app: 'tcp://127.0.0.1:26658'
+fast_sync: true
+config_genesis_file: 'config/genesis.json'
+config_priv_validator_key_file: 'config/priv_validator_key.json'
+config_priv_validator_state_file: 'data/priv_validator_state.json'
+config_priv_validator_laddr: ''
+config_node_key_file: 'config/node_key.json'
+filter_peers: false
+abci: socket
+## config.toml: RPC Config
+rpc_port: 26657
+rpc_laddr: tcp://0.0.0.0:{{ rpc_port }}
+rpc_cors_allowed_origins: []
+rpc_cors_allowed_methods: ["HEAD", "GET", "POST"]
+rpc_cors_allowed_headers: ["Origin", "Accept", "Content-Type", "X-Requested-With", "X-Server-Time"]
+grpc_laddr: ''
+grpc_max_open_connections: 900
+rpc_unsafe: false
+rpc_max_open_connections: 900
+rpc_max_subscription_clients: 100
+rpc_max_subscriptions_per_client: 5
+rpc_timeout_broadcast_tx_commit: 10s
+rpc_max_body_bytes: 1000000
+rpc_max_header_bytes: 1048576
+rpc_tls_cert_file: ''
+rpc_tls_key_file: ''
+rpc_pprof_port: 6060
+rpc_pprof_laddr: localhost:{{ rpc_pprof_port }}
+## config.toml: P2P Config
+p2p_port: '26656'
+p2p_laddr: tcp://0.0.0.0:{{ p2p_port }}
+p2p_external_address: ''
+p2p_seeds: ''
+p2p_persistent_peers: ''
+p2p_upnp: false
+p2p_addr_book_file: 'config/addrbook.json'
+p2p_addr_book_strict: true
+p2p_max_num_inbound_peers: 40
+p2p_max_num_outbound_peers: 10
+p2p_unconditional_peer_ids: ''
+p2p_pex: true
+p2p_seed_mode: false
+p2p_private_peer_ids: false
+p2p_allow_duplicate_ip: false
+p2p_handshake_timeout: 20s
+p2p_dial_timeout: 3s
+## config.toml: State Sync Config
+statesync_enabled: false
+statesync_rpc_servers: ''
+statesync_trust_height: 0
+statesync_trust_hash: ''
+statesync_trust_period: 168h0m0s
+statesync_discovery_time: 15s
+statesync_chunk_request_timeout: 10s
+statesync_chunk_fetchers: '4'
+statesync_auto_populate: true
+## config.toml: Fast Sync Config
+fastsync_version: v0
+## config.toml: Transaction Indexer Config
+config_indexer: kv
+## config.toml: Instrumentation Config
+prometheus_enabled: false
+prometheus_listen_addr: :26660
+instrumentation_max_open_connnections: 3
+instrumentation_namespace: tendermint
+
+# client.toml
+client_keyring_backend: test
+client_output_format: text
+client_rpc_interface: "tcp://localhost:{{ rpc_port }}"
+client_broadcast_mode: sync
+
+# Faucet settings
+faucet_enabled: false
+
+# Node Exporter config
+node_exporter_port: 9100
+
+# Prometheus / Grafana defaults
+grafana_ssh_url: root@monitor.testnet.com
+monitoring_prometheus: false
+
+# PANIC monitoring
+panic_ssh_url: root@monitor.testnet.com
+monitoring_panic: false
+panic_config_file: /home/panic/panic_cosmos/config/user_config_nodes.ini
+panic_is_validator: 'no'
+panic_include_in_node_monitor: 'yes'
+panic_include_in_network_monitor: 'yes'
+
+# Reboot after setup
+reboot: true
+
+# Vars with no defaults (to prevent code from running)
+# These don't get put into config files
+# genesis_url: ""
+# genesis_file: ""
+# addrbook_file: ""
+# addrbook_url: "https://quicksync.io/addrbook.cosmos.json"
+# node_key_file: ""
+# priv_validator_key_file
+
+# Architecture mapping
+binary_arch_map:
+  aarch64: "linux-arm64"
+  x86_64: "linux-amd64"
+
+# Multi-validator deployment
+start_multinode: false
+sync_multinode_genesis: false
+dynamic_p2p_persistent_peers: false

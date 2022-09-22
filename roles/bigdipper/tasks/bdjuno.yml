@@ -1,0 +1,193 @@
+---
+
+- name: "Checkout BDJuno"
+  become_user: "{{bigdipper_user}}"
+  git:
+    repo: 'https://github.com/forbole/bdjuno.git'
+    dest: "{{bdjuno_dir}}"
+    version: "{{bdjuno_version}}"
+
+- name: "Install postgres"
+  apt:
+    state: present
+    pkg:
+      - postgresql
+      - postgresql-contrib
+
+- name: Remove old database
+  become_user: postgres
+  community.postgresql.postgresql_db:
+    name: "{{bigdipper_db}}"
+    state: absent
+
+- name: Create postgres database
+  become_user: postgres
+  community.postgresql.postgresql_db:
+    name: "{{bigdipper_db}}"
+
+- name: Configure users on postgres
+  become_user: postgres
+  community.postgresql.postgresql_user:
+    db: "{{bigdipper_db}}"
+    name: "{{bigdipper_db_user}}"
+    password: "{{bigdipper_db_password}}"
+
+- name: Grant user access to database
+  become_user: postgres
+  community.postgresql.postgresql_privs:
+    db: "{{bigdipper_db}}"
+    privs: ALL
+    type: database
+    obj: "{{bigdipper_db}}"
+    role: "{{bigdipper_db_user}}"
+
+- name: Find bdjuno schema files
+  find:
+    paths: "{{bdjuno_dir}}/database/schema"
+  register: bdjuno_schemas
+
+- name: Run postgresql bdjuno setup scripts
+  community.postgresql.postgresql_script:
+    db: "{{bigdipper_db}}"
+    path: "{{ item.path }}"
+    login_user: "{{bigdipper_db_user}}"
+    login_password: "{{bigdipper_db_password}}"
+    login_host: "127.0.0.1"
+  with_items: "{{ bdjuno_schemas.files | sort(attribute='path') }}"
+
+- name: "Install BDJuno"
+  become_user: "{{bigdipper_user}}"
+  shell: |
+    export PATH=$PATH:/usr/local/go/bin:/home/{{bigdipper_user}}/go/bin
+    cd {{bdjuno_dir}}
+    make install
+    bdjuno init --home {{bdjuno_home}} --replace
+  args:
+    executable: /bin/bash
+
+# Copy config over from template?
+- name: "Generate bdjuno config"
+  become_user: "{{bigdipper_user}}"
+  template:
+    src: bdjuno-config.yaml.j2
+    dest: "{{bdjuno_home}}/config.yaml"
+
+# Copy genesis file or download from URL: we want it in {{bdujo_home}}/genesis.json
+- name: check if genesis_file is gz or not
+  when: genesis_file is defined
+  stat:
+    path: '{{genesis_file}}'
+    get_mime: true
+  delegate_to: localhost
+  become: false
+  register: file_type
+
+- name: File type of {{genesis_file}}
+  when: genesis_file is defined
+  debug:
+    msg: '{{file_type.stat.mimetype}}'
+
+- name: gzip the file if not zipped
+  when:
+    - genesis_file is defined
+    - file_type.stat.mimetype == "text/plain"
+  archive:
+    path: '{{genesis_file}}'
+    dest: '{{genesis_file}}.gz'
+    format: gz
+  delegate_to: localhost
+  become: false
+
+- name: set genesis_file to include .gz
+  when:
+    - genesis_file is defined
+    - file_type.stat.mimetype == "text/plain"
+  set_fact:
+    genesis_file: '{{ genesis_file }}.gz'
+
+- name: copy {{genesis_file}} to remote server
+  when: genesis_file is defined
+  copy:
+    src: '{{genesis_file}}'
+    dest: '{{bigdipper_user_home}}/genesis.json.gz'
+    owner: '{{bigdipper_user}}'
+    group: '{{bigdipper_user}}'
+
+- name: extract {{genesis_file}} to {{bdjuno_home}}/genesis.json
+  when: genesis_file is defined
+  shell: |
+    gunzip -c $HOME/genesis.json.gz > {{bdjuno_home}}/genesis.json
+  become_user: "{{bigdipper_user}}"
+
+- name: download genesis file
+  when: genesis_url is defined
+  get_url:
+    url: "{{genesis_url}}"
+    dest: "{{ bigdipper_user_home }}/genesis.data"
+    mode: 0644
+  become_user: "{{bigdipper_user}}"
+
+- name: Check file type of downloaded genesis file
+  when: genesis_url is defined
+  stat:
+    path: '{{bigdipper_user_home}}/genesis.data'
+    get_mime: true
+  register: file_type
+
+- name: File type of {{bigdipper_user_home}}/genesis.data
+  when: genesis_url is defined
+  debug:
+    msg: '{{file_type.stat.mimetype}}'
+
+- name: Extract the file if genesis is gzip
+  when:
+    - genesis_url is defined
+    - file_type.stat.mimetype == "application/gzip"
+  shell: |
+    gunzip -c $HOME/genesis.data > {{bdjuno_home}}/genesis.json
+  become_user: "{{bigdipper_user}}"
+
+- name: Copy non-zipped genesis to genesis config (plain text)
+  when:
+    - genesis_url is defined
+    - file_type.stat.mimetype == "text/plain"
+  copy:
+    src: '{{bigdipper_user_home}}/genesis.data'
+    dest: '{{bdjuno_home}}/genesis.json'
+    owner: '{{bigdipper_user}}'
+    group: '{{bigdipper_user}}'
+    remote_src: true
+
+- name: Copy non-zipped genesis to genesis config (json)
+  when:
+    - genesis_url is defined
+    - file_type.stat.mimetype == "application/json"
+  copy:
+    src: '{{bigdipper_user_home}}/genesis.data'
+    dest: '{{bdjuno_home}}/genesis.json'
+    owner: '{{bigdipper_user}}'
+    group: '{{bigdipper_user}}'
+    remote_src: true
+
+- name: "Parse genesis file with bdjuno"
+  become_user: "{{bigdipper_user}}"
+  shell: |
+    export PATH=$PATH:/usr/local/go/bin:/home/{{bigdipper_user}}/go/bin
+    bdjuno parse genesis-file --home {{bdjuno_home}} --genesis-file-path {{bdjuno_home}}/genesis.json
+
+- name: "Set up bdjuno systemd service"
+  template:
+    src: bdjuno.service.j2
+    dest: "/etc/systemd/system/{{bdjuno_service_name}}.service"
+
+- name: "Restart journalctl: the logs must flow"
+  systemd:
+    state: restarted
+    name: systemd-journald
+
+- name: "Run bdjuno systemd service"
+  systemd:
+    daemon_reload: true
+    state: restarted
+    enabled: true
+    name: "{{bdjuno_service_name}}"

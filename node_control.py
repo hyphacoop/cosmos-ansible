@@ -2,14 +2,14 @@
 
 """
 Ansible-backed node management operations:
-./gaia-control.py [-i <inventory file>] [-t target] <operation>
+./node-control.py [-i <inventory file>] [-t target] <operation>
 -i is optional, it defaults to inventory.yml
 The target option is the server IP or domain
 Operations:
-restart: restarts the gaiad/cosmovisor service
-stop: stops the gaiad/cosmovisor service
-start: starts the gaiad/cosmovisor service
-reset: resets the gaia database
+restart: restarts the chain service
+stop: stops the chain service
+start: starts the chain service
+reset: resets the chain database
 reboot: reboots the host
 """
 
@@ -33,36 +33,36 @@ inventory = args.i
 target = args.t
 
 if operation == "restart":
-    print(os.popen("ansible-playbook gaia.yml -i " +
-                   inventory + " --tags 'gaiad_restart'").read())
+    print(os.popen("ansible-playbook node.yml -i " +
+                   inventory + " -e 'target=" + target + " reboot=false' --tags 'chain_restart'").read())
     sys.exit(0)
 
 if operation == "stop":
-    print(os.popen("ansible-playbook gaia.yml -i " +
-                   inventory + " -e 'target=" + target + "' --tags 'gaiad_stop'").read())
+    print(os.popen("ansible-playbook node.yml -i " +
+                   inventory + " -e 'target=" + target + "' --tags 'chain_stop'").read())
     sys.exit(0)
 
 if operation == "start":
-    print(os.popen("ansible-playbook gaia.yml -i " +
-                   inventory + " -e 'target=" + target + "' --tags 'gaiad_start'").read())
+    print(os.popen("ansible-playbook node.yml -i " +
+                   inventory + " -e 'target=" + target + " reboot=false' --tags 'chain_start'").read())
     sys.exit(0)
 
 if operation == "reset":
     answer = input(
-        "This will reset gaiad database on all nodes in inventory. "
+        "This will reset chain database on all nodes in inventory. "
         "Are you sure you want to continue (yes/no)? ")
     if answer.lower() in ["yes"]:
-        print(os.popen("ansible-playbook gaia.yml -i " +
+        print(os.popen("ansible-playbook node.yml -i " +
                        inventory +
-                       " --extra-vars 'gaiad_unsafe_reset=true target=" + target + "' "
-                       " --tags 'gaiad_stop,gaiad_reset,gaiad_start'").read())
+                       " --extra-vars 'node_unsafe_reset=true target=" + target + "' "
+                       " --tags 'chain_stop,chain_reset,chain_start'").read())
         sys.exit(0)
     else:
         print("Aborting...")
         sys.exit(2)
 
 if operation == "reboot":
-    print(os.popen("ansible-playbook gaia.yml -i " + inventory +
+    print(os.popen("ansible-playbook node.yml -i " + inventory +
                    " --extra-vars 'reboot=true target=" + target + "' --tags 'reboot'").read())
     sys.exit(0)
 

@@ -1,19 +1,4 @@
 ---
-- name: Check golang version
-  shell: |
-    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
-    go version
-  register: go_current_version
-  ignore_errors: true
-
-- name: Extract golang
-  # TODO: Auto-detect go_arch
-  when: not go_version in go_current_version.stdout
-  unarchive:
-    src: "https://golang.org/dl/go{{go_version}}.{{go_arch}}.tar.gz"
-    dest: /usr/local
-    remote_src: yes
-  become: true
 
 # TODO: Firewall
 # - name: set up firewall (block by default?)
