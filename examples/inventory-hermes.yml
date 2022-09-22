@@ -4,18 +4,7 @@ all:
   vars:
     chain_home_clear: true
     chain_version: v7.0.2
-    hermes_version: latest
-    api_enabled: true
-    chain_use_ssl_proxy: true
-    chain_api_host: "rest"
-    chain_rpc_host: "rpc"
-    chain_p2p_host: "p2p"
-    chain_grpc_host: "grpc"
-    letsencrypt_email: "validator@devnet.com"
-    enable_swap: false
-    swap_size: 8192
-    monitoring_prometheus: true
-    grafana_ssh_url: root@monitor.devnet.com
+    hermes_version: v1.0.0
     ansible_user: root
   children:
     node:
@@ -25,20 +14,21 @@ all:
           chain_create_validator: true
           chain_airdrop: true
           chain_airdrop_accounts:
-            - cosmos*
-            - cosmos*
+            - cosmos1r5v5srda7xfth3hn2s26txvrcrntldjumt8mhl  # relayer account
         my-chain-2.dev.testnet.com:
           chain_id: my-chain-2
           chain_create_validator: true
           chain_airdrop: true
           chain_airdrop_accounts:
-            - cosmos*
-            - cosmos*
+            - cosmos1r5v5srda7xfth3hn2s26txvrcrntldjumt8mhl  # relayer account
     hermes:
       hosts:
         hermes.dev.testnet.com:
+          hermes_relayer_mnemonics: true
           hermes_chains:
             my-chain-1:
+              hermes_relayer_mnemonic: 'examples/validator-keys/validator-40/self-delegation-wallet-mnemonic.txt'
+              hermes_port_name: transfer
               hermes_chain_rpc_url_schema: http
               hermes_chain_rpc_hostname: my-chain-1.dev.testnet.com
               hermes_chain_rpc_port: 26657
@@ -58,6 +48,8 @@ all:
               hermes_chain_trusting_period: '1days'
               hermes_chain_trust_threshold: "{ numerator = '1', denominator = '3' }"
             my-chain-2:
+              hermes_relayer_mnemonic: 'examples/validator-keys/validator-40/self-delegation-wallet-mnemonic.txt'
+              hermes_port_name: transfer
               hermes_chain_rpc_url_schema: http
               hermes_chain_rpc_hostname: my-chain-2.dev.testnet.com
               hermes_chain_rpc_port: 26657
