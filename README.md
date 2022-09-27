@@ -88,7 +88,7 @@ The fresh state test is run using GitHub Actions and results are displayed with 
 
 ### Mainnet exported genesis (bi-weekly)
 
-We export the genesis from `cosmoshub-4` and modified using our [tinkerer script](https://github.com/hyphacoop/cosmos-genesis-tinkerer). The genesis files can be accessed from [here](https://files.polypore.xyz/genesis/)
+We export a genesis file from `cosmoshub-4` and modify it using our [tinkerer script](https://github.com/hyphacoop/cosmos-genesis-tinkerer). The exported and modified genesis files can be accessed [here](https://files.polypore.xyz/genesis/).
 
 We run the stateful tests with the modified genesis file when there is a major version of Gaia that is higher than the major version running on `cosmoshub-4`.
 
