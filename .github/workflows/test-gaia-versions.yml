@@ -86,7 +86,7 @@ jobs:
       - name: Install ansible-galaxy requirements
         run: ansible-galaxy install -r requirements.yml
       - name: Run playbook
-        run: ansible-playbook node.yml -i examples/inventory-local.yml --extra-vars "target=local reboot=false chain_version=${{ matrix.gaia_version }} chain_home={{ node_user_home }}/.gaia chain_gov_testing=true node_user=runner"
+        run: ansible-playbook node.yml -i examples/inventory-local.yml --extra-vars "target=local reboot=false chain_version=${{ matrix.gaia_version }} chain_home={{ node_user_home }}/.gaia chain_gov_testing=true node_user=runner cosmovisor_invariants_flag=''"
       - name: Check cosmovisor service
         run: systemctl status cosmovisor
       - name: Check blocks are being produced

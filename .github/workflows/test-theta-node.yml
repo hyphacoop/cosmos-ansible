@@ -31,7 +31,7 @@ jobs:
       - name: Run playbook
         run: |
           chain_version=$(curl -s https://rpc.state-sync-01.theta-testnet.polypore.xyz/abci_info? | jq -r '.result.response.version')
-          ansible-playbook node.yml -i examples/inventory-public-testnet.yml --extra-vars "target=local reboot=false chain_version=$chain_version chain_home={{ node_user_home }}/.gaia node_user=runner enable_swap=true swap_size=16384"
+          ansible-playbook node.yml -i examples/inventory-public-testnet.yml --extra-vars "target=local reboot=false chain_version=$chain_version chain_home={{ node_user_home }}/.gaia node_user=runner enable_swap=true swap_size=16384 cosmovisor_invariants_flag=''"
       - name: Check cosmovisor service
         run: systemctl status cosmovisor
       - name: Check blocks are being produced

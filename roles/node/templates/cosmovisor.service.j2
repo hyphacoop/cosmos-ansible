@@ -4,7 +4,7 @@ After=network-online.target
 
 [Service]
 User={{node_user}}
-ExecStart={{ cosmovisor_bin }} start --x-crisis-skip-assert-invariants --home {{ chain_home }}
+ExecStart={{ cosmovisor_bin }} start {{ cosmovisor_invariants_flag }}--home {{ chain_home }}
 Restart=always
 RestartSec=3
 LimitNOFILE=4096
