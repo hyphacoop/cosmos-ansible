@@ -1,8 +1,10 @@
 ---
 - name: Set variables for api endpoint
   set_fact:
-    endpoint_port: '{{api_port}}'
+    proxy_location: 'http://127.0.0.1:{{api_port}}'
     site_hostname: '{{chain_api_host}}.{{inventory_hostname}}'
+    websocket: "false"
+    grpc_vhost: "false"
   when: chain_use_ssl_proxy | default(false) | bool
 
 - name: Setup nginx SSL for chain api endpoint
@@ -12,8 +14,11 @@
 
 - name: Set variables for rpc endpoint
   set_fact:
-    endpoint_port: '{{rpc_port}}'
+    proxy_location: 'http://127.0.0.1:{{rpc_port}}'
     site_hostname: '{{chain_rpc_host}}.{{inventory_hostname}}'
+    websocket: "true"
+    websocket_path: '/websocket'
+    grpc_vhost: "false"
   when: chain_use_ssl_proxy | default(false) | bool
 
 - name: Setup nginx SSL for chain rpc endpoint
@@ -23,9 +28,10 @@
 
 - name: Set variables for GRPC endpoint
   set_fact:
-    endpoint_port: '{{grpc_port}}'
+    proxy_location: 'grpc://127.0.0.1:{{grpc_port}}'
     site_hostname: '{{chain_grpc_host}}.{{inventory_hostname}}'
-    grpc_vhost: true
+    websocket: "false"
+    grpc_vhost: "true"
   when: chain_use_ssl_proxy | default(false) | bool
 
 - name: Setup nginx SSL for chain GRPC endpoint
@@ -35,8 +41,10 @@
 
 - name: Set variables for P2P endpoint
   set_fact:
-    endpoint_port: '{{p2p_port}}'
+    proxy_location: 'http://127.0.0.1:{{p2p_port}}'
     site_hostname: '{{chain_p2p_host}}.{{inventory_hostname}}'
+    grpc_vhost: "false"
+    websocket: "false"
   when: chain_use_ssl_proxy | default(false) | bool
 
 - name: Setup nginx SSL for chain P2P endpoint
