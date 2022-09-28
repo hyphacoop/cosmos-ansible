@@ -1,9 +1,5 @@
 ---
 
-- name: Set reverse proxy path in vars
-  set_fact:
-    proxy_location: 'http://127.0.0.1:{{endpoint_port}}'
-
 - name: Install nginx packages
   apt:
     pkg:
