@@ -30,7 +30,7 @@ jobs:
         run: ansible-galaxy install -r requirements.yml
       - name: Run playbook
         run: |
-          ansible-playbook node.yml -i examples/inventory-cosmos-hub.yml --extra-vars "target=local reboot=false chain_home={{ node_user_home }}/.gaia node_user=runner enable_swap=true swap_size=16384"
+          ansible-playbook node.yml -i examples/inventory-cosmos-hub.yml --extra-vars "target=local reboot=false chain_home={{ node_user_home }}/.gaia node_user=runner enable_swap=true swap_size=16384 cosmovisor_invariants_flag=''"
       - name: Check cosmovisor service
         run: systemctl status cosmovisor
       - name: Check blocks are being produced
