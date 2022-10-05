@@ -39,7 +39,7 @@ jobs:
           chain_registry="https://registry.ping.pub/cosmoshub/chain.json"
           tinkered_genesis_url="https://files.polypore.xyz/genesis/mainnet-genesis-tinkered"
           gh_repo_name="cosmos/gaia"
-          current_chain_version=$(curl -s ${chain_registry} | jq -r '.codebase.recommended_version')
+          current_chain_version=$(wget -q -O - ${chain_registry} | jq -r '.codebase.recommended_version')
           current_github_version=$(curl -s "https://api.github.com/repos/${gh_repo_name}/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
           current_chain_version_major=$(echo $current_chain_version | cut -c 2)
           current_github_version_major=$(echo $current_github_version | cut -c 2)
