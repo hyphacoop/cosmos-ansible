@@ -42,7 +42,7 @@ To join the Cosmos Hub [public testnet](https://github.com/cosmos/testnets/tree/
 
 Watch the video below to see the playbook in action:
 
-[![Join the Cosmos Hub Public Testnet](https://img.youtube.com/vi/SYt0EC5pcY0/0.jpg)](https://www.youtube.com/watch?v=SYt0EC5pcY0)
+[![Join the Cosmos Hub Public Testnet](https://img.youtube.com/vi/4KkMblQ6wcY/0.jpg)](https://youtu.be/4KkMblQ6wcY)
 
 ## 🌳 Explore Further
 
