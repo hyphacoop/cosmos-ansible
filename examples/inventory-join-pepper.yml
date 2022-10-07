@@ -1,0 +1,23 @@
+---
+# yamllint disable rule:line-length
+all:
+  vars:
+    ansible_user: root
+    node_user: pepper
+    chain_home: "{{node_user_home}}/.isc-pepper"
+    chain_binary_name: interchain-security-cd
+    chain_version: tags/v0.1.4
+    chain_repository: https://github.com/cosmos/interchain-security.git
+    genesis_url: "https://raw.githubusercontent.com/hyphacoop/ics-testnets/main/private-testnet/ccv-pepper-genesis.json"
+    chain_id: pepper
+    chain_home_clear: true
+    p2p_persistent_peers: "2bd4797ad1812fc7c90737e9ddef38114bd77229@159.89.126.190:26656"
+    chain_moniker: "peppy"
+    node_service_name: "peppy"
+    cosmovisor_service_name: "cv-peppy"
+    reboot: false
+  children:
+    node:
+      hosts:
+        "{{ target }}":
+          fast_sync: false

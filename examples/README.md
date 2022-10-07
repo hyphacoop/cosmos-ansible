@@ -39,13 +39,13 @@ This playbook obtains a trust block height and the corresponding hash ID from th
 
 Set up nodes to join the [Interchain Security Testnet](https://informalsystems.notion.site/Interchain-Security-Testnet-cc65af3d57724c2bab52a04f3f3d3a7d) and run a validator.
 
-Before running the commands below, make sure you have installed Ansible as per [these requirements](https://github.com/hyphacoop/cosmos-ansible/tree/next#-requirements).
+Before running the commands below, make sure you have installed Ansible as per [these requirements](https://github.com/hyphacoop/cosmos-ansible/tree/main#-requirements).
 
-### Provider chain
+### Provider Chain
 
 * **Inventory file:** [`inventory-join-provider.yml`](inventory-join-provider.yml)
 * **Chain ID:** `provider`
-* **Chain version:** `tags/v0.1.4`
+* **Interchain Security version:** `tags/v0.1.4`
 
 Run the playbook:
 ```
@@ -58,33 +58,44 @@ After the play has finished running:
 - `priv_validator_key.json`
 - `node_key.json`
 
-2. Generate a keypair for your validator:
+2. If you have not set up a validator, generate a keypair for it:
 ```
 interchain-security-pd keys add <validator_keypair_name> --home ~/.isp --keyring-backend test --output json > ~/validator-keypair.json 2>&1
 ```
 
-### Consumer chain
+---
 
-* **Inventory file:** [`inventory-join-consumer.yml`](inventory-join-consumer.yml)
-* **Chain ID:** `consumer`
-* **Chain version:** `tags/v0.1.4`
+### `salt` Consumer Chain
+
+* **Inventory file:** [`inventory-join-salt.yml`](inventory-join-salt.yml)
+* **Chain ID:** `salt`
+* **Interchain Security version:** `tags/v0.1.4`
 
 Run the playbook using the keys collected from the provider chain node:
 ```
-ansible-playbook node.yml -i examples/inventory-join-consumer.yml -e 'target=SERVER_IP_OR_DOMAIN node_key_file=node_key.json priv_validator_key_file=priv_validator_key.json"
+ansible-playbook node.yml -i examples/inventory-join-salt.yml -e 'target=SERVER_IP_OR_DOMAIN node_key_file=node_key.json priv_validator_key_file=priv_validator_key.json"
 ```
 
-After the play has finished running:
+### `pepper` Consumer Chain
+
+* **Inventory file:** [`inventory-join-pepper.yml`](inventory-join-pepper.yml)
+* **Chain ID:** `pepper`
+* **Interchain Security version:** `tags/v0.1.4`
+
+Run the playbook using the keys collected from the provider chain node:
+```
+ansible-playbook node.yml -i examples/inventory-join-pepper.yml -e 'target=SERVER_IP_OR_DOMAIN node_key_file=node_key.json priv_validator_key_file=priv_validator_key.json"
+```
+
+---
+
+If you have not set up a validator, do the following after the play has finished running:
 
 3. Get tokens for your validator address.
 4. Bond the validator on the provider chain:
 ```
 interchain-security-pd tx staking create-validator --amount 2000000stake --pubkey <validator_public_key> --from <validator_keypair_name> --keyring-backend test --home ~/.isp --chain-id provider --commission-max-change-rate 0.01 --commission-max-rate 0.2 --commission-rate 0.1 --moniker <validator_moniker> --min-self-delegation 1 -b block -y
 ```
-
-### Run the playbook 
-
-This playbook obtains a trust block height and the corresponding hash ID from the first RPC server listed in the inventory file in order to use the state sync feature. 
 
 ## Join the Rho Devnet
 
