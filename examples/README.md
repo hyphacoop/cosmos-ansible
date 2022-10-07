@@ -39,7 +39,7 @@ This playbook obtains a trust block height and the corresponding hash ID from th
 
 Set up nodes to join the [Interchain Security Testnet](https://informalsystems.notion.site/Interchain-Security-Testnet-cc65af3d57724c2bab52a04f3f3d3a7d) and run a validator.
 
-Before running the commands below, make sure you have installed Ansible as per [these requirements](https://github.com/hyphacoop/cosmos-ansible/tree/next#-requirements).
+Before running the commands below, make sure you have installed Ansible as per [these requirements](https://github.com/hyphacoop/cosmos-ansible/tree/main#-requirements).
 
 ### Provider Chain
 
