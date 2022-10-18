@@ -21,10 +21,10 @@
   set_fact:
     chain_version: '{{ chain_registry_json.json.codebase.recommended_version }}'
 
-- name: Set genesis_url to {{ chain_registry_json.json.genesis.genesis_url }}
+- name: Set genesis_url to {{ chain_registry_json.json.codebase.genesis.genesis_url }}
   when: chain_registry is defined
   set_fact:
-    genesis_url: '{{ chain_registry_json.json.genesis.genesis_url }}'
+    genesis_url: '{{ chain_registry_json.json.codebase.genesis.genesis_url }}'
 
 # Get chain_version number
 - name: parse version
