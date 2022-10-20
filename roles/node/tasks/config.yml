@@ -26,7 +26,7 @@
     key: "{{ ssh_pub_key.stdout }}"
 
 - name: reset gaiad database (command for <v7.0.1)
-  when: chain_binary_name == "gaiad" and node_unsafe_reset and ((major_version|int == 7 and patch_version|int == 0) or major_version|int < 7)
+  when: chain_binary_name == "gaiad" and node_unsafe_reset and ((major_version|int == 7 and minor_version|int == 0 and patch_version|int == 0) or major_version|int < 7)
   shell: |
     cd $HOME
     {{chain_bin}} unsafe-reset-all --home {{chain_home}}
@@ -35,7 +35,7 @@
     - chain_reset
 
 - name: reset gaiad database (command for >v7.0.0)
-  when: chain_binary_name == "gaiad" and node_unsafe_reset and ((major_version|int == 7 and patch_version|int >= 1) or major_version|int > 7)
+  when: chain_binary_name == "gaiad" and node_unsafe_reset and ((major_version|int == 7 and minor_version|int == 0 and patch_version|int >= 1) or (major_version|int == 7 and minor_version|int >= 1) or major_version|int > 7)
   shell: |
     cd $HOME
     {{chain_bin}} tendermint unsafe-reset-all --home {{chain_home}}
