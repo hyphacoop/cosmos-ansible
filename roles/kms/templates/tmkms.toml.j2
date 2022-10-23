@@ -23,13 +23,11 @@ path = "{{ kms_home }}/.tmkms/config/secrets/priv_validator_key"
 {% if kms_mode == "yubihsm" %}
 [[providers.yubihsm]]
 adapter = { type = "usb" }
-auth = { key = {{kms_hsm_id | default(1) }}, password = "{{kms_hsm_pass | default("password")"}}  }
+auth = { key = {{kms_hsm_id | default(1) }}, password = "{{kms_hsm_pass | default("password")}}" }
 keys = [
     { key = 1, type = "consensus", chain_ids = ["{{chain_id}}"] },
 ]
-
 {% endif %}
-
 
 ## Validator Configuration
 
