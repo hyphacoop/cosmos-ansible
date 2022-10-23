@@ -42,7 +42,7 @@
   when: tmkms_exists is failed
   shell: |
     PATH=$PATH:$HOME/.cargo/bin
-    cargo install tmkms --features=softsign #--features=yubihsm --features=ledger --features=softsign --features=yubihsm-server
+    cargo install tmkms --features=softsign --features=yubihsm
   become_user: "{{kms_user}}"
 
 - name: Create tmkms directory
