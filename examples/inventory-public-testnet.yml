@@ -3,7 +3,7 @@
 all:
   vars:
     ansible_user: root
-    chain_version: v7.0.2
+    chain_version: v7.1.0
     genesis_url: "https://github.com/cosmos/testnets/raw/master/public/genesis.json.gz"
     chain_id: theta-testnet-001
     chain_home_clear: false
@@ -14,7 +14,7 @@ all:
     chain_p2p_host: "p2p"
     chain_grpc_host: "grpc"
     p2p_seeds: "639d50339d7045436c756a042906b9a69970913f@seed-01.theta-testnet.polypore.xyz:26656,3e506472683ceb7ed75c1578d092c79785c27857@seed-02.theta-testnet.polypore.xyz:26656"
-    reboot: false
+    reboot: true
   children:
     node:
       hosts:

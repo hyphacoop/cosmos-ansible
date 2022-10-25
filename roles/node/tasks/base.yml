@@ -53,7 +53,9 @@
 
 - name: Set up pip dependencies
   pip:
+    state: latest
     name:
+      - pyOpenSSL
       - toml
       - github3.py
 
