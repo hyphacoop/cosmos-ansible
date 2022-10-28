@@ -87,6 +87,17 @@ Run the playbook using the keys collected from the provider chain node:
 ansible-playbook node.yml -i examples/inventory-join-pepper.yml -e 'target=SERVER_IP_OR_DOMAIN node_key_file=node_key.json priv_validator_key_file=priv_validator_key.json"
 ```
 
+### `sugar` Consumer Chain
+
+* **Inventory file:** [`inventory-join-sugar.yml`](inventory-join-sugar.yml)
+* **Chain ID:** `sugar`
+* **Binary:** `neutrond` ([interchain-security-with-governance branch](https://github.com/neutron-org/neutron/tree/feat/interchain-security-with-governance))
+
+Run the playbook using the keys collected from the provider chain node:
+```
+ansible-playbook node.yml -i examples/inventory-join-sugar.yml -e 'target=SERVER_IP_OR_DOMAIN node_key_file=node_key.json priv_validator_key_file=priv_validator_key.json"
+```
+
 ---
 
 If you have not set up a validator, do the following after the play has finished running:

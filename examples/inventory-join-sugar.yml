@@ -1,0 +1,23 @@
+---
+# yamllint disable rule:line-length
+all:
+  vars:
+    ansible_user: root
+    node_user: sugar
+    chain_home: "{{node_user_home}}/.isc-sugar"
+    chain_binary_name: neutrond
+    chain_binary_release: https://github.com/neutron-org/neutron/raw/feat/interchain-security-with-governance/neutrond
+    chain_binary_source: release
+    genesis_url: "https://raw.githubusercontent.com/hyphacoop/ics-testnets/main/private-testnet/ccv-sugar-genesis.json"
+    chain_id: pepper
+    chain_home_clear: true
+    p2p_persistent_peers: "2bd4797ad1812fc7c90737e9ddef38114bd77229@159.203.29.24:26656"
+    chain_moniker: "sugary"
+    node_service_name: "sugary"
+    cosmovisor_service_name: "cv-sugary"
+    reboot: false
+  children:
+    node:
+      hosts:
+        "{{ target }}":
+          fast_sync: false
