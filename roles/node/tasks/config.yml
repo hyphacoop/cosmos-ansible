@@ -114,7 +114,7 @@
 
 # Create validator
 - name: create validator
-  when: chain_create_validator
+  when: chain_create_validator and not chain_recover_validator
   shell: |
     cd $HOME
     {{chain_bin}} keys add validator --keyring-backend {{node_keyring}} --home {{chain_home}} --output json
@@ -123,38 +123,54 @@
   become_user: "{{node_user}}"
 
 - name: save validator name, address, and mnemonic
-  when: chain_create_validator
+  when: chain_create_validator and not chain_recover_validator
   copy:
     content="{{chain_create_validator_output.stderr}}"
     dest="{{chain_home}}/validator.json"
   become_user: "{{node_user}}"
 
+- name: recover validator
+  when: chain_recover_validator
+  shell: |
+    cd $HOME
+    echo {{ self_delegation_mnemonic }} | {{chain_bin}} keys add validator --keyring-backend {{node_keyring}} --home {{chain_home}} --output json --recover
+    {{chain_bin}} add-genesis-account validator {{chain_validator_coins}}{{ chain_denom }} --home {{chain_home}} --keyring-backend="{{node_keyring}}"
+  register: chain_recover_validator_output
+  become_user: "{{node_user}}"
+
+- name: save validator name, address, and mnemonic
+  when: chain_recover_validator
+  copy:
+    content="{{chain_recover_validator_output.stderr}}"
+    dest="{{chain_home}}/validator.json"
+  become_user: "{{node_user}}"
+
 - name: create genesis accounts
-  when: chain_airdrop and chain_create_validator
+  when: chain_airdrop
   shell: |
     cd $HOME
     {{chain_bin}} add-genesis-account {{ item }} {{chain_airdrop_coins}}{{ chain_denom }} --home {{chain_home}}
   become_user: "{{node_user}}"
   loop: "{{ chain_airdrop_accounts }}"
 
-- name: restore delegator account
-  when: chain_restore_delegator
+- name: recover delegator account
+  when: chain_recover_delegator
   shell: |
     cd $HOME
     echo {{ delegator_account_mnemonic }} | {{ chain_bin }} keys add {{ delegator_account_name }} --keyring-backend {{ node_keyring }} --home {{ chain_home }} --output json --recover
     {{ chain_bin }} add-genesis-account {{ delegator_account_name }} {{ delegator_account_coins }}{{ chain_denom }} --home {{ chain_home }} --keyring-backend {{ node_keyring }}
-  register: chain_restore_delegator_output
+  register: chain_recover_delegator_output
   become_user: "{{ node_user }}"
 
 - name: save delegator name and address
-  when: chain_restore_delegator
+  when: chain_recover_delegator
   copy:
-    content="{{ chain_restore_delegator_output.stderr }}"
+    content="{{ chain_recover_delegator_output.stderr }}"
     dest="{{chain_home}}/{{delegator_account_name}}.json"
   become_user: "{{ node_user }}"
 
 - name: gentx validator
-  when: chain_create_validator
+  when: chain_create_validator or chain_recover_validator
   shell: |
     cd $HOME
     {{chain_bin}} gentx validator {{chain_gentx_validator}}{{ chain_denom }} --keyring-backend="{{node_keyring}}" --home {{chain_home}} --moniker {{ validator_moniker }} --chain-id {{chain_id}}
@@ -217,7 +233,7 @@
   throttle: 1
 
 - name: collect gentx
-  when: chain_create_validator
+  when: chain_create_validator or chain_recover_validator
   shell: |
     cd $HOME
     PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
