@@ -80,6 +80,7 @@
       - "Last connection: {{ connection_id.stdout }}"
 
 - name: Create channel using last connection
+  when: not hermes_set_channel_version
   shell: |
     hermes create channel --a-chain {{ chain_ids[0] }} \
     --a-port {{ hermes_chains[chain_ids[0]].hermes_port_name}} \
@@ -91,8 +92,27 @@
   become_user: hermes
 
 - name: Display channel creation output
+  when: not hermes_set_channel_version
   debug:
     msg: "{{ channel_creation.stdout }}"
+
+- name: Create channel using last connection, set channel version
+  when: hermes_set_channel_version
+  shell: |
+    hermes create channel --a-chain {{ chain_ids[0] }} \
+    --a-port {{ hermes_chains[chain_ids[0]].hermes_port_name}} \
+    --b-port {{ hermes_chains[chain_ids[1]].hermes_port_name}} \
+    --order {{ hermes_order }} --a-connection {{ connection_id.stdout }} \
+    --channel-version {{ hermes_channel_version }}
+  environment:
+    PATH: "/home/{{hermes_user}}/bin:{{ ansible_env.PATH }}"
+  register: channel_creation_with_version
+  become_user: hermes
+
+- name: Display channel creation output, set channel version
+  when: hermes_set_channel_version
+  debug:
+    msg: "{{ channel_creation_with_version.stdout }}"
 
 - name: Save channel ids for last connection
   shell: |
