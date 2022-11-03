@@ -60,10 +60,10 @@ ansible-playbook node.yml -i examples/inventory-local.yml --extra-vars "chain_ve
 | `chain_gov_testing`       | Set minimum deposit to `1`<br> and voting period to <br>`chain_voting_period` when `true` | `false`                                                                  |
 | `chain_denom`             | Set denom to replace `stake` with                                                         | `uatom`                                                                  |
 | `chain_create_validator`  | Create a validator when starting from fresh state                                         | `true`                                                                   |
-| `chain_recover_validator` | Recovers a self-delegation account creates a validator with it when `true`+                                | `false`                                                                  |
+| `chain_recover_validator` | Recovers a self-delegation account creates a validator with it when `true`+               | `false`                                                                  |
 | `chain_gentx_validator`   | Tokens validator will self-delegate at genesis                                            | `"1000000uatom"`                                                         |
 | `chain_validator_coins`   | Funds assigned to validator through genesis                                               | `"11000000uatom"`                                                        |
-| `chain_recover_delegator` | Recovers an account and adds it to genesis when `true`++                                | `false`                                                                  |
+| `chain_recover_delegator` | Recovers an account and adds it to genesis when `true`++                                  | `false`                                                                  |
 | `delegator_account_coins` | Funds assigned to restored account through genesis                                        | `"1000000000"`                                                           |
 | `node_keyring`            | Keyring for the validator keypair                                                         | `test`                                                                   |
 | `chain_airdrop`           | Airdrop tokens to accounts list when `true`                                               | `false`                                                                  |
@@ -158,13 +158,14 @@ ansible-playbook node.yml -i examples/inventory-local.yml --extra-vars "chain_ve
 
 ## `hermes` role
 
-| Variable                   | Description                           | Example Value |
-|----------------------------|---------------------------------------|---------------|
-| `hermes_version`           | Hermes repo release                   | `v1.0.0`      |
-| `hermes_relayer_keys`      | Set to `true` if using key files      | `true`        |
-| `hermes_relayer_mnemonics` | Set to `true` if using mnemonic files | `false`       |
-| `hermes_order`             | Channel ordering                      | `unordered`   |
-
+| Variable                     | Description                                                               | Example Value |
+|------------------------------|---------------------------------------------------------------------------|---------------|
+| `hermes_version`             | Hermes repo release                                                       | `v1.0.0`      |
+| `hermes_relayer_keys`        | Set to `true` if using key files                                          | `true`        |
+| `hermes_relayer_mnemonics`   | Set to `true` if using mnemonic files                                     | `false`       |
+| `hermes_order`               | Channel ordering                                                          | `unordered`   |
+| `hermes_set_channel_version` | Set to `true` to use the `--channel-version` flag when creating a channel | `true`        |
+| `hermes_channel_version`     | IBC channel version                                                       | `"1"`         |
 
 ## `consensus-monitor` role
 
