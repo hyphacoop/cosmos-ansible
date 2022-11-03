@@ -45,25 +45,26 @@ ansible-playbook node.yml -i examples/inventory-local.yml --extra-vars "chain_ve
 | `chain_binary_source`  | Build the binary from source if set to `build`, download it if set to `release` | `build`                                                                            |
 | `node_service_name`    | Chain service name when `use_cosmovisor` is `false`                             | `gaiad`                                                                            |
 | `chain_bin`            | Full path for binary                                                            | `/home/gaia/go/bin/gaiad`                                                          |
-| `chain_id`             | ID                                                                              | `my-testnet`                                                                       |
+| `chain_start`          | Starts the chain service at the end of the play                                 | `false`                                                                            |
+| `chain_id`             | Chain ID                                                                        | `my-testnet`                                                                       |
 | `addrbook_url`         | URL to download the addrbook.json file from                                     | `"https://quicksync.io/addrbook.cosmos.json"`                                      |
 | `addrbook_file`        | File path to the addrbook.json file to use                                      | `"addresses.json"`                                                                 |
 
 ### Chain Configuration: `genesis.json`
 
-| Variable                 | Description                                                                               | Example Value                                                                             |
-|--------------------------|-------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------|
+| Variable                 | Description                                                                               | Example Value                                                            |
+|--------------------------|-------------------------------------------------------------------------------------------|--------------------------------------------------------------------------|
 | `genesis_url`            | URL to download the gzipped genesis file from                                             | `"https://github.com/cosmos/testnets/raw/master/public/genesis.json.gz"` |
-| `genesis_file`           | File path to the genesis file***                                                          | `"examples/genesis-three-node.json"`                                                      |
-| `chain_voting_period`    | Voting period for gov proposals                                                           | `60s`                                                                                     |
-| `chain_gov_testing`      | Set minimum deposit to `1`<br> and voting period to <br>`chain_voting_period` when `true` | `false`                                                                                   |
-| `chain_denom`            | Set denom to replace `stake` with                                                         | `uatom`                                                                                   |
-| `chain_create_validator` | Create a validator when starting from fresh state                                         | `true`                                                                                    |
-| `chain_gentx_validator`  | Tokens validator will self-delegate at genesis                                            | `"1000000uatom"`                                                                          |
-| `chain_validator_coins`  | Funds assigned to validator through genesis                                               | `"11000000uatom"`                                                                         |
-| `node_keyring`           | Keyring for the validator keypair                                                         | `test`                                                                                    |
-| `chain_airdrop`          | Airdrop tokens to accounts list when `true`                                               | `false`                                                                                   |
-| `chain_airdrop_coins`    | Amount to airdrop to specified accounts                                                   | `"10000uatom"`                                                                            |
+| `genesis_file`           | File path to the genesis file***                                                          | `"examples/genesis-three-node.json"`                                     |
+| `chain_voting_period`    | Voting period for gov proposals                                                           | `60s`                                                                    |
+| `chain_gov_testing`      | Set minimum deposit to `1`<br> and voting period to <br>`chain_voting_period` when `true` | `false`                                                                  |
+| `chain_denom`            | Set denom to replace `stake` with                                                         | `uatom`                                                                  |
+| `chain_create_validator` | Create a validator when starting from fresh state                                         | `true`                                                                   |
+| `chain_gentx_validator`  | Tokens validator will self-delegate at genesis                                            | `"1000000uatom"`                                                         |
+| `chain_validator_coins`  | Funds assigned to validator through genesis                                               | `"11000000uatom"`                                                        |
+| `node_keyring`           | Keyring for the validator keypair                                                         | `test`                                                                   |
+| `chain_airdrop`          | Airdrop tokens to accounts list when `true`                                               | `false`                                                                  |
+| `chain_airdrop_coins`    | Amount to airdrop to specified accounts                                                   | `"10000uatom"`                                                           |
 | `chain_airdrop_accounts`      | List of accounts to airdrop tokens to | `[address-1,address-2,address-3]`
 
 ***The file will not be copied if there already is an existing file with the same length.  
@@ -102,11 +103,11 @@ ansible-playbook node.yml -i examples/inventory-local.yml --extra-vars "chain_ve
 
 ### Cosmovisor
 
-| Variable                 | Description                                                            | Example Value |
-|--------------------------|------------------------------------------------------------------------|---------------|
-| `use_cosmovisor`         | Use cosmovisor service when `true`, standalone binary one when `false` | `true`        |
-| `cosmovisor_skip_backup` | Skip Cosmovisor backups                                                | `true`        |
-
+| Variable                  | Description                                                            | Example Value |
+|---------------------------|------------------------------------------------------------------------|---------------|
+| `use_cosmovisor`          | Use cosmovisor service when `true`, standalone binary one when `false` | `true`        |
+| `cosmovisor_skip_backup`  | Skip Cosmovisor backups                                                | `true`        |
+| `cosmovisor_service_name` | Chain service name when `use_cosmovisor` is set to `true`              | `cv-gaia`     |
 
 ### Monitoring and Alerting
 
