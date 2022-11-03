@@ -52,22 +52,27 @@ ansible-playbook node.yml -i examples/inventory-local.yml --extra-vars "chain_ve
 
 ### Chain Configuration: `genesis.json`
 
-| Variable                 | Description                                                                               | Example Value                                                            |
-|--------------------------|-------------------------------------------------------------------------------------------|--------------------------------------------------------------------------|
-| `genesis_url`            | URL to download the gzipped genesis file from                                             | `"https://github.com/cosmos/testnets/raw/master/public/genesis.json.gz"` |
-| `genesis_file`           | File path to the genesis file***                                                          | `"examples/genesis-three-node.json"`                                     |
-| `chain_voting_period`    | Voting period for gov proposals                                                           | `60s`                                                                    |
-| `chain_gov_testing`      | Set minimum deposit to `1`<br> and voting period to <br>`chain_voting_period` when `true` | `false`                                                                  |
-| `chain_denom`            | Set denom to replace `stake` with                                                         | `uatom`                                                                  |
-| `chain_create_validator` | Create a validator when starting from fresh state                                         | `true`                                                                   |
-| `chain_gentx_validator`  | Tokens validator will self-delegate at genesis                                            | `"1000000uatom"`                                                         |
-| `chain_validator_coins`  | Funds assigned to validator through genesis                                               | `"11000000uatom"`                                                        |
-| `node_keyring`           | Keyring for the validator keypair                                                         | `test`                                                                   |
-| `chain_airdrop`          | Airdrop tokens to accounts list when `true`                                               | `false`                                                                  |
-| `chain_airdrop_coins`    | Amount to airdrop to specified accounts                                                   | `"10000uatom"`                                                           |
+| Variable                  | Description                                                                               | Example Value                                                            |
+|---------------------------|-------------------------------------------------------------------------------------------|--------------------------------------------------------------------------|
+| `genesis_url`             | URL to download the gzipped genesis file from                                             | `"https://github.com/cosmos/testnets/raw/master/public/genesis.json.gz"` |
+| `genesis_file`            | File path to the genesis file***                                                          | `"examples/genesis-three-node.json"`                                     |
+| `chain_voting_period`     | Voting period for gov proposals                                                           | `60s`                                                                    |
+| `chain_gov_testing`       | Set minimum deposit to `1`<br> and voting period to <br>`chain_voting_period` when `true` | `false`                                                                  |
+| `chain_denom`             | Set denom to replace `stake` with                                                         | `uatom`                                                                  |
+| `chain_create_validator`  | Create a validator when starting from fresh state                                         | `true`                                                                   |
+| `chain_recover_validator` | Recovers a self-delegation account creates a validator with it when `true`+                                | `false`                                                                  |
+| `chain_gentx_validator`   | Tokens validator will self-delegate at genesis                                            | `"1000000uatom"`                                                         |
+| `chain_validator_coins`   | Funds assigned to validator through genesis                                               | `"11000000uatom"`                                                        |
+| `chain_recover_delegator` | Recovers an account and adds it to genesis when `true`++                                | `false`                                                                  |
+| `delegator_account_coins` | Funds assigned to restored account through genesis                                        | `"1000000000"`                                                           |
+| `node_keyring`            | Keyring for the validator keypair                                                         | `test`                                                                   |
+| `chain_airdrop`           | Airdrop tokens to accounts list when `true`                                               | `false`                                                                  |
+| `chain_airdrop_coins`     | Amount to airdrop to specified accounts                                                   | `"10000uatom"`                                                           |
 | `chain_airdrop_accounts`      | List of accounts to airdrop tokens to | `[address-1,address-2,address-3]`
 
 ***The file will not be copied if there already is an existing file with the same length.  
++The mnemonic for this account must be set using the `self_delegation_mnemonic` variable.
+++The mnemonic for this account must be set using the `delegator_account_mnemonic` variable.
 
 ### Chain Configuration: `config.toml`
 
