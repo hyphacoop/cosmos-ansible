@@ -19,6 +19,9 @@ chain_id: "cosmos-testnet"
 chain_repo_dir: "{{ node_user_home }}/chain-repo"
 chain_moniker: "{{inventory_hostname}}"
 chain_start: true
+chain_restore_delegator: false
+delegator_account_name: delegator
+delegator_account_coins: "1000000000000"
 validator_moniker: "{{inventory_hostname}}"
 
 # Default variables for creating a validator

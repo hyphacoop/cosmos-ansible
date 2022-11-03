@@ -137,6 +137,22 @@
   become_user: "{{node_user}}"
   loop: "{{ chain_airdrop_accounts }}"
 
+- name: restore delegator account
+  when: chain_restore_delegator
+  shell: |
+    cd $HOME
+    echo {{ delegator_account_mnemonic }} | {{ chain_bin }} keys add {{ delegator_account_name }} --keyring-backend {{ node_keyring }} --home {{ chain_home }} --output json --recover
+    {{ chain_bin }} add-genesis-account {{ delegator_account_name }} {{ delegator_account_coins }}{{ chain_denom }} --home {{ chain_home }} --keyring-backend {{ node_keyring }}
+  register: chain_restore_delegator_output
+  become_user: "{{ node_user }}"
+
+- name: save delegator name and address
+  when: chain_restore_delegator
+  copy:
+    content="{{ chain_restore_delegator_output.stderr }}"
+    dest="{{chain_home}}/{{delegator_account_name}}.json"
+  become_user: "{{ node_user }}"
+
 - name: gentx validator
   when: chain_create_validator
   shell: |
