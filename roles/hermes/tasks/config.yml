@@ -59,9 +59,18 @@
   become_user: hermes
   when: hermes_relayer_mnemonics
 
-- name: Create connection
+- name: Create connection over new clients
+  when: not hermes_set_clients
   shell: |
     hermes create connection --a-chain {{ chain_ids[0] }} --b-chain {{ chain_ids[1] }}
+  environment:
+    PATH: "/home/{{hermes_user}}/bin:{{ ansible_env.PATH }}"
+  become_user: hermes
+
+- name: Create connection over existing clients
+  when: hermes_set_clients
+  shell: |
+    hermes create connection --a-chain {{ chain_ids[0] }} --a-client {{ hermes_chains[chain_ids[0]].hermes_client_id }} --b-client {{ hermes_chains[chain_ids[1]].hermes_client_id }}
   environment:
     PATH: "/home/{{hermes_user}}/bin:{{ ansible_env.PATH }}"
   become_user: hermes

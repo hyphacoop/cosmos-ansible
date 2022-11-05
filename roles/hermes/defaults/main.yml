@@ -6,6 +6,11 @@ hermes_version: v1.0.0
 # Node connections
 hermes_relayer_keys: false
 hermes_relayer_mnemonics: false
+
+# Connections
+hermes_set_clients: false
+
+# Channels
 hermes_order: unordered
 hermes_set_channel_version: false
 hermes_channel_version: '0'
