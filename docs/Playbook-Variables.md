@@ -158,14 +158,15 @@ ansible-playbook node.yml -i examples/inventory-local.yml --extra-vars "chain_ve
 
 ## `hermes` role
 
-| Variable                     | Description                                                               | Example Value |
-|------------------------------|---------------------------------------------------------------------------|---------------|
-| `hermes_version`             | Hermes repo release                                                       | `v1.0.0`      |
-| `hermes_relayer_keys`        | Set to `true` if using key files                                          | `true`        |
-| `hermes_relayer_mnemonics`   | Set to `true` if using mnemonic files                                     | `false`       |
-| `hermes_order`               | Channel ordering                                                          | `unordered`   |
-| `hermes_set_channel_version` | Set to `true` to use the `--channel-version` flag when creating a channel | `true`        |
-| `hermes_channel_version`     | IBC channel version                                                       | `"1"`         |
+| Variable                     | Description                                                                                                           | Example Value |
+|------------------------------|-----------------------------------------------------------------------------------------------------------------------|---------------|
+| `hermes_version`             | Hermes repo release                                                                                                   | `v1.0.0`      |
+| `hermes_relayer_keys`        | Set to `true` if using key files                                                                                      | `true`        |
+| `hermes_relayer_mnemonics`   | Set to `true` if using mnemonic files                                                                                 | `false`       |
+| `hermes_order`               | Channel ordering                                                                                                      | `unordered`   |
+| `hermes_set_channel_version` | Set to `true` to use the `--channel-version` flag when creating a channel                                             | `true`        |
+| `hermes_channel_version`     | IBC channel version                                                                                                   | `"1"`         |
+| `hermes_set_clients`         | Set up a connection over existing clients, a `hermes_client_id` variable must be specified for each chain when `true` | `true`        |
 
 ## `consensus-monitor` role
 
