@@ -251,8 +251,8 @@
 - name: patch genesis file with specified denom
   replace:
     path: '{{chain_home}}/config/genesis.json'
-    regexp: 'stake'
-    replace: '{{chain_denom}}'
+    regexp: '"stake"'
+    replace: '"{{chain_denom}}"'
 
 # Transfer genesis and required files to multi-node machines
 - name: Transfer multi-node config/genesis.json
