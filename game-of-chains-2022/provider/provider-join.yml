@@ -8,7 +8,7 @@ all:
     chain_binary_source: release # Set to "build" if building from source
     chain_version: glnro/ics-sdk45
     chain_repository: https://github.com/jtremback/gaia.git
-    genesis_file: provider-genesis.json
+    genesis_url: https://raw.githubusercontent.com/hyphacoop/ics-testnets/goc-day-1/game-of-chains-2022/provider/provider-genesis.json
     chain_id: provider
     chain_home_clear: true
     cosmovisor_service_name: "cv-provider"
