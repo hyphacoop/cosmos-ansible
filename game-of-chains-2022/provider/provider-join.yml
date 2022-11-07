@@ -1,0 +1,30 @@
+---
+# yamllint disable rule:line-length
+all:
+  vars:
+    ansible_user: root
+    node_user: provider
+    chain_binary_release: https://github.com/hyphacoop/ics-testnets/raw/goc-day-1/game-of-chains-2022/provider/gaiad # Linux amd64
+    chain_binary_source: release # Set to "build" if building from source
+    chain_version: glnro/ics-sdk45
+    chain_repository: https://github.com/jtremback/gaia.git
+    genesis_file: provider-genesis.json
+    chain_id: provider
+    chain_home_clear: true
+    cosmovisor_service_name: "cv-provider"
+    use_cosmovisor: true # Set to "false" if you do not want to use cosmovisor
+    node_service_name: provider
+    # Uncomment the following lines if setting up TLS
+    # chain_use_ssl_proxy: true
+    # chain_api_host: "rest"
+    # chain_rpc_host: "rpc"
+    # chain_p2p_host: "p2p"
+    # chain_grpc_host: "grpc"
+    # letsencrypt_email: ""
+  children:
+    node:
+      hosts:
+        "{{ target }}":
+          fast_sync: false
+          pruning: nothing
+          p2p_seeds: "7a86ddc92f56e77a26c4fb4d543412f7175a7c9b@143.198.45.140:26656"
