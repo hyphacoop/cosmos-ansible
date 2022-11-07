@@ -2,6 +2,8 @@
 
 Inventory files are provided here as reference and to help participants join different chains.
 
+These playbooks have been tested with Ubuntu 22.10.
+
 ## Join the Provider Chain
 
 * **Inventory file:** [`provider/provider-join.yml`](provider/provider-join.yml)
@@ -16,7 +18,7 @@ Inventory files are provided here as reference and to help participants join dif
 
 Run the playbook:
 ```
-ansible-playbook node.yml -i game-of-chains-2022/provider/provider-join.yml -e 'target=SERVER_IP_OR_DOMAIN node_key_file=<JSON file path> priv_validator_key_file=<JSON file path>"'
+ansible-playbook node.yml -i game-of-chains-2022/provider/provider-join.yml -e 'target=SERVER_IP_OR_DOMAIN node_key_file=<JSON file path> priv_validator_key_file=<JSON file path>'
 ```
 
 After the play has finished running, run `journalctl -fu cv-provider` to check the output of cosmovisor, or `journalctl -fu provider` if you set `use_cosmovisor` to `false`.
