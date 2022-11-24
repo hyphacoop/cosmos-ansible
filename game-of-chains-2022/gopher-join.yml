@@ -1,0 +1,23 @@
+---
+# yamllint disable rule:line-length
+all:
+  vars:
+    ansible_user: root
+    node_user: gopher
+    chain_home: "{{node_user_home}}/.gopher"
+    chain_binary_name: gopherd
+    chain_binary_release: https://github.com/hyphacoop/ics-testnets/raw/main/game-of-chains-2022/gopher/interchain-security-cd # Linux amd64
+    chain_binary_source: release # Set to "build" if building from source and uncomment the next three lines
+    genesis_url: https://github.com/hyphacoop/ics-testnets/raw/main/game-of-chains-2022/gopher/gopher-genesis.json
+    # chain_version: tags/v0.2.1
+    # chain_repository: https://github.com/cosmos/interchain-security.git
+    # chain_binary_name: interchain-security-cd
+    chain_home_clear: true
+    chain_id: gopher
+    cosmovisor_service_name: "cv-gopher"
+    chain_moniker: "gopher"
+  children:
+    node:
+      hosts:
+        "{{ target }}":
+          p2p_seeds: "e0a4a0704bbe72d252c541fa7a0da04e7400f589@tenderseed.ccvalidators.com:29059"
