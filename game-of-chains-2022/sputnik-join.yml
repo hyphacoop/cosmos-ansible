@@ -1,0 +1,23 @@
+---
+# yamllint disable rule:line-length
+all:
+  vars:
+    ansible_user: root
+    node_user: sputnik
+    chain_home: "{{node_user_home}}/.sputnik"
+    chain_binary_name: sputnikd
+    chain_binary_release: https://github.com/hyphacoop/ics-testnets/raw/main/game-of-chains-2022/sputnik/interchain-security-cd # Linux amd64
+    chain_binary_source: release # Set to "build" if building from source
+    # chain_version: tags/v0.2.0
+    # chain_repository: https://github.com/cosmos/interchain-security.git
+    # chain_binary_name: interchain-security-cd
+    genesis_url: https://github.com/hyphacoop/ics-testnets/raw/main/game-of-chains-2022/sputnik/sputnik-genesis.json
+    chain_home_clear: true
+    chain_id: sputnik
+    cosmovisor_service_name: "cv-sputnik"
+    chain_moniker: "sputnik"
+  children:
+    node:
+      hosts:
+        "{{ target }}":
+          p2p_seeds: "3aed29ec1ca96ea52299748c50bf7d908511068f@tenderseed.ccvalidators.com:29019"
