@@ -4,11 +4,11 @@ all:
   vars:
     ansible_user: root
     node_user: provider
-    chain_binary_release: https://github.com/hyphacoop/ics-testnets/raw/goc-day-1/game-of-chains-2022/provider/gaiad # Linux amd64
+    chain_binary_release: https://github.com/hyphacoop/ics-testnets/raw/main/game-of-chains-2022/provider/gaiad # Linux amd64
     chain_binary_source: release # Set to "build" if building from source
-    chain_version: glnro/ics-sdk45
-    chain_repository: https://github.com/jtremback/gaia.git
-    genesis_url: https://raw.githubusercontent.com/hyphacoop/ics-testnets/goc-day-1/game-of-chains-2022/provider/provider-genesis.json
+    # chain_version: glnro/ics-sdk45
+    # chain_repository: https://github.com/cosmos/gaia.git
+    genesis_url: https://github.com/hyphacoop/ics-testnets/raw/main/game-of-chains-2022/provider/provider-genesis.json
     chain_id: provider
     chain_home_clear: true
     cosmovisor_service_name: "cv-provider"
@@ -27,4 +27,6 @@ all:
         "{{ target }}":
           fast_sync: false
           pruning: nothing
-          p2p_seeds: "7a86ddc92f56e77a26c4fb4d543412f7175a7c9b@143.198.45.140:26656"
+          p2p_seeds: "7a86ddc92f56e77a26c4fb4d543412f7175a7c9b@provider-seed-01.goc.earthball.xyz:26656"
+          statesync_enabled: true
+          statesync_rpc_servers: 'http://provider-seed-01.goc.earthball.xyz:26657,http://provider-seed-01.goc.earthball.xyz:26657'
