@@ -39,7 +39,7 @@ chain_airdrop_accounts: []
 # Cosmovisor settings
 # TODO: Support arbitrary cosmovisor branches
 use_cosmovisor: true
-cosmovisor_version: v1.0.0
+cosmovisor_version: v1.3.0
 cosmovisor_repository: github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor
 cosmovisor_bin: "{{node_user_home}}/go/bin/cosmovisor"
 cosmovisor_home: "{{ chain_home }}/cosmovisor"
