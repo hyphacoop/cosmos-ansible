@@ -22,4 +22,4 @@ all:
         "{{ target }}":
           fast_sync: true
           statesync_enabled: true
-          statesync_rpc_servers: 'https://rpc.cosmos.network:443,https://rpc.cosmos.network:443'
+          statesync_rpc_servers: 'https://cosmos-rpc.polkachu.com:443,https://cosmos-rpc.polkachu.com:443'
