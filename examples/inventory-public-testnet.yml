@@ -21,4 +21,4 @@ all:
         "{{ target }}":
           fast_sync: true
           statesync_enabled: true
-          statesync_rpc_servers: 'http://rpc.state-sync-01.theta-testnet.polypore.xyz:26657,http://rpc.state-sync-02.theta-testnet.polypore.xyz:26657'
+          statesync_rpc_servers: 'http://rpc.sentry-01.theta-testnet.polypore.xyz:26657,http://rpc.sentry-02.theta-testnet.polypore.xyz:26657'
