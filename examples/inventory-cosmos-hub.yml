@@ -14,7 +14,7 @@ all:
     addrbook_url: "https://quicksync.io/addrbook.cosmos.json"
     minimum_gas_prices: "0.0025uatom"
     enable_swap: true
-    swap_size: 8192
+    swap_size: 32768
     reboot: true
   children:
     node:
@@ -22,4 +22,4 @@ all:
         "{{ target }}":
           fast_sync: true
           statesync_enabled: true
-          statesync_rpc_servers: 'https://rpc.cosmos.network:443,https://rpc.cosmos.network:443'
+          statesync_rpc_servers: 'https://cosmos-rpc.polkachu.com:443,https://cosmos-rpc.polkachu.com:443'

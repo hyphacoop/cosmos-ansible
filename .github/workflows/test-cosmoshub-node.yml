@@ -35,6 +35,6 @@ jobs:
         run: systemctl status cosmovisor
       - name: Check blocks are being produced
         run: |
-          height=$(curl -s https://rpc.cosmos.network/block | jq -r '.result.block.header.height')
+          height=$(curl -s https://cosmos-rpc.polkachu.com/block | jq -r '.result.block.header.height')
           echo "Waiting for block $[ $height + 100 ]..."
           tests/test_block_production.sh 127.0.0.1 26657 $[ $height + 100]
