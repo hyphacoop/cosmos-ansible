@@ -3,7 +3,7 @@
 all:
   vars:
     ansible_user: root
-    chain_version: main
+    chain_version: v8.0.0-rc1
     major_version: 8
     patch_version: 0
     genesis_url: "https://github.com/cosmos/testnets/raw/master/devnet/rho-chain-1-genesis.json.gz"
