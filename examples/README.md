@@ -114,7 +114,7 @@ Set up a node to join the [rho devnet](https://github.com/cosmos/testnets/tree/m
 
 * **Inventory files:** [`inventory-rho-devnet-chain-1.yml`](inventory-rho-devnet-chain-1.yml) and [`inventory-rho-devnet-chain-2.yml`](inventory-rho-devnet-chain-2.yml)
 * **Chain IDs:** `rho-chain-1` and `rho-chain-2`
-* **Gaia version:** `v8.0.0-rc2`
+* **Gaia version:** `v8.0.0-rc3`
 
 ### Run the playbooks
 
