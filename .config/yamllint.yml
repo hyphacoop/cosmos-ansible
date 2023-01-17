@@ -22,7 +22,7 @@ rules:
   hyphens: enable
   indentation:
     spaces: consistent
-    indent-sequences: whatever
+    indent-sequences: consistent
   key-duplicates: enable
   key-ordering: disable
   line-length: disable
