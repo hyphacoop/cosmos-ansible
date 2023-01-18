@@ -231,6 +231,7 @@
     create: yes
 
 - name: Check cosmovisor version
+  when: use_cosmovisor
   shell: |
     PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
     cosmovisor --version
@@ -239,7 +240,7 @@
   ignore_errors: true
 
 - name: clone and install cosmovisor
-  when: not cosmovisor_version in cosmovisor_current.stdout
+  when: use_cosmovisor and (not cosmovisor_version in cosmovisor_current.stdout)
   shell: |
     PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
     go install {{cosmovisor_repository}}@{{cosmovisor_version}}
@@ -247,6 +248,7 @@
 
 ## Configure cosmovisor
 - name: Prepare cosmovisor folder
+  when: use_cosmovisor
   file:
     path: '{{ cosmovisor_home }}/genesis/bin'
     state: directory
@@ -254,6 +256,7 @@
     group: '{{node_user}}'
 
 - name: Copy chain bin for cosmovisor genesis
+  when: use_cosmovisor
   copy:
     # force: false
     remote_src: true
@@ -264,6 +267,7 @@
     mode: '0755'
 
 - name: Add chain bin from cosmovisor to .bashrc PATH
+  when: use_cosmovisor
   blockinfile:
     dest: '{{ node_user_home }}/.bashrc'
     block: |
