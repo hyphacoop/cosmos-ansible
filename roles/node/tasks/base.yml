@@ -221,7 +221,7 @@
   become_user: "{{node_user}}"
 
 - name: Add chain bin from go/bin to .bashrc PATH
-  when: not (use_cosmovisor | default(false) | bool0
+  when: not (use_cosmovisor | default(false) | bool)
   blockinfile:
     dest: '{{ node_user_home }}/.bashrc'
     block: |
