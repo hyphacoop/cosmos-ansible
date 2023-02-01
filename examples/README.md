@@ -25,7 +25,7 @@ Set up a node to join the Cosmos Hub [public testnet](https://github.com/cosmos/
 
 * **Inventory file:** [`inventory-public-testnet.yml`](inventory-public-testnet.yml)
 * **Chain ID:** `theta-testnet-001`
-* **Gaia version:** `v8.0.0-rc3`
+* **Gaia version:** `v8.0.0-rc5`
 
 ### Run the playbook 
 
@@ -114,7 +114,7 @@ Set up a node to join the [rho devnet](https://github.com/cosmos/testnets/tree/m
 
 * **Inventory files:** [`inventory-rho-devnet-chain-1.yml`](inventory-rho-devnet-chain-1.yml) and [`inventory-rho-devnet-chain-2.yml`](inventory-rho-devnet-chain-2.yml)
 * **Chain IDs:** `rho-chain-1` and `rho-chain-2`
-* **Gaia version:** `v8.0.0-rc3`
+* **Gaia version:** `v8.0.0-rc5`
 
 ### Run the playbooks
 
