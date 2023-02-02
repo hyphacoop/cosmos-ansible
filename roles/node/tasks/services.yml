@@ -17,7 +17,7 @@
     name: systemd-journald
 
 - name: Enable chain systemd service
-  when: chain_start and (not use_cosmovisor | default(false) | bool) 
+  when: chain_start and (not use_cosmovisor | default(false) | bool)
   systemd:
     daemon_reload: true
     state: stopped

@@ -50,9 +50,6 @@ echo \"Starting download\"
 aria2c -x5 \$URL
 echo \"Execting \$(basename \$URL)\"
 lz4 -d \$(basename \$URL) | tar xf -
-echo \"Removing \$(basename \$URL)\"
-rm \$(basename \$URL)
-fi
 if [ ! -d cosmovisor/upgrades ]
 then
     echo \"Creating cosmovisor/upgrades/$cosmos_current_name/bin directory\"
