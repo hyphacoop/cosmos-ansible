@@ -1,6 +1,13 @@
 #!/bin/bash
 set -e
 
+# cosmos version name
+cosmos_current_name="v7-Theta"
+cosmos_upgrade_name="v8-Rho"
+
+# current mainnet version for creating archive
+chain_version=v7.1.0
+
 # cosmos-genesis-tinkerer repo config
 gh_branch="main"
 gh_user="hypha-bot"
@@ -41,30 +48,16 @@ URL=\$(curl -sL https://quicksync.io/cosmos.json|jq -r '.[] |select(.file==\"cos
 echo \"URL set to: \$URL\"
 echo \"Starting download\"
 aria2c -x5 \$URL
-echo \"Download checksum script\"
-wget https://raw.githubusercontent.com/chainlayer/quicksync-playbooks/master/roles/quicksync/files/checksum.sh
-chmod +x checksum.sh
-echo \"Download \$URL.checksum\"
-wget \$URL.checksum
-echo \"Get sha512sum\"
-curl -sL https://lcd-cosmos.cosmostation.io/txs/\$(curl -sL \$URL.hash)|jq -r '.tx.value.memo'|sha512sum -c
-echo \"Checking hash of download\"
-./checksum.sh \$(basename \$URL) check
-if [ \$? -ne 0 ]
-then
-	echo "Checksum FAILED falling back to statesync"
-	rm \$(basename \$URL)
-else
-	echo \"Execting \$(basename \$URL)\"
-	lz4 -d \$(basename \$URL) | tar xf -
-	echo \"Removing \$(basename \$URL)\"
-	rm \$(basename \$URL)
+echo \"Execting \$(basename \$URL)\"
+lz4 -d \$(basename \$URL) | tar xf -
+echo \"Removing \$(basename \$URL)\"
+rm \$(basename \$URL)
 fi
 if [ ! -d cosmovisor/upgrades ]
 then
-    echo \"Creating cosmovisor/upgrades/v7-Theta/bin directory\"
-    mkdir -p cosmovisor/upgrades/v7-Theta/bin
-    cp cosmovisor/genesis/bin/gaiad cosmovisor/upgrades/v7-Theta/bin/gaiad
+    echo \"Creating cosmovisor/upgrades/$cosmos_current_name/bin directory\"
+    mkdir -p cosmovisor/upgrades/$cosmos_current_name/bin
+    cp cosmovisor/genesis/bin/gaiad cosmovisor/upgrades/$cosmos_current_name/bin/gaiad
 fi
 " > ~gaia/quicksync.sh
 chmod +x ~gaia/quicksync.sh
@@ -162,6 +155,92 @@ scp mainnet-genesis-tinkered/tinkered-genesis_${current_block_time}_${chain_vers
 ssh gh-actions@files.polypore.xyz ln -sf /var/www/html/genesis/mainnet-genesis-export/mainnet-genesis_${current_block_time}_${chain_version}_${current_block}.json.gz /var/www/html/genesis/mainnet-genesis-export/latest_v$(echo $chain_version | cut  -c 2).json.gz
 ssh gh-actions@files.polypore.xyz ln -sf /var/www/html/genesis/mainnet-genesis-tinkered/tinkered-genesis_${current_block_time}_${chain_version}_${current_block}.json.gz /var/www/html/genesis/mainnet-genesis-tinkered/latest_v$(echo $chain_version | cut  -c 2).json.gz
 
+# cleanup
+echo "Cleanup ~gaia/.gaia"
+rm -rf ~gaia/.gaia
+
+# Stateful upgrade archive
+echo "Stateful upgrade archive"
+cd ~
+echo "Install Ansible"
+pip3 install ansible
+
+echo "Clone cosmos-ansible"
+git clone https://github.com/hyphacoop/cosmos-ansible.git
+cd cosmos-ansible
+echo "transport = local" >> ansible.cfg
+
+echo "Configure gaiad service to not auto restart"
+sed -e '/RestartSec=3/d ; s/Restart=always/Restart=no/' roles/node/templates/chain.service.j2 > chain.service.j2
+mv chain.service.j2 roles/node/templates/chain.service.j2
+
+echo "Configure inventory file"
+sed -e '/genesis_url:/d' examples/inventory-local-genesis.yml > inventory.yml
+
+echo "Starting chain with the new tinkered genesis"
+ansible-playbook node.yml -i inventory.yml --extra-vars "\
+target=local \
+reboot=false \
+use_cosmovisor=false \
+minimum_gas_prices=0.0025uatom \
+chain_version=$chain_version \
+chain_gov_testing=true \
+priv_validator_key_file=examples/validator-keys/validator-40/priv_validator_key.json \
+node_key_file=examples/validator-keys/validator-40/node_key.json \
+genesis_file=~/latest_v7.json.gz"
+
+echo "Restoring validator key"
+su gaia -c "echo \"abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon art\" | ~/.gaia/cosmovisor/current/bin/gaiad --output json keys add val --keyring-backend test --recover 2> ~/.gaia/validator.json" # Use stderr until gaiad use stdout
+
+echo "Waiting till gaiad is building blocks"
+su gaia -c "tests/test_block_production.sh 127.0.0.1 26657 $(($current_block+10))"
+if [ $? -ne 0 ]
+then
+    echo "gaiad failed to build blocks!"
+    build_block=0
+else
+    echo "gaiad is building blocks"
+    build_block=1
+fi
+
+if [ $build_block -eq 1 ]
+then
+    echo "Get current height"
+    current_block=$(curl -s 127.0.0.1:26657/block | jq -r .result.block.header.height)
+    upgrade_height=$(($current_block+10))
+
+    echo "Submitting the upgrade proposal"
+    proposal="gaiad --output json tx gov submit-proposal software-upgrade $cosmos_upgrade_name --from val --keyring-backend test --upgrade-height $upgrade_height --upgrade-info $upgrade_info --title gaia-upgrade --description 'test' --chain-id $chain_id --deposit 10$denom --fees 1000$denom --yes"
+    echo $proposal
+    txhash=$($proposal | jq -r .txhash)
+
+    echo "Wait for the proposal to go on chain"
+    sleep 8
+
+    echo "Get proposal ID from txhash"
+    proposal_id=$(gaiad --output json q tx $txhash | jq -r '.logs[].events[] | select(.type=="submit_proposal") | .attributes[] | select(.key=="proposal_id") | .value')
+
+    # Vote yes on the proposal
+    echo "Submitting the \"yes\" vote to proposal $proposal_id"
+    vote="gaiad tx gov vote $proposal_id yes --from $validator_address --keyring-backend test --chain-id $chain_id --fees 1000$denom --yes"
+    echo $vote
+    $vote
+
+
+    # Wait for the voting period to be over
+    echo "Waiting for the voting period to end..."
+    sleep 8
+
+    echo "Upgrade proposal $proposal_id status:"
+    gaiad q gov proposal $proposal_id --output json | jq '.status'
+
+    # # Wait until the right height is reached
+    # echo "Waiting for the upgrade to take place at block height $upgrade_height..."
+    # tests/test_block_production.sh 127.0.0.1 26657 $upgrade_height
+    # echo "The upgrade height was reached."
+
+fi
+
 # Print current date and time
 echo -n "Finished at: "
 date
@@ -185,4 +264,4 @@ git commit -m "Adding export log file"
 git push origin main
 
 # DESTROY the droplet from itself
-curl -X DELETE -H "Authorization: Bearer {{ digitalocean_api_key }}" "https://api.digitalocean.com/v2/droplets/{{ droplet_id }}"
+# curl -X DELETE -H "Authorization: Bearer {{ digitalocean_api_key }}" "https://api.digitalocean.com/v2/droplets/{{ droplet_id }}"
