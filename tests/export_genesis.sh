@@ -248,13 +248,15 @@ then
     # Wait until the service is stopped
     echo "Cosmovisor should stop at height $upgrade_height"
     cosmovisor=0
+    set +e
     while [ $cosmovisor -eq 0 ]
     do
         sleep 5
         curl -s 127.0.0.1:26657/block | jq -r .result.block.header.height
-        systemctl is-active cosmovisor
+        systemctl --quiet is-active cosmovisor
         cosmovisor=$?
     done
+    set -e
 
     # Archive .gaia
     echo "Archiving .gaia"
