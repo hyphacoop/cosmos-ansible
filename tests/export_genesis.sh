@@ -1,8 +1,7 @@
 #!/bin/bash
 set -e
 
-# cosmos version name
-cosmos_current_name="v7-Theta"
+# cosmos next upgrade version name
 cosmos_upgrade_name="v8-Rho"
 
 # cosmos-genesis-tinkerer repo config
