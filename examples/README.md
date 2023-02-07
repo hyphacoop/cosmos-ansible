@@ -25,7 +25,7 @@ Set up a node to join the Cosmos Hub [public testnet](https://github.com/cosmos/
 
 * **Inventory file:** [`inventory-public-testnet.yml`](inventory-public-testnet.yml)
 * **Chain ID:** `theta-testnet-001`
-* **Gaia version:** `v8.0.0-rc5`
+* **Gaia version:** `v8.0.0`
 
 ### Run the playbook 
 
@@ -114,7 +114,7 @@ Set up a node to join the [rho devnet](https://github.com/cosmos/testnets/tree/m
 
 * **Inventory files:** [`inventory-rho-devnet-chain-1.yml`](inventory-rho-devnet-chain-1.yml) and [`inventory-rho-devnet-chain-2.yml`](inventory-rho-devnet-chain-2.yml)
 * **Chain IDs:** `rho-chain-1` and `rho-chain-2`
-* **Gaia version:** `v8.0.0-rc5`
+* **Gaia version:** `v8.0.0`
 
 ### Run the playbooks
 
@@ -130,7 +130,7 @@ Set up a node with a single validator account.
 * **Inventory file:** [`inventory-local.yml`](inventory-local.yml)
 * **Chain ID:** `my-testnet`
 * **Moniker:** `cosmos-node`
-* **Gaia version:** `v7.1.0`
+* **Gaia version:** `v7.1.1`
 * **Faucet REST server**
 
 ### Run the Playbook
@@ -151,7 +151,7 @@ The playbook will download the genesis file, and the validator keys are listed b
 
 * **Inventory file:** [`inventory-local-genesis.yml`](inventory-local-genesis.yml)
 * **Chain ID:** `local-testnet`
-* **Gaia version:** `v7.1.0`
+* **Gaia version:** `v7.1.1`
 * **Validator mnemonic:** [self-delegation-wallet-mnemonic.txt](validator-keys/validator-40/self-delegation-wallet-mnemonic.txt)
 * **Validator key:** [priv_validator_key.json](validator-keys/validator-40/priv_validator_key.json)
 * **Node key:** [node_key.json](validator-keys/validator-40/node_key.json)
@@ -176,7 +176,7 @@ Each of the validators has a balance of 100 000 000 uatom.
 
 - **Inventory file:** [`inventory-three-node.yml`](inventory-three-node.yml)
 - **Chain ID:** `cosmos-testnet`
-- **Gaia version:** `v7.1.0`
+- **Gaia version:** `v7.1.1`
 
 Refer to the [Multi-Node Testnet Setup](/docs/Multi-Node-Testnet-Setup.md) guide in the `docs` folder to learn how these accounts were created and how you can set up a genesis file and private keys if you want to further customize your testnet.
 
@@ -205,7 +205,7 @@ Set up a chain with three validator nodes that have the following voting power:
 
 - **Inventory file:** [`inventory-three-node-scratch.yml`](inventory-three-node-scratch.yml)
 - **Chain ID:** `cosmos-testnet`
-- **Gaia version:** `v7.1.0`
+- **Gaia version:** `v7.1.1`
 
 Refer to the [Multi-Node Testnet Setup](/docs/Multi-Node-Testnet-Setup.md) guide in the `docs` folder if you want to further customize your testnet.
 
@@ -233,7 +233,7 @@ Set up a host as a single-node developer testnet.
 
 * **Inventory file:** [`inventory-dev.yml`](inventory-dev.yml)
 * **Chain ID:** `my-devnet`
-* **Gaia version:** `v7.1.0`
+* **Gaia version:** `v7.1.1`
 
 ### Requirements
 
