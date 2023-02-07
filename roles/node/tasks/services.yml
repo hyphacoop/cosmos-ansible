@@ -1,12 +1,12 @@
 ---
 - name: configure systemd service for chain
-  when: not use_cosmovisor
+  when: not (use_cosmovisor | default(false) | bool)
   template:
     src: chain.service.j2
     dest: "/etc/systemd/system/{{node_service_name}}.service"
 
 - name: configure systemd service for cosmovisor
-  when: use_cosmovisor
+  when: (use_cosmovisor | default(false) | bool)
   template:
     src: cosmovisor.service.j2
     dest: "/etc/systemd/system/{{cosmovisor_service_name}}.service"
@@ -17,7 +17,7 @@
     name: systemd-journald
 
 - name: Enable chain systemd service
-  when: chain_start and not use_cosmovisor
+  when: chain_start and (not use_cosmovisor | default(false) | bool)
   systemd:
     daemon_reload: true
     state: stopped
@@ -25,7 +25,7 @@
     name: "{{node_service_name}}"
 
 - name: Start chain systemd service
-  when: chain_start and ((not use_cosmovisor) and (not reboot | default(false) | bool))
+  when: chain_start and ((not use_cosmovisor | default(false) | bool) and (not reboot | default(false) | bool))
   systemd:
     daemon_reload: true
     state: restarted
@@ -36,7 +36,7 @@
     - chain_restart
 
 - name: Enable cosmovisor systemd service
-  when: chain_start and use_cosmovisor
+  when: chain_start and (use_cosmovisor | default(false) | bool)
   systemd:
     daemon_reload: true
     state: stopped
@@ -44,7 +44,7 @@
     name: "{{cosmovisor_service_name}}"
 
 - name: Start cosmovisor systemd service
-  when: chain_start and ((use_cosmovisor) and (not reboot | default(false) | bool))
+  when: chain_start and ((use_cosmovisor | default(false) | bool) and (not reboot | default(false) | bool))
   systemd:
     daemon_reload: true
     state: restarted

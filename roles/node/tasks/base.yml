@@ -77,7 +77,7 @@
 - name: Stop existing chain systemd service
   # Check for both `SERVICE_NAME` and `SERVICE_NAME.service`
   when: >
-    not use_cosmovisor and (
+    not (use_cosmovisor | default(false) | bool) and (
     (node_service_name in ansible_facts.services) or
     ((node_service_name + '.service') in ansible_facts.services))
   systemd:
@@ -89,7 +89,7 @@
 
 - name: Stop existing cosmovisor systemd service
   when: >
-    use_cosmovisor and (
+    (use_cosmovisor | default(false) | bool) and (
     (cosmovisor_service_name in ansible_facts.services) or
     ((cosmovisor_service_name + '.service') in ansible_facts.services))
   systemd:
@@ -221,7 +221,7 @@
   become_user: "{{node_user}}"
 
 - name: Add chain bin from go/bin to .bashrc PATH
-  when: not use_cosmovisor
+  when: not (use_cosmovisor | default(false) | bool)
   blockinfile:
     dest: '{{ node_user_home }}/.bashrc'
     block: |
@@ -231,7 +231,7 @@
     create: yes
 
 - name: Check cosmovisor version
-  when: use_cosmovisor
+  when: (use_cosmovisor | default(false) | bool)
   shell: |
     PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
     cosmovisor --version
@@ -240,7 +240,7 @@
   ignore_errors: true
 
 - name: clone and install cosmovisor
-  when: use_cosmovisor and (not cosmovisor_version in cosmovisor_current.stdout)
+  when: (use_cosmovisor | default(false) | bool) and (not cosmovisor_version in cosmovisor_current.stdout)
   shell: |
     PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
     go install {{cosmovisor_repository}}@{{cosmovisor_version}}
@@ -248,7 +248,7 @@
 
 ## Configure cosmovisor
 - name: Prepare cosmovisor folder
-  when: use_cosmovisor
+  when: (use_cosmovisor | default(false) | bool)
   file:
     path: '{{ cosmovisor_home }}/genesis/bin'
     state: directory
@@ -256,7 +256,7 @@
     group: '{{node_user}}'
 
 - name: Copy chain bin for cosmovisor genesis
-  when: use_cosmovisor
+  when: (use_cosmovisor | default(false) | bool)
   copy:
     # force: false
     remote_src: true
@@ -267,7 +267,7 @@
     mode: '0755'
 
 - name: Add chain bin from cosmovisor to .bashrc PATH
-  when: use_cosmovisor
+  when: (use_cosmovisor | default(false) | bool)
   blockinfile:
     dest: '{{ node_user_home }}/.bashrc'
     block: |

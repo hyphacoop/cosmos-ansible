@@ -1,6 +1,9 @@
 #!/bin/bash
 set -e
 
+# cosmos next upgrade version name
+cosmos_upgrade_name="v8-Rho"
+
 # cosmos-genesis-tinkerer repo config
 gh_branch="main"
 gh_user="hypha-bot"
@@ -111,8 +114,8 @@ current_block_time=$(curl -s 127.0.0.1:26657/block\?height="$current_block" | jq
 echo "Current block timestamp: $current_block_time"
 
 # Stop cosmovisor before exporting
-echo "stop cosmovisor"
-systemctl stop cosmovisor
+echo "stop and disable cosmovisor"
+systemctl disable --now cosmovisor
 
 # Clone cosmos-genesis-tinkerer
 echo "Cloning cosmos-genesis-tinkerer"
@@ -161,6 +164,112 @@ scp mainnet-genesis-tinkered/tinkered-genesis_${current_block_time}_${chain_vers
 # Update latest file symlinks
 ssh gh-actions@files.polypore.xyz ln -sf /var/www/html/genesis/mainnet-genesis-export/mainnet-genesis_${current_block_time}_${chain_version}_${current_block}.json.gz /var/www/html/genesis/mainnet-genesis-export/latest_v$(echo $chain_version | cut  -c 2).json.gz
 ssh gh-actions@files.polypore.xyz ln -sf /var/www/html/genesis/mainnet-genesis-tinkered/tinkered-genesis_${current_block_time}_${chain_version}_${current_block}.json.gz /var/www/html/genesis/mainnet-genesis-tinkered/latest_v$(echo $chain_version | cut  -c 2).json.gz
+
+# cleanup
+echo "Cleanup ~gaia/.gaia"
+rm -rf ~gaia/.gaia
+
+# Stateful upgrade archive
+echo "Stateful upgrade archive"
+cd ~
+echo "Install Ansible"
+pip3 install ansible
+
+echo "Clone cosmos-ansible"
+git clone https://github.com/hyphacoop/cosmos-ansible.git
+cd cosmos-ansible
+git checkout $gh_ansible_branch
+echo "transport = local" >> ansible.cfg
+
+echo "Configure cosmovisor service to not auto restart"
+sed -e '/RestartSec=3/d ; s/Restart=always/Restart=no/ ; s/DAEMON_RESTART_AFTER_UPGRADE=true/DAEMON_RESTART_AFTER_UPGRADE=false/' roles/node/templates/cosmovisor.service.j2 > cosmovisor.service.j2
+mv cosmovisor.service.j2 roles/node/templates/cosmovisor.service.j2
+
+echo "Configure inventory file"
+sed -e '/genesis_url:/d' examples/inventory-local-genesis.yml > inventory.yml
+
+echo "Starting chain with the new tinkered genesis"
+ansible-playbook node.yml -i inventory.yml --extra-vars "\
+target=local \
+reboot=false \
+minimum_gas_prices=0.0025uatom \
+chain_version=$chain_version \
+chain_gov_testing=true \
+priv_validator_key_file=examples/validator-keys/validator-40/priv_validator_key.json \
+node_key_file=examples/validator-keys/validator-40/node_key.json \
+genesis_file=~/cosmos-genesis-tinkerer/mainnet-genesis-tinkered/tinkered-genesis_${current_block_time}_${chain_version}_${current_block}.json.gz"
+
+echo "Waiting till gaiad is building blocks"
+su gaia -c "tests/test_block_production.sh 127.0.0.1 26657 $(($current_block+10))"
+if [ $? -ne 0 ]
+then
+    echo "gaiad failed to build blocks!"
+    build_block=0
+else
+    echo "gaiad is building blocks"
+    build_block=1
+fi
+
+echo "Restoring validator key"
+su gaia -c "echo \"abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon art\" | ~/go/bin/gaiad --output json keys add val --keyring-backend test --recover 2> ~/.gaia/validator.json" # Use stderr until gaiad use stdout
+
+if [ $build_block -eq 1 ]
+then
+    echo "Get current height"
+    current_block=$(curl -s 127.0.0.1:26657/block | jq -r .result.block.header.height)
+    upgrade_height=$(($current_block+20))
+
+    echo "Submitting the upgrade proposal"
+    proposal="~/go/bin/gaiad --output json tx gov submit-proposal software-upgrade $cosmos_upgrade_name --from val --keyring-backend test --upgrade-height $upgrade_height --upgrade-info 'Test' --title gaia-upgrade --description 'test' --chain-id local-testnet --deposit 10uatom --fees 1000uatom --yes -b block"
+    echo $proposal
+    txhash=$(su gaia -c "$proposal | jq -r .txhash")
+
+    echo "Wait for the proposal to go on chain"
+    sleep 8
+
+    echo "Get proposal ID from txhash"
+    proposal_id=$(su gaia -c "~/go/bin/gaiad --output json q tx $txhash | jq -r '.logs[].events[] | select(.type==\"submit_proposal\") | .attributes[] | select(.key==\"proposal_id\") | .value'")
+
+    # Vote yes on the proposal
+    echo "Submitting the \"yes\" vote to proposal $proposal_id"
+    vote="~/go/bin/gaiad tx gov vote $proposal_id yes --from val --keyring-backend test --chain-id local-testnet --fees 1000uatom --yes"
+    echo $vote
+    su gaia -c "$vote"
+
+
+    # Wait for the voting period to be over
+    echo "Waiting for the voting period to end..."
+    sleep 8
+
+    echo "Upgrade proposal $proposal_id status:"
+    su gaia -c "~/go/bin/gaiad q gov proposal $proposal_id --output json | jq '.status'"
+
+    # Wait until the service is stopped
+    echo "Cosmovisor should stop at height $upgrade_height"
+    cosmovisor=0
+    set +e
+    while [ $cosmovisor -eq 0 ]
+    do
+        sleep 5
+        curl -s 127.0.0.1:26657/block | jq -r .result.block.header.height
+        systemctl --quiet is-active cosmovisor
+        cosmovisor=$?
+    done
+    set -e
+
+    # Archive .gaia
+    echo "Archiving .gaia"
+    cd ~gaia
+    tar cfz $chain_version-$upgrade_height-stateful-upgrade.tar.gz .gaia
+
+    # Upload to files.polypore.xyz
+    echo "Uploading $chain_version-$upgrade_height-stateful-upgrade.tar.gz to files.polypore.xyz"
+    scp $chain_version-$upgrade_height-stateful-upgrade.tar.gz gh-actions@files.polypore.xyz:/var/www/html/archived-state/
+
+    # Update latest file symlinks
+    echo "Updating latest file symlinks"
+    ssh gh-actions@files.polypore.xyz ln -sf /var/www/html/archived-state/$chain_version-$upgrade_height-stateful-upgrade.tar.gz /var/www/html/archived-state/latest_v$(echo $chain_version | cut  -c 2).tar.gz
+fi
 
 # Print current date and time
 echo -n "Finished at: "
