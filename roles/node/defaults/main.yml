@@ -53,7 +53,7 @@ go_version: 1.18.5
 
 # app.toml
 ## app.toml: Base Configuration
-minimum_gas_prices: '0{{ chain_denom }}'
+minimum_gas_prices: '0.0025{{ chain_denom }}'
 pruning: default
 pruning_keep_recent: '0'
 pruning_keep_every: '0'
