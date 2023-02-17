@@ -2,7 +2,7 @@
 set -e
 
 # cosmos next upgrade version name
-cosmos_upgrade_name="v8-Rho"
+cosmos_upgrade_name="v9-Lambda"
 
 # cosmos-genesis-tinkerer repo config
 gh_branch="main"
