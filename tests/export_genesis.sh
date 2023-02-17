@@ -100,7 +100,7 @@ catching_up="true"
 while [ $catching_up == "true" ]
 do
 	catching_up=$(curl -s 127.0.0.1:26657/status | jq -r .result.sync_info.catching_up)
-	echo "catching up"
+	echo "catching up: $catching_up"
 	sleep 5
 done
 echo "Done catching up"
