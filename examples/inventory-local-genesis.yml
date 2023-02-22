@@ -3,11 +3,11 @@
 all:
   vars:
     chain_home_clear: true
-    chain_version: v7.1.1
-    genesis_url: "https://files.polypore.xyz/genesis/mainnet-genesis-tinkered/tinkered-genesis_2023-01-06T20%3A22%3A50.460851274Z_v7.1.0_13562370.json.gz"
+    chain_version: v8.0.1
+    genesis_url: "https://files.polypore.xyz/genesis/mainnet-genesis-tinkered/latest_v8.json.gz"
     ansible_user: root
     enable_swap: true  # Set this for machines with <32GB RAM
-    swap_size: 8192
+    swap_size: 32768
   children:
     node:
       hosts:
