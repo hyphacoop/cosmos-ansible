@@ -148,7 +148,6 @@ then
 fi
 mv tinkered_genesis.json "mainnet-genesis-tinkered/tinkered-genesis_${current_block_time}_${chain_version}_${current_block}.json"
 
-
 # Compress files
 echo "Compressing mainnet-genesis-export/mainnet-genesis_${current_block_time}_${chain_version}_${current_block}.json"
 gzip "mainnet-genesis-export/mainnet-genesis_${current_block_time}_${chain_version}_${current_block}.json"
@@ -197,6 +196,7 @@ chain_version=$chain_version \
 chain_gov_testing=true \
 priv_validator_key_file=examples/validator-keys/validator-40/priv_validator_key.json \
 node_key_file=examples/validator-keys/validator-40/node_key.json \
+chain_binary_source=release
 genesis_file=~/cosmos-genesis-tinkerer/mainnet-genesis-tinkered/tinkered-genesis_${current_block_time}_${chain_version}_${current_block}.json.gz"
 
 echo "Waiting till gaiad is building blocks"
