@@ -1,5 +1,8 @@
 ---
 
+- name: Bypass the grub-efi-amd64-signed package
+  shell: "apt-mark hold grub-efi-amd64-signed"
+
 - name: Upgrade the system
   apt:
     update_cache: true
