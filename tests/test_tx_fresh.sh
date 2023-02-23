@@ -67,6 +67,7 @@ sleep 6
 check_code $TXHASH
 
 # Check the test-account funds
+echo $(gaiad q bank balances $test account -o json)
 ending_balance=$(gaiad q bank balances $test_account -o json | jq -r '.balances[0].amount')
 delta=$[ $ending_balance - $starting_balance]
 if [ $delta -gt 0 ]
