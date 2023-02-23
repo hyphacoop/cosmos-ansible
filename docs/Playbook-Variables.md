@@ -49,7 +49,6 @@ ansible-playbook node.yml -i examples/inventory-local.yml --extra-vars "chain_ve
 | `chain_id`             | Chain ID                                                                        | `my-testnet`                                                                       |
 | `addrbook_url`         | URL to download the addrbook.json file from                                     | `"https://quicksync.io/addrbook.cosmos.json"`                                      |
 | `addrbook_file`        | File path to the addrbook.json file to use                                      | `"addresses.json"`                                                                 |
-| `hermes_version`        | Hermes release tag                                      | `"v1.3.0"`                                                                 |
 
 ### Chain Configuration: `genesis.json`
 
