@@ -3,8 +3,8 @@
 all:
   vars:
     chain_home_clear: true
-    chain_version: v7.1.1
-    hermes_version: v1.0.0
+    chain_version: v8.0.1
+    hermes_version: v1.3.0
     ansible_user: root
   children:
     node:
@@ -42,7 +42,7 @@ all:
               hermes_chain_store_prefix: 'ibc'
               hermes_chain_max_gas: 2000000
               hermes_chain_fee_granter: ''
-              gas_price: "{ price = 0.001, denom = 'uatom' }"
+              gas_price: "{ price = 0.025, denom = 'uatom' }"
               hermes_chain_gas_multiplier: 1.1
               hermes_chain_clock_drift: '5s'
               hermes_chain_trusting_period: '1days'
@@ -63,7 +63,7 @@ all:
               hermes_chain_store_prefix: 'ibc'
               hermes_chain_max_gas: 2000000
               hermes_chain_fee_granter: ''
-              gas_price: "{ price = 0.001, denom = 'uatom' }"
+              gas_price: "{ price = 0.025, denom = 'uatom' }"
               hermes_chain_gas_multiplier: 1.1
               hermes_chain_clock_drift: '5s'
               hermes_chain_trusting_period: '1days'

@@ -2,7 +2,7 @@
 set -e
 
 # cosmos next upgrade version name
-cosmos_upgrade_name="v8-Rho"
+cosmos_upgrade_name="v9-Lambda"
 
 # cosmos-genesis-tinkerer repo config
 gh_branch="main"
@@ -65,9 +65,9 @@ else
 fi
 if [ ! -d cosmovisor/upgrades ]
 then
-    echo \"Creating cosmovisor/upgrades/v7-Theta/bin directory\"
-    mkdir -p cosmovisor/upgrades/v7-Theta/bin
-    cp cosmovisor/genesis/bin/gaiad cosmovisor/upgrades/v7-Theta/bin/gaiad
+    echo \"Creating cosmovisor/upgrades/v8-Rho/bin directory\"
+    mkdir -p cosmovisor/upgrades/v8-Rho/bin
+    cp cosmovisor/genesis/bin/gaiad cosmovisor/upgrades/v8-Rho/bin/gaiad
 fi
 " > ~gaia/quicksync.sh
 chmod +x ~gaia/quicksync.sh
@@ -100,7 +100,7 @@ catching_up="true"
 while [ $catching_up == "true" ]
 do
 	catching_up=$(curl -s 127.0.0.1:26657/status | jq -r .result.sync_info.catching_up)
-	echo "catching up"
+	echo "catching up: $catching_up"
 	sleep 5
 done
 echo "Done catching up"
@@ -147,7 +147,6 @@ then
     mkdir mainnet-genesis-tinkered
 fi
 mv tinkered_genesis.json "mainnet-genesis-tinkered/tinkered-genesis_${current_block_time}_${chain_version}_${current_block}.json"
-
 
 # Compress files
 echo "Compressing mainnet-genesis-export/mainnet-genesis_${current_block_time}_${chain_version}_${current_block}.json"
@@ -197,6 +196,7 @@ chain_version=$chain_version \
 chain_gov_testing=true \
 priv_validator_key_file=examples/validator-keys/validator-40/priv_validator_key.json \
 node_key_file=examples/validator-keys/validator-40/node_key.json \
+chain_binary_source=release
 genesis_file=~/cosmos-genesis-tinkerer/mainnet-genesis-tinkered/tinkered-genesis_${current_block_time}_${chain_version}_${current_block}.json.gz"
 
 echo "Waiting till gaiad is building blocks"

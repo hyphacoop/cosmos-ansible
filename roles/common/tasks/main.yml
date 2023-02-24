@@ -8,20 +8,6 @@
   retries: 50
   until: apt_cache is success
 
-- name: Remove python3-pip apt package
-  ansible.builtin.apt:
-    name: python3-pip
-    state: absent
-
-- name: Download script to install pip3
-  get_url:
-    url: https://bootstrap.pypa.io/get-pip.py
-    dest: /tmp/get-pip.py
-    mode: '0644'
-
-- name: Install pip3 using downloaded script
-  shell: python3 /tmp/get-pip.py
-
 - name: Install system required packages
   apt:
     pkg:
@@ -46,6 +32,20 @@
       - curl
       - htop
       - mtr-tiny
+
+- name: Remove python3-pip apt package
+  ansible.builtin.apt:
+    name: python3-pip
+    state: absent
+
+- name: Download script to install pip3
+  get_url:
+    url: https://bootstrap.pypa.io/get-pip.py
+    dest: /tmp/get-pip.py
+    mode: '0644'
+
+- name: Install pip3 using downloaded script
+  shell: python3 /tmp/get-pip.py
 
 - name: Set timezone to America/Toronto
   timezone:

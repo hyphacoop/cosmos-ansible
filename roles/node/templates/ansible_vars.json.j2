@@ -36,13 +36,8 @@
 	"config.toml": {
 		"proxy_app": {{ config_proxy_app | to_json }},
 		"moniker": {{ chain_moniker | to_json }},
-		{% if major_version|int >= 8 %}
-		"blocksync.enable": {{ fast_sync | to_json }},
-		"blocksync.version": {{ fastsync_version | to_json }},
-		{% else %}
 		"fast_sync": {{ fast_sync | to_json }},
 		"fastsync.version": {{ fastsync_version | to_json }},
-		{% endif %}
 		"genesis_file": {{ config_genesis_file | to_json }},
 		"priv_validator_key_file": {{ config_priv_validator_key_file | to_json }},
 		"priv_validator_state_file": {{ config_priv_validator_state_file | to_json }},
