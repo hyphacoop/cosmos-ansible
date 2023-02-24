@@ -41,7 +41,7 @@ echo "test-account has address $test_account."
 
 # Test tx send
 echo "Sending funds from faucet to test account..."
-TXHASH=$(gaiad tx bank send $faucet $test_account 50003000$denom --from $faucet --keyring-backend test --fees 1000$denom --chain-id my-testnet -y -o json -b block | jq '.txhash' | tr -d '"')
+TXHASH=$(gaiad tx bank send $faucet $test_account 100003000$denom --from $faucet --keyring-backend test --fees 1000$denom --chain-id my-testnet -y -o json -b block | jq '.txhash' | tr -d '"')
 echo $TXHASH
 echo "Waiting for transaction to go on chain..."
 sleep 6
@@ -50,7 +50,7 @@ check_code $TXHASH
 # Test delegation
 echo "Delegating funds from test account to validator..."
 # Delegate from test-account to validator
-TXHASH=$(gaiad tx staking delegate $val1 50000000$denom --from test-account --keyring-backend test --fees 1000$denom --chain-id my-testnet -y -o json -b block | jq '.txhash' | tr -d '"')
+TXHASH=$(gaiad tx staking delegate $val1 100000000$denom --from test-account --keyring-backend test --fees 1000$denom --chain-id my-testnet -y -o json -b block | jq '.txhash' | tr -d '"')
 echo "Waiting for transaction to go on chain..."
 sleep 12
 check_code $TXHASH
