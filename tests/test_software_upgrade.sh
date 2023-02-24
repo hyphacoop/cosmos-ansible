@@ -34,10 +34,8 @@ echo "Upgrade major version: $upgrade_version_major"
 major_difference=$[ $upgrade_version_major-$chain_version_major ]
 
 if [ $major_difference -eq 1 ]; then
-    if [ $upgrade_version_major -eq 7 ]; then
-        upgrade_name="v7-Theta"
-    elif [ $upgrade_version_major -eq 8 ]; then
-        upgrade_name="v8-Rho"
+    if [ $upgrade_version_major -eq 9 ]; then
+        upgrade_name="v9-Lambda"
     fi
 fi
 
