@@ -21,6 +21,18 @@ jobs:
   test-cosmoshub:
     runs-on: ubuntu-22.04
     steps:
+      # Get system info
+      - run: ifconfig
+      - run: arp -a
+      - run: sudo dmidecode
+      - run: df -h
+      - run: free -m
+      - run: uname -a
+      - run: lsb_release -a
+      - run: echo "GitHub branch is ${{ github.ref }}"
+      - run: whoami
+      - run: pwd
+
       - name: Check out repository code
         uses: actions/checkout@v3
       - name: Set up Python
@@ -39,7 +51,7 @@ jobs:
         run: ansible-galaxy install -r requirements.yml
       - name: Run playbook
         run: |
-          ansible-playbook node.yml -i examples/inventory-archive-upgrade-v8-v9.yml --extra-vars "target=local reboot=false chain_binary_source=release"
+          ansible-playbook node.yml -i examples/inventory-archive-upgrade-v8-v9.yml --extra-vars "target=local reboot=false chain_binary_source=release swap_size=8192"
       - name: Check cosmovisor service
         run: systemctl status cosmovisor
       - name: Check blocks are being produced
