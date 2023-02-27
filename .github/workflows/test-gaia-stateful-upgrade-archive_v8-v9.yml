@@ -10,6 +10,13 @@ on:
     types:
       - opened
       - closed
+  push:
+    paths-ignore:
+      - 'docs/**'
+      - 'examples/**'
+      - 'logs/**'
+      - '!examples/inventory-local.yml'
+      - 'README.md'
 jobs:
   test-cosmoshub:
     runs-on: ubuntu-22.04
