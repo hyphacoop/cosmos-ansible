@@ -51,7 +51,7 @@ jobs:
         run: ansible-galaxy install -r requirements.yml
       - name: Run playbook
         run: |
-          ansible-playbook node.yml -i examples/inventory-archive-upgrade-v8-v9.yml --extra-vars "target=local reboot=false chain_binary_source=release swap_size=8192 node_user=runner"
+          ansible-playbook node.yml -i examples/inventory-archive-upgrade-v8-v9.yml --extra-vars "target=local reboot=false chain_binary_source=release swap_size=8192 node_user=runner chain_home={{ node_user_home }}/.gaia"
       - name: Check cosmovisor service
         run: systemctl status cosmovisor
       - name: Check blocks are being produced
