@@ -66,8 +66,8 @@ jobs:
   test-upgrade:
     runs-on: ubuntu-22.04
     needs: generate-matrices
-    fail-fast: false
     strategy:
+      fail-fast: false
       matrix:
         ${{ fromJSON(needs.generate-matrices.outputs.upgrade_versions) }}
     steps:
