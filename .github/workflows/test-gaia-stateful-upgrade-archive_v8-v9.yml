@@ -56,6 +56,6 @@ jobs:
         run: systemctl status cosmovisor
       - name: Check blocks are being produced
         run: |
-          height=$(jq -r '.initial_height' ~/.gaia/config/genesis.json')
+          height=$(jq -r '.initial_height' ~/.gaia/config/genesis.json)
           echo "Waiting for block $[ $height + 100 ]..."
           tests/test_block_production.sh 127.0.0.1 26657 $[ $height + 100]
