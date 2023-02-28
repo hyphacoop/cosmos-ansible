@@ -200,6 +200,15 @@
     extra_opts: [--strip-components=1]
   become_user: "{{node_user}}"
 
+- name: Fix cosmovisor current symlink from archive to user {{ node_user }}
+  when: archive_url is defined
+  file:
+    state: link
+    src: "{{chain_home}}/cosmovisor/genesis"
+    dest: "{{chain_home}}/cosmovisor/current"
+    owner: '{{node_user}}'
+    group: '{{node_user}}'
+
 # Clear chain_home if it exists
 - name: Check if chain home folder exists
   stat:
