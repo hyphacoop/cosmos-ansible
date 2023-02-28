@@ -41,7 +41,7 @@ echo "test-account has address $test_account."
 
 # Test tx send
 echo "Sending funds from faucet to test account..."
-TXHASH=$(gaiad tx bank send $faucet $test_account 5000100$denom --from $faucet --keyring-backend test --fees 1$denom --chain-id my-testnet -y -o json | jq '.txhash' | tr -d '"')
+TXHASH=$(gaiad tx bank send $faucet $test_account 100003000$denom --from $faucet --keyring-backend test --fees 1000$denom --chain-id my-testnet -y -o json -b block | jq '.txhash' | tr -d '"')
 echo $TXHASH
 echo "Waiting for transaction to go on chain..."
 sleep 6
@@ -50,24 +50,27 @@ check_code $TXHASH
 # Test delegation
 echo "Delegating funds from test account to validator..."
 # Delegate from test-account to validator
-TXHASH=$(gaiad tx staking delegate $val1 4000000$denom --from test-account --keyring-backend test --fees 1$denom --chain-id my-testnet -y -o json | jq '.txhash' | tr -d '"')
+TXHASH=$(gaiad tx staking delegate $val1 100000000$denom --from test-account --keyring-backend test --fees 1000$denom --chain-id my-testnet -y -o json -b block | jq '.txhash' | tr -d '"')
 echo "Waiting for transaction to go on chain..."
 sleep 12
 check_code $TXHASH
 
 # Test withdrawing rewards
 starting_balance=$(gaiad q bank balances $test_account -o json | jq -r '.balances[0].amount')
+echo "Starting balance: $starting_balance"
 balance_denom=$(gaiad q bank balances $test_account -o json | jq -r '.balances[0].denom')
 
-echo "Withdrawing rewards for test account..."
-TXHASH=$(gaiad tx distribution withdraw-all-rewards --from $test_account --keyring-backend test --fees 1$denom --chain-id my-testnet -y -o json | jq '.txhash' | tr -d '"')
 # Wait for rewards to accumulate
+echo "Withdrawing rewards for test account..."
+TXHASH=$(gaiad tx distribution withdraw-all-rewards --from $test_account --keyring-backend test --fees 1000$denom --chain-id my-testnet -y -o json -b block | jq '.txhash' | tr -d '"')
 echo "Waiting for transaction to go on chain..."
 sleep 6
 check_code $TXHASH
 
 # Check the test-account funds
+echo $(gaiad q bank balances $test_account -o json)
 ending_balance=$(gaiad q bank balances $test_account -o json | jq -r '.balances[0].amount')
+echo "Ending balance: $ending_balance"
 delta=$[ $ending_balance - $starting_balance]
 if [ $delta -gt 0 ]
 then
