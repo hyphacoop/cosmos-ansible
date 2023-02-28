@@ -66,7 +66,5 @@ jobs:
         run: |
           echo "Waiting for block $[ $height + 100 ]..."
           tests/test_block_production.sh 127.0.0.1 26657 $[ ${{ env.genesis_height }} + 10]
-      - name: Restore validator.json
-        run: echo "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon art" | ~/.gaia/cosmovisor/current/bin/gaiad --output json keys add val --keyring-backend test --recover 2> ~/.gaia/validator.json  # Use stderr until gaiad use stdout
       - name: Happy path - transaction testing
         run: tests/test_tx_stateful.sh
