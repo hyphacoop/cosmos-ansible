@@ -249,6 +249,7 @@
     rm temp.json
 
 - name: patch genesis file with specified denom
+  when: not (archive_url is defined)
   replace:
     path: '{{chain_home}}/config/genesis.json'
     regexp: '"stake"'

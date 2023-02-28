@@ -1,0 +1,70 @@
+---
+
+name: Test Gaia Upgrade Using Stateful Archive (v8 to v9)
+on:
+  workflow_dispatch:
+  schedule:
+    # At 15:30 on Sunday.
+    - cron: '30 15 * * 0'
+  pull_request:
+    types:
+      - opened
+      - closed
+  push:
+    paths-ignore:
+      - 'docs/**'
+      - 'examples/**'
+      - 'logs/**'
+      - '!examples/inventory-local.yml'
+      - 'README.md'
+jobs:
+  test-stateful-archive-upgrade:
+    runs-on: ubuntu-22.04
+    steps:
+      # Get system info
+      - run: ifconfig
+      - run: arp -a
+      - run: sudo dmidecode
+      - run: df -h
+      - run: free -m
+      - run: uname -a
+      - run: lsb_release -a
+      - run: echo "GitHub branch is ${{ github.ref }}"
+      - run: whoami
+      - run: pwd
+
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.10'
+      - name: Bypass the grub-efi-amd64-signed package
+        run: sudo apt-mark hold grub-efi-amd64-signed
+      - name: Install pip dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install ansible toml
+      - name: Configure ansible.cfg
+        run: echo "transport = local" >> ansible.cfg
+      - name: Install ansible-galaxy requirements
+        run: ansible-galaxy install -r requirements.yml
+      - name: Run playbook
+        run: |
+          ansible-playbook node.yml -i examples/inventory-archive-upgrade-v8-v9.yml --extra-vars "target=local reboot=false chain_start=false chain_binary_source=release swap_size=8192 node_user=runner"
+      - name: Get genesis height
+        run: |
+          echo "genesis_height=$(jq -r '.height' ~/.gaia/data/upgrade-info.json)" >> $GITHUB_ENV
+          echo "Genesis height: ${{ env.genesis_height }}"
+      - name: Enable and start cosmovisor service
+        run: sudo systemctl enable --now cosmovisor
+      - name: Check cosmovisor journal
+        run: journalctl -u cosmovisor
+      - name: Check cosmovisor service
+        run: systemctl status cosmovisor
+      - name: Check blocks are being produced
+        run: |
+          echo "Waiting for block $[ ${{ env.genesis_height }} + 100 ]..."
+          tests/test_block_production.sh 127.0.0.1 26657 $[ ${{ env.genesis_height }} + 100]
+      - name: Happy path - transaction testing
+        run: tests/test_tx_stateful.sh

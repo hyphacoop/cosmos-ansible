@@ -9,6 +9,7 @@ node_unsafe_reset: false
 chain_version: v8.0.1
 chain_repository: https://github.com/cosmos/gaia.git
 chain_binary_release: "https://github.com/cosmos/gaia/releases/download/{{ chain_version }}/gaiad-{{ chain_version }}-{{binary_arch_map[ansible_architecture]}}"
+chain_upgrade_binary_release: "https://github.com/cosmos/gaia/releases/download/{{ chain_upgrade_version }}/gaiad-{{ chain_upgrade_version }}-{{binary_arch_map[ansible_architecture]}}"
 chain_binary_source: "build"
 chain_bin: "{{ node_user_home }}/go/bin/{{chain_binary_name}}"
 node_service_name: "gaiad"
