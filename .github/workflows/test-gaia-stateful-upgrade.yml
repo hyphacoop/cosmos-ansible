@@ -83,6 +83,8 @@ jobs:
       matrix:
         ${{ fromJSON(needs.generate-matrices.outputs.upgrade_versions) }}
     steps:
+      - name: Bypass the grub-efi-amd64-signed package
+        run: sudo apt-mark hold grub-efi-amd64-signed
       - run: echo "Test upgrading ${{matrix.gaia_version}} to ${{matrix.upgrade_version}}"
       # Get system info
       - run: ifconfig

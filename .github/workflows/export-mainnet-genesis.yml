@@ -22,6 +22,9 @@ jobs:
       - run: whoami
       - run: pwd
 
+      - name: Bypass the grub-efi-amd64-signed package
+        run: sudo apt-mark hold grub-efi-amd64-signed
+
       - name: Set SSH key
         run: |
           if [ ! -d ~/.ssh ]
