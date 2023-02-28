@@ -79,6 +79,7 @@ jobs:
     needs: generate-matrices
     if: ${{ needs.generate-matrices.outputs.upgrade_versions != '[]' && needs.generate-matrices.outputs.upgrade_versions != '' }}
     strategy:
+      fail-fast: false
       matrix:
         ${{ fromJSON(needs.generate-matrices.outputs.upgrade_versions) }}
     steps:

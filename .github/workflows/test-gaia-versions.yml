@@ -66,6 +66,7 @@ jobs:
     runs-on: ubuntu-22.04
     needs: generate-matrices
     strategy:
+      fail-fast: false
       matrix:
         ${{ fromJSON(needs.generate-matrices.outputs.start_versions) }}
     steps:
