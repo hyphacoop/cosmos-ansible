@@ -51,13 +51,18 @@ jobs:
         run: ansible-galaxy install -r requirements.yml
       - name: Run playbook
         run: |
-          ansible-playbook node.yml -i examples/inventory-archive-upgrade-v8-v9.yml --extra-vars "target=local reboot=false chain_binary_source=release swap_size=8192 node_user=runner"
+          ansible-playbook node.yml -i examples/inventory-archive-upgrade-v8-v9.yml --extra-vars "target=local reboot=false chain_start=false chain_binary_source=release swap_size=8192 node_user=runner"
+      - name: Get genesis height
+        run: |
+          echo "genesis_height=$(jq -r '.initial_height' ~/.gaia/config/genesis.json)" >> $GITHUB_ENV
+          echo "Genesis height: ${{ env.genesis_height }}"
+      - name: Enable and start cosmovisor service
+        run: systemctl enable --now cosmovisor
       - name: Check cosmovisor journal
         run: journalctl -u cosmovisor
       - name: Check cosmovisor service
         run: systemctl status cosmovisor
       - name: Check blocks are being produced
         run: |
-          height=$(jq -r '.initial_height' ~/.gaia/config/genesis.json)
           echo "Waiting for block $[ $height + 100 ]..."
-          tests/test_block_production.sh 127.0.0.1 26657 $[ $height + 100]
+          tests/test_block_production.sh 127.0.0.1 26657 $[ ${{ env.genesis_height }} + 10]
