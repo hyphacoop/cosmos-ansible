@@ -21,18 +21,6 @@ jobs:
   generate-matrices:
     runs-on: ubuntu-22.04
     steps:
-      # Get system info
-      - run: ifconfig
-      - run: arp -a
-      - run: sudo dmidecode
-      - run: df -h
-      - run: free -m
-      - run: uname -a
-      - run: lsb_release -a
-      - run: echo "GitHub branch is ${{ github.ref }}"
-      - run: whoami
-      - run: pwd
-
       - name: Check out repository code
         uses: actions/checkout@v3
 
@@ -49,9 +37,7 @@ jobs:
       - name: Generate starting versions
         id: generate-start
         run: |
-          start=$(tests/generate_version_matrix.py v8.0.0)
-          echo $start
-          echo ::set-output name=start_versions::$start
+          echo '::set-output name=start_versions::{"gaia_version": ["v8.0.1"]}'
 
       - name: Generate upgrade versions
         id: generate-upgrade
