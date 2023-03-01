@@ -21,6 +21,18 @@ jobs:
   generate-matrices:
     runs-on: ubuntu-22.04
     steps:
+      # Get system info
+      - run: ifconfig
+      - run: arp -a
+      - run: sudo dmidecode
+      - run: df -h
+      - run: free -m
+      - run: uname -a
+      - run: lsb_release -a
+      - run: echo "GitHub branch is ${{ github.ref }}"
+      - run: whoami
+      - run: pwd
+
       - name: Check out repository code
         uses: actions/checkout@v3
 
@@ -55,6 +67,7 @@ jobs:
     runs-on: ubuntu-22.04
     needs: generate-matrices
     strategy:
+      fail-fast: false
       matrix:
         ${{ fromJSON(needs.generate-matrices.outputs.upgrade_versions) }}
     steps:
@@ -73,7 +86,7 @@ jobs:
       - name: Configure ansible.cfg
         run: echo "transport = local" >> ansible.cfg
       - name: Install ansible-galaxy requirements
-        run: ansible-galaxy install -r requirements.yml
+        run: ansible-galaxy install --timeout 120 --verbose -r requirements.yml
       - name: Run playbook
         run: ansible-playbook node.yml -i examples/inventory-archive-upgrade-v8-v9.yml --extra-vars "target=local reboot=false chain_version=${{ matrix.gaia_version }} chain_home={{ node_user_home }}/.gaia chain_gov_testing=true node_user=runner chain_binary_source=release"
       - name: Check cosmovisor service
