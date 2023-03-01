@@ -18,7 +18,7 @@ on:
       - '!examples/inventory-local.yml'
       - 'README.md'
 jobs:
-  test-stateful-archive-upgrade:
+  generate-matrices:
     runs-on: ubuntu-22.04
     steps:
       # Get system info
@@ -35,36 +35,62 @@ jobs:
 
       - name: Check out repository code
         uses: actions/checkout@v3
+
       - name: Set up Python
         uses: actions/setup-python@v3
         with:
           python-version: '3.10'
-      - name: Bypass the grub-efi-amd64-signed package
-        run: sudo apt-mark hold grub-efi-amd64-signed
-      - name: Install pip dependencies
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install requests
+
+      - name: Generate starting versions
+        id: generate-start
+        run: |
+          start=$(tests/generate_version_matrix.py v8.0.0)
+          echo $start
+          echo ::set-output name=start_versions::$start
+
+      - name: Generate upgrade versions
+        id: generate-upgrade
+        run: |
+          upgrade=$(tests/generate_upgrade_matrix.py v9.0.0)
+          echo $upgrade
+          echo ::set-output name=upgrade_versions::$upgrade
+    outputs:
+      start_versions: ${{ steps.generate-start.outputs.start_versions }}
+      upgrade_versions: ${{ steps.generate-upgrade.outputs.upgrade_versions }}
+
+  test-upgrade:
+    runs-on: ubuntu-22.04
+    needs: generate-matrices
+    strategy:
+      matrix:
+        ${{ fromJSON(needs.generate-matrices.outputs.upgrade_versions) }}
+    steps:
+      - run: echo "Test upgrading ${{matrix.gaia_version}} to ${{matrix.upgrade_version}}"
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.10'
+      - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           python -m pip install ansible toml
+
       - name: Configure ansible.cfg
         run: echo "transport = local" >> ansible.cfg
       - name: Install ansible-galaxy requirements
         run: ansible-galaxy install -r requirements.yml
       - name: Run playbook
-        run: |
-          ansible-playbook node.yml -i examples/inventory-archive-upgrade-v8-v9.yml --extra-vars "target=local reboot=false chain_start=false chain_binary_source=release swap_size=8192 node_user=runner"
-      - name: Get genesis height
-        run: |
-          echo "genesis_height=$(jq -r '.height' ~/.gaia/data/upgrade-info.json)" >> $GITHUB_ENV
-          echo "Genesis height: ${{ env.genesis_height }}"
-      - name: Enable and start cosmovisor service
-        run: sudo systemctl enable --now cosmovisor
-      - name: Check cosmovisor journal
-        run: journalctl -u cosmovisor
+        run: ansible-playbook node.yml -i examples/inventory-archive-upgrade-v8-v9.yml --extra-vars "target=local reboot=false chain_version=${{ matrix.gaia_version }} chain_home={{ node_user_home }}/.gaia chain_gov_testing=true node_user=runner chain_binary_source=release"
       - name: Check cosmovisor service
         run: systemctl status cosmovisor
       - name: Check blocks are being produced
-        run: |
-          echo "Waiting for block $[ ${{ env.genesis_height }} + 100 ]..."
-          tests/test_block_production.sh 127.0.0.1 26657 $[ ${{ env.genesis_height }} + 100]
+        run: tests/test_block_production.sh 127.0.0.1 26657 10
       - name: Happy path - transaction testing
-        run: tests/test_tx_stateful.sh
+        run: tests/test_tx_fresh.sh
