@@ -36,6 +36,7 @@ major_difference=$[ $upgrade_version_major-$chain_version_major ]
 if [ $major_difference -eq 1 ]; then
     if [ $upgrade_version_major -eq 9 ]; then
         upgrade_name="v9-Lambda"
+    fi
 fi
 
 if [ -n "$upgrade_name" ]; then
