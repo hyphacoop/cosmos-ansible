@@ -128,7 +128,7 @@ jobs:
       - name: Configure ansible.cfg
         run: echo "transport = local" >> ansible.cfg
       - name: Install ansible-galaxy requirements
-        run: ansible-galaxy install -r requirements.yml
+        run: ansible-galaxy install --timeout 120 --verbose -r requirements.yml
       - name: Modify examples/inventory-local-genesis.yml
         run: sed -e '/genesis_url:/d' examples/inventory-local-genesis.yml > inventory.yml
       - name: Run playbook
