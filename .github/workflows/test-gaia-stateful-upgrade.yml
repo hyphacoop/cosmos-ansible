@@ -79,9 +79,12 @@ jobs:
     needs: generate-matrices
     if: ${{ needs.generate-matrices.outputs.upgrade_versions != '[]' && needs.generate-matrices.outputs.upgrade_versions != '' }}
     strategy:
+      fail-fast: false
       matrix:
         ${{ fromJSON(needs.generate-matrices.outputs.upgrade_versions) }}
     steps:
+      - name: Bypass the grub-efi-amd64-signed package
+        run: sudo apt-mark hold grub-efi-amd64-signed
       - run: echo "Test upgrading ${{matrix.gaia_version}} to ${{matrix.upgrade_version}}"
       # Get system info
       - run: ifconfig
@@ -125,7 +128,7 @@ jobs:
       - name: Configure ansible.cfg
         run: echo "transport = local" >> ansible.cfg
       - name: Install ansible-galaxy requirements
-        run: ansible-galaxy install -r requirements.yml
+        run: ansible-galaxy install --timeout 120 --verbose -r requirements.yml
       - name: Modify examples/inventory-local-genesis.yml
         run: sed -e '/genesis_url:/d' examples/inventory-local-genesis.yml > inventory.yml
       - name: Run playbook
