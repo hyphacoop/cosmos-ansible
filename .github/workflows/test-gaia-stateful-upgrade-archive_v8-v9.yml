@@ -74,7 +74,7 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v3
       - name: Set up Python
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v4
         with:
           python-version: '3.10'
       - name: Bypass the grub-efi-amd64-signed package
@@ -86,7 +86,7 @@ jobs:
       - name: Configure ansible.cfg
         run: echo "transport = local" >> ansible.cfg
       - name: Install ansible-galaxy requirements
-        run: ansible-galaxy install -r requirements.yml
+        run: ansible-galaxy install --timeout 120 --verbose -r requirements.yml
       - name: Run playbook
         run: |
           ansible-playbook node.yml -i examples/inventory-archive-upgrade-v8-v9.yml --extra-vars "target=local reboot=false chain_start=false chain_binary_source=release swap_size=8192 node_user=runner"
