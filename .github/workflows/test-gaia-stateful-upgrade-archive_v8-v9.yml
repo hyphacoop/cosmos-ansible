@@ -39,14 +39,14 @@ jobs:
         run: |
           start=$(tests/generate_version_matrix.py v8.0.1)
           echo $start
-          echo ::set-output name=start_versions::$start
+          echo "start_versions=$start" >> $GITHUB_OUTPUT
 
       - name: Generate upgrade versions
         id: generate-upgrade
         run: |
           upgrade=$(tests/generate_upgrade_matrix.py v8.0.1)
           echo $upgrade
-          echo ::set-output name=upgrade_versions::$upgrade
+          echo "upgrade_versions=$upgrade" >> $GITHUB_OUTPUT
     outputs:
       start_versions: ${{ steps.generate-start.outputs.start_versions }}
       upgrade_versions: ${{ steps.generate-upgrade.outputs.upgrade_versions }}
