@@ -12,9 +12,9 @@ python3 /tmp/get-pip.py
 # install ansible
 pip3 install ansible
 
-git clone https://github.com/hyphacoop/cosmos-ansible.git
-cd /cosmos-ansible
-git checkout docker-tests
+# git clone https://github.com/hyphacoop/cosmos-ansible.git
+# cd /cosmos-ansible
+# git checkout docker-tests
 
 echo "transport = local" >> ansible.cfg
 ansible-playbook node.yml -i examples/inventory-local.yml --extra-vars "target=local \
