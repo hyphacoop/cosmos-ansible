@@ -1,4 +1,8 @@
 #!/bin/bash
+# Runs fresh upgrade tests using Debian Docker container
+
+chain_version=$1
+upgrade_version=$2
 set -e
 
 apt -y update
@@ -19,7 +23,7 @@ pip3 install ansible
 echo "transport = local" >> ansible.cfg
 ansible-playbook node.yml -i examples/inventory-local.yml --extra-vars "target=local \
 reboot=false \
-chain_version=${{ matrix.gaia_version }} \
+chain_version=$chain_version \
 chain_binary_source=release \
 chain_gov_testing=true \
 node_user=gaia \
@@ -46,6 +50,6 @@ chown -R gaia:gaia /cosmos-ansible
 # Check blocks are being produced
 su gaia -c "tests/test_block_production.sh 127.0.0.1 26657 10"
 # Test software upgrade
-su gaia -c "tests/test_software_upgrade.sh 127.0.0.1 26657 ${{ matrix.upgrade_version }}"
+su gaia -c "tests/test_software_upgrade.sh 127.0.0.1 26657 $upgrade_version"
 # Happy path - transaction testing
 su gaia -c "tests/test_tx_fresh.sh"
