@@ -95,4 +95,4 @@ jobs:
       - name: List docker images
         run: sudo docker image ls
       - name: Run script in docker
-        run: sudo docker run --name=upgrade-test -v /home/runner/work/cosmos-ansible/cosmos-ansible:/cosmos-ansible debian-bullseye /cosmos-ansible/tests/test_gaia_versions_docker.sh
+        run: sudo docker run --name=upgrade-test -v /home/runner/work/cosmos-ansible/cosmos-ansible:/cosmos-ansible debian:11 /cosmos-ansible/tests/test_gaia_versions_docker.sh
