@@ -84,12 +84,12 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
-    needs: generate-matrices
-    strategy:
-      matrix:
-        ${{ fromJSON(needs.generate-matrices.outputs.upgrade_versions) }}
-    steps:
+      
       - name: Pull Debian 11 image
         run: sudo docker pull debian:11
       - name: Run script in docker
         run:  docker run --name=upgrade-test -v /home/runner/work/cosmos-ansible/cosmos-ansible:/cosmos-ansible debian-bullseye /cosmos-ansible/tests/test_gaia_versions_docker.sh
+    needs: generate-matrices
+    strategy:
+      matrix:
+        ${{ fromJSON(needs.generate-matrices.outputs.upgrade_versions) }}
