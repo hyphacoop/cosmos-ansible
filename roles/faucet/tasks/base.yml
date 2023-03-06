@@ -7,7 +7,7 @@
 
 # Set up nginx
 - name: Change vars for TLS
-  when: (faucet_setup_nginx | default(false) | bool) and (faucet_use_tls_proxy | default(false)
+  when: (faucet_setup_nginx | default(false) | bool) and (faucet_use_tls_proxy | default(false) | bool)
   set_fact:
     ssl_provider: "letsencrypt"
 
@@ -17,7 +17,7 @@
 
 - include_role:
     name: hypha.common.ssl
-  when: (faucet_setup_nginx | default(false) | bool) and (faucet_use_tls_proxy | default(false)
+  when: (faucet_setup_nginx | default(false) | bool) and (faucet_use_tls_proxy | default(false) | bool)
 
 - name: Restart nginx to apply new config
   systemd:
