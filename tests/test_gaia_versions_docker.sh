@@ -54,7 +54,7 @@ UNSAFE_SKIP_BACKUP=true
 
 # Create script for cosmovisor
 echo "Creating script for cosmovisor"
-echo "while true; do su gaia -c \"~/go/bin/cosmovisor run start --home /home/gaia/.gaia\"; sleep 1; done" > ~/cosmovisor.sh
+echo "while true; do su gaia -c \"~/go/bin/cosmovisor run start --home /home/gaia/.gaia\"; sleep 1; done" > /cosmos-ansible/cosmovisor.sh
 chmod +x /cosmos-ansible/cosmovisor.sh
 
 # Run cosmovisor in screen session
