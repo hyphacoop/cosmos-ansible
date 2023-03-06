@@ -64,6 +64,11 @@ jobs:
 
   test-upgrade:
     runs-on: ubuntu-22.04
+    needs: generate-matrices
+    strategy:
+      fail-fast: false
+      matrix:
+        ${{ fromJSON(needs.generate-matrices.outputs.upgrade_versions) }}
     steps:
       # Get system info
       - run: ifconfig
@@ -87,9 +92,7 @@ jobs:
       
       - name: Pull Debian 11 image
         run: sudo docker pull debian:11
+      - name: List docker images
+        run: sudo docker image ls
       - name: Run script in docker
-        run:  docker run --name=upgrade-test -v /home/runner/work/cosmos-ansible/cosmos-ansible:/cosmos-ansible debian-bullseye /cosmos-ansible/tests/test_gaia_versions_docker.sh
-    needs: generate-matrices
-    strategy:
-      matrix:
-        ${{ fromJSON(needs.generate-matrices.outputs.upgrade_versions) }}
+        run: sudo docker run --name=upgrade-test -v /home/runner/work/cosmos-ansible/cosmos-ansible:/cosmos-ansible debian-bullseye /cosmos-ansible/tests/test_gaia_versions_docker.sh
