@@ -172,10 +172,10 @@ To check the validator set is being updated in the consumer chain:
 ```bash
 su provider
 gaiad q tendermint-validator-set --node http://localhost:26650 # validator has a voting power of 8000 on the provider chain
-gaiad q tendermint-validator-set --node http://localhost:26660 # # validator has a voting power of 8000 on the provider chain
+gaiad q tendermint-validator-set --node http://localhost:26660 # # validator has a voting power of 8000 on the consumer chain
 gaiad tx staking delegate cosmosvaloper1r5v5srda7xfth3hn2s26txvrcrntldju7lnwmv 1000000000uatom --from validator --gas auto --fees 1000uatom -b block -y
 gaiad q tendermint-validator-set --node http://localhost:26650 # validator has a voting power of 9000 on the provider chain
-gaiad q tendermint-validator-set --node http://localhost:26660 # validator has a voting power of 9000 on the provider chain
+gaiad q tendermint-validator-set --node http://localhost:26660 # validator has a voting power of 9000 on the consumer chain
 ```
 
 ## Start a three-node testnet from existing keys and genesis file
