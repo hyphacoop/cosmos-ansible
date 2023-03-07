@@ -21,10 +21,6 @@ python3 /tmp/get-pip.py
 echo "Installing ansible"
 pip3 install ansible
 
-# git clone https://github.com/hyphacoop/cosmos-ansible.git
-# cd /cosmos-ansible
-# git checkout docker-tests
-
 # Run ansible playbook
 echo "cd /cosmos-ansible"
 cd /cosmos-ansible
@@ -58,7 +54,8 @@ echo "while true; do su gaia -c \"~/go/bin/cosmovisor run start --home /home/gai
 chmod +x /cosmos-ansible/cosmovisor.sh
 
 # Run cosmovisor in screen session
-screen -L -Logfile /root/cosmovisor.log -S cosmovisor -d -m bash '/cosmos-ansible/cosmovisor.sh'
+mkdir /cosmos-ansible/log
+screen -L -Logfile /cosmos-ansible/artifact/cosmovisor.log -S cosmovisor -d -m bash '/cosmos-ansible/cosmovisor.sh'
 
 # Tests
 chown -R gaia:gaia /cosmos-ansible
