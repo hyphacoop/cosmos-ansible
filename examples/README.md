@@ -35,78 +35,65 @@ ansible-playbook node.yml -i examples/inventory-public-testnet.yml -e 'target=SE
 
 This playbook obtains a trust block height and the corresponding hash ID from the first RPC server listed in the inventory file in order to use the state sync feature. 
 
-## Join the Interchain Security Mini-Testnets
+## Join the Replicated Security Testnet
 
-Set up nodes to join the [Interchain Security Testnet](https://informalsystems.notion.site/Interchain-Security-Testnet-cc65af3d57724c2bab52a04f3f3d3a7d) and run a validator.
-
-Before running the commands below, make sure you have installed Ansible as per [these requirements](https://github.com/hyphacoop/cosmos-ansible/tree/main#-requirements).
+Set up nodes to join the [Replicated Security Testnet](https://github.com/cosmos/testnets/tree/master/replicated-security).
 
 ### Provider Chain
 
-* **Inventory file:** [`inventory-join-provider.yml`](inventory-join-provider.yml)
+* **Inventory file:** [`inventory-rs-testnet-provider.yml`](inventory-rs-testnet-provider.yml)
 * **Chain ID:** `provider`
-* **Interchain Security version:** `tags/v0.1.4`
+* **Gaia version:** `v9.0.0-rc7`
 
 Run the playbook:
 ```
-ansible-playbook node.yml -i examples/inventory-join-provider.yml -e 'target=SERVER_IP_OR_DOMAIN'
+ansible-playbook node.yml -i examples/inventory-rs-testnet-provider.yml -e 'target=SERVER_IP_OR_DOMAIN'
 ```
 
-After the play has finished running:
+If you want to run a validator, do the following after this play has finished running and continue to join the consumer chains:
 
-1. Make a copy of the keys in the `/home/provider/.isp/config` folder in the target machine. You will need them to set up the consumer chain validator:
+1. Make a copy of the keys in the `/home/provider/.gaia/config` folder in the target machine. You will need them to set up the consumer chain validators:
 - `priv_validator_key.json`
 - `node_key.json`
 
 2. If you have not set up a validator, generate a keypair for it:
 ```
-interchain-security-pd keys add <validator_keypair_name> --home ~/.isp --keyring-backend test --output json > ~/validator-keypair.json 2>&1
+gaiad keys add <validator_keypair_name> --home ~/.gaia --keyring-backend test --output json > ~/validator-keypair.json 2>&1
 ```
 
 ---
 
-### `salt` Consumer Chain
+### `baryon-1` Consumer Chain
 
-* **Inventory file:** [`inventory-join-salt.yml`](inventory-join-salt.yml)
-* **Chain ID:** `salt`
-* **Interchain Security version:** `tags/v0.1.4`
-
-Run the playbook using the keys collected from the provider chain node:
-```
-ansible-playbook node.yml -i examples/inventory-join-salt.yml -e 'target=SERVER_IP_OR_DOMAIN node_key_file=node_key.json priv_validator_key_file=priv_validator_key.json"
-```
-
-### `pepper` Consumer Chain
-
-* **Inventory file:** [`inventory-join-pepper.yml`](inventory-join-pepper.yml)
-* **Chain ID:** `pepper`
-* **Interchain Security version:** `tags/v0.1.4`
+* **Inventory file:** [`inventory-rs-testnet-baryon-1.yml`](inventory-rs-testnet-baryon-1.yml)
+* **Chain ID:** `baryon-1`
 
 Run the playbook using the keys collected from the provider chain node:
 ```
-ansible-playbook node.yml -i examples/inventory-join-pepper.yml -e 'target=SERVER_IP_OR_DOMAIN node_key_file=node_key.json priv_validator_key_file=priv_validator_key.json"
+ansible-playbook node.yml -i examples/inventory-rs-testnet-baryon-1.yml -e 'target=SERVER_IP_OR_DOMAIN node_key_file=node_key.json priv_validator_key_file=priv_validator_key.json"
 ```
 
-### `sugar` Consumer Chain
+### `noble-1` Consumer Chain
 
-* **Inventory file:** [`inventory-join-sugar.yml`](inventory-join-sugar.yml)
-* **Chain ID:** `sugar`
-* **Binary:** `neutrond` ([interchain-security-with-governance branch](https://github.com/neutron-org/neutron/tree/feat/interchain-security-with-governance))
+* **Inventory file:** [`inventory-rs-testnet-noble-1.yml`](inventory-rs-testnet-noble-1.yml)
+* **Chain ID:** `noble-1`
 
 Run the playbook using the keys collected from the provider chain node:
 ```
-ansible-playbook node.yml -i examples/inventory-join-sugar.yml -e 'target=SERVER_IP_OR_DOMAIN node_key_file=node_key.json priv_validator_key_file=priv_validator_key.json"
+ansible-playbook node.yml -i examples/inventory-rs-testnet-noble-1.yml -e 'target=SERVER_IP_OR_DOMAIN node_key_file=node_key.json priv_validator_key_file=priv_validator_key.json"
 ```
 
 ---
 
-If you have not set up a validator, do the following after the play has finished running:
+To set up a validator, do the following after the consumer chain plays have finished running and all nodes are synced:
 
 3. Get tokens for your validator address.
 4. Bond the validator on the provider chain:
 ```
-interchain-security-pd tx staking create-validator --amount 2000000stake --pubkey <validator_public_key> --from <validator_keypair_name> --keyring-backend test --home ~/.isp --chain-id provider --commission-max-change-rate 0.01 --commission-max-rate 0.2 --commission-rate 0.1 --moniker <validator_moniker> --min-self-delegation 1 -b block -y
+gaiad tx staking create-validator --amount 2000000uatom --pubkey <validator_public_key> --from <validator_keypair_name> --keyring-backend test --home ~/.gaia --chain-id provider --commission-max-change-rate 0.01 --commission-max-rate 0.2 --commission-rate 0.1 --moniker <validator_moniker> --min-self-delegation 1 -b block -y
 ```
+
+For more information, see the provider chain [README](https://github.com/cosmos/testnets/blob/master/replicated-security/provider/README.md#creating-a-validator).
 
 ## Join the Rho Devnet
 
