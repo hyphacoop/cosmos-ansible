@@ -27,7 +27,7 @@
   register: proposal_id
   become_user: provider
 
-- name: Pring proposal ID
+- name: Print proposal ID
   debug:
     msg: "Proposal ID is {{proposal_id.stdout}}"
 
@@ -38,9 +38,20 @@
     PATH: "{{ provider_home }}/cosmovisor/current/bin:{{ ansible_env.PATH }}"
   become_user: provider
 
+- name: Collect voting period
+  shell: |
+    GOV_PARAMS=$({{ chain_binary_name }} q gov params -o json)
+    VOTING_NANOSECONDS=$(echo $GOV_PARAMS | jq -r '.voting_params.voting_period')
+    VOTING_SECONDS=$(( $VOTING_NANOSECONDS/1000000000 ))
+    echo $VOTING_SECONDS
+  register: voting_period_seconds
+  environment:
+    PATH: "{{ provider_home }}/cosmovisor/current/bin:{{ ansible_env.PATH }}"
+  become_user: provider
+
 - name: Wait for voting period to end
   pause:
-    seconds: 10
+    seconds: "{{ voting_period_seconds.stdout }}"
 
 - name: Check proposal status
   shell: |
