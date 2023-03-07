@@ -33,9 +33,9 @@
   hosts: consumer
   become: true
   tasks:
-    - name: Start the consumer cosmovisor service
-      shell: |
-        systemctl start "{{ cosmovisor_service_name }}"
+  - name: Start the consumer cosmovisor service
+    shell: |
+      systemctl start "{{ cosmovisor_service_name }}"
 
 - name: Establish the CCV channel between chains
   hosts: hermes
