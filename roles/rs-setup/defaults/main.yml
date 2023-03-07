@@ -1,0 +1,20 @@
+---
+# Provider chain
+chain_binary_name: "gaiad"
+chain_tx_fees: "1000uatom"
+
+# Consumer chain proposal metadata
+consumer_chain_title: "Create consumer chain"
+consumer_chain_description: "Test consumer chain start"
+consumer_chain_id: "test-consumer"
+consumer_revision_number: 0
+consumer_genesis_hash: "ca0b10dcf187a8fbf936a7df212106136e96b1918f60be3bc658e0e77135fb9a"
+consumer_binary_hash: "16a5fe8860b8c15eb11057b622e8749704c18d0e1dedae2e100ab397e732a708"
+provider_chain_id: "test-provider"
+consumer_blocks_per_distribution_transmission: "1000"
+consumer_redistribution_fraction: "0.75"
+consumer_historical_entries: "10000"
+consumer_transfer_timeout_period: "1800000000000"
+consumer_ccv_timeout_period: "2419200000000000"
+consumer_unbonding_period: "1728000000000000"
+consumer_proposal_deposit: 10uatom

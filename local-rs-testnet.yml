@@ -1,0 +1,44 @@
+---
+# This playbook deploys a replicated security testnet
+# 1. Start a provider chain
+# 2. Initialize a consumer chain
+# 3. Use a consumer-addition proposal to generate CCV state
+# 4. Start the consumer chain
+# 5. Configure and start a Hermes relayer
+
+- name: Start the provider chain
+  hosts: provider
+  become: true
+  roles:
+  - node
+
+- name: Initialize the consumer chain
+  hosts: consumer
+  become: true
+  roles:
+  - node
+
+- name: Generate the CCV state and update the consumer genesis file  # both provider and conusmer must be running on the same machine
+  hosts: provider
+  become: true
+  vars:
+    provider_user_home: /home/provider
+    provider_home: "{{ provider_user_home }}/.gaia"
+    consumer_user_home: /home/consumer
+    consumer_home: "{{ consumer_user_home }}/.consumer"
+  roles:
+  - rs-setup
+
+- name: Start the consumer chain
+  hosts: consumer
+  become: true
+  tasks:
+  - name: Start the consumer cosmovisor service
+    shell: |
+      systemctl start "{{ cosmovisor_service_name }}"
+
+- name: Establish the CCV channel between chains
+  hosts: hermes
+  become: true
+  roles:
+  - hermes
