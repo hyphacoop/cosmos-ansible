@@ -54,7 +54,8 @@ echo "while true; do su gaia -c \"~/go/bin/cosmovisor run start --home /home/gai
 chmod +x /cosmos-ansible/cosmovisor.sh
 
 # Run cosmovisor in screen session
-mkdir /cosmos-ansible/log
+mkdir /cosmos-ansible/artifact
+echo "Starting cosmovisor"
 screen -L -Logfile /cosmos-ansible/artifact/cosmovisor.log -S cosmovisor -d -m bash '/cosmos-ansible/cosmovisor.sh'
 
 # Tests
