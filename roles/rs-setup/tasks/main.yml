@@ -1,0 +1,91 @@
+- name: Generate spawn time
+  set_fact:
+    spawn_time: "{{ansible_date_time.iso8601_micro}}"
+
+- name: Print spawn time
+  debug:
+    msg: "Spawn time: {{spawn_time}}"
+
+- name: Generate consumer chain proposal
+  template:
+    src: consumer-addition-proposal.json.j2
+    dest: '{{ provider_user_home }}/consumer-proposal.json'
+    owner: 'provider'
+    group: 'provider'
+
+- name: Submit consumer chain proposal
+  shell: |
+    {{ chain_binary_name }} tx gov submit-proposal consumer-addition {{ provider_user_home }}/consumer-proposal.json --keyring-backend test --chain-id {{ chain_id }} --from validator --home {{ provider_home }} --gas auto --fees {{ chain_tx_fees }} -b block -y --output json > {{ provider_user_home }}/proposal_result.json
+  environment:
+    PATH: "{{provider_home}}/cosmovisor/current/bin:{{ ansible_env.PATH }}"
+  become_user: provider
+
+- name: Collect proposal ID
+  shell: |
+    jq -r '.logs[0].events[4].attributes[0].value' {{ provider_user_home }}/proposal_result.json
+  register: proposal_id
+  become_user: provider
+
+- name: Pring proposal ID
+  debug:
+    msg: "Proposal ID is {{proposal_id.stdout}}"
+
+- name: Vote on proposal
+  shell: |
+    {{ chain_binary_name }} tx gov vote {{proposal_id.stdout}} yes --from validator --keyring-backend test --chain-id {{ provider_chain_id }} --home {{ provider_home }} --gas auto --fees {{ chain_tx_fees }} -b block -y
+  environment:
+    PATH: "{{ provider_home }}/cosmovisor/current/bin:{{ ansible_env.PATH }}"
+  become_user: provider
+
+- name: Wait for voting period to end
+  pause:
+    seconds: 8
+
+- name: Check proposal status
+  shell: |
+    {{ chain_binary_name }} q gov proposal {{ proposal_id.stdout }} --output json | jq -r '.status'
+  register: proposal_status
+  environment:
+    PATH: "{{ provider_home }}/cosmovisor/current/bin:{{ ansible_env.PATH }}"
+  become_user: provider
+
+- name: Fail if proposal does not pass
+  fail:
+    msg: 'The proposal did not reach "PROPOSAL_STATUS_PASSED" status'
+  when: proposal_status.stdout != "PROPOSAL_STATUS_PASSED"
+
+- name: Generate CCV genesis states from the provider chain
+  shell: |
+    {{ chain_binary_name }} q provider consumer-genesis {{consumer_chain_id}} --home {{provider_home}} -o json > {{provider_user_home}}/ccv-state.json
+  environment:
+    PATH: "{{provider_home}}/cosmovisor/current/bin:{{ ansible_env.PATH }}"
+  become_user: provider
+
+- name: Copy consumer genesis into provider home folder
+  shell: |
+    cp {{ consumer_home }}/config/genesis.json {{ provider_user_home }}/consumer-genesis-no-ccv.json
+
+- name: Insert CCV states into the consumer genesis file
+  shell: |
+    jq -s '.[0].app_state.ccvconsumer = .[1] | .[0]' {{ provider_user_home }}/consumer-genesis-no-ccv.json {{provider_user_home}}/ccv-state.json > {{ provider_user_home }}/consumer-genesis.json
+
+- name: Copy updated consumer genesis file to consumer user
+  copy:
+    remote_src: true
+    src: "{{ provider_user_home }}/consumer-genesis.json"
+    dest: "{{ consumer_home }}/config/genesis.json"
+    owner: consumer
+
+- name: Copy provider priv_validator_key to consumer user
+  copy:
+    remote_src: true
+    src: "{{ provider_home }}/config/priv_validator_key.json"
+    dest: "{{ consumer_home }}/config/priv_validator_key.json"
+    owner: consumer
+
+- name: Copy provider node_key to consumer user
+  copy:
+    remote_src: true
+    src: "{{ provider_home }}/config/node_key.json"
+    dest: "{{ consumer_home }}/config/node_key.json"
+    owner: consumer

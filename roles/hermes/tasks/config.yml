@@ -77,7 +77,7 @@
 
 - name: Obtain last connection
   shell: |
-    hermes --json query connections --chain {{ chain_ids[0] }} | jq -r '.result[-1]'
+    hermes --json query connections --chain {{ chain_ids[0] }} | tail -n 1 | jq -r '.result[-1]'
   environment:
     PATH: "/home/{{hermes_user}}/bin:{{ ansible_env.PATH }}"
   register: connection_id
