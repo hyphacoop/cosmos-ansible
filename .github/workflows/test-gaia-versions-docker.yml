@@ -103,5 +103,5 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v3
         with:
-          name: test-artifact
+          name: test-artifact-${{ matrix.gaia_version }}-${{ matrix.upgrade_version }}
           path: /home/runner/work/cosmos-ansible/cosmos-ansible/artifact/
