@@ -57,7 +57,9 @@ chmod +x /cosmos-ansible/cosmovisor.sh
 # Run cosmovisor in screen session
 mkdir /cosmos-ansible/artifact
 echo "Starting cosmovisor"
-screen -S cosmovisor -d -m bash '/cosmos-ansible/cosmovisor.sh >> /cosmos-ansible/artifact/cosmovisor.log 2>&1'
+screen -L -Logfile /cosmos-ansible/artifact/cosmovisor.log -S cosmovisor -d -m bash '/cosmos-ansible/cosmovisor.sh'
+# set screen to flush log to 0
+screen -r cosmovisor -p0 -X logfile flush 0
 
 # Tests
 set +e
