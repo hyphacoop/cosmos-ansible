@@ -56,7 +56,7 @@ chmod +x /cosmos-ansible/cosmovisor.sh
 # Run cosmovisor in screen session
 mkdir /cosmos-ansible/artifact
 echo "Starting cosmovisor"
-screen -S cosmovisor -d -m bash '/cosmos-ansible/cosmovisor.sh command1 >> /cosmos-ansible/artifact/cosmovisor.log 2>&1'
+screen -S cosmovisor -d -m bash '/cosmos-ansible/cosmovisor.sh >> /cosmos-ansible/artifact/cosmovisor.log 2>&1'
 
 # Tests
 set +e
