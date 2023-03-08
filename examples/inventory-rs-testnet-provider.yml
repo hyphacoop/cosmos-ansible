@@ -1,0 +1,26 @@
+---
+# yamllint disable rule:line-length
+all:
+  vars:
+    ansible_user: root
+    chain_version: v9.0.0-rc7
+    genesis_url: "https://github.com/cosmos/testnets/raw/master/replicated-security/provider/provider-genesis.json"
+    chain_id: provider
+    node_user: provider
+    cosmovisor_service_name: cv-provider
+    chain_home_clear: true
+    node_unsafe_reset: true
+    chain_use_ssl_proxy: false
+    chain_api_host: "rest"
+    chain_rpc_host: "rpc"
+    chain_p2p_host: "p2p"
+    chain_grpc_host: "grpc"
+    p2p_seeds: "08ec17e86dac67b9da70deb20177655495a55407@provider-seed-01.rs-testnet.polypore.xyz:26656,4ea6e56300a2f37b90e58de5ee27d1c9065cf871@provider-seed-02.rs-testnet.polypore.xyz:26656"
+    reboot: true
+  children:
+    node:
+      hosts:
+        "{{ target }}":
+          fast_sync: true
+          statesync_enabled: true
+          statesync_rpc_servers: 'provider-state-sync-01.rs-testnet.polypore.xyz:26657,provider-state-sync-02.rs-testnet.polypore.xyz:26657'

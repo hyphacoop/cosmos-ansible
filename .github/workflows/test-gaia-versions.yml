@@ -89,13 +89,17 @@ jobs:
       - name: Install ansible-galaxy requirements
         run: ansible-galaxy install --timeout 120 --verbose -r requirements.yml
       - name: Run playbook
-        run: ansible-playbook node.yml -i examples/inventory-local.yml --extra-vars "target=local reboot=false chain_version=${{ matrix.gaia_version }} chain_home={{ node_user_home }}/.gaia chain_gov_testing=true node_user=runner cosmovisor_invariants_flag=''"
+        run: ansible-playbook node.yml -i examples/inventory-local.yml --extra-vars "target=local reboot=false chain_version=${{ matrix.gaia_version }} chain_home={{ node_user_home }}/.gaia chain_gov_testing=true api_enabled=true node_user=runner cosmovisor_invariants_flag=''"
       - name: Check cosmovisor service
         run: systemctl status cosmovisor
       - name: Check blocks are being produced
         run: tests/test_block_production.sh 127.0.0.1 26657 10
       - name: Happy path - transaction testing
         run: tests/test_tx_fresh.sh
+      - name: Happy path - API endpoints testing
+        run: tests/test_endpoints_api.sh localhost 1317
+      - name: Happy path - RPC endpoints testing
+        run: tests/test_endpoints_rpc.sh localhost 26657
       - name: Get RAM usage while chain is running
         run: free -m
 
@@ -126,7 +130,7 @@ jobs:
       - name: Install ansible-galaxy requirements
         run: ansible-galaxy install --timeout 120 --verbose -r requirements.yml
       - name: Run playbook
-        run: ansible-playbook node.yml -i examples/inventory-local.yml --extra-vars "target=local reboot=false chain_version=${{ matrix.gaia_version }} chain_home={{ node_user_home }}/.gaia chain_gov_testing=true node_user=runner"
+        run: ansible-playbook node.yml -i examples/inventory-local.yml --extra-vars "target=local reboot=false chain_version=${{ matrix.gaia_version }} chain_home={{ node_user_home }}/.gaia chain_gov_testing=true api_enabled=true node_user=runner"
       - name: Check cosmovisor service
         run: systemctl status cosmovisor
       - name: Check blocks are being produced
@@ -135,3 +139,7 @@ jobs:
         run: tests/test_software_upgrade.sh 127.0.0.1 26657 ${{ matrix.upgrade_version }}
       - name: Happy path - transaction testing
         run: tests/test_tx_fresh.sh
+      - name: Happy path - API endpoints testing
+        run: tests/test_endpoints_api.sh localhost 1317
+      - name: Happy path - RPC endpoints testing
+        run: tests/test_endpoints_rpc.sh localhost 26657
