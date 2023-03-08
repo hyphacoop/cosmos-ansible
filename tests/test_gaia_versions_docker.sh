@@ -59,13 +59,38 @@ echo "Starting cosmovisor"
 screen -L -Logfile /cosmos-ansible/artifact/cosmovisor.log -S cosmovisor -d -m bash '/cosmos-ansible/cosmovisor.sh'
 
 # Tests
+set +e
 chown -R gaia:gaia /cosmos-ansible
 # Check blocks are being produced
 echo "Check blocks are being produced..."
 su gaia -c "tests/test_block_production.sh 127.0.0.1 26657 10"
+if [ $? -ne 0 ]
+then
+    echo "gaiad not producing blocks"
+    screen -XS cosmovisor quit
+    sleep 5
+    exit 1
+fi
 # Test software upgrade
 echo "Test software upgrade..."
 su gaia -c "tests/test_software_upgrade.sh 127.0.0.1 26657 $upgrade_version"
+if [ $? -ne 0 ]
+then
+    echo "test software upgrade failed"
+    screen -XS cosmovisor quit
+    sleep 5
+    exit 1
+fi
 # Happy path - transaction testing
 echo "Happy path - transaction testing..."
 su gaia -c "tests/test_tx_fresh.sh"
+if [ $? -ne 0 ]
+then
+    echo "Happy path test failed"
+    screen -XS cosmovisor quit
+    sleep 5
+    exit 1
+fi
+
+screen -XS cosmovisor quit
+sleep 5
