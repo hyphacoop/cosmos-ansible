@@ -38,7 +38,8 @@ node_user=gaia \
 cosmovisor_invariants_flag='' \
 chain_start=false \
 faucet_setup_nginx=false \
-faucet_start=false"
+faucet_start=false \
+api_enabled=true"
 
 echo "Setting env"
 export DAEMON_NAME=gaiad \
@@ -68,7 +69,7 @@ if [ $? -ne 0 ]
 then
     echo "gaiad not producing blocks"
     screen -XS cosmovisor quit
-    sleep 5
+    sleep 15
     exit 1
 fi
 # Test software upgrade
@@ -78,7 +79,7 @@ if [ $? -ne 0 ]
 then
     echo "test software upgrade failed"
     screen -XS cosmovisor quit
-    sleep 5
+    sleep 15
     exit 1
 fi
 # Happy path - transaction testing
@@ -86,11 +87,33 @@ echo "Happy path - transaction testing..."
 su gaia -c "tests/test_tx_fresh.sh"
 if [ $? -ne 0 ]
 then
-    echo "Happy path test failed"
+    echo "Happy path transaction test failed"
     screen -XS cosmovisor quit
-    sleep 5
+    sleep 15
+    exit 1
+fi
+
+# Happy path - API endpoints testing
+echo "Happy path - API endpoints testing..."
+su gaia -c "tests/test_endpoints_api.sh localhost 1317"
+if [ $? -ne 0 ]
+then
+    echo "Happy path API endpoints test failed"
+    screen -XS cosmovisor quit
+    sleep 15
+    exit 1
+fi
+
+# Happy path - RPC endpoints testing
+echo "Happy path - RPC endpoints testing..."
+su gaia -c "tests/test_endpoints_rpc.sh localhost 26657"
+if [ $? -ne 0 ]
+then
+    echo "Happy path RPC endpoints test failed"
+    screen -XS cosmovisor quit
+    sleep 15
     exit 1
 fi
 
 screen -XS cosmovisor quit
-sleep 5
+sleep 15
