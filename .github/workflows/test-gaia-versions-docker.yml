@@ -99,11 +99,11 @@ jobs:
       - name: Fix Permissions
         if: always()
         run: sudo chown -R runner:runner .
-      - name: Archive Log
+      - name: Upload artifacts
         if: always()
         uses: actions/upload-artifact@v3
         with:
-          name: test-cv-upgrade-debian11-${{ matrix.gaia_version }}-${{ matrix.upgrade_version }}
+          name: debian11-cv-upgrade-${{ matrix.gaia_version }}-${{ matrix.upgrade_version }}
           path: /home/runner/work/cosmos-ansible/cosmos-ansible/artifact/
 
   debian11-cv-manual-upgrade:
@@ -143,9 +143,9 @@ jobs:
       - name: Fix Permissions
         if: always()
         run: sudo chown -R runner:runner .
-      - name: Archive Log
+      - name: Upload artifacts
         if: always()
         uses: actions/upload-artifact@v3
         with:
-          name: test-cv-manual-upgrade-debian11-${{ matrix.gaia_version }}-${{ matrix.upgrade_version }}
+          name: debian11-cv-manual-upgrade-${{ matrix.gaia_version }}-${{ matrix.upgrade_version }}
           path: /home/runner/work/cosmos-ansible/cosmos-ansible/artifact/
