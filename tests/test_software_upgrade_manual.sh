@@ -11,7 +11,7 @@ echo "Attempting upgrade to $upgrade_version."
 
 # Add gaiad to PATH
 echo "Adding gaiad to PATH..."
-export PATH="$PATH:~/.gaia/cosmovisor/current/bin"
+export PATH="$PATH:~/.gaia/cosmovisor/current/bin:~/go/bin"
 echo "PATH=$PATH"
 
 # Manually download new binary

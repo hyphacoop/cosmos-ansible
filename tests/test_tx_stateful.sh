@@ -19,7 +19,7 @@ check_code()
 }
 
 # Add gaiad to PATH
-export PATH="$PATH:~/.gaia/cosmovisor/current/bin"
+export PATH="$PATH:~/.gaia/cosmovisor/current/bin:~/go/bin"
 
 # Recover validator self-delegation and operator addresses
 val_self_del=$(jq -r '.address' ~/.gaia/validator.json)

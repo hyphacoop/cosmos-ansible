@@ -18,7 +18,7 @@ check_code()
 }
 
 # Add gaiad to PATH
-export PATH="$PATH:~/.gaia/cosmovisor/current/bin"
+export PATH="$PATH:~/.gaia/cosmovisor/current/bin:~/go/bin"
 
 # Get bond denom
 denom=$(echo $(gaiad q staking params -o json) | jq -r '.bond_denom')

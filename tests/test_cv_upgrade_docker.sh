@@ -10,7 +10,7 @@ set -e
 echo "Update / upgrade system"
 apt -y update
 apt -y dist-upgrade
-apt -y install sudo curl wget git python3 python3-distutils screen jq python-is-python3
+apt -y install sudo curl wget git python3 python3-distutils screen jq python-is-python3 psmisc
 
 # Install pip3
 echo "Installing pip3"
@@ -70,6 +70,7 @@ su gaia -c "tests/test_block_production.sh 127.0.0.1 26657 10"
 if [ $? -ne 0 ]
 then
     echo "gaiad not producing blocks"
+    killall gaiad
     screen -XS cosmovisor quit
     sleep 15
     exit 1
@@ -80,6 +81,7 @@ su gaia -c "tests/test_software_upgrade.sh 127.0.0.1 26657 $upgrade_version"
 if [ $? -ne 0 ]
 then
     echo "test software upgrade failed"
+    killall gaiad
     screen -XS cosmovisor quit
     sleep 15
     exit 1
@@ -90,6 +92,7 @@ su gaia -c "tests/test_tx_fresh.sh"
 if [ $? -ne 0 ]
 then
     echo "Happy path transaction test failed"
+    killall gaiad
     screen -XS cosmovisor quit
     sleep 15
     exit 1
@@ -101,6 +104,7 @@ su gaia -c "tests/test_endpoints_api.sh localhost 1317"
 if [ $? -ne 0 ]
 then
     echo "Happy path API endpoints test failed"
+    killall gaiad
     screen -XS cosmovisor quit
     sleep 15
     exit 1
@@ -112,10 +116,12 @@ su gaia -c "tests/test_endpoints_rpc.sh localhost 26657"
 if [ $? -ne 0 ]
 then
     echo "Happy path RPC endpoints test failed"
+    killall gaiad
     screen -XS cosmovisor quit
     sleep 15
     exit 1
 fi
 
+killall gaiad
 screen -XS cosmovisor quit
 sleep 15

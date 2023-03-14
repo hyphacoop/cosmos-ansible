@@ -62,7 +62,7 @@ jobs:
       start_versions: ${{ steps.generate-start.outputs.start_versions }}
       upgrade_versions: ${{ steps.generate-upgrade.outputs.upgrade_versions }}
 
-  debian11-cv-upgrade:
+debian11-gaiad-upgrade:
     runs-on: ubuntu-22.04
     needs: generate-matrices
     strategy:
@@ -95,7 +95,7 @@ jobs:
       - name: List docker images
         run: sudo docker image ls
       - name: Run script in docker
-        run: sudo docker run --name=upgrade-test -v /home/runner/work/cosmos-ansible/cosmos-ansible:/cosmos-ansible debian:11 /cosmos-ansible/tests/test_cv_upgrade_docker.sh ${{ matrix.gaia_version }} ${{ matrix.upgrade_version }}
+        run: sudo docker run --name=upgrade-test -v /home/runner/work/cosmos-ansible/cosmos-ansible:/cosmos-ansible debian:11 /cosmos-ansible/tests/test_gaia_upgrade_docker.sh ${{ matrix.gaia_version }} ${{ matrix.upgrade_version }}
       - name: Fix Permissions
         if: always()
         run: sudo chown -R runner:runner .
@@ -103,49 +103,93 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v3
         with:
-          name: debian11-cv-upgrade-${{ matrix.gaia_version }}-${{ matrix.upgrade_version }}
+          name: debian11-gaiad-upgrade-${{ matrix.gaia_version }}-${{ matrix.upgrade_version }}
           path: /home/runner/work/cosmos-ansible/cosmos-ansible/artifact/
 
-  debian11-cv-manual-upgrade:
-    runs-on: ubuntu-22.04
-    needs: generate-matrices
-    strategy:
-      fail-fast: false
-      matrix:
-        ${{ fromJSON(needs.generate-matrices.outputs.upgrade_versions) }}
-    steps:
-      # Get system info
-      - run: ifconfig
-      - run: arp -a
-      - run: sudo dmidecode
-      - run: df -h
-      - run: free -m
-      - run: uname -a
-      - run: lsb_release -a
-      - run: echo "GitHub branch is ${{ github.ref }}"
-      - run: whoami
-      - run: pwd
+  # debian11-cv-upgrade:
+  #   runs-on: ubuntu-22.04
+  #   needs: generate-matrices
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       ${{ fromJSON(needs.generate-matrices.outputs.upgrade_versions) }}
+  #   steps:
+  #     # Get system info
+  #     - run: ifconfig
+  #     - run: arp -a
+  #     - run: sudo dmidecode
+  #     - run: df -h
+  #     - run: free -m
+  #     - run: uname -a
+  #     - run: lsb_release -a
+  #     - run: echo "GitHub branch is ${{ github.ref }}"
+  #     - run: whoami
+  #     - run: pwd
 
-      - name: Check out repository code
-        uses: actions/checkout@v3
+  #     - name: Check out repository code
+  #       uses: actions/checkout@v3
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.10'
+  #     - name: Set up Python
+  #       uses: actions/setup-python@v4
+  #       with:
+  #         python-version: '3.10'
 
-      - name: Pull Debian 11 image
-        run: sudo docker pull debian:11
-      - name: List docker images
-        run: sudo docker image ls
-      - name: Run script in docker
-        run: sudo docker run --name=upgrade-test -v /home/runner/work/cosmos-ansible/cosmos-ansible:/cosmos-ansible debian:11 /cosmos-ansible/tests/test_cv_manual_upgrade_docker.sh ${{ matrix.gaia_version }} ${{ matrix.upgrade_version }}
-      - name: Fix Permissions
-        if: always()
-        run: sudo chown -R runner:runner .
-      - name: Upload artifacts
-        if: always()
-        uses: actions/upload-artifact@v3
-        with:
-          name: debian11-cv-manual-upgrade-${{ matrix.gaia_version }}-${{ matrix.upgrade_version }}
-          path: /home/runner/work/cosmos-ansible/cosmos-ansible/artifact/
+  #     - name: Pull Debian 11 image
+  #       run: sudo docker pull debian:11
+  #     - name: List docker images
+  #       run: sudo docker image ls
+  #     - name: Run script in docker
+  #       run: sudo docker run --name=upgrade-test -v /home/runner/work/cosmos-ansible/cosmos-ansible:/cosmos-ansible debian:11 /cosmos-ansible/tests/test_cv_upgrade_docker.sh ${{ matrix.gaia_version }} ${{ matrix.upgrade_version }}
+  #     - name: Fix Permissions
+  #       if: always()
+  #       run: sudo chown -R runner:runner .
+  #     - name: Upload artifacts
+  #       if: always()
+  #       uses: actions/upload-artifact@v3
+  #       with:
+  #         name: debian11-cv-upgrade-${{ matrix.gaia_version }}-${{ matrix.upgrade_version }}
+  #         path: /home/runner/work/cosmos-ansible/cosmos-ansible/artifact/
+
+  # debian11-cv-manual-upgrade:
+  #   runs-on: ubuntu-22.04
+  #   needs: generate-matrices
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       ${{ fromJSON(needs.generate-matrices.outputs.upgrade_versions) }}
+  #   steps:
+  #     # Get system info
+  #     - run: ifconfig
+  #     - run: arp -a
+  #     - run: sudo dmidecode
+  #     - run: df -h
+  #     - run: free -m
+  #     - run: uname -a
+  #     - run: lsb_release -a
+  #     - run: echo "GitHub branch is ${{ github.ref }}"
+  #     - run: whoami
+  #     - run: pwd
+
+  #     - name: Check out repository code
+  #       uses: actions/checkout@v3
+
+  #     - name: Set up Python
+  #       uses: actions/setup-python@v4
+  #       with:
+  #         python-version: '3.10'
+
+  #     - name: Pull Debian 11 image
+  #       run: sudo docker pull debian:11
+  #     - name: List docker images
+  #       run: sudo docker image ls
+  #     - name: Run script in docker
+  #       run: sudo docker run --name=upgrade-test -v /home/runner/work/cosmos-ansible/cosmos-ansible:/cosmos-ansible debian:11 /cosmos-ansible/tests/test_cv_manual_upgrade_docker.sh ${{ matrix.gaia_version }} ${{ matrix.upgrade_version }}
+  #     - name: Fix Permissions
+  #       if: always()
+  #       run: sudo chown -R runner:runner .
+  #     - name: Upload artifacts
+  #       if: always()
+  #       uses: actions/upload-artifact@v3
+  #       with:
+  #         name: debian11-cv-manual-upgrade-${{ matrix.gaia_version }}-${{ matrix.upgrade_version }}
+  #         path: /home/runner/work/cosmos-ansible/cosmos-ansible/artifact/

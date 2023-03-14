@@ -35,31 +35,38 @@ chain_version=$chain_version \
 chain_binary_source=release \
 chain_gov_testing=true \
 node_user=gaia \
-cosmovisor_invariants_flag='' \
 chain_start=false \
 faucet_setup_nginx=false \
 faucet_start=false \
+use_cosmovisor=false \
 api_enabled=true"
 
 echo "Setting env"
 export DAEMON_NAME=gaiad \
 DAEMON_HOME=/home/gaia/.gaia \
-DAEMON_ALLOW_DOWNLOAD_BINARIES=false \
 DAEMON_RESTART_AFTER_UPGRADE=true \
 DAEMON_LOG_BUFFER_SIZE=512 \
 UNSAFE_SKIP_BACKUP=true
 
-# Create script for cosmovisor
-echo "Creating script for cosmovisor"
-echo "while true; do su gaia -c \"~/go/bin/cosmovisor run start --home /home/gaia/.gaia\"; sleep 1; done" > /cosmos-ansible/cosmovisor.sh
-chmod +x /cosmos-ansible/cosmovisor.sh
+# Create script for gaiad
+echo "Creating script for gaiad"
+echo "while true; do su gaia -c \"~/go/bin/gaiad start --home /home/gaia/.gaia\"; sleep 1; done" > /cosmos-ansible/gaiad.sh
+chmod +x /cosmos-ansible/gaiad.sh
 
-# Run cosmovisor in screen session
+# Run gaiad in screen session
 mkdir /cosmos-ansible/artifact
-echo "Starting cosmovisor"
-screen -L -Logfile /cosmos-ansible/artifact/cosmovisor.log -S cosmovisor -d -m bash '/cosmos-ansible/cosmovisor.sh'
+echo "Starting gaiad"
+screen -L -Logfile /cosmos-ansible/artifact/gaiad.log -S gaiad -d -m bash '/cosmos-ansible/gaiad.sh'
 # set screen to flush log to 0
-screen -r cosmovisor -p0 -X logfile flush 0
+screen -r gaiad -p0 -X logfile flush 0
+
+# Create script to monitor gaiad output for CONSENSUS FAILURE
+echo "Creating script to monitor gaiad for CONSENSUS FAILURE"
+echo "( tail -f -n0 /cosmos-ansible/artifact/gaiad.log & ) | grep -q \"CONSENSUS FAILURE\" ; echo "CONSENSUS FAILURE deteted, killing gaiad" ; killall gaiad ; screen -XS gaiad quit ; screen -L -Logfile /cosmos-ansible/artifact/gaiad.log -S gaiad -d -m bash '/cosmos-ansible/gaiad.sh'" > /cosmos-ansible/monitor_gaiad.sh
+chmod +x /cosmos-ansible/monitor_gaiad.sh
+
+echo "Starting monitor_gaiad.sh"
+/cosmos-ansible/monitor_gaiad.sh &> /cosmos-ansible/artifact/gaiad-monitor.log &
 
 # Tests
 set +e
@@ -71,7 +78,7 @@ if [ $? -ne 0 ]
 then
     echo "gaiad not producing blocks"
     killall gaiad
-    screen -XS cosmovisor quit
+    screen -XS gaiad quit
     sleep 15
     exit 1
 fi
@@ -90,13 +97,16 @@ fi
 # Set lowercase
 upgrade_name_lowercase=$(echo $upgrade_name | awk '{print tolower($0)}')
 # Test software upgrade
+echo "Move current running gaiad binary"
+mv -v /home/gaia/go/bin/gaiad /home/gaia/go/bin/gaiad-$chain_version
+
 echo "Test software upgrade..."
-su gaia -c "tests/test_software_upgrade_manual.sh 127.0.0.1 26657 $upgrade_version /home/gaia/.gaia/cosmovisor/upgrades/$upgrade_name_lowercase/bin"
+su gaia -c "tests/test_software_upgrade_manual.sh 127.0.0.1 26657 $upgrade_version /home/gaia/go/bin"
 if [ $? -ne 0 ]
 then
     echo "test software upgrade failed"
     killall gaiad
-    screen -XS cosmovisor quit
+    screen -XS gaiad quit
     sleep 15
     exit 1
 fi
@@ -107,7 +117,7 @@ if [ $? -ne 0 ]
 then
     echo "Happy path transaction test failed"
     killall gaiad
-    screen -XS cosmovisor quit
+    screen -XS gaiad quit
     sleep 15
     exit 1
 fi
@@ -118,8 +128,7 @@ su gaia -c "tests/test_endpoints_api.sh localhost 1317"
 if [ $? -ne 0 ]
 then
     echo "Happy path API endpoints test failed"
-    killall gaiad
-    screen -XS cosmovisor quit
+    screen -XS gaiad quit
     sleep 15
     exit 1
 fi
@@ -131,11 +140,11 @@ if [ $? -ne 0 ]
 then
     echo "Happy path RPC endpoints test failed"
     killall gaiad
-    screen -XS cosmovisor quit
+    screen -XS gaiad quit
     sleep 15
     exit 1
 fi
 
 killall gaiad
-screen -XS cosmovisor quit
+screen -XS gaiad quit
 sleep 15
