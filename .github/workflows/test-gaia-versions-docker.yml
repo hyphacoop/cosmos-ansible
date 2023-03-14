@@ -62,7 +62,7 @@ jobs:
       start_versions: ${{ steps.generate-start.outputs.start_versions }}
       upgrade_versions: ${{ steps.generate-upgrade.outputs.upgrade_versions }}
 
-debian11-gaiad-upgrade:
+  debian11-gaiad-upgrade:
     runs-on: ubuntu-22.04
     needs: generate-matrices
     strategy:
