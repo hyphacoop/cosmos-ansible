@@ -66,10 +66,12 @@ echo "( tail -f -n0 /cosmos-ansible/artifact/gaiad.log & ) | grep -q \"CONSENSUS
 chmod +x /cosmos-ansible/monitor_gaiad.sh
 
 echo "Starting monitor_gaiad.sh"
+echo "Waiting for gaiad.log"
 while [ ! -f /cosmos-ansible/artifact/gaiad.log ]
 do
-    echo "waiting for /cosmos-ansible/artifact/gaiad.log"
+    echo -n "."
 done
+echo "gaiad.log ready"
 /cosmos-ansible/monitor_gaiad.sh &> /cosmos-ansible/artifact/gaiad-monitor.log &
 
 # Tests
