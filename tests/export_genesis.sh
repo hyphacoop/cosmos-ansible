@@ -2,7 +2,7 @@
 set -e
 
 # cosmos next upgrade version name
-cosmos_upgrade_name="v9-Lambda"
+cosmos_upgrade_name="v10-Epsilon"
 
 # cosmos-genesis-tinkerer repo config
 gh_branch="main"
@@ -65,9 +65,9 @@ else
 fi
 if [ ! -d cosmovisor/upgrades ]
 then
-    echo \"Creating cosmovisor/upgrades/v8-Rho/bin directory\"
-    mkdir -p cosmovisor/upgrades/v8-Rho/bin
-    cp cosmovisor/genesis/bin/gaiad cosmovisor/upgrades/v8-Rho/bin/gaiad
+    echo \"Creating cosmovisor/upgrades/v9-lambda/bin directory\"
+    mkdir -p cosmovisor/upgrades/v9-lambda/bin
+    cp cosmovisor/genesis/bin/gaiad cosmovisor/upgrades/v9-lambda/bin/gaiad
 fi
 " > ~gaia/quicksync.sh
 chmod +x ~gaia/quicksync.sh
