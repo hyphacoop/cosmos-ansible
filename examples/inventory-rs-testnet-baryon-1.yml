@@ -9,6 +9,7 @@ all:
     chain_binary_name: neutrond
     chain_id: baryon-1
     node_user: baryon
+    chain_home: "{{ node_user_home }}/.baryon"
     cosmovisor_service_name: cv-baryon
     chain_home_clear: true
     node_unsafe_reset: true

@@ -9,6 +9,7 @@ all:
     chain_binary_name: nobled
     chain_id: noble-1
     node_user: noble
+    chain_home: "{{ node_user_home }}/.noble"
     cosmovisor_service_name: cv-noble
     chain_home_clear: true
     node_unsafe_reset: true
