@@ -32,7 +32,7 @@ echo "Running Ansible playbook"
 ansible-playbook node.yml -i examples/inventory-local.yml --extra-vars "target=local \
 reboot=false \
 chain_version=$chain_version \
-chain_binary_source=release \
+chain_binary_source=build \
 chain_gov_testing=true \
 node_user=gaia \
 cosmovisor_invariants_flag='' \
