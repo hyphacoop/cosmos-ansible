@@ -6,7 +6,7 @@ node_user_home: "/home/{{node_user}}"
 chain_home: "{{node_user_home}}/.gaia"
 chain_home_clear: false
 node_unsafe_reset: false
-chain_version: v8.0.1
+chain_version: v9.0.1
 chain_repository: https://github.com/cosmos/gaia.git
 chain_binary_release: "https://github.com/cosmos/gaia/releases/download/{{ chain_version }}/gaiad-{{ chain_version }}-{{binary_arch_map[ansible_architecture]}}"
 chain_upgrade_binary_release: "https://github.com/cosmos/gaia/releases/download/{{ chain_upgrade_version }}/gaiad-{{ chain_upgrade_version }}-{{binary_arch_map[ansible_architecture]}}"
