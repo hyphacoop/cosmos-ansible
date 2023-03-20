@@ -10,6 +10,7 @@ all:
     chain_archive_upgrade_testing: true
     ansible_user: root
     archive_url: https://files.polypore.xyz/archived-state/latest_v8.tar.gz
+    api_enabled: true
     enable_swap: true
     swap_size: 32768
   children:
