@@ -89,7 +89,7 @@ jobs:
         run: ansible-galaxy install --timeout 120 --verbose -r requirements.yml
       - name: Run playbook
         run: |
-          ansible-playbook node.yml -i examples/inventory-archive-upgrade-v8-v9.yml --extra-vars "target=local reboot=false chain_start=false chain_binary_source=release swap_size=8192 node_user=runner"
+          ansible-playbook node.yml -i examples/inventory-archive-upgrade-v8-v9.yml --extra-vars "target=local reboot=false chain_start=false chain_binary_source=release swap_size=16384 node_user=runner"
       - name: Get genesis height
         run: |
           echo "genesis_height=$(jq -r '.height' ~/.gaia/data/upgrade-info.json)" >> $GITHUB_ENV
@@ -106,3 +106,16 @@ jobs:
           tests/test_block_production.sh 127.0.0.1 26657 $[ ${{ env.genesis_height }} + 100]
       - name: Happy path - transaction testing
         run: tests/test_tx_stateful.sh
+      - name: Happy path - API endpoints testing
+        run: tests/test_endpoints_api.sh localhost 1317
+      - name: Happy path - RPC endpoints testing
+        run: tests/test_endpoints_rpc.sh localhost 26657
+      - name: Print cosmovisor log
+        if: always()
+        run: sudo journalctl -u cosmovisor
+      - name: Print syslog log
+        if: always()
+        run: sudo cat /var/log/syslog
+      - name: Print dmesg
+        if: always()
+        run: sudo dmesg

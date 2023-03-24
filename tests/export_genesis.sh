@@ -191,6 +191,7 @@ echo "Starting chain with the new tinkered genesis"
 ansible-playbook node.yml -i inventory.yml --extra-vars "\
 target=local \
 reboot=false \
+api_enabled=true \
 minimum_gas_prices=0.0025uatom \
 chain_version=$chain_version \
 chain_gov_testing=true \
