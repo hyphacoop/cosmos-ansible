@@ -3,7 +3,7 @@
 all:
   vars:
     ansible_user: root
-    chain_version: v9.0.1
+    chain_version: v9.0.2-rc0
     genesis_file: "examples/genesis-three-node.json"
     chain_id: cosmos-testnet
     minimum_gas_prices: '0.001uatom'

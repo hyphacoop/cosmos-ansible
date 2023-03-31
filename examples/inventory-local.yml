@@ -3,7 +3,7 @@
 all:
   vars:
     chain_home_clear: true
-    chain_version: v9.0.1
+    chain_version: v9.0.2-rc0
     chain_create_validator: true
     faucet_enabled: true
     ansible_user: root

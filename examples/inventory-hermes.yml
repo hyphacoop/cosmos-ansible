@@ -3,7 +3,7 @@
 all:
   vars:
     chain_home_clear: true
-    chain_version: v9.0.1
+    chain_version: v9.0.2-rc0
     hermes_version: v1.3.0
     ansible_user: root
   children:
