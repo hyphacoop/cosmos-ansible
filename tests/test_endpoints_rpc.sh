@@ -35,85 +35,85 @@ response_failed()
 echo "Testing RPC endpoints..."
 
 echo "> $ABCI_INFO"
-RESPONSE=$(curl -s $ABCI_INFO | jq -r '.result | keys[0]')
+RESPONSE=$(curl --retry 10 --retry-delay 5 --retry-connrefused -s $ABCI_INFO | jq -r '.result | keys[0]')
 if [ "$RESPONSE" != "response" ]; then
     response_failed $RESPONSE
 fi
 
 echo "> $BLOCK"
-RESPONSE=$(curl -s $BLOCK | jq -r '.result | keys[0]')
+RESPONSE=$(curl --retry 10 --retry-delay 5 --retry-connrefused -s $BLOCK | jq -r '.result | keys[0]')
 if [ "$RESPONSE" != "block" ]; then
     response_failed $RESPONSE
 fi
 
 echo "> $BLOCK_RESULTS"
-RESPONSE=$(curl -s $BLOCK_RESULTS | jq -r '.result | keys[0]')
+RESPONSE=$(curl --retry 10 --retry-delay 5 --retry-connrefused -s $BLOCK_RESULTS | jq -r '.result | keys[0]')
 if [ "$RESPONSE" != "begin_block_events" ]; then
     response_failed $RESPONSE
 fi
 
 echo "> $BLOCKCHAIN"
-RESPONSE=$(curl -s $BLOCKCHAIN | jq -r '.result | keys[0]')
+RESPONSE=$(curl --retry 10 --retry-delay 5 --retry-connrefused -s $BLOCKCHAIN | jq -r '.result | keys[0]')
 if [ "$RESPONSE" != "block_metas" ]; then
     response_failed $RESPONSE
 fi
 
 echo "> $COMMIT"
-RESPONSE=$(curl -s $COMMIT | jq -r '.result | keys[-1]')
+RESPONSE=$(curl --retry 10 --retry-delay 5 --retry-connrefused -s $COMMIT | jq -r '.result | keys[-1]')
 if [ "$RESPONSE" != "signed_header" ]; then
     response_failed $RESPONSE
 fi
 
 echo "> $CONSENSUS_PARAMS"
-RESPONSE=$(curl -s $CONSENSUS_PARAMS | jq -r '.result | keys[-1]')
+RESPONSE=$(curl --retry 10 --retry-delay 5 --retry-connrefused -s $CONSENSUS_PARAMS | jq -r '.result | keys[-1]')
 if [ "$RESPONSE" != "consensus_params" ]; then
     response_failed $RESPONSE
 fi
 
 echo "> $CONSENSUS_STATE"
-RESPONSE=$(curl -s $CONSENSUS_STATE | jq -r '.result | keys[-1]')
+RESPONSE=$(curl --retry 10 --retry-delay 5 --retry-connrefused -s $CONSENSUS_STATE | jq -r '.result | keys[-1]')
 if [ "$RESPONSE" != "round_state" ]; then
     response_failed $RESPONSE
 fi
 
 echo "> $DUMP_CONSENSUS_STATE"
-RESPONSE=$(curl -s $DUMP_CONSENSUS_STATE | jq -r '.result | keys[-1]')
+RESPONSE=$(curl --retry 10 --retry-delay 5 --retry-connrefused -s $DUMP_CONSENSUS_STATE | jq -r '.result | keys[-1]')
 if [ "$RESPONSE" != "round_state" ]; then
     response_failed $RESPONSE
 fi
 
 echo "> $GENESIS_CHUNKED"
-RESPONSE=$(curl -s $GENESIS_CHUNKED | jq -r '.result | keys[0]')
+RESPONSE=$(curl --retry 10 --retry-delay 5 --retry-connrefused -s $GENESIS_CHUNKED | jq -r '.result | keys[0]')
 if [ "$RESPONSE" != "chunk" ]; then
     response_failed $RESPONSE
 fi
 
 echo "> $NET_INFO"
-RESPONSE=$(curl -s $NET_INFO | jq -r '.result | keys[-1]')
+RESPONSE=$(curl --retry 10 --retry-delay 5 --retry-connrefused -s $NET_INFO | jq -r '.result | keys[-1]')
 if [ "$RESPONSE" != "peers" ]; then
     response_failed $RESPONSE
 fi
 
 echo "> $NUM_UNCONFIRMED_TXS"
-RESPONSE=$(curl -s $NUM_UNCONFIRMED_TXS | jq -r '.result | keys[0]')
+RESPONSE=$(curl --retry 10 --retry-delay 5 --retry-connrefused -s $NUM_UNCONFIRMED_TXS | jq -r '.result | keys[0]')
 if [ "$RESPONSE" != "n_txs" ]; then
     response_failed $RESPONSE
 fi
 
 echo "> $UNCONFIRMED_TXS"
-RESPONSE=$(curl -s $UNCONFIRMED_TXS | jq -r '.result | keys[0]')
+RESPONSE=$(curl --retry 10 --retry-delay 5 --retry-connrefused -s $UNCONFIRMED_TXS | jq -r '.result | keys[0]')
 if [ "$RESPONSE" != "n_txs" ]; then
     response_failed $RESPONSE
 fi
 
 echo "> $STATUS"
-RESPONSE=$(curl -s $STATUS | jq -r '.result | keys[0]')
+RESPONSE=$(curl --retry 10 --retry-delay 5 --retry-connrefused -s $STATUS | jq -r '.result | keys[0]')
 if [ "$RESPONSE" != "node_info" ]; then
     response_failed $RESPONSE
 fi
 
 echo "> $VALIDATORS"
-RESPONSE=$(curl -s $VALIDATORS | jq -r '.result | keys[-1]')
+RESPONSE=$(curl --retry 10 --retry-delay 5 --retry-connrefused -s $VALIDATORS | jq -r '.result | keys[-1]')
 if [ "$RESPONSE" != "validators" ]; then
     response_failed $RESPONSE
 fi

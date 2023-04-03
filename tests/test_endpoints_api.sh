@@ -37,109 +37,111 @@ response_failed()
 echo "Testing API endpoints..."
 
 echo "> $AUTH_ACCOUNTS"
-RESPONSE=$(curl -s $AUTH_ACCOUNTS | jq -r '. | keys[0]')
+curl $AUTH_ACCOUNTS
+RESPONSE=$(curl --retry 10 --retry-delay 5 --retry-connrefused -s $AUTH_ACCOUNTS | jq -r '. | keys[0]')
+echo "$RESPONSE"
 if [ "$RESPONSE" != "accounts" ]; then
     response_failed $RESPONSE
 fi
 
 echo "> $BANK_BALANCES"
-RESPONSE=$(curl -s $BANK_BALANCES | jq -r '. | keys[0]')
+RESPONSE=$(curl --retry 10 --retry-delay 5 --retry-connrefused -s $BANK_BALANCES | jq -r '. | keys[0]')
 if [ "$RESPONSE" != "balances" ]; then
     response_failed $RESPONSE
 fi
 
 echo "> $BANK_DENOMS_METADATA"
-RESPONSE=$(curl -s $BANK_DENOMS_METADATA | jq -r '. | keys[0]')
+RESPONSE=$(curl --retry 10 --retry-delay 5 --retry-connrefused -s $BANK_DENOMS_METADATA | jq -r '. | keys[0]')
 if [ "$RESPONSE" != "metadatas" ]; then
     response_failed $RESPONSE
 fi
 
 echo "> $BANK_SUPPLY"
-RESPONSE=$(curl -s $BANK_SUPPLY | jq -r '. | keys[-1]')
+RESPONSE=$(curl --retry 10 --retry-delay 5 --retry-connrefused -s $BANK_SUPPLY | jq -r '. | keys[-1]')
 if [ "$RESPONSE" != "supply" ]; then
     response_failed $RESPONSE
 fi
 
 echo "> $DIST_SLASHES"
-RESPONSE=$(curl -s $DIST_SLASHES | jq -r '. | keys[1]')
+RESPONSE=$(curl --retry 10 --retry-delay 5 --retry-connrefused -s $DIST_SLASHES | jq -r '. | keys[1]')
 if [ "$RESPONSE" != "slashes" ]; then
     response_failed $RESPONSE
 fi
 
 echo "> $EVIDENCE"
-RESPONSE=$(curl -s $EVIDENCE | jq -r '. | keys[0]')
+RESPONSE=$(curl --retry 10 --retry-delay 5 --retry-connrefused -s $EVIDENCE | jq -r '. | keys[0]')
 if [ "$RESPONSE" != "evidence" ]; then
     response_failed $RESPONSE
 fi
 
 echo "> $GOV_PROPOSALS"
-RESPONSE=$(curl -s $GOV_PROPOSALS | jq -r '. | keys[-1]')
+RESPONSE=$(curl --retry 10 --retry-delay 5 --retry-connrefused -s $GOV_PROPOSALS | jq -r '. | keys[-1]')
 if [ "$RESPONSE" != "proposals" ]; then
     response_failed $RESPONSE
 fi
 
 echo "> $GOV_DEPOSITS"
-RESPONSE=$(curl -s $GOV_DEPOSITS | jq -r '. | keys[0]')
+RESPONSE=$(curl --retry 10 --retry-delay 5 --retry-connrefused -s $GOV_DEPOSITS | jq -r '. | keys[0]')
 if [ "$RESPONSE" != "deposits" ]; then
     response_failed $RESPONSE
 fi
 
 echo "> $GOV_VOTES"
-RESPONSE=$(curl -s $GOV_VOTES | jq -r '. | keys[-1]')
+RESPONSE=$(curl --retry 10 --retry-delay 5 --retry-connrefused -s $GOV_VOTES | jq -r '. | keys[-1]')
 if [ "$RESPONSE" != "votes" ]; then
     response_failed $RESPONSE
 fi
 
 echo "> $SLASH_SIGNING_INFOS"
-RESPONSE=$(curl -s $SLASH_SIGNING_INFOS | jq -r '. | keys[0]')
+RESPONSE=$(curl --retry 10 --retry-delay 5 --retry-connrefused -s $SLASH_SIGNING_INFOS | jq -r '. | keys[0]')
 if [ "$RESPONSE" != "info" ]; then
     response_failed $RESPONSE
 fi
 
 echo "> $STAKING_DELEGATIONS"
-RESPONSE=$(curl -s $STAKING_DELEGATIONS | jq -r '. | keys[0]')
+RESPONSE=$(curl --retry 10 --retry-delay 5 --retry-connrefused -s $STAKING_DELEGATIONS | jq -r '. | keys[0]')
 if [ "$RESPONSE" != "delegation_responses" ]; then
     response_failed $RESPONSE
 fi
 
 echo "> $STAKING_REDELEGATIONS"
-RESPONSE=$(curl -s $STAKING_REDELEGATIONS | jq -r '. | keys[-1]')
+RESPONSE=$(curl --retry 10 --retry-delay 5 --retry-connrefused -s $STAKING_REDELEGATIONS | jq -r '. | keys[-1]')
 if [ "$RESPONSE" != "redelegation_responses" ]; then
     response_failed $RESPONSE
 fi
 
 echo "> $STAKING_UNBONDING"
-RESPONSE=$(curl -s $STAKING_UNBONDING | jq -r '. | keys[-1]')
+RESPONSE=$(curl --retry 10 --retry-delay 5 --retry-connrefused -s $STAKING_UNBONDING | jq -r '. | keys[-1]')
 if [ "$RESPONSE" != "unbonding_responses" ]; then
     response_failed $RESPONSE
 fi
 
 echo "> $STAKING_DEL_VALIDATORS"
-RESPONSE=$(curl -s $STAKING_DEL_VALIDATORS | jq -r '. | keys[-1]')
+RESPONSE=$(curl --retry 10 --retry-delay 5 --retry-connrefused -s $STAKING_DEL_VALIDATORS | jq -r '. | keys[-1]')
 if [ "$RESPONSE" != "validators" ]; then
     response_failed $RESPONSE
 fi
 
 echo "> $STAKING_VALIDATORS"
-RESPONSE=$(curl -s $STAKING_VALIDATORS | jq -r '. | keys[-1]')
+RESPONSE=$(curl --retry 10 --retry-delay 5 --retry-connrefused -s $STAKING_VALIDATORS | jq -r '. | keys[-1]')
 if [ "$RESPONSE" != "validators" ]; then
     response_failed $RESPONSE
 fi
 
 echo "> $STAKING_VAL_DELEGATIONS"
-RESPONSE=$(curl -s $STAKING_VAL_DELEGATIONS | jq -r '. | keys[0]')
+RESPONSE=$(curl --retry 10 --retry-delay 5 --retry-connrefused -s $STAKING_VAL_DELEGATIONS | jq -r '. | keys[0]')
 if [ "$RESPONSE" != "delegation_responses" ]; then
     response_failed $RESPONSE
 fi
 
 echo "> $STAKING_VAL_UNBONDING"
-RESPONSE=$(curl -s $STAKING_VAL_UNBONDING | jq -r '. | keys[-1]')
+RESPONSE=$(curl --retry 10 --retry-delay 5 --retry-connrefused -s $STAKING_VAL_UNBONDING | jq -r '. | keys[-1]')
 if [ "$RESPONSE" != "unbonding_responses" ]; then
     response_failed $RESPONSE
 fi
 
 echo "> $TM_VALIDATORSETS"
-RESPONSE=$(curl -s $TM_VALIDATORSETS | jq -r '. | keys[-1]')
+RESPONSE=$(curl --retry 10 --retry-delay 5 --retry-connrefused -s $TM_VALIDATORSETS | jq -r '. | keys[-1]')
 if [ "$RESPONSE" != "validators" ]; then
     response_failed $RESPONSE
 fi
