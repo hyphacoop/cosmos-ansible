@@ -135,7 +135,7 @@ then
     mkdir mainnet-genesis-export
 fi
 echo "Export genesis"
-time su gaia -c "~gaia/.gaia/cosmovisor/current/bin/gaiad export --height $current_block" 2> "mainnet-genesis-export/mainnet-genesis_${current_block_time}_${chain_version}_${current_block}.json"
+time su gaia -c "~gaia/.gaia/cosmovisor/current/bin/gaiad export --height $current_block" 2> >(sed '0,/min fee bypass activated for message/{/min fee bypass activated for message/d}' > "mainnet-genesis-export/mainnet-genesis_${current_block_time}_${chain_version}_${current_block}.json") 
 
 echo "Tinkering exported genesis"
 pip3 install -r requirements.txt
