@@ -72,8 +72,13 @@ jobs:
 
       - name: Update apt
         run: sudo apt install python-is-python3
-      - name: Install python-is-python3
+      - name: Install required packages
         run: sudo apt install python-is-python3
+      
+      - name: Install pip
+        run: |
+          wget https://bootstrap.pypa.io/get-pip.py -O /tmp/get-pip.py
+          sudo python /tmp/get-pip.py
 
       - name: Check out repository code
         uses: actions/checkout@v3
