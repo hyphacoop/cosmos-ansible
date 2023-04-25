@@ -104,10 +104,10 @@ jobs:
       - name: Create script for cosmovisor
         run: |
           echo "while true; do su gaia -c \"~/go/bin/cosmovisor run start --home $HOME/.gaia\"; sleep 1; done" > cosmovisor.sh
-          chmod +x /cosmos-ansible/cosmovisor.sh
+          chmod +x cosmovisor.sh
       - name: Start cosmovisor in screen session
         run: |
-          screen -L -Logfile ./artifact/cosmovisor.log -S cosmovisor -d -m bash '/cosmos-ansible/cosmovisor.sh'
+          screen -L -Logfile ./artifact/cosmovisor.log -S cosmovisor -d -m bash './cosmovisor.sh'
           screen -r cosmovisor -p0 -X logfile flush 0
       - name: Check blocks are being produced
         run: |
