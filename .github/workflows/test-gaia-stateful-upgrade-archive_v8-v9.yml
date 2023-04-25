@@ -119,14 +119,18 @@ jobs:
         run: tests/test_endpoints_api.sh localhost 1317
       - name: Happy path - RPC endpoints testing
         run: tests/test_endpoints_rpc.sh localhost 26657
+
       - name: Stop screen session
+        if: always()
         run: screen -XS cosmovisor quit
-      # - name: Copy files to artifact directory
-      #   if: always()
-      #   run: copy files
-      # - name: Upload artifacts
-      #   if: always()
-      #   uses: actions/upload-artifact@v3
-      #   with:
-      #     name: ubuntu2210-cv-manual-upgrade-${{ matrix.gaia_version }}-${{ matrix.upgrade_version }}
-      #     path: /home/runner/work/cosmos-ansible/cosmos-ansible/artifact/
+      - name: Copy files to artifact directory
+        if: always()
+        run: |
+          dmesg > artifact/dmesg.log
+          cat /var/log/syslog > artifact/syslog.log
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: upgrade-stateful-archive-upgrade-${{ matrix.gaia_version }}-${{ matrix.upgrade_version }}
+          path: artifact/
