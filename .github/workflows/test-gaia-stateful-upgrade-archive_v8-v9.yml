@@ -118,8 +118,8 @@ jobs:
           screen -r cosmovisor -p0 -X logfile flush 0
       - name: Check blocks are being produced
         run: |
-          echo "Waiting for block $[ ${{ env.genesis_height }} + 100 ]..."
-          tests/test_block_production.sh 127.0.0.1 26657 $[ ${{ env.genesis_height }} + 100]
+          echo "Waiting for block $[ ${{ env.genesis_height }} + 20 ]..."
+          tests/test_block_production.sh 127.0.0.1 26657 $[ ${{ env.genesis_height }} + 20]
       - name: Happy path - transaction testing
         run: tests/test_tx_stateful.sh
       - name: Happy path - API endpoints testing

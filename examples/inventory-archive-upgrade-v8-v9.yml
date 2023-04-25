@@ -12,6 +12,7 @@ all:
     archive_url: https://files.polypore.xyz/archived-state/latest_v8.tar.gz
     enable_swap: true
     swap_size: 32768
+    api_enabled: true
   children:
     node:
       hosts:
