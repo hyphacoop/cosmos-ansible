@@ -103,7 +103,7 @@ jobs:
           echo "Genesis height: ${{ env.genesis_height }}"
       - name: Create script for cosmovisor
         run: |
-          echo "while true; do su gaia -c \"~/go/bin/cosmovisor run start --home $HOME/.gaia\"; sleep 1; done" > cosmovisor.sh
+          echo "while true; do ~/go/bin/cosmovisor run start --home $HOME/.gaia; sleep 1; done" > cosmovisor.sh
           chmod +x cosmovisor.sh
       - name: Start cosmovisor in screen session
         run: |
@@ -126,7 +126,7 @@ jobs:
       - name: Copy files to artifact directory
         if: always()
         run: |
-          dmesg > artifact/dmesg.log
+          sudo dmesg > artifact/dmesg.log
           cat /var/log/syslog > artifact/syslog.log
       - name: Upload artifacts
         if: always()
