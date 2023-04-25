@@ -141,7 +141,7 @@ Set up a provider chain, a consumer chain, and Hermes on the same machine.
 * **Inventory file:** [`inventory-local-rs-testnet.yml`](inventory-local-rs-testnet.yml)
 * **Provider binary:** [`gaiad v9.0.3`](https://github.com/cosmos/gaia/releases/tag/v9.0.3)
 * **Provider denom:** `uatom`
-* **Consumer binary:** [`interchain-security-cd v1.2.1`](https://github.com/cosmos/interchain-security/releases/tag/v1.2.1)
+* **Consumer binary:** [`interchain-security-cd v1.0.1`](https://github.com/cosmos/interchain-security/releases/tag/v1.0.1)
 * **Consumer denom:** `ucons`
 
 The RPC, API, and gRPC ports are set to non-default values so both chains can run on the same machine. You can modify the `consumer` host entry in the inventory file to install a different consumer chain.
