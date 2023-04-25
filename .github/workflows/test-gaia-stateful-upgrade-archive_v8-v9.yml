@@ -105,7 +105,7 @@ jobs:
         run: |
           echo "#!/bin/bash
           export DAEMON_NAME=gaiad \
-          DAEMON_HOME=/home/gaia/.gaia \
+          DAEMON_HOME=/home/$HOME/.gaia \
           DAEMON_ALLOW_DOWNLOAD_BINARIES=true \
           DAEMON_RESTART_AFTER_UPGRADE=true \
           DAEMON_LOG_BUFFER_SIZE=512 \
@@ -130,10 +130,6 @@ jobs:
       - name: Stop screen session
         if: always()
         run: screen -XS cosmovisor quit
-      - name: Copy files to artifact directory
-        if: always()
-        run: |
-          cp /var/log/syslog artifact/syslog
       - name: Upload artifacts
         if: always()
         uses: actions/upload-artifact@v3
