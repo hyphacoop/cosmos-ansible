@@ -105,7 +105,7 @@ jobs:
         run: |
           echo "#!/bin/bash
           export DAEMON_NAME=gaiad \
-          DAEMON_HOME=/home/$HOME/.gaia \
+          DAEMON_HOME=$HOME/.gaia \
           DAEMON_ALLOW_DOWNLOAD_BINARIES=true \
           DAEMON_RESTART_AFTER_UPGRADE=true \
           DAEMON_LOG_BUFFER_SIZE=512 \
