@@ -150,7 +150,7 @@ The RPC, API, and gRPC ports are set to non-default values so both chains can ru
 
 Use the same address for both `target_provider` and `target_consumer`:
 ```
-ansible-playbook local-rs-testnet.yml -i examples/inventory-local-rs-testnet.yml -e 'target_provider=SERVER_IP_OR_DOMAIN target_consumer=SERVER_IP_OR_DMAIN'
+ansible-playbook local-rs-testnet.yml -i examples/inventory-local-rs-testnet.yml -e 'target_provider=SERVER_IP_OR_DOMAIN target_consumer=SERVER_IP_OR_DOMAIN'
 ```
 
 To check the validator set is being updated in the consumer chain:
