@@ -72,9 +72,13 @@ then
     echo "gaiad not producing blocks"
     killall gaiad
     screen -XS cosmovisor quit
+    echo "blocks-1,fail" > /cosmos-ansible/artifact/tests-status.txt
     sleep 15
     exit 1
+else
+    echo "blocks-1,pass" > /cosmos-ansible/artifact/tests-status.txt
 fi
+
 # Happy path - transaction testing
 echo "Happy path - transaction testing..."
 su gaia -c "tests/test_tx_fresh.sh"
@@ -83,10 +87,12 @@ then
     echo "Happy path transaction test failed"
     killall gaiad
     screen -XS gaiad quit
+    echo "tx-1,failed" > /cosmos-ansible/artifact/tests-status.txt
     sleep 15
     exit 1
+else
+    echo "tx-1,pass" > /cosmos-ansible/artifact/tests-status.txt
 fi
-
 # Happy path - API endpoints testing
 echo "Happy path - API endpoints testing..."
 su gaia -c "tests/test_endpoints_api.sh localhost 1317"
@@ -94,10 +100,12 @@ if [ $? -ne 0 ]
 then
     echo "Happy path API endpoints test failed"
     screen -XS gaiad quit
+    echo "api-1,failed" > /cosmos-ansible/artifact/tests-status.txt
     sleep 15
     exit 1
+else
+    echo "api-1,pass" > /cosmos-ansible/artifact/tests-status.txt
 fi
-
 # Happy path - RPC endpoints testing
 echo "Happy path - RPC endpoints testing..."
 su gaia -c "tests/test_endpoints_rpc.sh localhost 26657"
@@ -106,9 +114,13 @@ then
     echo "Happy path RPC endpoints test failed"
     killall gaiad
     screen -XS gaiad quit
+    echo "rpc-1,failed" > /cosmos-ansible/artifact/tests-status.txt
     sleep 15
     exit 1
+else
+    echo "rpc-1,pass" > /cosmos-ansible/artifact/tests-status.txt
 fi
+
 # Get upgrade name
 chain_version_major=${chain_version:1:1}
 echo "Get upgrade name"
@@ -131,9 +143,13 @@ then
     echo "test software upgrade failed"
     killall gaiad
     screen -XS cosmovisor quit
+    echo "upgrade-1,failed" > /cosmos-ansible/artifact/tests-status.txt
     sleep 15
     exit 1
+else
+    echo "upgrade-1,pass" > /cosmos-ansible/artifact/tests-status.txt
 fi
+
 # Happy path - transaction testing
 echo "Happy path - transaction testing..."
 su gaia -c "tests/test_tx_fresh.sh"
@@ -141,23 +157,26 @@ if [ $? -ne 0 ]
 then
     echo "Happy path transaction test failed"
     killall gaiad
-    screen -XS cosmovisor quit
+    screen -XS gaiad quit
+    echo "tx-2,failed" > /cosmos-ansible/artifact/tests-status.txt
     sleep 15
     exit 1
+else
+    echo "tx-2,pass" > /cosmos-ansible/artifact/tests-status.txt
 fi
-
 # Happy path - API endpoints testing
 echo "Happy path - API endpoints testing..."
 su gaia -c "tests/test_endpoints_api.sh localhost 1317"
 if [ $? -ne 0 ]
 then
     echo "Happy path API endpoints test failed"
-    killall gaiad
-    screen -XS cosmovisor quit
+    screen -XS gaiad quit
+    echo "api-2,failed" > /cosmos-ansible/artifact/tests-status.txt
     sleep 15
     exit 1
+else
+    echo "api-2,pass" > /cosmos-ansible/artifact/tests-status.txt
 fi
-
 # Happy path - RPC endpoints testing
 echo "Happy path - RPC endpoints testing..."
 su gaia -c "tests/test_endpoints_rpc.sh localhost 26657"
@@ -165,11 +184,13 @@ if [ $? -ne 0 ]
 then
     echo "Happy path RPC endpoints test failed"
     killall gaiad
-    screen -XS cosmovisor quit
+    screen -XS gaiad quit
+    echo "rpc-2,failed" > /cosmos-ansible/artifact/tests-status.txt
     sleep 15
     exit 1
+else
+    echo "rpc-2,pass" > /cosmos-ansible/artifact/tests-status.txt
 fi
 
-killall gaiad
 screen -XS cosmovisor quit
 sleep 15
