@@ -3,7 +3,7 @@
 all:
   vars:
     ansible_user: root
-    chain_version: v9.0.2
+    chain_version: v9.0.3
     chain_id: cosmos-testnet
     minimum_gas_prices: '0.001uatom'
     chain_home_clear: true
