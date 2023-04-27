@@ -153,7 +153,7 @@ echo "Move current running gaiad binary"
 mv -v /home/gaia/go/bin/gaiad /home/gaia/go/bin/gaiad-$chain_version
 
 echo "Test software upgrade..."
-su gaia -c "tests/test_software_upgrade_manual.sh 127.0.0.1 26657 $upgrade_version /home/gaia/go/bin"
+su gaia -c "tests/test_software_upgrade_manual.sh 127.0.0.1 16657 $upgrade_version /home/gaia/go/bin"
 if [ $? -ne 0 ]
 then
     echo "test software upgrade failed"
