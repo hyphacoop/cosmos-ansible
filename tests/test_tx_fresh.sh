@@ -35,7 +35,10 @@ echo "validator has self-delegation address $val_self_del."
 echo "validator has operator address $val1."
 
 # Create test account
-echo $(gaiad keys add test-account --keyring-backend test --output json 2>&1) > test_account.json
+if [ ! -f test_account.json ]
+then
+  echo $(gaiad keys add test-account --keyring-backend test --output json 2>&1) > test_account.json
+fi
 test_account=$(jq -r '.address' ./test_account.json)
 echo "test-account has address $test_account."
 
