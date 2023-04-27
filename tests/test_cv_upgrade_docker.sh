@@ -75,6 +75,40 @@ then
     sleep 15
     exit 1
 fi
+# Happy path - transaction testing
+echo "Happy path - transaction testing..."
+su gaia -c "tests/test_tx_fresh.sh"
+if [ $? -ne 0 ]
+then
+    echo "Happy path transaction test failed"
+    killall gaiad
+    screen -XS gaiad quit
+    sleep 15
+    exit 1
+fi
+
+# Happy path - API endpoints testing
+echo "Happy path - API endpoints testing..."
+su gaia -c "tests/test_endpoints_api.sh localhost 1317"
+if [ $? -ne 0 ]
+then
+    echo "Happy path API endpoints test failed"
+    screen -XS gaiad quit
+    sleep 15
+    exit 1
+fi
+
+# Happy path - RPC endpoints testing
+echo "Happy path - RPC endpoints testing..."
+su gaia -c "tests/test_endpoints_rpc.sh localhost 26657"
+if [ $? -ne 0 ]
+then
+    echo "Happy path RPC endpoints test failed"
+    killall gaiad
+    screen -XS gaiad quit
+    sleep 15
+    exit 1
+fi
 # Test software upgrade
 echo "Test software upgrade..."
 su gaia -c "tests/test_software_upgrade.sh 127.0.0.1 26657 $upgrade_version"
