@@ -4,8 +4,8 @@ import json
 import sys
 import requests
 
-SKIP_VERSIONS = ['v8.0.0-rc',   # software-upgrade command not available
-                 'v8.0.0-rc1']  # unsuccessful upgrade to v9.0.0-rc3 through v9.0.0: https://github.com/hyphacoop/cosmos-ansible/actions/runs/4319476707
+#SKIP_VERSIONS = ['v8.0.0-rc',   # software-upgrade command not available
+#                 'v8.0.0-rc1']  # unsuccessful upgrade to v9.0.0-rc3 through v9.0.0: https://github.com/hyphacoop/cosmos-ansible/actions/runs/4319476707
 
 SKIP_VERSIONS = []
 
