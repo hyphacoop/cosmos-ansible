@@ -39,10 +39,10 @@ for name in release_names:
         else:
             releases.append(name)
 
-# Remove all rcs from the list if there is a final release available
-for rc in rc_releases:
-    if rc.split('-')[0] not in releases:
-        releases.append(rc)
+# # Remove all rcs from the list if there is a final release available
+# for rc in rc_releases:
+#     if rc.split('-')[0] not in releases:
+#         releases.append(rc)
 
 # Trim list further to remove all releases listed in the SKIP_VERSIONS list
 filtered_releases = [release for release in releases if
