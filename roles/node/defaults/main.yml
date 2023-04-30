@@ -153,6 +153,21 @@ statesync_chunk_fetchers: '4'
 statesync_auto_populate: true
 ## config.toml: Fast Sync Config
 fastsync_version: v0
+## config.toml: Consensus Config
+consensus_wal_file: data/cs.wal/wal
+consensus_timeout_propose: 3s
+consensus_timeout_propose_delta: 500ms
+consensus_timeout_prevote: 1s
+consensus_timeout_prevote_delta: 500ms
+consensus_timeout_precommit: 1s
+consensus_timeout_precommit_delta: 500ms
+consensus_timeout_commit: 5s
+consensus_double_sign_check_height: '0'
+consensus_skip_timeout_commit: false
+consensus_create_empty_blocks: true
+consensus_create_empty_blocks_interval: 0s
+consensus_peer_gossip_sleep_duration: 100ms
+consensus_peer_query_maj23_sleep_duration: 2s
 ## config.toml: Transaction Indexer Config
 config_indexer: kv
 ## config.toml: Instrumentation Config
