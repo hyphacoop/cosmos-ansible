@@ -76,16 +76,17 @@ ansible-playbook node.yml -i examples/inventory-local.yml --extra-vars "chain_ve
 
 ### Chain Configuration: `config.toml`
 
-| Variable                 | Example Value                                                                       |
-|--------------------------|-------------------------------------------------------------------------------------|
-| `fast_sync`              | `true`                                                                              |
-| `rpc_port`               | `26657`                                                                             |
-| `p2p_port`               | `26656`                                                                             |
-| `p2p_seeds`              | `"node-id@http://seed-1.testnet.com:26656,node-id@http://seed-2.testnet.com:26656"` |
-| `p2p_persistent_peers`   | `"node-id@http://p2p-1.testnet.com:26656,node-id@http://p2p-2.testnet.com:26656`"   |
-| `p2p_allow_duplicate_ip` | `true`                                                                              |
-| `statesync_enabled`      | `true`                                                                              |
-| `statesync_rpc_servers`  | `"http://rpc.sentry-1.testnet.com:26657,http://rpc.sentry-2.testnet.com"`           |
+| Variable                   | Example Value                                                                       |
+|----------------------------|-------------------------------------------------------------------------------------|
+| `fast_sync`                | `true`                                                                              |
+| `rpc_port`                 | `26657`                                                                             |
+| `p2p_port`                 | `26656`                                                                             |
+| `p2p_seeds`                | `"node-id@http://seed-1.testnet.com:26656,node-id@http://seed-2.testnet.com:26656"` |
+| `p2p_persistent_peers`     | `"node-id@http://p2p-1.testnet.com:26656,node-id@http://p2p-2.testnet.com:26656`"   |
+| `p2p_allow_duplicate_ip`   | `true`                                                                              |
+| `statesync_enabled`        | `true`                                                                              |
+| `statesync_rpc_servers`    | `"http://rpc.sentry-1.testnet.com:26657,http://rpc.sentry-2.testnet.com"`           |
+| `consensus_timeout_commit` | `3s`                                                                                |
 
 ### Chain Configuration: `app.toml`
 
