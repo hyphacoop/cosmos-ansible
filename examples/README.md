@@ -163,6 +163,40 @@ gaiad q tendermint-validator-set --node http://localhost:26650 # validator has a
 gaiad q tendermint-validator-set --node http://localhost:26660 # validator has a voting power of 9000 on the consumer chain
 ```
 
+## Start a Local Replicated Security Testnet with a Neutron Consumer Chain
+
+Set up a provider chain, a Neutron consumer chain, and Hermes on the same machine.
+
+* **Inventory file:** [`inventory-local-rs-testnet-neutron.yml`](inventory-local-rs-testnet-neutron.yml)
+* **Provider binary:** [`gaiad v9.0.3`](https://github.com/cosmos/gaia/releases/tag/v9.0.3)
+* **Provider denom:** `uatom`
+* **Consumer binary:** [`neutrond v1.0.0-rc1`](https://github.com/neutron-org/neutron/releases/tag/v1.0.0-rc1)
+* **Consumer denom:** `untrn`
+
+The RPC, API, and gRPC ports are set to non-default values so both chains can run on the same machine. You can modify the `consumer` host entry in the inventory file to install a different consumer chain.
+
+### Run the playbook
+
+Use the same address for both `target_provider` and `target_consumer`:
+```
+ansible-playbook local-rs-testnet.yml -i examples/inventory-local-rs-testnet-neutron.yml -e 'target_provider=SERVER_IP_OR_DOMAIN target_consumer=SERVER_IP_OR_DOMAIN'
+```
+
+To run this on the same machine as Ansible locally:
+```
+ansible-playbook local-rs-testnet.yml -i examples/inventory-local-rs-testnet-neutron.yml -e 'ansible_connection=local target_provider=localhost target_consumer=localhost'
+```
+
+To check the validator set is being updated in the consumer chain:
+```bash
+su provider
+gaiad q tendermint-validator-set --node http://localhost:26650 # validator has a voting power of 8000 in the provider chain
+gaiad q tendermint-validator-set --node http://localhost:26660 # validator has a voting power of 8000 in the Neutron chain
+gaiad tx staking delegate cosmosvaloper1r5v5srda7xfth3hn2s26txvrcrntldju7lnwmv 1000000000uatom --from validator --gas auto --fees 1000uatom -b block -y
+gaiad q tendermint-validator-set --node http://localhost:26650 # validator has a voting power of 9000 in the provider chain
+gaiad q tendermint-validator-set --node http://localhost:26660 # validator has a voting power of 9000 in the Neutron chain
+```
+
 ## Start a three-node testnet from existing keys and genesis file
 
 Set up a chain with three validator nodes that have the following voting power:

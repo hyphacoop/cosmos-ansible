@@ -1,4 +1,13 @@
 ---
+# Provider paths
+provider_user_home: /home/provider
+provider_home: "{{ provider_user_home }}/.gaia"
+
+# Consumer paths
+consumer_user: consumer
+consumer_user_home: /home/{{ consumer_user }}
+consumer_home: /home/consumer/.consumer
+
 # Provider chain
 chain_binary_name: "gaiad"
 chain_tx_fees: "1000uatom"
@@ -18,3 +27,6 @@ consumer_transfer_timeout_period: "1800000000000"
 consumer_ccv_timeout_period: "2419200000000000"
 consumer_unbonding_period: "1728000000000000"
 consumer_proposal_deposit: 10uatom
+
+# Consumer chain genesis patches
+genesis_soft_optout_patch: false
