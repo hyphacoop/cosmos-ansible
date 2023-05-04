@@ -10,6 +10,6 @@ all:
       hosts:
         local:
           digitalocean_hostname: mainnet-export
-          digitalocean_size: s-8vcpu-16gb
+          digitalocean_size: so-4vcpu-32gb
           digitalocean_region: tor1
           digitalocean_project: Staging
