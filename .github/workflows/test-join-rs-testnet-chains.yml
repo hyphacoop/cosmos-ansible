@@ -4,6 +4,13 @@ on:
   schedule:
     # At 15:30 on Monday.
     - cron: '30 15 * * 1'
+  push:
+    paths-ignore:
+      - 'docs/**'
+      - 'examples/**'
+      - 'logs/**'
+      - '!examples/inventory-local.yml'
+      - 'README.md'
 
 jobs:
   rs-testnet-provider:
