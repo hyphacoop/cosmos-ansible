@@ -6,7 +6,7 @@ on:
     - cron: '30 15 * * 1'
 
 jobs:
-  rs-testnet-provider
+  rs-testnet-provider:
     runs-on: self-hosted-debian-11
     steps:
       # Get system info
@@ -33,10 +33,10 @@ jobs:
 
       - name: Update path
         run: echo "$HOME/.local/bin" >> $GITHUB_PATH
-      
+
       - name: Check out repository code
         uses: actions/checkout@v3
-      
+
       - name: Create artifact directory
         run: |
           mkdir artifact
