@@ -3,8 +3,8 @@ name: Export mainnet genesis
 on:
   workflow_dispatch:
   schedule:
-    # At 05:30 on Saturday.
-    - cron: '30 5 * * 6'
+    # At 05:30 on Monday.
+    - cron: '30 5 * * 1'
 
 jobs:
   build:
