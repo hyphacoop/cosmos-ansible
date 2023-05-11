@@ -62,8 +62,21 @@ jobs:
       - name: Run playbook
         run: ansible-playbook node.yml -i examples/inventory-rs-testnet-provider.yml --extra-vars "target=local reboot=false node_user=$(whoami) enable_swap=false "
 
-      - name: Check cosmovisor service
-        run: systemctl status cosmovisor
+      - name: Create script for cosmovisor
+        run: |
+          echo "#!/bin/bash
+          export DAEMON_NAME=gaiad \
+          DAEMON_HOME=$HOME/.gaia \
+          DAEMON_ALLOW_DOWNLOAD_BINARIES=true \
+          DAEMON_RESTART_AFTER_UPGRADE=true \
+          DAEMON_LOG_BUFFER_SIZE=512 \
+          UNSAFE_SKIP_BACKUP=true" > cosmovisor.sh
+          echo "while true; do ~/go/bin/cosmovisor run start --home $HOME/.gaia; sleep 1; done" >> cosmovisor.sh
+          chmod +x cosmovisor.sh
+      - name: Start cosmovisor in screen session
+        run: |
+          screen -L -Logfile ./artifact/cosmovisor.log -S cosmovisor -d -m bash './cosmovisor.sh'
+          screen -r cosmovisor -p0 -X logfile flush 0
 
       - name: Check blocks are being produced
         run: |
