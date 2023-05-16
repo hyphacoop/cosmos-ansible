@@ -81,5 +81,15 @@ jobs:
       - name: Check blocks are being produced
         run: |
           height=$(curl -s https://rpc.provider-sentry-01.rs-testnet.polypore.xyz/block | jq -r '.result.block.header.height')
-          echo "Waiting for block $[ $height + 100 ]..."
+          echo "Waiting for block $[ $height + 10 ]..."
           tests/test_block_production.sh 127.0.0.1 26657 $[ $height + 100]
+
+      - name: Fix Permissions
+        if: always()
+        run: sudo chown -R $(whoami):$(whoami) .
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: join-provider-logs
+          path: ./artifact/
