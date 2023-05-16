@@ -60,7 +60,7 @@ jobs:
         run: ansible-galaxy install -r requirements.yml
 
       - name: Run playbook
-        run: ansible-playbook node.yml -i examples/inventory-rs-testnet-provider.yml --extra-vars "target=local reboot=false node_user=$(whoami) enable_swap=false "
+        run: ansible-playbook node.yml -i examples/inventory-rs-testnet-provider.yml --extra-vars "target=local reboot=false node_user=$(whoami) enable_swap=false chain_start=false"
 
       - name: Create script for cosmovisor
         run: |
