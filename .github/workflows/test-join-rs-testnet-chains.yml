@@ -87,7 +87,7 @@ jobs:
       - name: Stop cosmovisor
         if: always()
         run: |
-          screen -XS gaiad quit
+          screen -XS cosmovisor quit
           sleep 15
 
       - name: Fix Permissions
