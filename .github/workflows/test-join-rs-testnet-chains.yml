@@ -99,3 +99,90 @@ jobs:
         with:
           name: join-provider-logs
           path: ./artifact/
+
+  rs-testnet-pion-1:
+    runs-on: self-hosted-debian-11
+    steps:
+      # Get system info
+      - run: ifconfig
+      - run: lscpu
+      - run: df -h
+      - run: free -m
+      - run: uname -a
+      - run: lsb_release -a
+      - run: echo "GitHub branch is ${{ github.ref }}"
+      - run: whoami
+      - run: pwd
+
+      - name: Update apt
+        run: sudo apt update
+
+      - name: Install required packages
+        run: sudo apt -y install python-is-python3 python3-distutils screen
+
+      - name: Install pip
+        run: |
+          wget https://bootstrap.pypa.io/get-pip.py -O /tmp/get-pip.py
+          sudo python /tmp/get-pip.py
+
+      - name: Update path
+        run: echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Check out repository code
+        uses: actions/checkout@v3
+
+      - name: Create artifact directory
+        run: |
+          mkdir artifact
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install ansible toml
+
+      - name: Configure ansible.cfg
+        run: echo "transport = local" >> ansible.cfg
+
+      - name: Install ansible-galaxy requirements
+        run: ansible-galaxy install -r requirements.yml
+
+      - name: Run playbook
+        run: ansible-playbook node.yml -i examples/inventory-rs-testnet-pion-1.yml --extra-vars "target=local reboot=false node_user=$(whoami) enable_swap=false chain_start=false cosmovisor_service_name=cosmovisor"
+
+      - name: Create script for cosmovisor
+        run: |
+          echo "#!/bin/bash
+          export DAEMON_NAME=neutrond \
+          DAEMON_HOME=$HOME/.neutrond \
+          DAEMON_ALLOW_DOWNLOAD_BINARIES=true \
+          DAEMON_RESTART_AFTER_UPGRADE=true \
+          DAEMON_LOG_BUFFER_SIZE=512 \
+          UNSAFE_SKIP_BACKUP=true" > cosmovisor.sh
+          echo "while true; do ~/go/bin/cosmovisor run start --home $HOME/.neutrond; sleep 1; done" >> cosmovisor.sh
+          chmod +x cosmovisor.sh
+      - name: Start cosmovisor in screen session
+        run: |
+          screen -L -Logfile ./artifact/cosmovisor.log -S cosmovisor -d -m bash './cosmovisor.sh'
+          screen -r cosmovisor -p0 -X logfile flush 0
+
+      - name: Check blocks are being produced
+        run: |
+          height=$(curl -s https://rpc.pion.rs-testnet.polypore.xyz/block | jq -r '.result.block.header.height')
+          echo "Waiting for block $[ $height + 10 ]..."
+          tests/test_block_production.sh 127.0.0.1 26657 $[ $height + 10]
+
+      - name: Stop cosmovisor
+        if: always()
+        run: |
+          screen -XS cosmovisor quit
+          sleep 15
+
+      - name: Fix Permissions
+        if: always()
+        run: sudo chown -R $(whoami):$(whoami) .
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: join-pion-1-logs
+          path: ./artifact/

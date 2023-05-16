@@ -4,7 +4,7 @@ all:
   vars:
     ansible_user: root
     chain_repository: "https://github.com/neutron-org/neutron.git"
-    chain_version: v0.4.2
+    chain_version: v1.0.0-rc1
     go_version: 1.19.8
     genesis_url: "https://github.com/cosmos/testnets/raw/master/replicated-security/pion-1/pion-1-genesis.json"
     chain_binary_name: neutrond
