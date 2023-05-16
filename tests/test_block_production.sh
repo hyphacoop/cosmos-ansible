@@ -3,7 +3,6 @@
 
 gaia_host=$1
 gaia_port=$2
-stop_height=$3
 
 # Test gaia response
 tests/test_gaia_response.sh $gaia_host $gaia_port
@@ -31,6 +30,7 @@ echo "Current gaiad version: $chain_version"
 echo "Block height: $cur_height"
 echo "Waiting to reach block height $stop_height..."
 height=0
+stop_height=$[ $cur_height+5 ]
 until [ $height -ge $stop_height ]
 do
     sleep 5
