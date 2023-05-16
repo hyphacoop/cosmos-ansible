@@ -186,4 +186,3 @@ jobs:
         with:
           name: join-pion-1-logs
           path: ./artifact/
-
