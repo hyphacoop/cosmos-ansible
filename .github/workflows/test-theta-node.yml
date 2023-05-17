@@ -40,4 +40,4 @@ jobs:
         run: |
           height=$(curl -s http://rpc.state-sync-01.theta-testnet.polypore.xyz:26657/block | jq -r '.result.block.header.height')
           echo "Waiting for block $[ $height + 100 ]..."
-          tests/test_block_production.sh 127.0.0.1 26657 $[ $height + 100]
+          tests/test_block_production.sh 127.0.0.1 26657 100
