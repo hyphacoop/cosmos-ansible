@@ -3,7 +3,7 @@
 all:
   vars:
     chain_home_clear: true
-    chain_version: v9.0.3
+    chain_version: v9.1.0
     genesis_url: "https://files.polypore.xyz/genesis/mainnet-genesis-tinkered/latest_v9.json.gz"
     ansible_user: root
     enable_swap: true  # Set this for machines with <32GB RAM

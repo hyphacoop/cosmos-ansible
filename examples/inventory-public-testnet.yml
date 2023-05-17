@@ -3,7 +3,7 @@
 all:
   vars:
     ansible_user: root
-    chain_version: v9.0.3
+    chain_version: v9.1.0
     genesis_url: "https://github.com/cosmos/testnets/raw/master/public/genesis.json.gz"
     chain_id: theta-testnet-001
     chain_home_clear: false
