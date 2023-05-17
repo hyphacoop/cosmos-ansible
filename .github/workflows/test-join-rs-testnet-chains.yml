@@ -1,3 +1,5 @@
+---
+
 name: Join RS Testnets
 on:
   workflow_dispatch:
