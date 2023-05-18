@@ -92,7 +92,9 @@ if [ -n "$upgrade_name" ]; then
 
     # Wait until the right height is reached
     echo "Waiting for the upgrade to take place at block height $upgrade_height..."
-    tests/test_block_production.sh $gaia_host $gaia_port $upgrade_height
+    current_height=$(curl -s http://$gaia_host:$gaia_port/block | jq -r '.result.block.header.height')
+    blocks_delta=$(($upgrade_height-$current_height))
+    tests/test_block_production.sh $gaia_host $gaia_port $blocks_delta
     echo "The upgrade height was reached."
 
     # Test gaia response
@@ -109,7 +111,7 @@ if [ -n "$upgrade_name" ]; then
     fi
 
     # Test block production
-    tests/test_block_production.sh $gaia_host $gaia_port $[$upgrade_height+10]
+    tests/test_block_production.sh $gaia_host $gaia_port
 
 else
     echo "No upgrade name specified, skipping upgrade."
