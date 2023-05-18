@@ -65,9 +65,9 @@ else
 fi
 if [ ! -d cosmovisor/upgrades ]
 then
-    echo \"Creating cosmovisor/upgrades/v9-lambda/bin directory\"
-    mkdir -p cosmovisor/upgrades/v9-lambda/bin
-    cp cosmovisor/genesis/bin/gaiad cosmovisor/upgrades/v9-lambda/bin/gaiad
+    echo \"Creating cosmovisor/upgrades/v10/bin directory\"
+    mkdir -p cosmovisor/upgrades/v10/bin
+    cp cosmovisor/genesis/bin/gaiad cosmovisor/upgrades/v10/bin/gaiad
 fi
 " > ~gaia/quicksync.sh
 chmod +x ~gaia/quicksync.sh
