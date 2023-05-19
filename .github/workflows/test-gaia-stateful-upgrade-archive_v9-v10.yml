@@ -36,7 +36,8 @@ jobs:
       - name: Generate starting versions
         id: generate-start
         run: |
-          start=$(tests/generate_version_matrix.py v9.0.0)
+          current_release=$(curl -s https://api.github.com/repos/cosmos/gaia/releases/latest | jq -r '.tag_name')
+          start=$(tests/generate_version_matrix.py $current_release)
           echo $start
           echo "start_versions=$start" >> $GITHUB_OUTPUT
 
