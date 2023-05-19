@@ -42,7 +42,7 @@ jobs:
       - name: Generate starting versions
         id: generate-start
         run: |
-          echo "start_versions=${{ steps.get-latest-gaia.outputs.current_release }} >> $GITHUB_OUTPUT
+          echo "start_versions=${{ steps.get-latest-gaia.outputs.current_release }}"" >> $GITHUB_OUTPUT
 
       - name: Generate upgrade versions
         id: generate-upgrade
