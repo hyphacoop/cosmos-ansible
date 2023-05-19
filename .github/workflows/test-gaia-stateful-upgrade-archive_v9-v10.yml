@@ -34,17 +34,22 @@ jobs:
           python -m pip install requests
 
       - name: Generate starting versions
-        id: generate-start
+        id: get-latest-gaia
         run: |
           current_release=$(curl -s https://api.github.com/repos/cosmos/gaia/releases/latest | jq -r '.tag_name')
-          start=$(tests/generate_version_matrix.py $current_release)
+          echo $current_release >> $GITHUB_OUTPUT
+
+      - name: Generate starting versions
+        id: generate-start
+        run: |
+          start=$(tests/generate_version_matrix.py ${{ steps.get-latest-gaia.outputs.current_release }})
           echo $start
           echo "start_versions=$start" >> $GITHUB_OUTPUT
 
       - name: Generate upgrade versions
         id: generate-upgrade
         run: |
-          upgrade=$(tests/generate_upgrade_matrix.py v9.0.0)
+          upgrade=$(tests/generate_upgrade_matrix.py ${{ steps.get-latest-gaia.outputs.current_release }})
           echo $upgrade
           echo "upgrade_versions=$upgrade" >> $GITHUB_OUTPUT
     outputs:
