@@ -1,0 +1,134 @@
+---
+
+name: Test Gaia Upgrade Using Stateful Archive (v9 to v10)
+on:
+  workflow_dispatch:
+  schedule:
+    # At 15:30 on Sunday.
+    - cron: '30 15 * * 0'
+  pull_request:
+    types:
+      - opened
+      - closed
+  push:
+    paths-ignore:
+      - 'docs/**'
+      - 'examples/**'
+      - 'logs/**'
+      - '!examples/inventory-local.yml'
+      - 'README.md'
+jobs:
+  generate-matrices:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install requests
+
+      - name: Generate starting versions
+        id: generate-start
+        run: |
+          start=$(tests/generate_version_matrix.py v9.0.0)
+          echo $start
+          echo "start_versions=$start" >> $GITHUB_OUTPUT
+
+      - name: Generate upgrade versions
+        id: generate-upgrade
+        run: |
+          upgrade=$(tests/generate_upgrade_matrix.py v9.0.0)
+          echo $upgrade
+          echo "upgrade_versions=$upgrade" >> $GITHUB_OUTPUT
+    outputs:
+      start_versions: ${{ steps.generate-start.outputs.start_versions }}
+      upgrade_versions: ${{ steps.generate-upgrade.outputs.upgrade_versions }}
+
+  test-upgrade:
+    runs-on: self-hosted-debian-11
+    needs: generate-matrices
+    strategy:
+      fail-fast: false
+      matrix:
+        ${{ fromJSON(needs.generate-matrices.outputs.upgrade_versions) }}
+    steps:
+      # Get system info
+      - run: ifconfig
+      - run: lscpu
+      - run: df -h
+      - run: free -m
+      - run: uname -a
+      - run: lsb_release -a
+      - run: echo "GitHub branch is ${{ github.ref }}"
+      - run: whoami
+      - run: pwd
+
+      - name: Update apt
+        run: sudo apt update
+      - name: Install required packages
+        run: sudo apt -y install python-is-python3 python3-distutils screen
+
+      - name: Install pip
+        run: |
+          wget https://bootstrap.pypa.io/get-pip.py -O /tmp/get-pip.py
+          sudo python /tmp/get-pip.py
+
+      - name: Update path
+        run: echo "$HOME/.local/bin" >> $GITHUB_PATH
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - name: Create artifact directory
+        run: |
+          mkdir artifact
+      - name: Install pip dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install ansible toml
+      - name: Configure ansible.cfg
+        run: echo "transport = local" >> ansible.cfg
+      - name: Install ansible-galaxy requirements
+        run: ansible-galaxy install --timeout 120 --verbose -r requirements.yml
+      - name: Run playbook
+        run: |
+          ansible-playbook node.yml -i examples/inventory-archive-upgrade-v8-v9.yml --extra-vars "target=local reboot=false chain_start=false chain_binary_source=release chain_binary_release=https://github.com/cosmos/gaia/releases/download/${{ matrix.upgrade_versions }}/gaiad-${{ matrix.upgrade_versions }}-linux-amd64 enable_swap=false node_user=github"
+      - name: Get genesis height
+        run: |
+          echo "genesis_height=$(jq -r '.height' ~/.gaia/data/upgrade-info.json)" >> $GITHUB_ENV
+          echo "Genesis height: ${{ env.genesis_height }}"
+      - name: Create script for cosmovisor
+        run: |
+          echo "#!/bin/bash
+          export DAEMON_NAME=gaiad \
+          DAEMON_HOME=$HOME/.gaia \
+          DAEMON_ALLOW_DOWNLOAD_BINARIES=true \
+          DAEMON_RESTART_AFTER_UPGRADE=true \
+          DAEMON_LOG_BUFFER_SIZE=512 \
+          UNSAFE_SKIP_BACKUP=true" > cosmovisor.sh
+          echo "while true; do ~/go/bin/cosmovisor run start --home $HOME/.gaia; sleep 1; done" >> cosmovisor.sh
+          chmod +x cosmovisor.sh
+      - name: Start cosmovisor in screen session
+        run: |
+          screen -L -Logfile ./artifact/cosmovisor.log -S cosmovisor -d -m bash './cosmovisor.sh'
+          screen -r cosmovisor -p0 -X logfile flush 0
+      - name: Check blocks are being produced
+        run: |
+          echo "Waiting for block $[ ${{ env.genesis_height }} + 20 ]..."
+          tests/test_block_production.sh 127.0.0.1 26657 $[ ${{ env.genesis_height }} + 20]
+      - name: Happy path - transaction testing
+        run: tests/test_tx_stateful.sh
+
+      - name: Stop screen session
+        if: always()
+        run: screen -XS cosmovisor quit
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: upgrade-stateful-archive-upgrade-${{ matrix.gaia_version }}-${{ matrix.upgrade_version }}
+          path: artifact/
