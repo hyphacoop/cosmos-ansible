@@ -96,7 +96,7 @@ jobs:
         run: ansible-galaxy install --timeout 120 --verbose -r requirements.yml
       - name: Run playbook
         run: |
-          ansible-playbook node.yml -i examples/inventory-archive-upgrade-v8-v9.yml --extra-vars "target=local reboot=false chain_start=false chain_binary_source=release chain_binary_release=https://github.com/cosmos/gaia/releases/download/${{ matrix.upgrade_versions }}/gaiad-${{ matrix.upgrade_versions }}-linux-amd64 enable_swap=false node_user=github"
+          ansible-playbook node.yml -i examples/inventory-archive-upgrade-v8-v9.yml --extra-vars "target=local reboot=false chain_start=false chain_binary_source=release chain_binary_release=https://github.com/cosmos/gaia/releases/download/${{ matrix.upgrade_version }}/gaiad-${{ matrix.upgrade_version }}-linux-amd64 enable_swap=false node_user=github"
       - name: Get genesis height
         run: |
           echo "genesis_height=$(jq -r '.height' ~/.gaia/data/upgrade-info.json)" >> $GITHUB_ENV
