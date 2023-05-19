@@ -37,7 +37,7 @@ jobs:
         id: get-latest-gaia
         run: |
           current_release=$(curl -s https://api.github.com/repos/cosmos/gaia/releases/latest | jq -r '.tag_name')
-          echo $current_release >> $GITHUB_OUTPUT
+          echo "current_release=$current_release" >> $GITHUB_OUTPUT
 
       - name: Generate starting versions
         id: generate-start
