@@ -2,7 +2,7 @@
 set -e
 
 # cosmos next upgrade version name
-cosmos_upgrade_name="v10-Epsilon"
+cosmos_upgrade_name="v10"
 
 # cosmos-genesis-tinkerer repo config
 gh_branch="main"
@@ -201,7 +201,7 @@ chain_binary_source=release
 genesis_file=~/cosmos-genesis-tinkerer/mainnet-genesis-tinkered/tinkered-genesis_${current_block_time}_${chain_version}_${current_block}.json.gz"
 
 echo "Waiting till gaiad is building blocks"
-su gaia -c "tests/test_block_production.sh 127.0.0.1 26657 $(($current_block+10))"
+su gaia -c "tests/test_block_production.sh 127.0.0.1 26657 10"
 if [ $? -ne 0 ]
 then
     echo "gaiad failed to build blocks!"
