@@ -22,26 +22,36 @@ all:
         grpc_web_enabled: false
         api_enabled: true
         chain_home_clear: true
+        consumer_user: neutron
+        consumer_user_home: /home/neutron
+        consumer_home: "{{ consumer_user_home }}/.neutrond"
+        genesis_soft_optout_patch: true
+        consumer_chain_id: test-neutron
         ansible_user: root
       hosts:
         "{{ target_provider }}":
 
     consumer:
       vars:
-        node_user: consumer
+        node_user: neutron
         # Modify the lines below up to the airdrop accounts if you want to use a different chain
-        chain_repository: https://github.com/cosmos/interchain-security.git
-        chain_version: v1.0.0
-        chain_binary_name: interchain-security-cd
+        chain_repository: "https://github.com/neutron-org/neutron.git"
+        chain_version: v1.0.0-rc1
+        chain_binary_release: https://github.com/neutron-org/neutron/releases/download/v1.0.0-rc1/neutrond-linux-amd64
+        chain_binary_source: release
+        chain_binary_name: neutrond
         moniker: rs-validator
-        chain_id: test-consumer
-        chain_home: "{{node_user_home}}/.consumer"
-        chain_denom: ucons
+        chain_id: test-neutron
+        chain_home: "{{node_user_home}}/.neutrond"
+        chain_denom: untrn
         chain_airdrop: true
         chain_airdrop_accounts:
-        - cosmos1r5v5srda7xfth3hn2s26txvrcrntldjumt8mhl
+        - neutron1r5v5srda7xfth3hn2s26txvrcrntldjul5wedc
         chain_airdrop_coins: 100000000000000
-        cosmovisor_service_name: "cv-consumer"
+        minimum_gas_prices: 0untrn
+        pruning: nothing
+        consensus_timeout_commit: 1s
+        cosmovisor_service_name: "cv-neutron"
         rpc_port: 26660
         p2p_port: 26661
         api_port: 26662
@@ -65,7 +75,7 @@ all:
         mode_channels: 'true'
         hermes_set_clients: true
         hermes_chains:
-          test-consumer:
+          test-neutron:
             hermes_relayer_mnemonic: examples/validator-keys/validator-40/self-delegation-wallet-mnemonic.txt
             hermes_port_name: consumer
             hermes_client_id: 07-tendermint-0
@@ -77,12 +87,12 @@ all:
             hermes_chain_grpc_port: 26663
             hermes_chain_websocket_url_schema: ws
             hermes_chain_rpc_timeout: '10s'
-            hermes_chain_account_prefix: 'cosmos'
+            hermes_chain_account_prefix: 'neutron'
             hermes_chain_key_name: 'testkey'
             hermes_chain_store_prefix: 'ibc'
             hermes_chain_max_gas: 2000000
             hermes_chain_fee_granter: ''
-            gas_price: "{ price = 0.0025, denom = 'ucons' }"
+            gas_price: "{ price = 0.0, denom = 'untrn' }"
             hermes_chain_gas_multiplier: 1.1
             hermes_chain_clock_drift: '10s'
             hermes_chain_trusting_period: '5days'

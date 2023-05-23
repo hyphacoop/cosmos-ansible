@@ -51,13 +51,13 @@ jobs:
         run: |
           start=$(tests/generate_version_matrix.py v8.0.0)
           echo $start
-          echo ::set-output name=start_versions::$start
+          echo "start_versions=$start" >> $GITHUB_OUTPUT
       - name: Generate upgrade versions
         id: generate-upgrade
         run: |
           upgrade=$(tests/generate_upgrade_matrix.py v8.0.0)
           echo $upgrade
-          echo ::set-output name=upgrade_versions::$upgrade
+          echo "upgrade_versions=$upgrade" >> $GITHUB_OUTPUT
     outputs:
       start_versions: ${{ steps.generate-start.outputs.start_versions }}
       upgrade_versions: ${{ steps.generate-upgrade.outputs.upgrade_versions }}
@@ -93,7 +93,7 @@ jobs:
       - name: Check cosmovisor service
         run: systemctl status cosmovisor
       - name: Check blocks are being produced
-        run: tests/test_block_production.sh 127.0.0.1 26657 10
+        run: tests/test_block_production.sh 127.0.0.1 26657
       - name: Test software upgrade
         run: tests/test_software_upgrade.sh 127.0.0.1 26657 ${{ matrix.upgrade_version }}
       - name: Happy path - transaction testing

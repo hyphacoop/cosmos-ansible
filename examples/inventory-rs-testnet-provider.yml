@@ -3,7 +3,7 @@
 all:
   vars:
     ansible_user: root
-    chain_version: v9.0.0-rc7
+    chain_version: v9.1.0
     genesis_url: "https://github.com/cosmos/testnets/raw/master/replicated-security/provider/provider-genesis.json"
     chain_id: provider
     node_user: provider

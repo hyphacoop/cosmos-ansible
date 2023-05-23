@@ -2,7 +2,7 @@
 set -e
 
 # cosmos next upgrade version name
-cosmos_upgrade_name="v9-Lambda"
+cosmos_upgrade_name="v10"
 
 # cosmos-genesis-tinkerer repo config
 gh_branch="main"
@@ -65,9 +65,9 @@ else
 fi
 if [ ! -d cosmovisor/upgrades ]
 then
-    echo \"Creating cosmovisor/upgrades/v8-Rho/bin directory\"
-    mkdir -p cosmovisor/upgrades/v8-Rho/bin
-    cp cosmovisor/genesis/bin/gaiad cosmovisor/upgrades/v8-Rho/bin/gaiad
+    echo \"Creating cosmovisor/upgrades/v9-lambda/bin directory\"
+    mkdir -p cosmovisor/upgrades/v9-lambda/bin
+    cp cosmovisor/genesis/bin/gaiad cosmovisor/upgrades/v9-lambda/bin/gaiad
 fi
 " > ~gaia/quicksync.sh
 chmod +x ~gaia/quicksync.sh
@@ -191,6 +191,7 @@ echo "Starting chain with the new tinkered genesis"
 ansible-playbook node.yml -i inventory.yml --extra-vars "\
 target=local \
 reboot=false \
+api_enabled=true \
 minimum_gas_prices=0.0025uatom \
 chain_version=$chain_version \
 chain_gov_testing=true \
@@ -200,7 +201,7 @@ chain_binary_source=release
 genesis_file=~/cosmos-genesis-tinkerer/mainnet-genesis-tinkered/tinkered-genesis_${current_block_time}_${chain_version}_${current_block}.json.gz"
 
 echo "Waiting till gaiad is building blocks"
-su gaia -c "tests/test_block_production.sh 127.0.0.1 26657 $(($current_block+10))"
+su gaia -c "tests/test_block_production.sh 127.0.0.1 26657 10"
 if [ $? -ne 0 ]
 then
     echo "gaiad failed to build blocks!"

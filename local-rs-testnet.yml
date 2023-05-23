@@ -21,11 +21,6 @@
 - name: Generate the CCV state and update the consumer genesis file  # both provider and conusmer must be running on the same machine
   hosts: provider
   become: true
-  vars:
-    provider_user_home: /home/provider
-    provider_home: "{{ provider_user_home }}/.gaia"
-    consumer_user_home: /home/consumer
-    consumer_home: "{{ consumer_user_home }}/.consumer"
   roles:
   - rs-setup
 

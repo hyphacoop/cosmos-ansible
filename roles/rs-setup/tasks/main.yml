@@ -81,23 +81,29 @@
   shell: |
     jq -s '.[0].app_state.ccvconsumer = .[1] | .[0]' {{ provider_user_home }}/consumer-genesis-no-ccv.json {{provider_user_home}}/ccv-state.json > {{ provider_user_home }}/consumer-genesis.json
 
+- name: Apply soft opt-out patch to CCV params
+  when: genesis_soft_optout_patch | default(false) | bool
+  shell: |
+    jq '.app_state.ccvconsumer.params += { "soft_opt_out_threshold": "0.05" }' {{ provider_user_home }}/consumer-genesis.json > {{ provider_user_home }}/optout-genesis.json
+    mv {{ provider_user_home }}/optout-genesis.json {{ provider_user_home }}/consumer-genesis.json
+
 - name: Copy updated consumer genesis file to consumer user
   copy:
     remote_src: true
     src: "{{ provider_user_home }}/consumer-genesis.json"
     dest: "{{ consumer_home }}/config/genesis.json"
-    owner: consumer
+    owner: "{{ consumer_user }}"
 
 - name: Copy provider priv_validator_key to consumer user
   copy:
     remote_src: true
     src: "{{ provider_home }}/config/priv_validator_key.json"
     dest: "{{ consumer_home }}/config/priv_validator_key.json"
-    owner: consumer
+    owner: "{{ consumer_user }}"
 
 - name: Copy provider node_key to consumer user
   copy:
     remote_src: true
     src: "{{ provider_home }}/config/node_key.json"
     dest: "{{ consumer_home }}/config/node_key.json"
-    owner: consumer
+    owner: "{{ consumer_user }}"

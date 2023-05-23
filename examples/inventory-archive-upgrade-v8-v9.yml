@@ -5,11 +5,12 @@ all:
     chain_home_clear: false
     node_unsafe_reset: false
     chain_version: v8.0.0
-    chain_upgrade_version: v9.0.0
+    chain_upgrade_version: v9.1.0
     chain_upgrade_name: "v9-lambda" # keep lowercase
     chain_archive_upgrade_testing: true
     ansible_user: root
     archive_url: https://files.polypore.xyz/archived-state/latest_v8.tar.gz
+    api_enabled: true
     enable_swap: true
     swap_size: 32768
     api_enabled: true

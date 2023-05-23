@@ -6,7 +6,7 @@ node_user_home: "/home/{{node_user}}"
 chain_home: "{{node_user_home}}/.gaia"
 chain_home_clear: false
 node_unsafe_reset: false
-chain_version: v8.0.1
+chain_version: v9.0.1
 chain_repository: https://github.com/cosmos/gaia.git
 chain_binary_release: "https://github.com/cosmos/gaia/releases/download/{{ chain_version }}/gaiad-{{ chain_version }}-{{binary_arch_map[ansible_architecture]}}"
 chain_upgrade_binary_release: "https://github.com/cosmos/gaia/releases/download/{{ chain_upgrade_version }}/gaiad-{{ chain_upgrade_version }}-{{binary_arch_map[ansible_architecture]}}"
@@ -154,6 +154,21 @@ statesync_chunk_fetchers: '4'
 statesync_auto_populate: true
 ## config.toml: Fast Sync Config
 fastsync_version: v0
+## config.toml: Consensus Config
+consensus_wal_file: data/cs.wal/wal
+consensus_timeout_propose: 3s
+consensus_timeout_propose_delta: 500ms
+consensus_timeout_prevote: 1s
+consensus_timeout_prevote_delta: 500ms
+consensus_timeout_precommit: 1s
+consensus_timeout_precommit_delta: 500ms
+consensus_timeout_commit: 5s
+consensus_double_sign_check_height: '0'
+consensus_skip_timeout_commit: false
+consensus_create_empty_blocks: true
+consensus_create_empty_blocks_interval: 0s
+consensus_peer_gossip_sleep_duration: 100ms
+consensus_peer_query_maj23_sleep_duration: 2s
 ## config.toml: Transaction Indexer Config
 config_indexer: kv
 ## config.toml: Instrumentation Config
