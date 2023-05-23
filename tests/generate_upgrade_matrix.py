@@ -53,8 +53,6 @@ for start_version, _ in matrix.items():
 # Assemble matrix include section:
 includes = []
 for version, upgrades in matrix.items():
-    # v10 pre-release testing
-    includes.append({'gaia_version': version, 'upgrade_version': 'v10.0.0-rc0'})
     for upgrade in upgrades:
         includes.append({'gaia_version': version, 'upgrade_version': upgrade})
 upgrade_json = json.dumps({'include': includes})
