@@ -3,12 +3,15 @@
 all:
   vars:
     ansible_user: root
-    chain_version: v9.0.3
+    chain_version: v10.0.0-rc0
+    go_version: 1.20.4
     genesis_url: "https://github.com/cosmos/testnets/raw/master/public/genesis.json.gz"
     chain_id: theta-testnet-001
     chain_home_clear: false
     node_unsafe_reset: true
     chain_use_ssl_proxy: false
+    enable_swap: true
+    swap_size: 32768
     chain_api_host: "rest"
     chain_rpc_host: "rpc"
     chain_p2p_host: "p2p"
