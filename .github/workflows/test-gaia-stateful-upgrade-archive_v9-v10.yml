@@ -39,15 +39,20 @@ jobs:
           versions=$(tests/patch_upgrade/patch_upgrade_matrix.py)
           echo $versions
           echo "matrix=$versions" >> $GITHUB_OUTPUT
+    
+      - name: Save versions to json
+        id: save-versions
+        run: |
+          tests/generate_version_matrix.py ${{ steps.set-start.outputs.matrix }}
 
       - name: Generate upgrade versions
         id: generate-upgrade
         run: |
-          upgrade=$(tests/generate_upgrade_matrix.py v9.0.0)
+          upgrade=$(tests/generate_upgrade_matrix.py ${{ steps.set-start.outputs.matrix }})
           echo $upgrade
           echo "upgrade_versions=$upgrade" >> $GITHUB_OUTPUT
     outputs:
-      start_versions: ${{ steps.set-start.outputs.start_versions }}
+      start_versions: ${{ steps.set-start.outputs.matrix }}
       upgrade_versions: ${{ steps.generate-upgrade.outputs.upgrade_versions }}
 
   test-upgrade:
