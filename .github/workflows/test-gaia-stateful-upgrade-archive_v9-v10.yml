@@ -18,7 +18,7 @@ on:
       - '!examples/inventory-local.yml'
       - 'README.md'
 jobs:
-  generate-matrices:
+  set-version-matrix:
     runs-on: ubuntu-22.04
     steps:
       - name: Check out repository code
@@ -41,15 +41,15 @@ jobs:
           echo "matrix=$versions" >> $GITHUB_OUTPUT
 
     outputs:
-      start_versions: ${{ steps.set-start.outputs.matrix }}
+      version_matrix: ${{ steps.set-start.outputs.matrix }}
 
   test-upgrade:
     runs-on: self-hosted-debian-11
-    needs: generate-matrices
+    needs: set-version-matrix
     strategy:
       fail-fast: false
       matrix:
-        ${{ fromJSON(needs.generate-matrices.outputs.matrix) }}
+        ${{ fromJSON(needs.set-version-matrix.outputs.version_matrix) }}
     steps:
       # Get system info
       - run: ifconfig
