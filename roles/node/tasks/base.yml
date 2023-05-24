@@ -29,10 +29,18 @@
 # Get chain_version number
 - name: parse version
   set_fact:
-    major_version: "{{ chain_version[1] }}"
-    minor_version: "{{ chain_version[3] }}"
-    patch_version: "{{ chain_version[5] }}"
+    major_version: '{{ chain_version.split(".")[0][1:] }}'
+    minor_version: '{{ chain_version.split(".")[1] }}'
+    patch_version: '{{ chain_version.split(".")[2] }}'
   when: major_version is undefined and patch_version is undefined
+  tags:
+    - chain_reset
+    - chain_stop
+    - chain_restart
+
+- name: print versions
+  debug:
+    msg: 'Major: {{ major_version }} Minor: {{ minor_version }} Patch: {{ patch_version }}'
   tags:
     - chain_reset
     - chain_stop
