@@ -33,12 +33,12 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install requests
 
-      - name: Generate starting versions
-        id: generate-start
+      - name: Obtain latest non-rc release
+        id: set-start
         run: |
-          start=$(tests/generate_version_matrix.py v9.0.0)
-          echo $start
-          echo "start_versions=$start" >> $GITHUB_OUTPUT
+          versions=$(tests/patch_upgrade/patch_upgrade_matrix.py)
+          echo $versions
+          echo "matrix=$versions" >> $GITHUB_OUTPUT
 
       - name: Generate upgrade versions
         id: generate-upgrade
@@ -47,7 +47,7 @@ jobs:
           echo $upgrade
           echo "upgrade_versions=$upgrade" >> $GITHUB_OUTPUT
     outputs:
-      start_versions: ${{ steps.generate-start.outputs.start_versions }}
+      start_versions: ${{ steps.set-start.outputs.start_versions }}
       upgrade_versions: ${{ steps.generate-upgrade.outputs.upgrade_versions }}
 
   test-upgrade:
