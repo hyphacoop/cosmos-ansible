@@ -1,20 +1,20 @@
 ---
 
-    name: Test Gaia Fresh State Upgrade - v11
-    on:
-      workflow_dispatch:
-      schedule:
-        # Once a day at 13:15
-        - cron: '15 13 * * 1'
-      push:
+name: Test Gaia Fresh State Upgrade - v11
+on:
+    workflow_dispatch:
+    schedule:
+    # Once a day at 13:15
+    - cron: '15 13 * * 1'
+    push:
         paths-ignore:
-          - 'docs/**'
-          - 'examples/**'
-          - 'logs/**'
-          - '!examples/inventory-local.yml'
-          - 'README.md'
-    jobs:
-      generate-matrices:
+        - 'docs/**'
+        - 'examples/**'
+        - 'logs/**'
+        - '!examples/inventory-local.yml'
+        - 'README.md'
+jobs:
+    generate-matrices:
         runs-on: ubuntu-22.04
         steps:
           # Get system info
@@ -58,7 +58,7 @@
           start_versions: ${{ steps.generate-start.outputs.start_versions }}
           upgrade_versions: ${{ steps.generate-upgrade.outputs.upgrade_versions }}
     
-      test-upgrade:
+    test-upgrade:
         runs-on: ubuntu-22.04
         needs: generate-matrices
         strategy:
@@ -99,13 +99,13 @@
               DOWNLOAD_URL: https://github.com/cosmos/gaia/releases/download/${{ matrix.upgrade_version }}/gaiad-${{ matrix.upgrade_version }}-linux-amd64
             run: |
               echo $DOWNLOAD_URL
-              tests/test_software_upgrade.sh 127.0.0.1 26657 v11
+              tests/test_software_upgrade_fresh.sh 127.0.0.1 26657 v11
           - name: Test software upgrade for main branch
             if: ${{ matrix.upgrade_version == 'main' }}
             env:
               DOWNLOAD_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/gaiad-linux-main/gaiad-linux
             run: |
-              tests/test_software_upgrade.sh 127.0.0.1 26657 v11
+              tests/test_software_upgrade_fresh.sh 127.0.0.1 26657 v11
           - name: Happy path - transaction testing
             run: tests/test_tx_fresh.sh
           - name: Happy path - API endpoints testing
@@ -116,4 +116,3 @@
             run: tests/v11_upgrade/test_globalfee_params.sh
           - name: Happy path - test bypass messages
             run: tests/v11_upgrade/test_bypass_msg.sh
-    
