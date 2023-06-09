@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import json
+import re
 import requests
 
 # SKIP_VERSIONS = ['v8.0.0-rc',   # software-upgrade command not available
