@@ -6,13 +6,6 @@ on:
     schedule:
     # Once a day at 13:15
     - cron: '15 13 * * 1'
-    push:
-        paths-ignore:
-        - 'docs/**'
-        - 'examples/**'
-        - 'logs/**'
-        - '!examples/inventory-local.yml'
-        - 'README.md'
 jobs:
     generate-matrices:
         runs-on: ubuntu-22.04
