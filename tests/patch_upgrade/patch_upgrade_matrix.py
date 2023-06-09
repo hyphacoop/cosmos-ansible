@@ -7,7 +7,7 @@ import requests
                 #  'v8.0.0-rc1']  # unsuccessful upgrade to v9.0.0-rc3 through v9.0.0: https://github.com/hyphacoop/cosmos-ansible/actions/runs/4319476707
 
 # Set start version
-gaia_releases = requests.get(
+releases_list = requests.get(
     'https://api.github.com/repos/cosmos/gaia/releases', timeout=30).json()
 
 # Filter names that do not comply to `vA.B.C` format (-rcX suffix is fine)
