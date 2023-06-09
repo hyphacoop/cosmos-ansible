@@ -51,7 +51,7 @@ jobs:
           - name: Generate upgrade versions
             id: generate-upgrade
             run: |
-              upgrade=$(tests/generate_upgrade_matrix.py v10.0.0)
+              upgrade=$(tests/generate_upgrade_matrix_fresh.py v10.0.0)
               echo $upgrade
               echo "upgrade_versions=$upgrade" >> $GITHUB_OUTPUT
         outputs:
