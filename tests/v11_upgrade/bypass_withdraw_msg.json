@@ -1,0 +1,19 @@
+{
+    "title": "Remove fees for WithrawDelegatorReward messsages",
+    "description": "This will add the MsgWithrdawDelegatorReward message type to the bypass messages in the globalfee module.",
+    "deposit": "10000000uatom",
+    "changes": [
+        {
+            "subspace": "globalfee",
+            "key": "BypassMinFeeMsgTypes",
+            "value": [
+                "/ibc.core.channel.v1.MsgRecvPacket",
+                "/ibc.core.channel.v1.MsgAcknowledgement",
+                "/ibc.core.client.v1.MsgUpdateClient",
+                "/ibc.core.channel.v1.MsgTimeout",
+                "/ibc.core.channel.v1.MsgTimeoutOnClose",
+                "/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward"
+            ]
+        }
+    ]
+}
