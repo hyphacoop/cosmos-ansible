@@ -25,7 +25,7 @@ for name in release_names:
         break
 
 target_rc_version = ''
-for release in release_names:
+for name in release_names:
     if 'rc' in name:
         version_parts =  name.split('.')
         rc_major_version = int(version_parts[0][1:])
