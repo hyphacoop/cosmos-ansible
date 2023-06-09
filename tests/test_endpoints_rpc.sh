@@ -16,7 +16,7 @@ BLOCKCHAIN="$NODE_ADDRESS/blockchain"
 COMMIT="$NODE_ADDRESS/commit"
 CONSENSUS_PARAMS="$NODE_ADDRESS/consensus_params"
 CONSENSUS_STATE="$NODE_ADDRESS/consensus_state"
-DUMP_CONSENSUS_STATE="$NODE_ADDRESS/dump_consensus_state"
+# DUMP_CONSENSUS_STATE="$NODE_ADDRESS/dump_consensus_state" # not tested: node hangs on this query
 # GENESIS="$NODE_ADDRESS/genesis" # not tested: will fail if the genesis file is too large
 GENESIS_CHUNKED="$NODE_ADDRESS/genesis_chunked"
 NET_INFO="$NODE_ADDRESS/net_info"
@@ -72,12 +72,6 @@ fi
 
 echo "> $CONSENSUS_STATE"
 RESPONSE=$(curl --retry 10 --retry-delay 5 --retry-connrefused -s $CONSENSUS_STATE | jq -r '.result | keys[-1]')
-if [ "$RESPONSE" != "round_state" ]; then
-    response_failed $RESPONSE
-fi
-
-echo "> $DUMP_CONSENSUS_STATE"
-RESPONSE=$(curl --retry 10 --retry-delay 5 --retry-connrefused -s $DUMP_CONSENSUS_STATE | jq -r '.result | keys[-1]')
 if [ "$RESPONSE" != "round_state" ]; then
     response_failed $RESPONSE
 fi

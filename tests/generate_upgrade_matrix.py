@@ -2,6 +2,7 @@
 
 import json
 import sys
+import re
 
 SKIP_VERSIONS = ['v8.0.0-rc',   # software-upgrade command not available
                  'v8.0.0-rc1']  # unsuccessful upgrade to v9.0.0-rc3 through v9.0.0: https://github.com/hyphacoop/cosmos-ansible/actions/runs/4319476707
@@ -16,7 +17,9 @@ version_patch = int(starting_version[2])
 with open('releases.json', 'r', encoding='utf-8') as releases_file:
     releases_list = json.load(releases_file)
 
-release_names = [release['name'] for release in releases_list]
+# Filter names that do not comply to `vA.B.C` format (-rcX suffix is fine)
+version_pattern = r'v\d+.\d+.\d+(-rc\d*)?'
+release_names = [ release['name'] for release in releases_list if re.fullmatch(version_pattern, release['name']) ]
 
 releases = []
 rc_releases = []

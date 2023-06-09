@@ -2,6 +2,7 @@
 
 import json
 import sys
+import re
 import requests
 
 SKIP_VERSIONS = ['v8.0.0-rc',   # software-upgrade command not available
@@ -21,7 +22,9 @@ releases_list = requests.get(
 with open('releases.json', 'w', encoding='utf-8') as outfile:
     json.dump(releases_list, outfile)
 
-release_names = [release['name'] for release in releases_list]
+# Filter names that do not comply to `vA.B.C` format (-rcX suffix is fine)
+version_pattern = r'v\d+.\d+.\d+(-rc\d*)?'
+release_names = [ release['name'] for release in releases_list if re.fullmatch(version_pattern, release['name']) ]
 
 releases = []
 rc_releases = []
