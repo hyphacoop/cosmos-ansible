@@ -39,3 +39,4 @@
   tags:
     - faucet_start
     - faucet_restart
+  when: (faucet_start | default(false) | bool)

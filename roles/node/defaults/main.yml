@@ -47,6 +47,7 @@ cosmovisor_home: "{{ chain_home }}/cosmovisor"
 cosmovisor_service_name: "cosmovisor"
 cosmovisor_skip_backup: true
 cosmovisor_invariants_flag: "--x-crisis-skip-assert-invariants "
+cosmovisor_auto_download: true
 
 # Go configuration
 go_arch: "{{binary_arch_map[ansible_architecture]}}"

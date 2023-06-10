@@ -12,6 +12,7 @@
     dest: "/etc/systemd/system/{{cosmovisor_service_name}}.service"
 
 - name: Restart journalctl so that the logs may flow
+  when: (chain_start | default(false) | bool)
   systemd:
     state: restarted
     name: systemd-journald

@@ -10,7 +10,11 @@ RestartSec=3
 LimitNOFILE=4096
 Environment="DAEMON_NAME={{chain_binary_name}}"
 Environment="DAEMON_HOME={{ chain_home }}"
+{% if cosmovisor_auto_download %}
 Environment="DAEMON_ALLOW_DOWNLOAD_BINARIES=true"
+{% else %}
+Environment="DAEMON_ALLOW_DOWNLOAD_BINARIES=false"
+{% endif %}
 Environment="DAEMON_RESTART_AFTER_UPGRADE=true"
 Environment="DAEMON_LOG_BUFFER_SIZE=512"
 {% if cosmovisor_skip_backup %}
