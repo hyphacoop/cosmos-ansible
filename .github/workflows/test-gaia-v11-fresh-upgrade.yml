@@ -120,7 +120,7 @@ jobs:
           START_VERSION: ${{matrix.gaia_version}}
         run: tests/major_fresh_upgrade/start_chain.sh
       - name: _blocks-1
-        run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT
+        run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 5 # 5 blocks
       - name: _signatures-1
         run: tests/patch_upgrade/patch_test_signatures.sh $VAL1_RPC_PORT 1  # one validator
       - name: _txs-1
