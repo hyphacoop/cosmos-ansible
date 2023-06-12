@@ -1,6 +1,5 @@
 #!/bin/bash
 # Set minimum gas prices to 0.001uatom
-validator_address=$(jq -r '.address' ~/.gaia/validator.json)
 
 echo "Submitting proposal to update the minimum gas prices..."
 proposal="gaiad tx gov submit-proposal param-change tests/v11_upgrade/min_gas_prices_proposal.json --from $WALLET_1 --gas auto --fees $BASE_FEES$DENOM -b block -y -o json --home $HOME_1"
@@ -25,5 +24,5 @@ echo "Waiting for the voting period to end..."
 sleep 6
 
 # Query the globalfee params
-gaiad q globalfee minimum-gas-prices -o json > globalfee-pre-upgrade.json
+gaiad q globalfee minimum-gas-prices -o json --home $HOME_1 > globalfee-pre-upgrade.json
 jq '.' globalfee-pre-upgrade.json

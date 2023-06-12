@@ -18,7 +18,6 @@ cp hermes ~/.hermes/hermes
 export PATH="$PATH:~/.hermes"
 
 echo "Setting up Hermes config..."
-# sed "s%id = ''%id = '$CONSUMER_CHAIN_ID'%g" tests/hermes-config.toml > ~/.hermes/config.toml
 cp tests/patch_upgrade/hermes-config.toml ~/.hermes/config.toml
 
 echo "Adding relayer keys..."
