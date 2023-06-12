@@ -94,13 +94,16 @@ jobs:
           DOWNLOAD_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/gaiad-linux-main/gaiad-linux
         run: |
           tests/test_software_upgrade_fresh.sh 127.0.0.1 26657 v11
-      - name: Happy path - transaction testing
+      - name: _blocks-1
+        run: |
+          tests/test_block_production.sh 127.0.0.1 26657 5
+      - name: _txs-1
         run: tests/test_tx_fresh.sh
-      - name: Happy path - API endpoints testing
+      - name: _api-1
         run: tests/test_endpoints_api.sh localhost 1317
-      - name: Happy path - RPC endpoints testing
+      - name: _rpc-1
         run: tests/test_endpoints_rpc.sh localhost 26657
-      - name: Happy path - globalfee params
+      - name: _globalfee-1
         run: tests/v11_upgrade/test_globalfee_params.sh
-      - name: Happy path - test bypass messages
+      - name: _globalfee-2
         run: tests/v11_upgrade/test_bypass_msg.sh
