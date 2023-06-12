@@ -70,6 +70,7 @@ jobs:
       VAL1_P2P_PORT: 28001
       VAL1_PPROF_PORT: 6061
       WALLET_1: ${{ vars.WALLET_1 }}
+      WALLET_2: ${{ vars.WALLET_2 }}
       VALOPER_1: ${{ vars.VALOPER_1 }}
       CONSUMER_CHAIN_BINARY_URL: ${{ vars.CONSUMER_CHAIN_BINARY_URL }}
       CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY }}
