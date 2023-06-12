@@ -38,7 +38,6 @@ toml set --toml-path $CONSUMER_HOME_1/config/app.toml grpc.address "0.0.0.0:$CON
 
 # Turn off grpc web
 toml set --toml-path $CONSUMER_HOME_1/config/app.toml grpc-web.enable false
-toml set --toml-path $CONSUMER_HOME_2/config/app.toml grpc-web.enable false
 
 # config.toml
 # Set different ports for rpc
