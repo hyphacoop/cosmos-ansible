@@ -3,13 +3,6 @@
 name: Test Patch Upgrade
 on:
   workflow_dispatch:
-  push:
-    paths-ignore:
-      - 'docs/**'
-      - 'examples/**'
-      - 'logs/**'
-      - '!examples/inventory-local.yml'
-      - 'README.md'
 jobs:
   set-version-matrix:
     runs-on: ubuntu-22.04
