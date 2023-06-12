@@ -140,7 +140,7 @@ jobs:
       - name: Initialize consumer chain a
         env:
           CONSUMER_CHAIN_ID: consumera
-        run: tests/patch_upgrade/patch_init_consumer.sh
+        run: tests/major_fresh_upgrade/init_consumer.sh
       - name: Launch consumer chain a
         env:
           CONSUMER_CHAIN_ID: consumera
