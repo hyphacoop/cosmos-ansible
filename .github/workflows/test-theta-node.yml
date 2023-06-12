@@ -6,10 +6,6 @@ on:
   schedule:
     # At 15:30 on Monday.
     - cron: '30 15 * * 1'
-  pull_request:
-    types:
-      - opened
-      - closed
 jobs:
   test-public-testnet:
     runs-on: ubuntu-22.04
