@@ -129,6 +129,8 @@ jobs:
         run: tests/test_endpoints_api.sh localhost $VAL1_API_PORT
       - name: _rpc-1
         run: tests/test_endpoints_rpc.sh localhost $VAL1_RPC_PORT
+      - name: Set minimum gas prices in globalfee module
+        run: tests/v11_upgrade/set_minimum_gas_prices.sh
 
       # - name: Configure ansible.cfg
       #   run: echo "transport = local" >> ansible.cfg
