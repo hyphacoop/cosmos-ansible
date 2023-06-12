@@ -96,7 +96,7 @@ jobs:
           tests/test_software_upgrade_fresh.sh 127.0.0.1 26657 v11
       - name: _blocks-1
         run: |
-          tests/test_block_production.sh $gaia_host $gaia_port $blocks_delta
+          tests/test_block_production.sh 127.0.0.1 26657 5
       - name: _txs-1
         run: tests/test_tx_fresh.sh
       - name: _api-1
