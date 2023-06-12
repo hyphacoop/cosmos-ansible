@@ -111,12 +111,13 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install ansible toml
+          python -m pip install toml-cli
+      - name: Print RPC port
+        run: echo $VAL1_RPC_PORT
       - name: Start chain
         env:
           START_VERSION: ${{matrix.start_version}}
         run: tests/major_fresh_upgrade/start_chain.sh
-
       - name: _blocks-1
         run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT
       - name: _signatures-1
