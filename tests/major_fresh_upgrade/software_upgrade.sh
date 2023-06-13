@@ -57,6 +57,7 @@ blocks_delta=$(($upgrade_height-$current_height))
 tests/test_block_production.sh $gaia_host $gaia_port $blocks_delta
 echo "The upgrade height was reached."
 
+
 # # Test gaia response
 # tests/test_gaia_response.sh $gaia_host $gaia_port
 
