@@ -31,15 +31,16 @@ echo $proposal
 txhash=$($proposal | jq -r .txhash)
 
 # Wait for the proposal to go on chain
-sleep 6
+# sleep 6
 
 # Get proposal ID from txhash
-echo "Get proposal ID from txhash"
+echo "Getting proposal ID from txhash..."
 proposal_id=$($CHAIN_BINARY --output json q tx $txhash --home $HOME_1 | jq -r '.logs[].events[] | select(.type=="submit_proposal") | .attributes[] | select(.key=="proposal_id") | .value')
+echo "Proposal ID: $proposal_id"
 
 # Vote yes on the proposal
-echo "Submitting the \"yes\" vote to proposal $proposal_id"
-vote="$CHAIN_BINARY tx gov vote $proposal_id yes --from $WALLET_1 --keyring-backend test --chain-id $CHAIN_ID --fees $BASE_FEES$DENOM --yes --home $HOME_1"
+echo "Submitting the \"yes\" vote to proposal $proposal_id..."
+vote="$CHAIN_BINARY tx gov vote $proposal_id yes --from $WALLET_1 --keyring-backend test --chain-id $CHAIN_ID --fees $BASE_FEES$DENOM -b block -y --home $HOME_1"
 echo $vote
 $vote
 
@@ -48,7 +49,7 @@ echo "Waiting for the voting period to end..."
 sleep 6
 
 echo "Upgrade proposal $proposal_id status:"
-gaiad $CHAIN_BINARY gov proposal $proposal_id --output json --home $HOME_1 | jq '.status'
+$CHAIN_BINARY q gov proposal $proposal_id --output json --home $HOME_1 | jq '.status'
 
 # Wait until the right height is reached
 echo "Waiting for the upgrade to take place at block height $upgrade_height..."
