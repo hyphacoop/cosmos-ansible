@@ -4,7 +4,7 @@
 $CHAIN_BINARY q params subspace globalfee MaxTotalBypassMinFeeMsgGasUsage --home $HOME_1
 
 echo "Submitting proposal to update the bypass max usage..."
-proposal="$CHAIN_BINARY tx gov submit-proposal param-change tests/v11_upgrade/bypass_max_gas_usage_proposal.json --from $WALLET_1 --gas auto --fees $BASE_FEES$DENOM -b block -y -o json --home $HOME_1"
+proposal="$CHAIN_BINARY tx gov submit-proposal param-change tests/v11_upgrade/bypass_max_gas_usage_proposal.json --from $WALLET_1 --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -b block -y -o json --home $HOME_1"
 echo $proposal
 txhash=$($proposal | jq -r .txhash)
 # Wait for the proposal to go on chain
@@ -16,7 +16,7 @@ proposal_id=$($CHAIN_BINARY --output json q tx $txhash --home $HOME_1 | jq -r '.
 
 # Vote yes on the proposal
 echo "Submitting the \"yes\" vote to proposal $proposal_id"
-vote="$CHAIN_BINARY tx gov vote $proposal_id yes --from $WALLET_1 --gas auto --fees $BASE_FEES$DENOM -b block --yes --home $HOME_1"
+vote="$CHAIN_BINARY tx gov vote $proposal_id yes --from $WALLET_1 --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -b block --yes --home $HOME_1"
 echo $vote
 $vote
 sleep 6
