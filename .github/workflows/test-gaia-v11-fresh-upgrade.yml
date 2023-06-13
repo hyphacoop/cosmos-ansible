@@ -176,7 +176,7 @@ jobs:
           CONSUMER_SERVICE_1: conb1.service
         run: tests/major_fresh_upgrade/launch_consumer.sh
       - name: _consumerb-blocks
-        run: tests/test_block_production.sh 127.0.0.1 27201
+        run: tests/test_block_production.sh 127.0.0.1 27201 5
       - name: Establish CCV channel for consumer b
         run: |
           hermes create connection --a-chain consumerb --a-client 07-tendermint-0 --b-client 07-tendermint-1
@@ -200,7 +200,7 @@ jobs:
       - name: _consumerb-remove
         run: tests/patch_upgrade/patch_test_consumer_removed.sh
       - name: _consumera-blocks-2
-        run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT
+        run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT 5
       - name: _blocks-2
         run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT
       - name: Test software upgrade for published releases
@@ -217,7 +217,7 @@ jobs:
         run: |
           tests/major_fresh_upgrade/software_upgrade.sh 127.0.0.1 $VAL1_RPC_PORT v11
       - name: _blocks-3
-        run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 5 # 5 blocks
+        run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 15 # 15 blocks
       - name: _txs-2
         env:
           BASE_FEES: 2000
@@ -245,7 +245,7 @@ jobs:
           CONSUMER_SERVICE_1: conc1.service
         run: tests/major_fresh_upgrade/launch_consumer.sh
       - name: _consumerc-blocks
-        run: tests/test_block_production.sh 127.0.0.1 27301
+        run: tests/test_block_production.sh 127.0.0.1 27301 5
       - name: Establish CCV channel for consumer c
         run: |
           hermes create connection --a-chain consumerc --a-client 07-tendermint-0 --b-client 07-tendermint-2
