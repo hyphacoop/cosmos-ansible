@@ -2,7 +2,7 @@
 # Verify globalfee params are set properly
 
 # Collect globalfee params post-upgrade
-gaiad q globalfee params -o json > globalfee-post-upgrade.json
+$CHAIN_BINARY q globalfee params -o json --home $HOME_1 > globalfee-post-upgrade.json
 
 # 1. Min gas prices are the same
 min_gas_prices_pre=$(jq '.minimum_gas_prices' globalfee-pre-upgrade.json)

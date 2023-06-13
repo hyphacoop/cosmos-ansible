@@ -1,9 +1,7 @@
 #!/bin/bash
 # Add bypass message type
 
-validator_address=$(jq -r '.address' ~/.gaia/validator.json)
-
-withdraw_rewards="gaiad tx distribution withdraw-all-rewards --from $validator_address -b block -y -o json"
+withdraw_rewards="$CHAIN_BINARY tx distribution withdraw-all-rewards --from $WALLET_1 -b block -y -o json --home $HOME_1"
 tx_result=$($withdraw_rewards | jq -r '.code')
 echo $tx_result
 if [ $tx_result == "13" ]; then
@@ -14,17 +12,17 @@ else
 fi
 
 echo "Submitting proposal to add withdraw-rewards message bypass to the globalfee module..."
-proposal="gaiad tx gov submit-proposal param-change tests/v11_upgrade/bypass_withdraw_msg.json --from $validator_address --gas 200000 --fees 500uatom -b block -y -o json"
+proposal="$CHAIN_BINARY tx gov submit-proposal param-change tests/v11_upgrade/bypass_withdraw_msg.json --from $WALLET_1 --gas 200000 --fees 500uatom -b block -y -o json --home $HOME_1"
 echo $proposal
 txhash=$($proposal | jq -r .txhash)
 # Wait for the proposal to go on chain
 sleep 6
 
 # Get proposal ID from tx hash
-proposal_id=$(gaiad --output json q tx $txhash | jq -r '.logs[].events[] | select(.type=="submit_proposal") | .attributes[] | select(.key=="proposal_id") | .value')
+proposal_id=$($CHAIN_BINARY --output json q tx $txhash --home $HOME_1 | jq -r '.logs[].events[] | select(.type=="submit_proposal") | .attributes[] | select(.key=="proposal_id") | .value')
 # Vote yes on the proposal
 echo "Submitting the \"yes\" vote to proposal $proposal_id"
-vote="gaiad tx gov vote $proposal_id yes --from $validator_address --fees 500uatom --yes"
+vote="$CHAIN_BINARY tx gov vote $proposal_id yes --from $WALLET_1 --fees 500uatom --yes -b block --home $HOME_1"
 echo $vote
 $vote
 
@@ -32,9 +30,9 @@ $vote
 echo "Waiting for the voting period to end..."
 sleep 8
 
-gaiad q globalfee params -o json > globalfee-params-withdraw-bypass.json
+$CHAIN_BINARY q globalfee params -o json --home $HOME_1 > globalfee-params-withdraw-bypass.json
 
-withdraw_rewards="gaiad tx distribution withdraw-all-rewards --from $validator_address -b block -y -o json"
+withdraw_rewards="$CHAIN_BINARY tx distribution withdraw-all-rewards --from $WALLET_1 -b block -y -o json --home $HOME_1"
 tx_result=$($withdraw_rewards | jq -r '.code')
 echo $tx_result
 if [ $tx_result == "0" ]; then
