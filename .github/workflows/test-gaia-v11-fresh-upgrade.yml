@@ -86,7 +86,7 @@ jobs:
       BASE_FEES: 1500
       HIGH_FEES: 10000
       GAS: auto
-      GAS_ADJUSTMENT: 1.1
+      GAS_ADJUSTMENT: 1.2
     steps:
       - name: start-version
         run: echo ${{matrix.gaia_version}}
