@@ -9,9 +9,10 @@ upgrade_name=$3
 echo "Attempting upgrade to $upgrade_name."
 
 # Set time to wait for proposal to pass
-echo "Get voting_period from genesis file"
-voting_period=$(jq -r '.app_state.gov.voting_params.voting_period' $HOME_1/config/genesis.json)
-voting_period_seconds=${voting_period::-1}
+# echo "Get voting_period from genesis file"
+# voting_period=$(jq -r '.app_state.gov.voting_params.voting_period' $HOME_1/config/genesis.json)
+# voting_period_seconds=${voting_period::-1}
+voting_period_seconds=${VOTING_PERIOD::-1}
 echo "Using ($voting_period_seconds)s voting period to calculate the upgrade height."
     
 # Calculate upgrade height

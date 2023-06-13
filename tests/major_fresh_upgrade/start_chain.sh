@@ -35,7 +35,9 @@ $CHAIN_BINARY collect-gentxs --home $HOME_1
 
 echo "Patching genesis file for fast governance..."
 jq -r ".app_state.gov.voting_params.voting_period = \"$VOTING_PERIOD\"" $HOME_1/config/genesis.json  > ./voting.json
-mv ./voting.json $HOME_1/config/genesis.json
+jq -r ".app_state.gov.deposit_params.min_deposit[0].amount = \"1\"" ./voting.json > ./gov.json
+mv ./gov.json $HOME_1/config/genesis.json
+
 
 echo "Patching config files..."
 # app.toml
