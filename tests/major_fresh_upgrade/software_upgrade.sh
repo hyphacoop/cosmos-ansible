@@ -39,7 +39,7 @@ proposal_id=$($CHAIN_BINARY --output json q tx $txhash --home $HOME_1 | jq -r '.
 
 # Vote yes on the proposal
 echo "Submitting the \"yes\" vote to proposal $proposal_id"
-vote="$CHAIN_BINARY tx gov vote $proposal_id yes --from $validator_address --keyring-backend test --chain-id $chain_id --fees 1000$denom --yes --home $HOME_1"
+vote="$CHAIN_BINARY tx gov vote $proposal_id yes --from $WALLET_1 --keyring-backend test --chain-id $CHAIN_ID --fees $BASE_FEES$DENOM --yes --home $HOME_1"
 echo $vote
 $vote
 
