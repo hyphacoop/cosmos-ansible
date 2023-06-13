@@ -59,6 +59,12 @@ blocks_delta=$(($upgrade_height-$current_height))
 tests/test_block_production.sh $gaia_host $gaia_port $blocks_delta
 echo "The upgrade height was reached."
 
+# Replace binary
+sudo systemctl stop $PROVIDER_SERVICE_1
+wget $DOWNLOAD_URL -O ./upgraded
+chmod +x ./upgraded
+mv ./upgraded $HOME/go/bin/$CHAIN_BINARY
+sudo systemctl start $PROVIDER_SERVICE_1
 
 # # Test gaia response
 # tests/test_gaia_response.sh $gaia_host $gaia_port

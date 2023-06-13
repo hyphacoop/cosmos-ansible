@@ -224,7 +224,8 @@ jobs:
           DOWNLOAD_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/gaiad-linux-main/gaiad-linux
         run: |
           tests/major_fresh_upgrade/software_upgrade.sh 127.0.0.1 $VAL1_RPC_PORT v11
-
+      - name: _blocks-1
+        run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 5 # 5 blocks
       # - name: Configure ansible.cfg
       #   run: echo "transport = local" >> ansible.cfg
       # - name: Install ansible-galaxy requirements
