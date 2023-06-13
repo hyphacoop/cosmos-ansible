@@ -203,6 +203,8 @@ jobs:
         run: tests/patch_upgrade/patch_test_consumer_removed.sh
       - name: _consumera-blocks-2
         run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT 5
+      - name: _consumera-vsc-2
+        run: tests/patch_upgrade/patch_test_ccv.sh
       - name: _blocks-2
         run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT
       - name: Test software upgrade for published releases
@@ -218,6 +220,10 @@ jobs:
           DOWNLOAD_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/gaiad-linux-main/gaiad-linux
         run: |
           tests/major_fresh_upgrade/software_upgrade.sh 127.0.0.1 $VAL1_RPC_PORT v11
+      - name: _consumera-blocks-3
+        run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT 5
+      - name: _consumera-vsc-3
+        run: tests/patch_upgrade/patch_test_ccv.sh
       - name: _blocks-3
         run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 5 # blocks to wait for
       - name: _txs-2
@@ -269,6 +275,10 @@ jobs:
         run: tests/major_fresh_upgrade/remove_consumer.sh
       - name: _consumerc-remove
         run: tests/patch_upgrade/patch_test_consumer_removed.sh
+      - name: _consumera-blocks-4
+        run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT 5
+      - name: _consumera-vsc-4
+        run: tests/patch_upgrade/patch_test_ccv.sh
       - name: _blocks-4
         run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 5 # 5 blocks
       - name: _txs-3
@@ -277,42 +287,6 @@ jobs:
         run: tests/test_endpoints_api.sh localhost $VAL1_API_PORT
       - name: _rpc-3
         run: tests/test_endpoints_rpc.sh localhost $VAL1_RPC_PORT
-      # - name: Configure ansible.cfg
-      #   run: echo "transport = local" >> ansible.cfg
-      # - name: Install ansible-galaxy requirements
-      #   run: ansible-galaxy install --timeout 120 --verbose -r requirements.yml
-      # - name: Update PATH with cosmovisor binary
-      #   run: echo "$HOME/.gaia/cosmovisor/current/bin" >> $GITHUB_PATH
-      # - name: Run playbook
-      #   run: ansible-playbook node.yml -i examples/inventory-local.yml --extra-vars "target=local reboot=false chain_version=${{ matrix.gaia_version }} chain_home={{ node_user_home }}/.gaia chain_gov_testing=true api_enabled=true node_user=runner go_version=1.20.4 chain_binary_source=release chain_binary_release=https://github.com/cosmos/gaia/releases/download/${{ matrix.gaia_version }}/gaiad-${{ matrix.gaia_version }}-linux-amd64"
-      # - name: Check cosmovisor service
-      #   run: systemctl status cosmovisor
-      # - name: Check blocks are being produced
-      #   run: tests/test_block_production.sh 127.0.0.1 26657
-      # - name: Set minimum gas prices in globalfee module
-      #   run: tests/v11_upgrade/set_minimum_gas_prices.sh
-      # - name: Test software upgrade for published releases
-      #   if: ${{ matrix.upgrade_version != 'main' }}
-      #   env:
-      #     DOWNLOAD_URL: https://github.com/cosmos/gaia/releases/download/${{ matrix.upgrade_version }}/gaiad-${{ matrix.upgrade_version }}-linux-amd64
-      #   run: |
-      #     echo $DOWNLOAD_URL
-      #     tests/test_software_upgrade_fresh.sh 127.0.0.1 26657 v11
-      # - name: Test software upgrade for main branch
-      #   if: ${{ matrix.upgrade_version == 'main' }}
-      #   env:
-      #     DOWNLOAD_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/gaiad-linux-main/gaiad-linux
-      #   run: |
-      #     tests/test_software_upgrade_fresh.sh 127.0.0.1 26657 v11
-      # - name: _blocks-1
-      #   run: |
-      #     tests/test_block_production.sh 127.0.0.1 26657 5
-      # - name: _txs-1
-      #   run: tests/test_tx_fresh.sh
-      # - name: _api-1
-      #   run: tests/test_endpoints_api.sh localhost 1317
-      # - name: _rpc-1
-      #   run: tests/test_endpoints_rpc.sh localhost 26657
       - name: _globalfee-1
         run: tests/v11_upgrade/test_globalfee_params.sh
       - name: _globalfee-2
