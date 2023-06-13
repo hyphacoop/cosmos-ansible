@@ -127,90 +127,90 @@ jobs:
         run: tests/test_endpoints_api.sh localhost $VAL1_API_PORT
       - name: _rpc-1
         run: tests/test_endpoints_rpc.sh localhost $VAL1_RPC_PORT
-      # - name: Set minimum gas prices in globalfee module
-      #   run: tests/v11_upgrade/set_minimum_gas_prices.sh
-      # - name: Set up relayer
-      #   run: tests/patch_upgrade/patch_setup_relayer.sh
-      # - name: Download consumer chain binary
-      #   run: |
-      #     wget $CONSUMER_CHAIN_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_BINARY
-      #     chmod +x $HOME/go/bin/$CONSUMER_CHAIN_BINARY
-      # - name: Initialize consumer chain a
-      #   env:
-      #     CONSUMER_CHAIN_ID: consumera
-      #   run: tests/major_fresh_upgrade/init_consumer.sh
-      # - name: Launch consumer chain a
-      #   env:
-      #     CONSUMER_CHAIN_ID: consumera
-      #   run: tests/major_fresh_upgrade/launch_consumer.sh
-      # - name: _consumera-blocks-1
-      #   run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT 5
-      # - name: Establish CCV channel for consumer a
-      #   run: |
-      #     hermes create connection --a-chain consumera --a-client 07-tendermint-0 --b-client 07-tendermint-0
-      #     hermes create channel --a-chain consumera --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
-      #     sudo systemctl restart hermes
-      #     sleep 10
-      # - name: _consumera-vsc-1
-      #   run: tests/patch_upgrade/patch_test_ccv.sh
-      # - name: _consumera-ibc-1
-      #   env:
-      #     CONSUMER_CHAIN_ID: consumera
-      #   run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-1 2
-      # - name: Initialize consumer chain b
-      #   env:
-      #     CONSUMER_CHAIN_ID: consumerb
-      #     CONSUMER_HOME_1: /home/runner/.conb1
-      #     CONSUMER_HOME_2: /home/runner/.conb2
-      #     CON1_API_PORT: 25201
-      #     CON2_API_PORT: 25202
-      #     CON1_GRPC_PORT: 26201
-      #     CON2_GRPC_PORT: 26202
-      #     CON1_RPC_PORT: 27201
-      #     CON2_RPC_PORT: 27202
-      #     CON1_P2P_PORT: 28201
-      #     CON2_P2P_PORT: 28202
-      #     CON1_PPROF_PORT: 6165
-      #     CON2_PPROF_PORT: 6166
-      #     CONSUMER_SERVICE_1: conb1.service
-      #     CONSUMER_SERVICE_2: conb2.service
-      #   run: tests/major_fresh_upgrade/init_consumer.sh
-      # - name: Launch consumer chain b
-      #   env:
-      #     CONSUMER_CHAIN_ID: consumerb
-      #     CONSUMER_HOME_1: /home/runner/.conb1
-      #     CONSUMER_HOME_2: /home/runner/.conb2
-      #     CONSUMER_SERVICE_1: conb1.service
-      #     CONSUMER_SERVICE_2: conb2.service
-      #   run: tests/major_fresh_upgrade/launch_consumer.sh
-      # - name: _consumerb-blocks
-      #   run: tests/test_block_production.sh 127.0.0.1 27201
-      # - name: Establish CCV channel for consumer b
-      #   run: |
-      #     hermes create connection --a-chain consumerb --a-client 07-tendermint-0 --b-client 07-tendermint-1
-      #     hermes create channel --a-chain consumerb --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
-      #     sudo systemctl restart hermes
-      #     sleep 10
-      # - name: _consumerb-vsc
-      #   env:
-      #     CON1_RPC_PORT: 27201
-      #   run: tests/patch_upgrade/patch_test_ccv.sh
-      # - name: _consumerb-ibc
-      #   env:
-      #     CONSUMER_CHAIN_ID: consumerb
-      #     CONSUMER_HOME_1: /home/runner/.conb1
-      #     CONSUMER_HOME_2: /home/runner/.conb2
-      #   run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-3 3
-      # - name: Stop consumerb chain
-      #   env:
-      #     CONSUMER_CHAIN_ID: consumerb
-      #   run: tests/major_fresh_upgrade/remove_consumer.sh
-      # - name: _consumerb-remove
-      #   run: tests/patch_upgrade/patch_test_consumer_removed.sh
-      # - name: _consumera-blocks-2
-      #   run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT
-      # - name: _blocks-2
-      #   run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT
+      - name: Set minimum gas prices in globalfee module
+        run: tests/v11_upgrade/set_minimum_gas_prices.sh
+      - name: Set up relayer
+        run: tests/patch_upgrade/patch_setup_relayer.sh
+      - name: Download consumer chain binary
+        run: |
+          wget $CONSUMER_CHAIN_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_BINARY
+          chmod +x $HOME/go/bin/$CONSUMER_CHAIN_BINARY
+      - name: Initialize consumer chain a
+        env:
+          CONSUMER_CHAIN_ID: consumera
+        run: tests/major_fresh_upgrade/init_consumer.sh
+      - name: Launch consumer chain a
+        env:
+          CONSUMER_CHAIN_ID: consumera
+        run: tests/major_fresh_upgrade/launch_consumer.sh
+      - name: _consumera-blocks-1
+        run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT 5
+      - name: Establish CCV channel for consumer a
+        run: |
+          hermes create connection --a-chain consumera --a-client 07-tendermint-0 --b-client 07-tendermint-0
+          hermes create channel --a-chain consumera --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
+          sudo systemctl restart hermes
+          sleep 10
+      - name: _consumera-vsc-1
+        run: tests/patch_upgrade/patch_test_ccv.sh
+      - name: _consumera-ibc-1
+        env:
+          CONSUMER_CHAIN_ID: consumera
+        run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-1 2
+      - name: Initialize consumer chain b
+        env:
+          CONSUMER_CHAIN_ID: consumerb
+          CONSUMER_HOME_1: /home/runner/.conb1
+          CONSUMER_HOME_2: /home/runner/.conb2
+          CON1_API_PORT: 25201
+          CON2_API_PORT: 25202
+          CON1_GRPC_PORT: 26201
+          CON2_GRPC_PORT: 26202
+          CON1_RPC_PORT: 27201
+          CON2_RPC_PORT: 27202
+          CON1_P2P_PORT: 28201
+          CON2_P2P_PORT: 28202
+          CON1_PPROF_PORT: 6165
+          CON2_PPROF_PORT: 6166
+          CONSUMER_SERVICE_1: conb1.service
+          CONSUMER_SERVICE_2: conb2.service
+        run: tests/major_fresh_upgrade/init_consumer.sh
+      - name: Launch consumer chain b
+        env:
+          CONSUMER_CHAIN_ID: consumerb
+          CONSUMER_HOME_1: /home/runner/.conb1
+          CONSUMER_HOME_2: /home/runner/.conb2
+          CONSUMER_SERVICE_1: conb1.service
+          CONSUMER_SERVICE_2: conb2.service
+        run: tests/major_fresh_upgrade/launch_consumer.sh
+      - name: _consumerb-blocks
+        run: tests/test_block_production.sh 127.0.0.1 27201
+      - name: Establish CCV channel for consumer b
+        run: |
+          hermes create connection --a-chain consumerb --a-client 07-tendermint-0 --b-client 07-tendermint-1
+          hermes create channel --a-chain consumerb --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
+          sudo systemctl restart hermes
+          sleep 10
+      - name: _consumerb-vsc
+        env:
+          CON1_RPC_PORT: 27201
+        run: tests/patch_upgrade/patch_test_ccv.sh
+      - name: _consumerb-ibc
+        env:
+          CONSUMER_CHAIN_ID: consumerb
+          CONSUMER_HOME_1: /home/runner/.conb1
+          CONSUMER_HOME_2: /home/runner/.conb2
+        run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-3 3
+      - name: Stop consumerb chain
+        env:
+          CONSUMER_CHAIN_ID: consumerb
+        run: tests/major_fresh_upgrade/remove_consumer.sh
+      - name: _consumerb-remove
+        run: tests/patch_upgrade/patch_test_consumer_removed.sh
+      - name: _consumera-blocks-2
+        run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT
+      - name: _blocks-2
+        run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT
       - name: Test software upgrade for published releases
         if: ${{ matrix.upgrade_version != 'main' }}
         env:
@@ -224,8 +224,10 @@ jobs:
           DOWNLOAD_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/gaiad-linux-main/gaiad-linux
         run: |
           tests/major_fresh_upgrade/software_upgrade.sh 127.0.0.1 $VAL1_RPC_PORT v11
-      - name: _blocks-1
+      - name: _blocks-2
         run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 5 # 5 blocks
+
+
       # - name: Configure ansible.cfg
       #   run: echo "transport = local" >> ansible.cfg
       # - name: Install ansible-galaxy requirements
@@ -262,7 +264,7 @@ jobs:
       #   run: tests/test_endpoints_api.sh localhost 1317
       # - name: _rpc-1
       #   run: tests/test_endpoints_rpc.sh localhost 26657
-      # - name: _globalfee-1
-      #   run: tests/v11_upgrade/test_globalfee_params.sh
-      # - name: _globalfee-2
-      #   run: tests/v11_upgrade/test_bypass_msg.sh
+      - name: _globalfee-1
+        run: tests/v11_upgrade/test_globalfee_params.sh
+      - name: _globalfee-2
+        run: tests/v11_upgrade/test_bypass_msg.sh
