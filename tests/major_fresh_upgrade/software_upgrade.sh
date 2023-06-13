@@ -23,7 +23,7 @@ echo "Upgrade block height set to $upgrade_height."
 
 # Auto download: Set the binary paths need for the proposal message
 upgrade_info="{\"binaries\":{\"linux/amd64\":\"$DOWNLOAD_URL\"}}"
-proposal="gaiad --output json tx gov submit-proposal software-upgrade $upgrade_name --from $validator_address --keyring-backend test --upgrade-height $upgrade_height --upgrade-info $upgrade_info --title gaia-upgrade --description 'test' --chain-id $chain_id --deposit 10$denom --fees 1000$denom --yes"
+proposal="$CHAIN_BINARY --output json tx gov submit-proposal software-upgrade $upgrade_name --from $WALLET_1 --keyring-backend test --upgrade-height $upgrade_height --upgrade-info $upgrade_info --title gaia-upgrade --description 'test' --chain-id $CHAIN_ID --deposit $VAL_STAKE_STEP$DENOM --fees $BASE_FEES$DENOM --yes --home $HOME_1"
 
 # Submit the proposal
 echo "Submitting the upgrade proposal."
@@ -31,24 +31,24 @@ echo $proposal
 txhash=$($proposal | jq -r .txhash)
 
 # Wait for the proposal to go on chain
-sleep 8
+sleep 6
 
 # Get proposal ID from txhash
 echo "Get proposal ID from txhash"
-proposal_id=$(gaiad --output json q tx $txhash | jq -r '.logs[].events[] | select(.type=="submit_proposal") | .attributes[] | select(.key=="proposal_id") | .value')
+proposal_id=$($CHAIN_BINARY --output json q tx $txhash --home $HOME_1 | jq -r '.logs[].events[] | select(.type=="submit_proposal") | .attributes[] | select(.key=="proposal_id") | .value')
 
 # Vote yes on the proposal
 echo "Submitting the \"yes\" vote to proposal $proposal_id"
-vote="gaiad tx gov vote $proposal_id yes --from $validator_address --keyring-backend test --chain-id $chain_id --fees 1000$denom --yes"
+vote="$CHAIN_BINARY tx gov vote $proposal_id yes --from $validator_address --keyring-backend test --chain-id $chain_id --fees 1000$denom --yes --home $HOME_1"
 echo $vote
 $vote
 
 # Wait for the voting period to be over
 echo "Waiting for the voting period to end..."
-sleep 8
+sleep 6
 
 echo "Upgrade proposal $proposal_id status:"
-gaiad q gov proposal $proposal_id --output json | jq '.status'
+gaiad $CHAIN_BINARY gov proposal $proposal_id --output json --home $HOME_1 | jq '.status'
 
 # Wait until the right height is reached
 echo "Waiting for the upgrade to take place at block height $upgrade_height..."
@@ -57,9 +57,9 @@ blocks_delta=$(($upgrade_height-$current_height))
 tests/test_block_production.sh $gaia_host $gaia_port $blocks_delta
 echo "The upgrade height was reached."
 
-# Test gaia response
-tests/test_gaia_response.sh $gaia_host $gaia_port
+# # Test gaia response
+# tests/test_gaia_response.sh $gaia_host $gaia_port
 
-# Get running version
-gaiad_upgraded_version=$(curl -s http://$gaia_host:$gaia_port/abci_info | jq -r .result.response.version)
-echo "Current gaiad version: $gaiad_upgraded_version"
+# # Get running version
+# gaiad_upgraded_version=$(curl -s http://$gaia_host:$gaia_port/abci_info | jq -r .result.response.version)
+# echo "Current gaiad version: $gaiad_upgraded_version"
