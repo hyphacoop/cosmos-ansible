@@ -4,7 +4,7 @@
 $CHAIN_BINARY q params subspace globalfee MaxTotalBypassMinFeeMsgGasUsage --home $HOME_1
 
 echo "Submitting proposal to update the bypass max usage..."
-proposal="$CHAIN_BINARY tx gov submit-proposal param-change tests/v11_upgrade/byass_max_gas_usage_proposal.json --from $WALLET_1 --gas auto --fees $BASE_FEES$DENOM -b block -y -o json --home $HOME_1"
+proposal="$CHAIN_BINARY tx gov submit-proposal param-change tests/v11_upgrade/bypass_max_gas_usage_proposal.json --from $WALLET_1 --gas auto --fees $BASE_FEES$DENOM -b block -y -o json --home $HOME_1"
 echo $proposal
 txhash=$($proposal | jq -r .txhash)
 # Wait for the proposal to go on chain
@@ -33,9 +33,9 @@ echo "Testing withdraw-all-rewards transaction with 0 fees after adding it to th
 withdraw_rewards="$CHAIN_BINARY tx distribution withdraw-all-rewards --from $WALLET_1 -b block -y -o json --home $HOME_1"
 tx_result=$($withdraw_rewards | jq -r '.code')
 echo $tx_result
-if [ $tx_result == "0" ]; then
-    echo "Withdraw-all-rewards transaction succeeded: it is in the bypass message list now."
+if [ $tx_result == "13" ]; then
+    echo "Withdraw-all-rewards transaction failed: the max gas threshold was reached."
 else
-    echo "Withdraw-all-rewards transaction failed."
+    echo "Withdraw-all-rewards transaction succeeded: the max gas threshold was not reached."
     exit 1
 fi
