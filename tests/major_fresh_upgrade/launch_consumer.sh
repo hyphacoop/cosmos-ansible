@@ -15,9 +15,10 @@ txhash=$($proposal | jq -r .txhash)
 sleep 6
 
 # Get proposal ID from txhash
-echo "Get proposal ID from txhash"
-proposal_id=$($CHAIN_BINARY --output json q tx $txhash --home $HOME_1 | jq -r '.logs[].events[] | select(.type=="submit_proposal") | .attributes[] | select(.key=="proposal_id") | .value')
+echo "Getting proposal ID from txhash..."
+proposal_id=$($CHAIN_BINARY q tx $txhash --home $HOME_1 --output json | jq -r '.logs[].events[] | select(.type=="submit_proposal") | .attributes[] | select(.key=="proposal_id") | .value')
 
+echo "Voting on proposal $proposal_id..."
 $CHAIN_BINARY tx gov vote $proposal_id yes --gas auto --fees $BASE_FEES$DENOM --from $WALLET_1 --keyring-backend test --home $HOME_1 --chain-id $CHAIN_ID -b block -y
 $CHAIN_BINARY q gov tally $proposal_id --home $HOME_1
 
