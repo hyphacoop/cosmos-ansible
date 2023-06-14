@@ -28,7 +28,7 @@ jobs:
       - name: Run playbook
         run: |
           chain_version=$(curl -s https://rpc.provider-sentry-02.rs-testnet.polypore.xyz/abci_info? | jq -r '.result.response.version')
-          ansible-playbook node.yml -i examples/inventory-rs-testnet-provider.yml --extra-vars "target=local reboot=false chain_version=$chain_version chain_home={{ node_user_home }}/.gaia node_user=runner enable_swap=false use_cosmovisor=false chain_binary_release=https://github.com/cosmos/gaia/releases/download/$chain_version/gaiad-$chain_version-linux-amd64"
+          ansible-playbook node.yml -i examples/inventory-rs-testnet-provider.yml --extra-vars "target=local reboot=false chain_version=$chain_version chain_home={{ node_user_home }}/.gaia node_user=runner enable_swap=false use_cosmovisor=false chain_binary_release=https://github.com/cosmos/gaia/releases/download/$chain_version/gaiad-$chain_version-linux-amd64 chain_binary_source=release"
       - name: Check gaia service
         run: systemctl status gaiad
       - name: Check blocks are being produced
