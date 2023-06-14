@@ -22,5 +22,4 @@ all:
       hosts:
         "{{ target }}":
           fast_sync: true
-          statesync_enabled: true
-          statesync_rpc_servers: 'https://rpc.testnet-1.duality.xyz:443,https://rpc.testnet-1.duality.xyz:443'
+
