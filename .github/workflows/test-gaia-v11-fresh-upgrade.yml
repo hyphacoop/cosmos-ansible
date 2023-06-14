@@ -3,11 +3,13 @@
 name: Test Gaia Fresh State Upgrade - v11
 on:
   workflow_dispatch:
-  schedule:
-    # Once a day at 13:15
-    - cron: '15 13 * * 1'
+  # schedule:
+  #   # Once a day at 13:15
+  #   - cron: '15 13 * * 1'
+  push:
+
 jobs:
-  generate-matrices:
+  set-version-matrix:
     runs-on: ubuntu-22.04
     steps:
       # Get system info
@@ -25,8 +27,6 @@ jobs:
         uses: actions/checkout@v3
       - name: Set up Python
         uses: actions/setup-python@v3
-        with:
-          python-version: '3.10'
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
@@ -44,19 +44,68 @@ jobs:
           echo $upgrade
           echo "upgrade_versions=$upgrade" >> $GITHUB_OUTPUT
     outputs:
-      start_versions: ${{ steps.generate-start.outputs.start_versions }}
       upgrade_versions: ${{ steps.generate-upgrade.outputs.upgrade_versions }}
   test-upgrade:
     runs-on: ubuntu-22.04
-    needs: generate-matrices
+    needs: set-version-matrix
     strategy:
-      fail-fast: false
       matrix:
-        ${{ fromJSON(needs.generate-matrices.outputs.upgrade_versions) }}
+        ${{ fromJSON(needs.set-version-matrix.outputs.upgrade_versions) }}
+      fail-fast: false
+    environment: major-upgrade-fresh-workflow
+    env:
+      PROVIDER_SERVICE_1: ${{ vars.PROVIDER_SERVICE_1 }}
+      CHAIN_BINARY: ${{ vars.CHAIN_BINARY }}
+      HOME_1: ${{ vars.HOME_1 }}
+      CHAIN_ID: ${{ vars.CHAIN_ID }}
+      MONIKER_1: ${{ vars.MONIKER_1 }}
+      MNEMONIC_1: ${{ vars.MNEMONIC_1 }}
+      DENOM: ${{ vars.DENOM }}
+      VAL_FUNDS: ${{ vars.VAL_FUNDS }}
+      VAL_STAKE: ${{ vars.VAL_STAKE }}
+      VAL_STAKE_STEP: ${{ vars.VAL_STAKE_STEP }}
+      VOTING_PERIOD: ${{ vars.VOTING_PERIOD }}
+      VAL1_RPC_PORT: 27001
+      VAL1_API_PORT: 25001
+      VAL1_GRPC_PORT: 26001
+      VAL1_P2P_PORT: 28001
+      VAL1_PPROF_PORT: 6061
+      WALLET_1: ${{ vars.WALLET_1 }}
+      WALLET_2: ${{ vars.WALLET_2 }}
+      VALOPER_1: ${{ vars.VALOPER_1 }}
+      CONSUMER_CHAIN_BINARY_URL: ${{ vars.CONSUMER_CHAIN_BINARY_URL }}
+      CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY }}
+      CONSUMER_DENOM: ${{ vars.CONSUMER_DENOM }}
+      CONSUMER_HOME_1: /home/runner/.cona1
+      CON1_API_PORT: 25101
+      CON1_GRPC_PORT: 26101
+      CON1_RPC_PORT: 27101
+      CON1_P2P_PORT: 28101
+      CON1_PPROF_PORT: 6163
+      CONSUMER_SERVICE_1: cona1.service
+      BASE_FEES: 1500
+      HIGH_FEES: 10000
+      GAS: auto
+      GAS_ADJUSTMENT: 1.2
     steps:
+      - name: start-version
+        run: echo ${{matrix.gaia_version}}
+      - name: target-version
+        run: echo ${{matrix.upgrade_version}}
+      - name: target-commit
+        if: ${{ matrix.upgrade_version == 'main' }}
+        run: |
+          BUILD_TAG=gaiad-linux-${{matrix.upgrade_version}}
+          TARGET_COMMIT=$(curl -s -L -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" https://api.github.com/repos/hyphacoop/cosmos-builds/releases/tags/$BUILD_TAG | jq -r '.name')
+          echo $TARGET_COMMIT
+      - name: Consumer chain binary URL
+        run: echo $CONSUMER_CHAIN_BINARY_URL
+      - name: Update PATH
+        run: |
+          echo "$HOME/go/bin" >> $GITHUB_PATH
+          echo "$HOME/.hermes" >> $GITHUB_PATH
       - name: Bypass the grub-efi-amd64-signed package
         run: sudo apt-mark hold grub-efi-amd64-signed
-      - run: echo "Test upgrading ${{matrix.gaia_version}} to ${{matrix.upgrade_version}}"
       - name: Check out repository code
         uses: actions/checkout@v3
       - name: Set up Python
@@ -66,44 +115,181 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install ansible toml
-      - name: Configure ansible.cfg
-        run: echo "transport = local" >> ansible.cfg
-      - name: Install ansible-galaxy requirements
-        run: ansible-galaxy install --timeout 120 --verbose -r requirements.yml
-      - name: Update PATH with cosmovisor binary
-        run: echo "$HOME/.gaia/cosmovisor/current/bin" >> $GITHUB_PATH
-      - name: Run playbook
-        run: ansible-playbook node.yml -i examples/inventory-local.yml --extra-vars "target=local reboot=false chain_version=${{ matrix.gaia_version }} chain_home={{ node_user_home }}/.gaia chain_gov_testing=true api_enabled=true node_user=runner go_version=1.20.4 chain_binary_source=release chain_binary_release=https://github.com/cosmos/gaia/releases/download/${{ matrix.gaia_version }}/gaiad-${{ matrix.gaia_version }}-linux-amd64"
-      - name: Check cosmovisor service
-        run: systemctl status cosmovisor
-      - name: Check blocks are being produced
-        run: tests/test_block_production.sh 127.0.0.1 26657
+          python -m pip install toml-cli
+      - name: Print RPC port
+        run: echo $VAL1_RPC_PORT
+      - name: Start chain
+        env:
+          START_VERSION: ${{matrix.gaia_version}}
+        run: tests/major_fresh_upgrade/start_chain.sh
+      - name: _blocks-1
+        run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 5 # 5 blocks
+      - name: _txs-1
+        run: tests/patch_upgrade/patch_test_tx.sh
+      - name: _api-1
+        run: tests/test_endpoints_api.sh localhost $VAL1_API_PORT
+      - name: _rpc-1
+        run: tests/test_endpoints_rpc.sh localhost $VAL1_RPC_PORT
       - name: Set minimum gas prices in globalfee module
         run: tests/v11_upgrade/set_minimum_gas_prices.sh
+      - name: Set up relayer
+        run: tests/patch_upgrade/patch_setup_relayer.sh
+      - name: Download consumer chain binary
+        run: |
+          wget $CONSUMER_CHAIN_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_BINARY
+          chmod +x $HOME/go/bin/$CONSUMER_CHAIN_BINARY
+      - name: Initialize consumer chain a
+        env:
+          CONSUMER_CHAIN_ID: consumera
+        run: tests/major_fresh_upgrade/init_consumer.sh
+      - name: Launch consumer chain a
+        env:
+          CONSUMER_CHAIN_ID: consumera
+        run: tests/major_fresh_upgrade/launch_consumer.sh
+      - name: _consumera-blocks-1
+        run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT 5
+      - name: Establish CCV channel for consumer a
+        run: |
+          hermes create connection --a-chain consumera --a-client 07-tendermint-0 --b-client 07-tendermint-0
+          hermes create channel --a-chain consumera --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
+          sudo systemctl restart hermes
+          sleep 10
+      - name: _consumera-vsc-1
+        run: tests/patch_upgrade/patch_test_ccv.sh
+      - name: _consumera-ibc-1
+        env:
+          CONSUMER_CHAIN_ID: consumera
+        run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-1 2
+      - name: Initialize consumer chain b
+        env:
+          CONSUMER_CHAIN_ID: consumerb
+          CONSUMER_HOME_1: /home/runner/.conb1
+          CON1_API_PORT: 25201
+          CON1_GRPC_PORT: 26201
+          CON1_RPC_PORT: 27201
+          CON1_P2P_PORT: 28201
+          CON1_PPROF_PORT: 6165
+          CONSUMER_SERVICE_1: conb1.service
+        run: tests/major_fresh_upgrade/init_consumer.sh
+      - name: Launch consumer chain b
+        env:
+          CONSUMER_CHAIN_ID: consumerb
+          CONSUMER_HOME_1: /home/runner/.conb1
+          CONSUMER_SERVICE_1: conb1.service
+        run: tests/major_fresh_upgrade/launch_consumer.sh
+      - name: _consumerb-blocks
+        run: tests/test_block_production.sh 127.0.0.1 27201 5
+      - name: Establish CCV channel for consumer b
+        run: |
+          hermes create connection --a-chain consumerb --a-client 07-tendermint-0 --b-client 07-tendermint-1
+          hermes create channel --a-chain consumerb --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
+          sudo systemctl restart hermes
+          sleep 10
+      - name: _consumerb-vsc
+        env:
+          CON1_RPC_PORT: 27201
+        run: tests/patch_upgrade/patch_test_ccv.sh
+      - name: _consumerb-ibc
+        env:
+          CONSUMER_CHAIN_ID: consumerb
+          CONSUMER_HOME_1: /home/runner/.conb1
+          CONSUMER_HOME_2: /home/runner/.conb2
+        run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-3 3
+      - name: Stop consumerb chain
+        env:
+          CONSUMER_CHAIN_ID: consumerb
+        run: tests/major_fresh_upgrade/remove_consumer.sh
+      - name: _consumerb-remove
+        run: tests/patch_upgrade/patch_test_consumer_removed.sh
+      - name: _consumera-blocks-2
+        run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT 5
+      - name: _consumera-vsc-2
+        run: tests/patch_upgrade/patch_test_ccv.sh
+      - name: _blocks-2
+        run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT
       - name: Test software upgrade for published releases
         if: ${{ matrix.upgrade_version != 'main' }}
         env:
           DOWNLOAD_URL: https://github.com/cosmos/gaia/releases/download/${{ matrix.upgrade_version }}/gaiad-${{ matrix.upgrade_version }}-linux-amd64
         run: |
           echo $DOWNLOAD_URL
-          tests/test_software_upgrade_fresh.sh 127.0.0.1 26657 v11
+          tests/major_fresh_upgrade/software_upgrade.sh 127.0.0.1 $VAL1_RPC_PORT v11
       - name: Test software upgrade for main branch
         if: ${{ matrix.upgrade_version == 'main' }}
         env:
           DOWNLOAD_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/gaiad-linux-main/gaiad-linux
         run: |
-          tests/test_software_upgrade_fresh.sh 127.0.0.1 26657 v11
-      - name: _blocks-1
+          tests/major_fresh_upgrade/software_upgrade.sh 127.0.0.1 $VAL1_RPC_PORT v11
+      - name: _consumera-blocks-3
+        run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT 5
+      - name: _consumera-vsc-3
+        run: tests/patch_upgrade/patch_test_ccv.sh
+      - name: _blocks-3
+        run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 5 # blocks to wait for
+      - name: _txs-2
+        env:
+          BASE_FEES: 2000
+        run: tests/patch_upgrade/patch_test_tx.sh
+      - name: _api-2
+        run: tests/test_endpoints_api.sh localhost $VAL1_API_PORT
+      - name: _rpc-2
+        run: tests/test_endpoints_rpc.sh localhost $VAL1_RPC_PORT
+      - name: Initialize consumer chain c
+        env:
+          CONSUMER_CHAIN_ID: consumerc
+          CONSUMER_HOME_1: /home/runner/.conc1
+          CON1_API_PORT: 25301
+          CON1_GRPC_PORT: 26301
+          CON1_RPC_PORT: 27301
+          CON1_P2P_PORT: 28301
+          CON1_PPROF_PORT: 6167
+          CONSUMER_SERVICE_1: conc1.service
+        run: tests/major_fresh_upgrade/init_consumer.sh
+      - name: Launch consumer chain c
+        env:
+          CONSUMER_CHAIN_ID: consumerc
+          CONSUMER_HOME_1: /home/runner/.conc1
+          CONSUMER_HOME_2: /home/runner/.conc2
+          CONSUMER_SERVICE_1: conc1.service
+        run: tests/major_fresh_upgrade/launch_consumer.sh
+      - name: _consumerc-blocks
+        run: tests/test_block_production.sh 127.0.0.1 27301 5
+      - name: Establish CCV channel for consumer c
         run: |
-          tests/test_block_production.sh 127.0.0.1 26657 5
-      - name: _txs-1
-        run: tests/test_tx_fresh.sh
-      - name: _api-1
-        run: tests/test_endpoints_api.sh localhost 1317
-      - name: _rpc-1
-        run: tests/test_endpoints_rpc.sh localhost 26657
+          hermes create connection --a-chain consumerc --a-client 07-tendermint-0 --b-client 07-tendermint-2
+          hermes create channel --a-chain consumerc --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
+          sudo systemctl restart hermes
+          sleep 10
+      - name: _consumerc-vsc
+        env:
+          CON1_RPC_PORT: 27301
+        run: tests/patch_upgrade/patch_test_ccv.sh
+      - name: _consumerc-ibc
+        env:
+          CONSUMER_CHAIN_ID: consumerc
+          CONSUMER_HOME_1: /home/runner/.conc1
+        run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-5 4
+      - name: Stop consumerc chain
+        env:
+          CONSUMER_CHAIN_ID: consumerc
+        run: tests/major_fresh_upgrade/remove_consumer.sh
+      - name: _consumerc-remove
+        run: tests/patch_upgrade/patch_test_consumer_removed.sh
+      - name: _consumera-blocks-4
+        run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT 5
+      - name: _consumera-vsc-4
+        run: tests/patch_upgrade/patch_test_ccv.sh
+      - name: _blocks-4
+        run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 5 # 5 blocks
+      - name: _txs-3
+        run: tests/patch_upgrade/patch_test_tx.sh
+      - name: _api-3
+        run: tests/test_endpoints_api.sh localhost $VAL1_API_PORT
+      - name: _rpc-3
+        run: tests/test_endpoints_rpc.sh localhost $VAL1_RPC_PORT
       - name: _globalfee-1
         run: tests/v11_upgrade/test_globalfee_params.sh
       - name: _globalfee-2
         run: tests/v11_upgrade/test_bypass_msg.sh
+      - name: _globalfee-3
+        run: tests/v11_upgrade/test_max_gas.sh

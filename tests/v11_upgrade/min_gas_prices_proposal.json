@@ -1,6 +1,6 @@
 {
     "title": "min_gas_prices -> 0.001uatom",
-    "description": "This will set number the minimum gas prices to 0.001uatom in the globalfee module.",
+    "description": "This will set the minimum gas prices to 0.001uatom in the globalfee module.",
     "deposit": "10000000uatom",
     "changes": [
         {

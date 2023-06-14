@@ -1,0 +1,12 @@
+{
+    "title": "Set max gas to 1,000",
+    "description": "This will set the max gas usage for bypass types to 1,000 in the globalfee module.",
+    "deposit": "10000000uatom",
+    "changes": [
+        {
+            "subspace": "globalfee",
+            "key": "MaxTotalBypassMinFeeMsgGasUsage",
+            "value": "1000"
+        }
+    ]
+}
