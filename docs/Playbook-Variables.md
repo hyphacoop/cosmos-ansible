@@ -15,7 +15,7 @@ ansible-playbook node.yml -i examples/inventory-local.yml --extra-vars "chain_ve
 ### Target
 
 | Variable              | Description                                               | Example Value |
-|-----------------------|-----------------------------------------------------------|---------------|
+| --------------------- | --------------------------------------------------------- | ------------- |
 | `target`              | Target server IP/domain (for single node inventory files) | `example.com` |
 | `go_version`          | Golang version to install                                 | `"1.18.1"`    |
 | `enable_swap`         | Enable/disable swap                                       | `false`       |
@@ -32,7 +32,7 @@ ansible-playbook node.yml -i examples/inventory-local.yml --extra-vars "chain_ve
 
 ### Chain Binary Installation
 | Variable               | Description                                                                     | Example Value                                                                      |
-|------------------------|---------------------------------------------------------------------------------|------------------------------------------------------------------------------------|
+| ---------------------- | ------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
 | `node_user`            | User account to install the chain binary in                                     | `gaia`                                                                             |
 | `node_user_home`       | Path to the user account home                                                   | `/home/gaia`                                                                       |
 | `chain_home`           | Path to chain home folder home                                                  | `/home/gaia/.gaia`                                                                 |
@@ -53,7 +53,7 @@ ansible-playbook node.yml -i examples/inventory-local.yml --extra-vars "chain_ve
 ### Chain Configuration: `genesis.json`
 
 | Variable                  | Description                                                                               | Example Value                                                            |
-|---------------------------|-------------------------------------------------------------------------------------------|--------------------------------------------------------------------------|
+| ------------------------- | ----------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
 | `genesis_url`             | URL to download the gzipped genesis file from                                             | `"https://github.com/cosmos/testnets/raw/master/public/genesis.json.gz"` |
 | `genesis_file`            | File path to the genesis file***                                                          | `"examples/genesis-three-node.json"`                                     |
 | `chain_voting_period`     | Voting period for gov proposals                                                           | `60s`                                                                    |
@@ -68,7 +68,7 @@ ansible-playbook node.yml -i examples/inventory-local.yml --extra-vars "chain_ve
 | `node_keyring`            | Keyring for the validator keypair                                                         | `test`                                                                   |
 | `chain_airdrop`           | Airdrop tokens to accounts list when `true`                                               | `false`                                                                  |
 | `chain_airdrop_coins`     | Amount to airdrop to specified accounts                                                   | `"10000uatom"`                                                           |
-| `chain_airdrop_accounts`      | List of accounts to airdrop tokens to | `[address-1,address-2,address-3]`
+| `chain_airdrop_accounts`  | List of accounts to airdrop tokens to                                                     | `[address-1,address-2,address-3]`                                        |
 
 ***The file will not be copied if there already is an existing file with the same length.  
 +The mnemonic for this account must be set using the `self_delegation_mnemonic` variable.
@@ -77,7 +77,7 @@ ansible-playbook node.yml -i examples/inventory-local.yml --extra-vars "chain_ve
 ### Chain Configuration: `config.toml`
 
 | Variable                   | Example Value                                                                       |
-|----------------------------|-------------------------------------------------------------------------------------|
+| -------------------------- | ----------------------------------------------------------------------------------- |
 | `fast_sync`                | `true`                                                                              |
 | `rpc_port`                 | `26657`                                                                             |
 | `p2p_port`                 | `26656`                                                                             |
@@ -91,7 +91,7 @@ ansible-playbook node.yml -i examples/inventory-local.yml --extra-vars "chain_ve
 ### Chain Configuration: `app.toml`
 
 | Variable             | Example Value  |
-|----------------------|----------------|
+| -------------------- | -------------- |
 | `minimum_gas_prices` | `"0.001uatom"` |
 | `api_enabled`        | `true`         |
 | `api_port`           | `1317`         |
@@ -103,22 +103,23 @@ ansible-playbook node.yml -i examples/inventory-local.yml --extra-vars "chain_ve
 ### Chain Configuration: `client.toml`
 
 | Variable                 | Example Value |
-|--------------------------|---------------|
+| ------------------------ | ------------- |
 | `client_keyring_backend` | `test`        |
 | `client_broadcast_mode`  | `block`       |
 
 ### Cosmovisor
 
-| Variable                  | Description                                                            | Example Value |
-|---------------------------|------------------------------------------------------------------------|---------------|
-| `use_cosmovisor`          | Use cosmovisor service when `true`, standalone binary one when `false` | `true`        |
-| `cosmovisor_skip_backup`  | Skip Cosmovisor backups                                                | `true`        |
-| `cosmovisor_service_name` | Chain service name when `use_cosmovisor` is set to `true`              | `cv-gaia`     |
+| Variable                    | Description                                                            | Example Value |
+| --------------------------- | ---------------------------------------------------------------------- | ------------- |
+| `use_cosmovisor`            | Use cosmovisor service when `true`, standalone binary one when `false` | `true`        |
+| `cosmovisor_skip_backup`    | Skip Cosmovisor backups                                                | `true`        |
+| `cosmovisor_service_name`   | Chain service name when `use_cosmovisor` is set to `true`              | `cv-gaia`     |
+| `cosmosvisor_auto_download` | Download binaries listed in upgrade proposals when set to `true`       | `false`       |
 
 ### Monitoring and Alerting
 
 | Variable                | Description                               | Example Value                                           |
-|-------------------------|-------------------------------------------|---------------------------------------------------------|
+| ----------------------- | ----------------------------------------- | ------------------------------------------------------- |
 | `monitoring_prometheus` | Configure Prometheus / Grafana monitoring | `false`                                                 |
 | `monitoring_panic`      | Configure PANIC monitoring                | `false`                                                 |
 | `panic_ssh_url`         | User and address for PANIC server         | `root@monitor.polypore.xyz`                             |
@@ -128,7 +129,7 @@ ansible-playbook node.yml -i examples/inventory-local.yml --extra-vars "chain_ve
 ## `faucet` role
 
 | Variable              | Description                                          | Example Value  |
-|-----------------------|------------------------------------------------------|----------------|
+| --------------------- | ---------------------------------------------------- | -------------- |
 | `faucet_enabled`      | Create faucet account and install REST server for it | `true`         |
 | `faucet_version`      | Cosmos REST faucet version to install                | `v0.2.1`       |
 | `faucet_service_name` | Service name for faucet REST server                  | `token-faucet` |
@@ -138,7 +139,7 @@ ansible-playbook node.yml -i examples/inventory-local.yml --extra-vars "chain_ve
 ## `bigdipper` role
 
 | Variable                   | Description                                                      | Example Value                      |
-|----------------------------|------------------------------------------------------------------|------------------------------------|
+| -------------------------- | ---------------------------------------------------------------- | ---------------------------------- |
 | `chain_id`                 |                                                                  | `theta-testnet-001`                |
 | `bdjuno_version`           | A `bdjuno` branch that matches the tracked chain                 | `chains/cosmos/testnet`            |
 | `bdjuno_rpc_address`       | The RPC address `bdjuno` will collect block data from            | `http://archive.testnet.com:26657` |
@@ -160,7 +161,7 @@ ansible-playbook node.yml -i examples/inventory-local.yml --extra-vars "chain_ve
 ## `hermes` role
 
 | Variable                     | Description                                                                                                           | Example Value |
-|------------------------------|-----------------------------------------------------------------------------------------------------------------------|---------------|
+| ---------------------------- | --------------------------------------------------------------------------------------------------------------------- | ------------- |
 | `hermes_version`             | Hermes repo release                                                                                                   | `v1.0.0`      |
 | `hermes_relayer_keys`        | Set to `true` if using key files                                                                                      | `true`        |
 | `hermes_relayer_mnemonics`   | Set to `true` if using mnemonic files                                                                                 | `false`       |
@@ -172,7 +173,7 @@ ansible-playbook node.yml -i examples/inventory-local.yml --extra-vars "chain_ve
 ## `consensus-monitor` role
 
 | Variable                    | Description                                                    | Example Value                   |
-|-----------------------------|----------------------------------------------------------------|---------------------------------|
+| --------------------------- | -------------------------------------------------------------- | ------------------------------- |
 | `consensus_monitor_version` | `cosmos-consensus-monitor` version to use                      | `v1.0.0`                        |
 | `consensus_api_node_url`    | Node API endpoint                                              | `http://node.testnet.com:26657` |
 | `consensus_rpc_node_url`    | Node RPC endpoint                                              | `http://node.testnet.com:1317`  |
