@@ -1,6 +1,8 @@
 #!/bin/bash
 # Test IBC transfer
 
+echo "Running with $CONSUMER_CHAIN_BINARY."
+
 PROVIDER_CHANNEL=$1
 EXPECTED_DENOMS=$2
 # Transfer provider token to consumer chain

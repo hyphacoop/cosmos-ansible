@@ -1,6 +1,8 @@
 #!/bin/bash
 # Initialize a consumer chain
 
+echo "Running with $CONSUMER_CHAIN_BINARY."
+
 # Initialize home directories
 echo "Initializing consumer homes..."
 $CONSUMER_CHAIN_BINARY config chain-id $CONSUMER_CHAIN_ID --home $CONSUMER_HOME_1
