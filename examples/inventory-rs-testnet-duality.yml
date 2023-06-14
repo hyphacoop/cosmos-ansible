@@ -22,4 +22,3 @@ all:
       hosts:
         "{{ target }}":
           fast_sync: true
-
