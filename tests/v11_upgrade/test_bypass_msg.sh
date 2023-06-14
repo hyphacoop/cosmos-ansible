@@ -36,6 +36,7 @@ jq '.' globalfee-params-withdraw-bypass.json
 
 echo "Testing withdraw-all-rewards transaction with 0 fees after adding it to the bypass message list..."
 withdraw_rewards="$CHAIN_BINARY tx distribution withdraw-all-rewards --from $WALLET_1 -b block -y -o json --home $HOME_1"
+echo $withdraw_rewards
 tx_result=$($withdraw_rewards | jq -r '.code')
 echo $tx_result
 if [ $tx_result == "0" ]; then
