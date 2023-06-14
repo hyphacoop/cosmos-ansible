@@ -3,10 +3,9 @@
 name: Test Gaia Fresh State Upgrade - v11
 on:
   workflow_dispatch:
-  # schedule:
-  #   # Once a day at 13:15
-  #   - cron: '15 13 * * 1'
-  push:
+  schedule:
+    # Once a day at 13:15
+    - cron: '15 13 * * 1'
 
 jobs:
   set-version-matrix:
