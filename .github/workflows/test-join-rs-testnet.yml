@@ -10,6 +10,8 @@ on:
 jobs:
   test-provider:
     runs-on: ubuntu-22.04
+    env:
+      RPC_ENDPOINT: https://rpc.provider-sentry-02.rs-testnet.polypore.xyz
     steps:
       - name: Bypass the grub-efi-amd64-signed package
         run: sudo apt-mark hold grub-efi-amd64-signed
@@ -27,12 +29,73 @@ jobs:
         run: echo "transport = local" >> ansible.cfg
       - name: Run playbook
         run: |
-          chain_version=$(curl -s https://rpc.provider-sentry-02.rs-testnet.polypore.xyz/abci_info? | jq -r '.result.response.version')
-          ansible-playbook node.yml -i examples/inventory-rs-testnet-provider.yml --extra-vars "target=local reboot=false chain_version=$chain_version chain_home={{ node_user_home }}/.gaia node_user=runner enable_swap=false use_cosmovisor=false chain_binary_release=https://github.com/cosmos/gaia/releases/download/$chain_version/gaiad-$chain_version-linux-amd64 chain_binary_source=release"
-      - name: Check gaia service
+          chain_version=$(curl -s $RPC_ENDPOINT/abci_info? | jq -r '.result.response.version')
+          ansible-playbook node.yml -i examples/inventory-rs-testnet-provider.yml --extra-vars "target=local reboot=false chain_home={{ node_user_home }}/.gaia node_user=runner enable_swap=false use_cosmovisor=false chain_binary_release=https://github.com/cosmos/gaia/releases/download/$chain_version/gaiad-$chain_version-linux-amd64 chain_binary_source=release"
+      - name: Check gaiad service
         run: systemctl status gaiad
       - name: Check blocks are being produced
         run: |
-          height=$(curl -s http://rpc.provider-sentry-02.rs-testnet.polypore.xyz:26657/block | jq -r '.result.block.header.height')
-          echo "Waiting for block $[ $height + 10 ]..."
-          tests/test_block_production.sh 127.0.0.1 26657 10
+          chain_height=$(curl -s $RPC_ENDPOINT/block | jq -r '.result.block.header.height')
+          echo "Waiting for block $chain_height..."
+          tests/test_block_production.sh 127.0.0.1 26657 $chain_height
+
+  test-pion-1:
+    runs-on: ubuntu-22.04
+    env:
+      RPC_ENDPOINT: https://rpc.pion.rs-testnet.polypore.xyz
+    steps:
+      - name: Bypass the grub-efi-amd64-signed package
+        run: sudo apt-mark hold grub-efi-amd64-signed
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.10'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install ansible toml
+      - name: Configure ansible.cfg
+        run: echo "transport = local" >> ansible.cfg
+      - name: Run playbook
+        run: |
+          chain_version=$(curl -s $RPC_ENDPOINT/abci_info? | jq -r '.result.response.version')
+          ansible-playbook node.yml -i examples/inventory-rs-testnet-pion-1.yml --extra-vars "target=local reboot=false chain_home={{ node_user_home }}/.neutrond node_user=runner enable_swap=false use_cosmovisor=false chain_binary_release=https://github.com/neutron-org/neutron/releases/download/$chain_version/neutrond-$chain_version-linux-amd64 chain_binary_source=release node_service_name=neutrond"
+      - name: Check neutrond service
+        run: systemctl status neutrond
+      - name: Check blocks are being produced
+        run: |
+          chain_height=$(curl -s $RPC_ENDPOINT/block | jq -r '.result.block.header.height')
+          echo "Waiting for block $chain_height..."
+          tests/test_block_production.sh 127.0.0.1 26657 $chain_height
+
+  test-duality-rehearsal-1:
+    runs-on: ubuntu-22.04
+    env:
+      RPC_ENDPOINT: https://rpc.duality.rs-testnet.polypore.xyz
+    steps:
+      - name: Bypass the grub-efi-amd64-signed package
+        run: sudo apt-mark hold grub-efi-amd64-signed
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.10'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install ansible toml
+      - name: Configure ansible.cfg
+        run: echo "transport = local" >> ansible.cfg
+      - name: Run playbook
+        run: |
+          ansible-playbook node.yml -i examples/inventory-rs-testnet-duality.yml --extra-vars "target=local reboot=false chain_home={{ node_user_home }}/.duality node_user=runner enable_swap=false use_cosmovisor=false node_service_name=dualityd go_version=1.18.5"
+      - name: Check dualityd service
+        run: systemctl status dualityd
+      - name: Check blocks are being produced
+        run: |
+          chain_height=$(curl -s $RPC_ENDPOINT/block | jq -r '.result.block.header.height')
+          echo "Waiting for block $chain_height..."
+          tests/test_block_production.sh 127.0.0.1 26657 $chain_height

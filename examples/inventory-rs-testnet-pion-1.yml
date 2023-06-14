@@ -12,6 +12,7 @@ all:
     node_user: neutron
     chain_home: "{{ node_user_home }}/.neutrond"
     cosmovisor_service_name: cv-pion
+    consensus_timeout_commit: 1s
     chain_home_clear: true
     node_unsafe_reset: true
     chain_use_ssl_proxy: false
