@@ -63,24 +63,24 @@ gaiad keys add <validator_keypair_name> --home ~/.gaia --keyring-backend test --
 
 ---
 
-### `baryon-1` Consumer Chain
+### `pion-1` Consumer Chain
 
-* **Inventory file:** [`inventory-rs-testnet-baryon-1.yml`](inventory-rs-testnet-baryon-1.yml)
-* **Chain ID:** `baryon-1`
-
-Run the playbook using the keys collected from the provider chain node:
-```
-ansible-playbook node.yml -i examples/inventory-rs-testnet-baryon-1.yml -e 'target=SERVER_IP_OR_DOMAIN node_key_file=node_key.json priv_validator_key_file=priv_validator_key.json"
-```
-
-### `noble-1` Consumer Chain
-
-* **Inventory file:** [`inventory-rs-testnet-noble-1.yml`](inventory-rs-testnet-noble-1.yml)
-* **Chain ID:** `noble-1`
+* **Inventory file:** [`inventory-rs-testnet-pion-1.yml`](inventory-rs-testnet-pion-1.yml)
+* **Chain ID:** `pion-1`
 
 Run the playbook using the keys collected from the provider chain node:
 ```
-ansible-playbook node.yml -i examples/inventory-rs-testnet-noble-1.yml -e 'target=SERVER_IP_OR_DOMAIN node_key_file=node_key.json priv_validator_key_file=priv_validator_key.json"
+ansible-playbook node.yml -i examples/inventory-rs-testnet-pion-1.yml -e 'target=SERVER_IP_OR_DOMAIN node_key_file=node_key.json priv_validator_key_file=priv_validator_key.json"
+```
+
+### `duality-rehearsal-1` Consumer Chain
+
+* **Inventory file:** [`inventory-rs-testnet-duality.yml`](inventory-rs-testnet-duality.yml)
+* **Chain ID:** `duality-rehearsal-1`
+
+Run the playbook using the keys collected from the provider chain node:
+```
+ansible-playbook node.yml -i examples/inventory-rs-testnet-duality.yml -e 'target=SERVER_IP_OR_DOMAIN node_key_file=node_key.json priv_validator_key_file=priv_validator_key.json"
 ```
 
 ---
@@ -93,7 +93,7 @@ To set up a validator, do the following after the consumer chain plays have fini
 gaiad tx staking create-validator --amount 2000000uatom --pubkey <validator_public_key> --from <validator_keypair_name> --keyring-backend test --home ~/.gaia --chain-id provider --commission-max-change-rate 0.01 --commission-max-rate 0.2 --commission-rate 0.1 --moniker <validator_moniker> --min-self-delegation 1 -b block -y
 ```
 
-For more information, see the provider chain [README](https://github.com/cosmos/testnets/blob/master/replicated-security/provider/README.md#creating-a-validator).
+For more information, see the [validator joining guide](https://github.com/cosmos/testnets/blob/master/replicated-security/VALIDATOR_JOINING_GUIDE.md).
 
 ## Start a Local Testnet
 
