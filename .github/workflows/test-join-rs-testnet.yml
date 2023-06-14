@@ -61,7 +61,7 @@ jobs:
       - name: Run playbook
         run: |
           chain_version=$(curl -s $RPC_ENDPOINT/abci_info? | jq -r '.result.response.version')
-          ansible-playbook node.yml -i examples/inventory-rs-testnet-pion-1.yml --extra-vars "target=local reboot=false chain_home={{ node_user_home }}/.neutrond node_user=runner enable_swap=false use_cosmovisor=false chain_binary_release=https://github.com/neutron-org/neutron/releases/download/$chain_version/neutrond-linux-amd64 chain_binary_source=release node_service_name=neutrond"
+          ansible-playbook node.yml -i examples/inventory-rs-testnet-pion-1.yml --extra-vars "target=local reboot=false chain_home={{ node_user_home }}/.neutrond node_user=runner enable_swap=false use_cosmovisor=false chain_binary_release=https://github.com/neutron-org/neutron/releases/download/v$chain_version/neutrond-linux-amd64 chain_binary_source=release node_service_name=neutrond"
       - name: Check neutrond service
         run: systemctl status neutrond
       - name: Check blocks are being produced
