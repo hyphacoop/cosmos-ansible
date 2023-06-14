@@ -6,6 +6,7 @@ on:
   schedule:
     # Once a day at 13:15
     - cron: '15 13 * * 1'
+  push:
 
 jobs:
   set-version-matrix:
@@ -75,6 +76,8 @@ jobs:
       CONSUMER_CHAIN_BINARY_URL: ${{ vars.CONSUMER_CHAIN_BINARY_URL }}
       CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY }}
       CONSUMER_DENOM: ${{ vars.CONSUMER_DENOM }}
+      CONSUMER_CHAIN_BINARY_URL_2: ${{ vars.CONSUMER_CHAIN_BINARY_URL_2 }}
+      CONSUMER_CHAIN_BINARY_2: ${{ vars.CONSUMER_CHAIN_BINARY_2 }}
       CONSUMER_HOME_1: /home/runner/.cona1
       CON1_API_PORT: 25101
       CON1_GRPC_PORT: 26101
@@ -133,10 +136,12 @@ jobs:
         run: tests/v11_upgrade/set_minimum_gas_prices.sh
       - name: Set up relayer
         run: tests/patch_upgrade/patch_setup_relayer.sh
-      - name: Download consumer chain binary
+      - name: Download consumer chain binaries
         run: |
           wget $CONSUMER_CHAIN_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_BINARY
           chmod +x $HOME/go/bin/$CONSUMER_CHAIN_BINARY
+          wget $CONSUMER_CHAIN_BINARY_URL_2 -O $HOME/go/bin/$CONSUMER_CHAIN_BINARY_2
+          chmod +x $HOME/go/bin/$CONSUMER_CHAIN_BINARY_2
       - name: Initialize consumer chain a
         env:
           CONSUMER_CHAIN_ID: consumera
@@ -169,6 +174,7 @@ jobs:
           CON1_P2P_PORT: 28201
           CON1_PPROF_PORT: 6165
           CONSUMER_SERVICE_1: conb1.service
+          CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY_2 }}
         run: tests/major_fresh_upgrade/init_consumer.sh
       - name: Launch consumer chain b
         env:
@@ -193,6 +199,7 @@ jobs:
           CONSUMER_CHAIN_ID: consumerb
           CONSUMER_HOME_1: /home/runner/.conb1
           CONSUMER_HOME_2: /home/runner/.conb2
+          CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY_2 }}
         run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-3 3
       - name: Stop consumerb chain
         env:
