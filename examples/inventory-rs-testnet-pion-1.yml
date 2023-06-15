@@ -4,9 +4,11 @@ all:
   vars:
     ansible_user: root
     chain_repository: "https://github.com/neutron-org/neutron.git"
-    chain_version: v0.4.2
-    go_version: 1.19.8
+    chain_version: v1.0.2-pion-1-upgrade
+    go_version: '1.20'
     genesis_url: "https://github.com/cosmos/testnets/raw/master/replicated-security/pion-1/pion-1-genesis.json"
+    chain_binary_release: https://github.com/neutron-org/neutron/releases/download/v1.0.2-pion-1-upgrade/neutrond-linux-amd64
+    chain_binary_source: release
     chain_binary_name: neutrond
     chain_id: pion-1
     node_user: neutron
