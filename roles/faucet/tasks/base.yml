@@ -12,20 +12,21 @@
     ssl_provider: "letsencrypt"
 
 - include_role:
-  when: (faucet_setup_nginx | default(false) | bool)
     name: hypha.common.nginx
+  when: (faucet_setup_nginx | default(false) | bool)
   
 
 - include_role:
-  when: (faucet_setup_nginx | default(false) | bool) and (faucet_use_tls_proxy | default(false) | bool)
     name: hypha.common.ssl
+  when: (faucet_setup_nginx | default(false) | bool) and (faucet_use_tls_proxy | default(false) | bool)
+  
   
 
 - name: Restart nginx to apply new config
-  when: (faucet_setup_nginx | default(false) | bool)
   systemd:
     state: restarted
     name: nginx
+  when: (faucet_setup_nginx | default(false) | bool)
 
 - name: Stop existing faucet systemd service
   when: >
