@@ -6,7 +6,6 @@ on:
   schedule:
     # At 14:30 on M/W/F.
     - cron: '30 14 * * 1,3,5'
-  push:
 jobs:
   test-provider:
     runs-on: ubuntu-22.04
