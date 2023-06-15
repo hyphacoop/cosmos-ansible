@@ -31,3 +31,4 @@ all:
           fast_sync: true
           statesync_enabled: true
           statesync_rpc_servers: 'https://rpc.pion.rs-testnet.polypore.xyz:443,https://rpc.pion.rs-testnet.polypore.xyz:443'
+          statesync_trust_period: 8h0m0s
