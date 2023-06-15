@@ -3,7 +3,9 @@
 name: Test Patch Upgrade
 on:
   workflow_dispatch:
-  push:
+  schedule:
+    # Once a day at 13:10
+   - cron: '10 13 * * 1'
 jobs:
   set-version-matrix:
     runs-on: ubuntu-22.04
