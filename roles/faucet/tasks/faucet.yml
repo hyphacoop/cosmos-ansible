@@ -31,6 +31,7 @@
     dest: "/etc/systemd/system/{{faucet_service_name}}.service"
 
 - name: Start faucet service
+  when: (faucet_start | default(false) | bool)
   systemd:
     daemon_reload: true
     state: restarted

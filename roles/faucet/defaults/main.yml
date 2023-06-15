@@ -12,6 +12,7 @@ faucet_chain_env: "PATH={{chain_home}}/cosmovisor/current/bin"
 # Faucet settings
 faucet_version: v1.0.0
 faucet_service_name: token-faucet
+faucet_start: true
 faucet_address: cosmosabc123
 transactions_log_path: "transactions.csv"
 request_timeout: 86400
