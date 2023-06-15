@@ -26,6 +26,7 @@ hermes keys add --chain $CHAIN_ID --mnemonic-file mnemonic.txt
 hermes keys add --chain consumera --mnemonic-file mnemonic.txt
 hermes keys add --chain consumerb --mnemonic-file mnemonic.txt
 hermes keys add --chain consumerc --mnemonic-file mnemonic.txt
+hermes keys add --chain consumerf --mnemonic-file mnemonic.txt
 
 # echo "Creating connection..."
 # hermes create connection --a-chain $CONSUMER_CHAIN_ID --a-client 07-tendermint-0 --b-client $PROVIDER_CLIENT
