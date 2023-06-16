@@ -256,7 +256,10 @@ jobs:
           CONSUMER_HOME_1: /home/runner/.conc1
           CONSUMER_HOME_2: /home/runner/.conc2
           CONSUMER_SERVICE_1: conc1.service
-        run: tests/major_fresh_upgrade/launch_consumer.sh
+        run: |
+          tests/major_fresh_upgrade/launch_consumer.sh
+          sleep 10
+          journalctl -u $CONSUMER_SERVICE_1
       - name: _consumerc-blocks
         run: tests/test_block_production.sh 127.0.0.1 27301 5
       - name: Establish CCV channel for consumer c
