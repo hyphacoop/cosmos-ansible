@@ -226,12 +226,12 @@ jobs:
         run: tests/patch_upgrade/patch_test_ccv.sh
       - name: _consumerb-blocks-2
         run: tests/test_block_production.sh 127.0.0.1 27201 5
-      - name: _consumerb-vs2
+      - name: _consumerb-vsc-2
         env:
           CON1_RPC_PORT: 27201
         run: tests/patch_upgrade/patch_test_ccv.sh
       - name: _blocks-3
-        run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 5 # blocks to wait for
+        run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 10 # blocks to wait for
       - name: _txs-2
         env:
           BASE_FEES: 2000
