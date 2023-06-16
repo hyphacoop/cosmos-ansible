@@ -182,7 +182,7 @@ jobs:
           CONSUMER_HOME_1: /home/runner/.conb1
           CONSUMER_SERVICE_1: conb1.service
         run: tests/major_fresh_upgrade/launch_consumer.sh
-      - name: _consumerb-blocks
+      - name: _consumerb-blocks-1
         run: tests/test_block_production.sh 127.0.0.1 27201 5
       - name: Establish CCV channel for consumer b
         run: |
@@ -190,7 +190,7 @@ jobs:
           hermes create channel --a-chain consumerb --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
           sudo systemctl restart hermes
           sleep 10
-      - name: _consumerb-vsc
+      - name: _consumerb-vsc-1
         env:
           CON1_RPC_PORT: 27201
         run: tests/patch_upgrade/patch_test_ccv.sh
@@ -200,12 +200,6 @@ jobs:
           CONSUMER_HOME_1: /home/runner/.conb1
           CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY_2 }}
         run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-3 3
-      - name: Stop consumerb chain
-        env:
-          CONSUMER_CHAIN_ID: consumerb
-        run: tests/major_fresh_upgrade/remove_consumer.sh
-      - name: _consumerb-remove
-        run: tests/patch_upgrade/patch_test_consumer_removed.sh
       - name: _consumera-blocks-2
         run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT 5
       - name: _consumera-vsc-2
@@ -229,6 +223,12 @@ jobs:
         run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT 5
       - name: _consumera-vsc-3
         run: tests/patch_upgrade/patch_test_ccv.sh
+      - name: _consumerb-blocks-2
+        run: tests/test_block_production.sh 127.0.0.1 27201 5
+      - name: _consumerb-vs2
+        env:
+          CON1_RPC_PORT: 27201
+        run: tests/patch_upgrade/patch_test_ccv.sh
       - name: _blocks-3
         run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 5 # blocks to wait for
       - name: _txs-2
@@ -239,50 +239,6 @@ jobs:
         run: tests/test_endpoints_api.sh localhost $VAL1_API_PORT
       - name: _rpc-2
         run: tests/test_endpoints_rpc.sh localhost $VAL1_RPC_PORT
-      - name: Initialize consumer chain c
-        env:
-          CONSUMER_CHAIN_ID: consumerc
-          CONSUMER_HOME_1: /home/runner/.conc1
-          CON1_API_PORT: 25301
-          CON1_GRPC_PORT: 26301
-          CON1_RPC_PORT: 27301
-          CON1_P2P_PORT: 28301
-          CON1_PPROF_PORT: 6167
-          CONSUMER_SERVICE_1: conc1.service
-        run: tests/major_fresh_upgrade/init_consumer.sh
-      - name: Launch consumer chain c
-        env:
-          CONSUMER_CHAIN_ID: consumerc
-          CONSUMER_HOME_1: /home/runner/.conc1
-          CONSUMER_HOME_2: /home/runner/.conc2
-          CONSUMER_SERVICE_1: conc1.service
-        run: |
-          tests/major_fresh_upgrade/launch_consumer.sh
-          sleep 10
-          journalctl -u $CONSUMER_SERVICE_1
-      - name: _consumerc-blocks
-        run: tests/test_block_production.sh 127.0.0.1 27301 5
-      - name: Establish CCV channel for consumer c
-        run: |
-          hermes create connection --a-chain consumerc --a-client 07-tendermint-0 --b-client 07-tendermint-2
-          hermes create channel --a-chain consumerc --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
-          sudo systemctl restart hermes
-          sleep 10
-      - name: _consumerc-vsc
-        env:
-          CON1_RPC_PORT: 27301
-        run: tests/patch_upgrade/patch_test_ccv.sh
-      - name: _consumerc-ibc
-        env:
-          CONSUMER_CHAIN_ID: consumerc
-          CONSUMER_HOME_1: /home/runner/.conc1
-        run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-5 4
-      - name: Stop consumerc chain
-        env:
-          CONSUMER_CHAIN_ID: consumerc
-        run: tests/major_fresh_upgrade/remove_consumer.sh
-      - name: _consumerc-remove
-        run: tests/patch_upgrade/patch_test_consumer_removed.sh
       - name: Initialize consumer chain f
         env:
           CONSUMER_CHAIN_ID: consumerf
@@ -305,7 +261,7 @@ jobs:
         run: tests/test_block_production.sh 127.0.0.1 27401 5
       - name: Establish CCV channel for consumer f
         run: |
-          hermes create connection --a-chain consumerf --a-client 07-tendermint-0 --b-client 07-tendermint-3
+          hermes create connection --a-chain consumerf --a-client 07-tendermint-0 --b-client 07-tendermint-2
           hermes create channel --a-chain consumerf --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
           sudo systemctl restart hermes
           sleep 10
@@ -318,13 +274,7 @@ jobs:
           CONSUMER_CHAIN_ID: consumerf
           CONSUMER_HOME_1: /home/runner/.conf1
           CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY_2 }}
-        run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-7 5
-      - name: Stop consumerf chain
-        env:
-          CONSUMER_CHAIN_ID: consumerf
-        run: tests/major_fresh_upgrade/remove_consumer.sh
-      - name: _consumerf-remove
-        run: tests/patch_upgrade/patch_test_consumer_removed.sh
+        run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-5 4
       - name: _consumera-blocks-4
         run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT 5
       - name: _consumera-vsc-4
