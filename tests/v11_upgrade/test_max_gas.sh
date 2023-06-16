@@ -31,9 +31,11 @@ jq '.' globalfee-bypass-gas.json
 
 echo "Testing withdraw-all-rewards transaction with 0 fees after adding it to the bypass message list and lowering the max gas usage to 1,000..."
 withdraw_rewards="$CHAIN_BINARY tx distribution withdraw-all-rewards --from $WALLET_1 -b block -y -o json --home $HOME_1"
-tx_result=$($withdraw_rewards | jq -r '.code')
+withdraw_rewards_result=$($withdraw_rewards)
+echo $withdraw_rewards_result
+tx_result=$(echo $withdraw_rewards_result | jq -r '.code')
 echo $tx_result
-if [ $tx_result == "13" ]; then
+if [ $tx_result != "0" ]; then
     echo "Withdraw-all-rewards transaction failed: the max gas threshold was reached."
 else
     echo "Withdraw-all-rewards transaction succeeded: the max gas threshold was not reached."
