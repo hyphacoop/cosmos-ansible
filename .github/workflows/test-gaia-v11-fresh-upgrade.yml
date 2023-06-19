@@ -102,8 +102,8 @@ jobs:
           echo $TARGET_COMMIT
       - name: Consumer chain binary URLs
         run: |
-          echo $CONSUMER_CHAIN_BINARY runs off $CONSUMER_CHAIN_BINARY_URL
-          echo $CONSUMER_CHAIN_BINARY_2 runs off $CONSUMER_CHAIN_BINARY_URL_2
+          echo "$CONSUMER_CHAIN_BINARY runs off $CONSUMER_CHAIN_BINARY_URL"
+          echo "$CONSUMER_CHAIN_BINARY_2 runs off $CONSUMER_CHAIN_BINARY_URL_2"
       - name: Update PATH
         run: |
           echo "$HOME/go/bin" >> $GITHUB_PATH
