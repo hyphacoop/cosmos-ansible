@@ -124,7 +124,7 @@ jobs:
       WALLET_3: ${{ vars.WALLET_3 }}
       VAL1_STAKE: 800000000
       VAL2_STAKE: 200000000
-      VAL3_STAKE:  10000000
+      VAL3_STAKE: 10000000
     steps:
       - name: start-version
         run: echo ${{matrix.gaia_version}}
