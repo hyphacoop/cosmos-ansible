@@ -247,90 +247,96 @@ jobs:
         run: tests/patch_upgrade/patch_test_ccv.sh
       - name: _blocks-2
         run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT
-      # - name: Test software upgrade for published releases
-      #   if: ${{ matrix.upgrade_version != 'main' }}
-      #   env:
-      #     DOWNLOAD_URL: https://github.com/cosmos/gaia/releases/download/${{ matrix.upgrade_version }}/gaiad-${{ matrix.upgrade_version }}-linux-amd64
-      #   run: |
-      #     echo $DOWNLOAD_URL
-      #     tests/major_fresh_upgrade/software_upgrade.sh 127.0.0.1 $VAL1_RPC_PORT v11
-      # - name: Test software upgrade for main branch
-      #   if: ${{ matrix.upgrade_version == 'main' }}
-      #   env:
-      #     DOWNLOAD_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/gaiad-linux-main/gaiad-linux
-      #   run: |
-      #     tests/major_fresh_upgrade/software_upgrade.sh 127.0.0.1 $VAL1_RPC_PORT v11
-      # - name: _consumera-blocks-3
-      #   run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT 5
-      # - name: _consumera-vsc-3
-      #   run: tests/patch_upgrade/patch_test_ccv.sh
-      # - name: _consumerb-blocks-2
-      #   run: tests/test_block_production.sh 127.0.0.1 27201 5
-      # - name: _consumerb-vsc-2
-      #   env:
-      #     CON1_RPC_PORT: 27201
-      #   run: tests/patch_upgrade/patch_test_ccv.sh
-      # - name: _blocks-3
-      #   run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 10 # blocks to wait for
-      # - name: _txs-2
-      #   env:
-      #     BASE_FEES: 2000
-      #   run: tests/patch_upgrade/patch_test_tx.sh
-      # - name: _api-2
-      #   run: tests/test_endpoints_api.sh localhost $VAL1_API_PORT
-      # - name: _rpc-2
-      #   run: tests/test_endpoints_rpc.sh localhost $VAL1_RPC_PORT
-      # - name: Initialize consumer chain f
-      #   env:
-      #     CONSUMER_CHAIN_ID: consumerf
-      #     CONSUMER_HOME_1: /home/runner/.conf1
-      #     CON1_API_PORT: 25401
-      #     CON1_GRPC_PORT: 26401
-      #     CON1_RPC_PORT: 27401
-      #     CON1_P2P_PORT: 28401
-      #     CON1_PPROF_PORT: 6169
-      #     CONSUMER_SERVICE_1: conf1.service
-      #     CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY_2 }}
-      #   run: tests/major_fresh_upgrade/init_consumer.sh
-      # - name: Launch consumer chain f
-      #   env:
-      #     CONSUMER_CHAIN_ID: consumerf
-      #     CONSUMER_HOME_1: /home/runner/.conf1
-      #     CONSUMER_SERVICE_1: conf1.service
-      #   run: tests/major_fresh_upgrade/launch_consumer.sh
-      # - name: _consumerf-blocks
-      #   run: tests/test_block_production.sh 127.0.0.1 27401 5
-      # - name: Establish CCV channel for consumer f
-      #   run: |
-      #     hermes create connection --a-chain consumerf --a-client 07-tendermint-0 --b-client 07-tendermint-2
-      #     hermes create channel --a-chain consumerf --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
-      #     sudo systemctl restart hermes
-      #     sleep 10
-      # - name: _consumerf-vsc
-      #   env:
-      #     CON1_RPC_PORT: 27401
-      #   run: tests/patch_upgrade/patch_test_ccv.sh
-      # - name: _consumerf-ibc
-      #   env:
-      #     CONSUMER_CHAIN_ID: consumerf
-      #     CONSUMER_HOME_1: /home/runner/.conf1
-      #     CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY_2 }}
-      #   run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-5 4
-      # - name: _consumera-blocks-4
-      #   run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT 5
-      # - name: _consumera-vsc-4
-      #   run: tests/patch_upgrade/patch_test_ccv.sh
-      # - name: _blocks-4
-      #   run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 5 # 5 blocks
-      # - name: _txs-3
-      #   run: tests/patch_upgrade/patch_test_tx.sh
-      # - name: _api-3
-      #   run: tests/test_endpoints_api.sh localhost $VAL1_API_PORT
-      # - name: _rpc-3
-      #   run: tests/test_endpoints_rpc.sh localhost $VAL1_RPC_PORT
-      # - name: _globalfee-1
-      #   run: tests/v11_upgrade/test_globalfee_params.sh
-      # - name: _globalfee-2
-      #   run: tests/v11_upgrade/test_bypass_msg.sh
-      # - name: _globalfee-3
-      #   run: tests/v11_upgrade/test_max_gas.sh
+      - name: Test software upgrade for published releases
+        if: ${{ matrix.upgrade_version != 'main' }}
+        env:
+          DOWNLOAD_URL: https://github.com/cosmos/gaia/releases/download/${{ matrix.upgrade_version }}/gaiad-${{ matrix.upgrade_version }}-linux-amd64
+        run: |
+          echo $DOWNLOAD_URL
+          tests/major_fresh_upgrade/software_upgrade.sh 127.0.0.1 $VAL1_RPC_PORT v11
+      - name: Test software upgrade for main branch
+        if: ${{ matrix.upgrade_version == 'main' }}
+        env:
+          DOWNLOAD_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/gaiad-linux-main/gaiad-linux
+        run: |
+          tests/major_fresh_upgrade/software_upgrade.sh 127.0.0.1 $VAL1_RPC_PORT v11
+      - name: _consumera-blocks-3
+        run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT 5
+      - name: _consumera-vsc-3
+        run: tests/patch_upgrade/patch_test_ccv.sh
+      - name: _consumerb-blocks-2
+        run: tests/test_block_production.sh 127.0.0.1 27201 5
+      - name: _consumerb-vsc-2
+        env:
+          CON1_RPC_PORT: 27201
+        run: tests/patch_upgrade/patch_test_ccv.sh
+      - name: _blocks-3
+        run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 10 # blocks to wait for
+      - name: _txs-2
+        env:
+          BASE_FEES: 2000
+        run: tests/patch_upgrade/patch_test_tx.sh
+      - name: _api-2
+        run: tests/test_endpoints_api.sh localhost $VAL1_API_PORT
+      - name: _rpc-2
+        run: tests/test_endpoints_rpc.sh localhost $VAL1_RPC_PORT
+      - name: Initialize consumer chain f
+        env:
+          CONSUMER_CHAIN_ID: consumerf
+          CONSUMER_HOME_1: /home/runner/.conf1
+          CON1_API_PORT: 25401
+          CON1_GRPC_PORT: 26401
+          CON1_RPC_PORT: 27401
+          CON1_P2P_PORT: 28401
+          CON1_PPROF_PORT: 6169
+          CONSUMER_SERVICE_1: conf1.service
+          CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY_2 }}
+          DOWNTIME_BLOCKS: 20
+        run: tests/major_fresh_upgrade/init_consumer.sh
+      - name: Launch consumer chain f
+        env:
+          CONSUMER_CHAIN_ID: consumerf
+          CONSUMER_HOME_1: /home/runner/.conf1
+          CONSUMER_SERVICE_1: conf1.service
+        run: tests/major_fresh_upgrade/launch_consumer.sh
+      - name: _consumerf-blocks
+        run: tests/test_block_production.sh 127.0.0.1 27401 5
+      - name: Establish CCV channel for consumer f
+        run: |
+          hermes create connection --a-chain consumerf --a-client 07-tendermint-0 --b-client 07-tendermint-2
+          hermes create channel --a-chain consumerf --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
+          sudo systemctl restart hermes
+          sleep 10
+      - name: _consumerf-vsc
+        env:
+          CON1_RPC_PORT: 27401
+        run: tests/patch_upgrade/patch_test_ccv.sh
+      - name: _consumerf-ibc
+        env:
+          CONSUMER_CHAIN_ID: consumerf
+          CONSUMER_HOME_1: /home/runner/.conf1
+          CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY_2 }}
+        run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-5 4
+      - name: _consumera-blocks-4
+        run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT 5
+      - name: _consumera-vsc-4
+        run: tests/patch_upgrade/patch_test_ccv.sh
+      - name: _blocks-4
+        run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 5 # 5 blocks
+      - name: _txs-3
+        run: tests/patch_upgrade/patch_test_tx.sh
+      - name: _api-3
+        run: tests/test_endpoints_api.sh localhost $VAL1_API_PORT
+      - name: _rpc-3
+        run: tests/test_endpoints_rpc.sh localhost $VAL1_RPC_PORT
+      - name: _soft-opt-out-1
+        run: tests/v11_upgrade/test_validator_jailed.sh $VALOPER_2 true
+      - name: _soft-opt-out-2
+        run: tests/v11_upgrade/test_validator_jailed.sh $VALOPER_3 false
+      - name: _globalfee-1
+        run: tests/v11_upgrade/test_globalfee_params.sh
+      - name: _globalfee-2
+        run: tests/v11_upgrade/test_bypass_msg.sh
+      - name: _globalfee-3
+        run: tests/v11_upgrade/test_max_gas.sh
+
