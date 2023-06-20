@@ -19,7 +19,7 @@ cp $HOME_1/config/node_key.json $CONSUMER_HOME_1/config/node_key.json
 sed -i s%stake%$CONSUMER_DENOM%g $CONSUMER_HOME_1/config/genesis.json
 
 # Set slashing to $DOWNTIME_BLOCKS
-jq -r  --arg SLASH "$DOWNTIME_BLOCKS" '.app_state.slashing.params.signed_blocks_window |= SLASH' $CONSUMER_HOME_1/config/genesis.json > consumer-slashing.json
+jq -r --arg SLASH "$DOWNTIME_BLOCKS" '.app_state.slashing.params.signed_blocks_window |= $SLASH' $CONSUMER_HOME_1/config/genesis.json > consumer-slashing.json
 mv consumer-slashing.json $CONSUMER_HOME_1/config/genesis.json
 
 # Create self-delegation accounts
