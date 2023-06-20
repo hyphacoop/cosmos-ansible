@@ -329,6 +329,16 @@ jobs:
         run: tests/test_endpoints_api.sh localhost $VAL1_API_PORT
       - name: _rpc-3
         run: tests/test_endpoints_rpc.sh localhost $VAL1_RPC_PORT
+      - name: Print consumer genesis files
+        run: |
+          echo "chain a:"
+          jq '.app_state.slashing.params' /home/runner/.cona1/config/genesis.json
+          echo "chain b:"
+          jq '.app_state.slashing.params' /home/runner/.conb1/config/genesis.json
+          echo "chain f:"
+          jq '.app_state.slashing.params' /home/runner/.conf1/config/genesis.json
+      - name: Check validators
+        run: $CHAIN_BINARY q staking validators --home $HOME_1
       - name: _soft-opt-out-1
         run: tests/v11_upgrade/test_validator_jailed.sh $VALOPER_2 true
       - name: _soft-opt-out-2
