@@ -112,6 +112,7 @@ toml set --toml-path $HOME_2/config/config.toml p2p.allow_duplicate_ip true
 toml set --toml-path $HOME_3/config/config.toml p2p.allow_duplicate_ip true
 
 # Set persistent peers
+echo "Setting persistent peers..."
 VAL2_PEER="$VAL2_NODE_ID@localhost:$VAL2_P2P_PORT"
 VAL3_PEER="$VAL3_NODE_ID@localhost:$VAL3_P2P_PORT"
 toml set --toml-path $HOME_1/config/config.toml p2p.persistent_peers "$VAL2_PEER,$VAL3_PEER"
@@ -164,3 +165,6 @@ sudo systemctl daemon-reload
 sudo systemctl enable $PROVIDER_SERVICE_1 --now
 sudo systemctl enable $PROVIDER_SERVICE_2 --now
 sudo systemctl enable $PROVIDER_SERVICE_3 --now
+
+sleep 10
+sudo journalctl -u $PROVIDER_SERVICE_1
