@@ -280,6 +280,11 @@ jobs:
         run: tests/test_endpoints_api.sh localhost $VAL1_API_PORT
       - name: _rpc-2
         run: tests/test_endpoints_rpc.sh localhost $VAL1_RPC_PORT
+      - name: Check validators
+        run: |
+          $CHAIN_BINARY q staking validators --home $HOME_1
+          journalctl -u $PROVIDER_SERVICE_2 | tail -n 100
+          journalctl -u $PROVIDER_SERVICE_3 | tail -n 100
       - name: Initialize consumer chain f
         env:
           CONSUMER_CHAIN_ID: consumerf
@@ -306,7 +311,7 @@ jobs:
           hermes create connection --a-chain consumerf --a-client 07-tendermint-0 --b-client 07-tendermint-2
           hermes create channel --a-chain consumerf --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
           sudo systemctl restart hermes
-          sleep 10
+          sleep 30
       - name: _consumerf-vsc
         env:
           CON1_RPC_PORT: 27401
@@ -338,7 +343,10 @@ jobs:
           echo "chain f:"
           jq '.app_state.slashing.params' /home/runner/.conf1/config/genesis.json
       - name: Check validators
-        run: $CHAIN_BINARY q staking validators --home $HOME_1
+        run: |
+          $CHAIN_BINARY q staking validators --home $HOME_1
+          journalctl -u $PROVIDER_SERVICE_2 | tail -n 100
+          journalctl -u $PROVIDER_SERVICE_3 | tail -n 100
       - name: _soft-opt-out-1
         run: tests/v11_upgrade/test_validator_jailed.sh $VALOPER_2 true
       - name: _soft-opt-out-2
