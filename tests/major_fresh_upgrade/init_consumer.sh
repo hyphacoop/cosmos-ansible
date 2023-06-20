@@ -58,6 +58,9 @@ toml set --toml-path $CONSUMER_HOME_1/config/config.toml p2p.laddr "tcp://0.0.0.
 # Allow duplicate IPs in p2p
 toml set --toml-path $CONSUMER_HOME_1/config/config.toml p2p.allow_duplicate_ip true
 
+# Set fast_sync to false
+toml set --toml-path $CONSUMER_HOME_1/config/config.toml fast_sync false
+
 echo "Setting up services..."
 
 sudo rm /etc/systemd/system/$CONSUMER_SERVICE_1
