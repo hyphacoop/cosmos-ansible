@@ -283,8 +283,6 @@ jobs:
       - name: Check validators
         run: |
           $CHAIN_BINARY q staking validators --home $HOME_1
-          journalctl -u $PROVIDER_SERVICE_2 | tail -n 100
-          journalctl -u $PROVIDER_SERVICE_3 | tail -n 100
       - name: Initialize consumer chain f
         env:
           CONSUMER_CHAIN_ID: consumerf
@@ -338,15 +336,16 @@ jobs:
         run: |
           echo "chain a:"
           jq '.app_state.slashing.params' /home/runner/.cona1/config/genesis.json
+          jq '.app_state.ccvconsumer.params' /home/runner/.cona1/config/genesis.json
           echo "chain b:"
           jq '.app_state.slashing.params' /home/runner/.conb1/config/genesis.json
+          jq '.app_state.ccvconsumer.params' /home/runner/.conb1/config/genesis.json
           echo "chain f:"
           jq '.app_state.slashing.params' /home/runner/.conf1/config/genesis.json
+          jq '.app_state.ccvconsumer.params' /home/runner/.conf1/config/genesis.json
       - name: Check validators
         run: |
           $CHAIN_BINARY q staking validators --home $HOME_1
-          journalctl -u $PROVIDER_SERVICE_2 | tail -n 100
-          journalctl -u $PROVIDER_SERVICE_3 | tail -n 100
       - name: _soft-opt-out-1
         run: tests/v11_upgrade/test_validator_jailed.sh $VALOPER_2 true
       - name: _soft-opt-out-2
@@ -357,4 +356,3 @@ jobs:
         run: tests/v11_upgrade/test_bypass_msg.sh
       - name: _globalfee-3
         run: tests/v11_upgrade/test_max_gas.sh
-

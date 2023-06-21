@@ -69,10 +69,3 @@ mv ./upgraded $HOME/go/bin/$CHAIN_BINARY
 sudo systemctl start $PROVIDER_SERVICE_1
 sudo systemctl start $PROVIDER_SERVICE_2
 sudo systemctl start $PROVIDER_SERVICE_3
-
-# # Test gaia response
-# tests/test_gaia_response.sh $gaia_host $gaia_port
-
-# # Get running version
-# gaiad_upgraded_version=$(curl -s http://$gaia_host:$gaia_port/abci_info | jq -r .result.response.version)
-# echo "Current gaiad version: $gaiad_upgraded_version"
