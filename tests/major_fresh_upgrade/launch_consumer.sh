@@ -12,7 +12,7 @@ proposal="$CHAIN_BINARY tx gov submit-proposal consumer-addition proposal-add-$C
 echo $proposal
 txhash=$($proposal | jq -r .txhash)
 # Wait for the proposal to go on chain
-sleep 6
+sleep 4
 
 # Get proposal ID from txhash
 echo "Getting proposal ID from txhash..."
