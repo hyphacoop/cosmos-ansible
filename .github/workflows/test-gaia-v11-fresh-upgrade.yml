@@ -344,7 +344,12 @@ jobs:
           jq '.app_state.slashing.params' /home/runner/.conf1/config/genesis.json
           jq '.app_state.ccvconsumer.params' /home/runner/.conf1/config/genesis.json
       - name: Check validators
+        env:
+          CONSUMER_CHAIN_ID: consumerf
+          CONSUMER_HOME_1: /home/runner/.conf1
+          CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY_2 }}
         run: |
+          echo "Consumer chain f is at block $($CONSUMER_CHAIN_BINARY q block --home $CONSUMER_HOME_1 | jq -r '.block.header.height').
           $CHAIN_BINARY q staking validators --home $HOME_1
       - name: _soft-opt-out-1
         run: tests/v11_upgrade/test_validator_jailed.sh $VALOPER_2 true
