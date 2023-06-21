@@ -8,11 +8,11 @@ sed "s%\"chain_id\": \"\"%\"chain_id\": \"$CONSUMER_CHAIN_ID\"%g" proposal-add-s
 rm proposal-add-spawn.json
 
 echo "Submitting proposal..."
-proposal="$CHAIN_BINARY tx gov submit-proposal consumer-addition proposal-add-$CONSUMER_CHAIN_ID.json --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM --from $WALLET_1 --keyring-backend test --home $HOME_1 --chain-id $CHAIN_ID -b block -y -o json"
+proposal="$CHAIN_BINARY tx gov submit-proposal consumer-addition proposal-add-$CONSUMER_CHAIN_ID.json --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM --from $WALLET_2 --keyring-backend test --home $HOME_1 --chain-id $CHAIN_ID -b block -y -o json"
 echo $proposal
 txhash=$($proposal | jq -r .txhash)
 # Wait for the proposal to go on chain
-sleep 6
+sleep 4
 
 # Get proposal ID from txhash
 echo "Getting proposal ID from txhash..."
@@ -24,6 +24,7 @@ $CHAIN_BINARY tx gov vote $proposal_id yes --gas $GAS --gas-adjustment $GAS_ADJU
 $CHAIN_BINARY q gov tally $proposal_id --home $HOME_1
 
 echo "Waiting for proposal to pass..."
+sleep 5
 sleep $VOTING_PERIOD
 
 #$CHAIN_BINARY q gov proposals --home $HOME_1
@@ -40,6 +41,6 @@ cp consumer-genesis.json $CONSUMER_HOME_1/config/genesis.json
 echo "Starting the consumer chain..."
 sudo systemctl enable $CONSUMER_SERVICE_1 --now
 
-# sleep 20
-# sudo journalctl -u $CONSUMER_SERVICE_1 | tail -n 200
+sleep 20
+sudo journalctl -u $CONSUMER_SERVICE_1 | tail -n 200
 # sudo journalctl -u $CONSUMER_SERVICE_2 | tail -n 200

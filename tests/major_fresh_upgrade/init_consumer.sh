@@ -18,11 +18,17 @@ cp $HOME_1/config/node_key.json $CONSUMER_HOME_1/config/node_key.json
 # Update genesis file with right denom
 sed -i s%stake%$CONSUMER_DENOM%g $CONSUMER_HOME_1/config/genesis.json
 
+# Set slashing to $DOWNTIME_BLOCKS
+jq -r --arg SLASH "$DOWNTIME_BLOCKS" '.app_state.slashing.params.signed_blocks_window |= $SLASH' $CONSUMER_HOME_1/config/genesis.json > consumer-slashing.json
+mv consumer-slashing.json $CONSUMER_HOME_1/config/genesis.json
+
 # Create self-delegation accounts
 echo $MNEMONIC_1 | $CONSUMER_CHAIN_BINARY keys add $MONIKER_1 --keyring-backend test --home $CONSUMER_HOME_1 --recover
+echo $MNEMONIC_4 | $CONSUMER_CHAIN_BINARY keys add $MONIKER_4 --keyring-backend test --home $CONSUMER_HOME_1 --recover
 
 # Add funds to accounts
 $CONSUMER_CHAIN_BINARY add-genesis-account $MONIKER_1 $VAL_FUNDS$CONSUMER_DENOM --home $CONSUMER_HOME_1
+$CONSUMER_CHAIN_BINARY add-genesis-account $MONIKER_4 $VAL_FUNDS$CONSUMER_DENOM --home $CONSUMER_HOME_1
 
 echo "Patching config files..."
 # app.toml
@@ -53,6 +59,9 @@ toml set --toml-path $CONSUMER_HOME_1/config/config.toml p2p.laddr "tcp://0.0.0.
 
 # Allow duplicate IPs in p2p
 toml set --toml-path $CONSUMER_HOME_1/config/config.toml p2p.allow_duplicate_ip true
+
+# Set fast_sync to false
+toml set --toml-path $CONSUMER_HOME_1/config/config.toml fast_sync false
 
 echo "Setting up services..."
 

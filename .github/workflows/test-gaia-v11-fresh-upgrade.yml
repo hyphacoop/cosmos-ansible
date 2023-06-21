@@ -5,9 +5,6 @@ on:
   repository_dispatch:
     types: [new_main_build]
   workflow_dispatch:
-  schedule:
-    # Once a day at 13:15
-    - cron: '15 13 * * 1'
 jobs:
   set-version-matrix:
     runs-on: ubuntu-22.04
@@ -54,41 +51,84 @@ jobs:
       fail-fast: false
     environment: major-upgrade-fresh-workflow
     env:
-      PROVIDER_SERVICE_1: ${{ vars.PROVIDER_SERVICE_1 }}
       CHAIN_BINARY: ${{ vars.CHAIN_BINARY }}
-      HOME_1: ${{ vars.HOME_1 }}
+      CONSUMER_CHAIN_BINARY_URL: ${{ vars.CONSUMER_CHAIN_BINARY_URL }}
+      CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY }}
+      CONSUMER_CHAIN_BINARY_URL_2: ${{ vars.CONSUMER_CHAIN_BINARY_URL_2 }}
+      CONSUMER_CHAIN_BINARY_2: ${{ vars.CONSUMER_CHAIN_BINARY_2 }}
       CHAIN_ID: ${{ vars.CHAIN_ID }}
-      MONIKER_1: ${{ vars.MONIKER_1 }}
-      MNEMONIC_1: ${{ vars.MNEMONIC_1 }}
       DENOM: ${{ vars.DENOM }}
       VAL_FUNDS: ${{ vars.VAL_FUNDS }}
       VAL_STAKE: ${{ vars.VAL_STAKE }}
       VAL_STAKE_STEP: ${{ vars.VAL_STAKE_STEP }}
       VOTING_PERIOD: ${{ vars.VOTING_PERIOD }}
-      VAL1_RPC_PORT: 27001
-      VAL1_API_PORT: 25001
-      VAL1_GRPC_PORT: 26001
-      VAL1_P2P_PORT: 28001
-      VAL1_PPROF_PORT: 6061
-      WALLET_1: ${{ vars.WALLET_1 }}
-      WALLET_2: ${{ vars.WALLET_2 }}
-      VALOPER_1: ${{ vars.VALOPER_1 }}
-      CONSUMER_CHAIN_BINARY_URL: ${{ vars.CONSUMER_CHAIN_BINARY_URL }}
-      CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY }}
       CONSUMER_DENOM: ${{ vars.CONSUMER_DENOM }}
-      CONSUMER_CHAIN_BINARY_URL_2: ${{ vars.CONSUMER_CHAIN_BINARY_URL_2 }}
-      CONSUMER_CHAIN_BINARY_2: ${{ vars.CONSUMER_CHAIN_BINARY_2 }}
-      CONSUMER_HOME_1: /home/runner/.cona1
-      CON1_API_PORT: 25101
-      CON1_GRPC_PORT: 26101
-      CON1_RPC_PORT: 27101
-      CON1_P2P_PORT: 28101
-      CON1_PPROF_PORT: 6163
-      CONSUMER_SERVICE_1: cona1.service
       BASE_FEES: 1500
       HIGH_FEES: 10000
       GAS: auto
       GAS_ADJUSTMENT: 1.2
+      HOME_1: /home/runner/.val1
+      CONSUMER_HOME_1: /home/runner/.cona1
+      VAL1_API_PORT: 25001
+      VAL1_GRPC_PORT: 26001
+      VAL1_RPC_PORT: 27001
+      VAL1_P2P_PORT: 28001
+      VAL1_PPROF_PORT: 29001
+      CON1_API_PORT: 25101
+      CON1_GRPC_PORT: 26101
+      CON1_RPC_PORT: 27101
+      CON1_P2P_PORT: 28101
+      CON1_PPROF_PORT: 29101
+      PROVIDER_SERVICE_1: gaia1.service
+      CONSUMER_SERVICE_1: cona1.service
+      MONIKER_1: val1
+      MNEMONIC_1: ${{ vars.MNEMONIC_1 }}
+      VALOPER_1: ${{ vars.VALOPER_1 }}
+      WALLET_1: ${{ vars.WALLET_1 }}
+      HOME_2: /home/runner/.val2
+      CONSUMER_HOME_2: /home/runner/.cona2
+      VAL2_API_PORT: 25002
+      VAL2_GRPC_PORT: 26002
+      VAL2_RPC_PORT: 27002
+      VAL2_P2P_PORT: 28002
+      VAL2_PPROF_PORT: 29002
+      CON2_API_PORT: 25102
+      CON2_GRPC_PORT: 26102
+      CON2_RPC_PORT: 27102
+      CON2_P2P_PORT: 28102
+      CON2_PPROF_PORT: 29102
+      PROVIDER_SERVICE_2: gaia2.service
+      CONSUMER_SERVICE_2: cona2.service
+      MONIKER_2: val2
+      MNEMONIC_2: ${{ vars.MNEMONIC_2 }}
+      VALOPER_2: ${{ vars.VALOPER_2 }}
+      WALLET_2: ${{ vars.WALLET_2 }}
+      HOME_3: /home/runner/.val3
+      CONSUMER_HOME_3: /home/runner/.cona3
+      VAL3_API_PORT: 25003
+      VAL3_GRPC_PORT: 26003
+      VAL3_RPC_PORT: 27003
+      VAL3_P2P_PORT: 28003
+      VAL3_PPROF_PORT: 29003
+      CON3_API_PORT: 25103
+      CON3_GRPC_PORT: 26103
+      CON3_RPC_PORT: 27103
+      CON3_P2P_PORT: 28103
+      CON3_PPROF_PORT: 29103
+      PROVIDER_SERVICE_3: gaia3.service
+      CONSUMER_SERVICE_3: cona3.service
+      MONIKER_3: val3
+      MNEMONIC_3: ${{ vars.MNEMONIC_3 }}
+      VALOPER_3: ${{ vars.VALOPER_3 }}
+      WALLET_3: ${{ vars.WALLET_3 }}
+      MNEMONIC_4: ${{ vars.MNEMONIC_4 }}
+      WALLET_4: ${{ vars.WALLET_4 }}
+      MONIKER_4: ${{ vars.MONIKER_4 }}
+      VAL1_STAKE: 800000000
+      VAL2_STAKE: 200000000
+      VAL3_STAKE: 10000000
+      DOWNTIME_BLOCKS: 10000
+      HERMES_VERSION: v1.5.1
     steps:
       - name: start-version
         run: echo ${{matrix.gaia_version}}
@@ -166,6 +206,8 @@ jobs:
         env:
           CONSUMER_CHAIN_ID: consumera
         run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-1 2
+      - name: Check validators
+        run: $CHAIN_BINARY q staking validators --home $HOME_1
       - name: Initialize consumer chain b
         env:
           CONSUMER_CHAIN_ID: consumerb
@@ -241,6 +283,9 @@ jobs:
         run: tests/test_endpoints_api.sh localhost $VAL1_API_PORT
       - name: _rpc-2
         run: tests/test_endpoints_rpc.sh localhost $VAL1_RPC_PORT
+      - name: Check validators
+        run: |
+          $CHAIN_BINARY q staking validators --home $HOME_1
       - name: Initialize consumer chain f
         env:
           CONSUMER_CHAIN_ID: consumerf
@@ -252,6 +297,7 @@ jobs:
           CON1_PPROF_PORT: 6169
           CONSUMER_SERVICE_1: conf1.service
           CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY_2 }}
+          DOWNTIME_BLOCKS: 20
         run: tests/major_fresh_upgrade/init_consumer.sh
       - name: Launch consumer chain f
         env:
@@ -266,7 +312,7 @@ jobs:
           hermes create connection --a-chain consumerf --a-client 07-tendermint-0 --b-client 07-tendermint-2
           hermes create channel --a-chain consumerf --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
           sudo systemctl restart hermes
-          sleep 10
+          sleep 30
       - name: _consumerf-vsc
         env:
           CON1_RPC_PORT: 27401
@@ -289,6 +335,32 @@ jobs:
         run: tests/test_endpoints_api.sh localhost $VAL1_API_PORT
       - name: _rpc-3
         run: tests/test_endpoints_rpc.sh localhost $VAL1_RPC_PORT
+      - name: Print consumer genesis files
+        run: |
+          echo "chain a:"
+          jq '.app_state.slashing.params' /home/runner/.cona1/config/genesis.json
+          jq '.app_state.ccvconsumer.params' /home/runner/.cona1/config/genesis.json
+          echo "chain b:"
+          jq '.app_state.slashing.params' /home/runner/.conb1/config/genesis.json
+          jq '.app_state.ccvconsumer.params' /home/runner/.conb1/config/genesis.json
+          echo "chain f:"
+          jq '.app_state.slashing.params' /home/runner/.conf1/config/genesis.json
+          jq '.app_state.ccvconsumer.params' /home/runner/.conf1/config/genesis.json
+      - name: Check validators
+        env:
+          CONSUMER_CHAIN_ID: consumerf
+          CONSUMER_HOME_1: /home/runner/.conf1
+          CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY_2 }}
+        run: |
+          echo "$CONSUMER_CHAIN_BINARY q block --home $CONSUMER_HOME_1"
+          $CONSUMER_CHAIN_BINARY q block --home $CONSUMER_HOME_1
+          echo "Consumer chain f is at block $($CONSUMER_CHAIN_BINARY q block --home $CONSUMER_HOME_1 | jq -r '.block.header.height')."
+          $CHAIN_BINARY q staking validators --home $HOME_1
+          echo "Consumer f slashing params: $($CONSUMER_CHAIN_BINARY slashing params --home $CONSUMER_HOME_1)"
+      - name: _soft-opt-out-1
+        run: tests/v11_upgrade/test_validator_jailed.sh $VALOPER_2 true
+      - name: _soft-opt-out-2
+        run: tests/v11_upgrade/test_validator_jailed.sh $VALOPER_3 false
       - name: _globalfee-1
         run: tests/v11_upgrade/test_globalfee_params.sh
       - name: _globalfee-2
