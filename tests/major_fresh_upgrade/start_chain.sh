@@ -119,6 +119,11 @@ VAL2_PEER="$VAL2_NODE_ID@localhost:$VAL2_P2P_PORT"
 VAL3_PEER="$VAL3_NODE_ID@localhost:$VAL3_P2P_PORT"
 toml set --toml-path $HOME_1/config/config.toml p2p.persistent_peers "$VAL2_PEER,$VAL3_PEER"
 
+# Set fast_sync to false
+toml set --toml-path $HOME_1/config/config.toml fast_sync false
+toml set --toml-path $HOME_2/config/config.toml fast_sync false
+toml set --toml-path $HOME_3/config/config.toml fast_sync false
+
 echo "Setting up services..."
 
 sudo touch /etc/systemd/system/$PROVIDER_SERVICE_1
@@ -165,8 +170,8 @@ echo "WantedBy=multi-user.target"           | sudo tee /etc/systemd/system/$PROV
 
 sudo systemctl daemon-reload
 sudo systemctl enable $PROVIDER_SERVICE_1 --now
-sudo systemctl enable $PROVIDER_SERVICE_2 --now
-sudo systemctl enable $PROVIDER_SERVICE_3 --now
+# sudo systemctl enable $PROVIDER_SERVICE_2 --now
+# sudo systemctl enable $PROVIDER_SERVICE_3 --now
 
-sleep 10
-sudo journalctl -u $PROVIDER_SERVICE_1
+# sleep 10
+# sudo journalctl -u $PROVIDER_SERVICE_1
