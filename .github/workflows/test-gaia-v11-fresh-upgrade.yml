@@ -351,7 +351,7 @@ jobs:
         run: |
           echo "$CONSUMER_CHAIN_BINARY q block --home $CONSUMER_HOME_1"
           $CONSUMER_CHAIN_BINARY q block --home $CONSUMER_HOME_1
-          echo "Consumer chain f is at block $($CONSUMER_CHAIN_BINARY q block --home $CONSUMER_HOME_1 | jq -r '.block.header.height').
+          echo "Consumer chain f is at block $($CONSUMER_CHAIN_BINARY q block --home $CONSUMER_HOME_1 | jq -r '.block.header.height')."
           $CHAIN_BINARY q staking validators --home $HOME_1
       - name: _soft-opt-out-1
         run: tests/v11_upgrade/test_validator_jailed.sh $VALOPER_2 true
