@@ -128,7 +128,7 @@ jobs:
       VAL1_STAKE: 800000000
       VAL2_STAKE: 200000000
       VAL3_STAKE: 10000000
-      DOWNTIME_BLOCKS: 1000
+      DOWNTIME_BLOCKS: 10000
       HERMES_VERSION: v1.5.1
     steps:
       - name: start-version
