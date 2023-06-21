@@ -122,6 +122,7 @@ jobs:
       MNEMONIC_3: ${{ vars.MNEMONIC_3 }}
       VALOPER_3: ${{ vars.VALOPER_3 }}
       WALLET_3: ${{ vars.WALLET_3 }}
+      MNEMONIC_4: ${{ vars.MNEMONIC_4 }}
       WALLET_4: ${{ vars.WALLET_4 }}
       VAL1_STAKE: 800000000
       VAL2_STAKE: 200000000
