@@ -11,8 +11,8 @@ rm hermes
 rm hermes*gz
 
 echo "Downloading Hermes..."
-wget https://github.com/informalsystems/hermes/releases/download/v1.4.0/hermes-v1.4.0-x86_64-unknown-linux-gnu.tar.gz -O hermes-v1.4.0.tar.gz
-tar -xzvf hermes-v1.4.0.tar.gz
+wget https://github.com/informalsystems/hermes/releases/download/v1.5.1/hermes-v1.5.1-x86_64-unknown-linux-gnu.tar.gz -O hermes-v1.5.1.tar.gz
+tar -xzvf hermes-v1.5.1.tar.gz
 mkdir -p ~/.hermes
 cp hermes ~/.hermes/hermes
 export PATH="$PATH:~/.hermes"
