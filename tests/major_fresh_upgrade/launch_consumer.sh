@@ -24,6 +24,7 @@ $CHAIN_BINARY tx gov vote $proposal_id yes --gas $GAS --gas-adjustment $GAS_ADJU
 $CHAIN_BINARY q gov tally $proposal_id --home $HOME_1
 
 echo "Waiting for proposal to pass..."
+sleep 5
 sleep $VOTING_PERIOD
 
 #$CHAIN_BINARY q gov proposals --home $HOME_1
