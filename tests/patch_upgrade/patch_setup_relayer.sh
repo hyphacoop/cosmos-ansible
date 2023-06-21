@@ -11,8 +11,8 @@ rm hermes
 rm hermes*gz
 
 echo "Downloading Hermes..."
-wget https://github.com/informalsystems/hermes/releases/download/v1.5.1/hermes-v1.5.1-x86_64-unknown-linux-gnu.tar.gz -O hermes-v1.5.1.tar.gz
-tar -xzvf hermes-v1.5.1.tar.gz
+wget https://github.com/informalsystems/hermes/releases/download/$HERMES_VERSION/hermes-$HERMES_VERSION-x86_64-unknown-linux-gnu.tar.gz -O hermes-$HERMES_VERSION.tar.gz
+tar -xzvf hermes-$HERMES_VERSION.tar.gz
 mkdir -p ~/.hermes
 cp hermes ~/.hermes/hermes
 export PATH="$PATH:~/.hermes"
@@ -21,11 +21,10 @@ echo "Setting up Hermes config..."
 cp tests/patch_upgrade/hermes-config.toml ~/.hermes/config.toml
 
 echo "Adding relayer keys..."
-echo $MNEMONIC_1 > mnemonic.txt
+echo $MNEMONIC_4 > mnemonic.txt
 hermes keys add --chain $CHAIN_ID --mnemonic-file mnemonic.txt
 hermes keys add --chain consumera --mnemonic-file mnemonic.txt
 hermes keys add --chain consumerb --mnemonic-file mnemonic.txt
-hermes keys add --chain consumerc --mnemonic-file mnemonic.txt
 hermes keys add --chain consumerf --mnemonic-file mnemonic.txt
 
 # echo "Creating connection..."
