@@ -187,6 +187,8 @@ jobs:
           chmod +x $HOME/go/bin/$CONSUMER_CHAIN_BINARY
           wget $CONSUMER_CHAIN_BINARY_URL_2 -O $HOME/go/bin/$CONSUMER_CHAIN_BINARY_2
           chmod +x $HOME/go/bin/$CONSUMER_CHAIN_BINARY_2
+          wget $CONSUMER_CHAIN_BINARY_URL_3 -O $HOME/go/bin/$CONSUMER_CHAIN_BINARY_3
+          chmod +x $HOME/go/bin/$CONSUMER_CHAIN_BINARY_3
       - name: Initialize consumer chain a
         env:
           CONSUMER_CHAIN_ID: consumera
