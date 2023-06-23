@@ -211,8 +211,6 @@ jobs:
         env:
           CONSUMER_CHAIN_ID: consumera
         run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-1 2
-      - name: Check validators
-        run: $CHAIN_BINARY q staking validators --home $HOME_1
       - name: Initialize consumer chain b
         env:
           CONSUMER_CHAIN_ID: consumerb
@@ -288,9 +286,6 @@ jobs:
         run: tests/test_endpoints_api.sh localhost $VAL1_API_PORT
       - name: _rpc-2
         run: tests/test_endpoints_rpc.sh localhost $VAL1_RPC_PORT
-      - name: Check validators
-        run: |
-          $CHAIN_BINARY q staking validators --home $HOME_1
       - name: Initialize consumer chain f
         env:
           CONSUMER_CHAIN_ID: consumerf
@@ -347,7 +342,7 @@ jobs:
           CONSUMER_SERVICE_1: cong1.service
         run: |
           tests/major_fresh_upgrade/launch_consumer.sh
-          sleep 10
+          sleep 60
           journalctl -u $CONSUMER_SERVICE_1
       - name: _consumerf-blocks
         run: tests/test_block_production.sh 127.0.0.1 27501 5
