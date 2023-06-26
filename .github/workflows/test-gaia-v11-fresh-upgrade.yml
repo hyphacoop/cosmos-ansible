@@ -247,6 +247,42 @@ jobs:
           CONSUMER_HOME_1: /home/runner/.conb1
           CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY_2 }}
         run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-3 3
+      - name: Initialize consumer chain c
+        env:
+          CONSUMER_CHAIN_ID: consumerc
+          CONSUMER_HOME_1: /home/runner/.conc1
+          CON1_API_PORT: 25301
+          CON1_GRPC_PORT: 26301
+          CON1_RPC_PORT: 27301
+          CON1_P2P_PORT: 28301
+          CON1_PPROF_PORT: 6167
+          CONSUMER_SERVICE_1: conc1.service
+          CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY_3 }}
+        run: tests/major_fresh_upgrade/init_consumer.sh
+      - name: Launch consumer chain c
+        env:
+          CONSUMER_CHAIN_ID: consumerc
+          CONSUMER_HOME_1: /home/runner/.conc1
+          CONSUMER_SERVICE_1: conc1.service
+        run: tests/major_fresh_upgrade/launch_consumer.sh
+      - name: _consumerc-blocks-1
+        run: tests/test_block_production.sh 127.0.0.1 27301 5
+      - name: Establish CCV channel for consumer c
+        run: |
+          hermes create connection --a-chain consumerc --a-client 07-tendermint-0 --b-client 07-tendermint-2
+          hermes create channel --a-chain consumerc --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
+          sudo systemctl restart hermes
+          sleep 10
+      - name: _consumerc-vsc-1
+        env:
+          CON1_RPC_PORT: 27301
+        run: tests/patch_upgrade/patch_test_ccv.sh
+      - name: _consumerc-ibc
+        env:
+          CONSUMER_CHAIN_ID: consumerc
+          CONSUMER_HOME_1: /home/runner/.conc1
+          CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY_3 }}
+        run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-5 4
       - name: _consumera-blocks-2
         run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT 5
       - name: _consumera-vsc-2
@@ -309,7 +345,7 @@ jobs:
         run: tests/test_block_production.sh 127.0.0.1 27401 5
       - name: Establish CCV channel for consumer f
         run: |
-          hermes create connection --a-chain consumerf --a-client 07-tendermint-0 --b-client 07-tendermint-2
+          hermes create connection --a-chain consumerf --a-client 07-tendermint-0 --b-client 07-tendermint-3
           hermes create channel --a-chain consumerf --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
           sudo systemctl restart hermes
           sleep 30
@@ -322,7 +358,7 @@ jobs:
           CONSUMER_CHAIN_ID: consumerf
           CONSUMER_HOME_1: /home/runner/.conf1
           CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY_2 }}
-        run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-5 4
+        run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-7 5
       - name: Initialize consumer chain g
         env:
           CONSUMER_CHAIN_ID: consumerg
@@ -346,7 +382,7 @@ jobs:
         run: tests/test_block_production.sh 127.0.0.1 27501 5
       - name: Establish CCV channel for consumer g
         run: |
-          hermes create connection --a-chain consumerg --a-client 07-tendermint-0 --b-client 07-tendermint-3
+          hermes create connection --a-chain consumerg --a-client 07-tendermint-0 --b-client 07-tendermint-4
           hermes create channel --a-chain consumerg --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
           sudo systemctl restart hermes
           sleep 30
@@ -359,7 +395,7 @@ jobs:
           CONSUMER_CHAIN_ID: consumerg
           CONSUMER_HOME_1: /home/runner/.cong1
           CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY_3 }}
-        run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-7 5
+        run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-9 6
       - name: _consumera-blocks-4
         run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT 5
       - name: _consumera-vsc-4
