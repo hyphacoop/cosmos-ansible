@@ -60,8 +60,9 @@ toml set --toml-path $CONSUMER_HOME_1/config/config.toml p2p.laddr "tcp://0.0.0.
 # Allow duplicate IPs in p2p
 toml set --toml-path $CONSUMER_HOME_1/config/config.toml p2p.allow_duplicate_ip true
 
-# Set fast_sync to false
+# Set fast_sync to false - or block_sync for ICS v3
 toml set --toml-path $CONSUMER_HOME_1/config/config.toml fast_sync false
+toml set --toml-path $CONSUMER_HOME_1/config/config.toml block_sync false
 
 echo "Setting up services..."
 

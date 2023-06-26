@@ -342,9 +342,7 @@ jobs:
           CONSUMER_SERVICE_1: cong1.service
         run: |
           tests/major_fresh_upgrade/launch_consumer.sh
-          sleep 60
-          journalctl -u $CONSUMER_SERVICE_1
-      - name: _consumerf-blocks
+      - name: _consumerg-blocks
         run: tests/test_block_production.sh 127.0.0.1 27501 5
       - name: Establish CCV channel for consumer g
         run: |
