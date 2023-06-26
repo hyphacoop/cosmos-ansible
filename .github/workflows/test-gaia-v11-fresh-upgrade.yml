@@ -341,7 +341,7 @@ jobs:
           CONSUMER_HOME_1: /home/runner/.conf1
           CONSUMER_SERVICE_1: conf1.service
         run: tests/major_fresh_upgrade/launch_consumer.sh
-      - name: _consumerf-blocks
+      - name: _consumerf-blocks-1
         run: tests/test_block_production.sh 127.0.0.1 27401 5
       - name: Establish CCV channel for consumer f
         run: |
@@ -378,7 +378,7 @@ jobs:
           CONSUMER_SERVICE_1: cong1.service
         run: |
           tests/major_fresh_upgrade/launch_consumer.sh
-      - name: _consumerg-blocks
+      - name: _consumerg-blocks-1
         run: tests/test_block_production.sh 127.0.0.1 27501 5
       - name: Establish CCV channel for consumer g
         run: |
@@ -398,6 +398,14 @@ jobs:
         run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-9 6
       - name: _consumera-blocks-4
         run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT 5
+      - name: _consumerb-blocks-3
+        run: tests/test_block_production.sh 127.0.0.1 27201 5
+      - name: _consumerc-blocks-2
+        run: tests/test_block_production.sh 127.0.0.1 27301 5
+      - name: _consumerf-blocks-2
+        run: tests/test_block_production.sh 127.0.0.1 27401 5
+      - name: _consumerg-blocks-2
+        run: tests/test_block_production.sh 127.0.0.1 27501 5
       - name: _consumera-vsc-4
         run: tests/patch_upgrade/patch_test_ccv.sh
       - name: _blocks-4
