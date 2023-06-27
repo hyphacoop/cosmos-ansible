@@ -210,10 +210,11 @@ jobs:
         run: tests/patch_upgrade/patch_test_ccv.sh
       - name: Verify slashing params in consumer
         run: |
-          sleep 60
+          sleep 30
           $CONSUMER_CHAIN_BINARY q slashing params --home $CONSUMER_HOME_1
           $CONSUMER_CHAIN_BINARY q block --home $CONSUMER_HOME_1 | jq '.'
           $CONSUMER_CHAIN_BINARY q slashing signing-infos --home $CONSUMER_HOME_1 -o json | jq '.'
+          journalctl -u hermes
 
       # - name: _consumera-ibc-1
       #   env:
