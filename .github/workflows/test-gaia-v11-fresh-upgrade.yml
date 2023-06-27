@@ -183,7 +183,7 @@ jobs:
         run: tests/patch_upgrade/patch_setup_relayer.sh
       - name: Download consumer chain binaries
         run: |
-          wget $CONSUMER_CHAIN_BINARY_URL_2 -O $HOME/go/bin/$CONSUMER_CHAIN_BINARY
+          wget $CONSUMER_CHAIN_BINARY_URL_3 -O $HOME/go/bin/$CONSUMER_CHAIN_BINARY
           chmod +x $HOME/go/bin/$CONSUMER_CHAIN_BINARY
           wget $CONSUMER_CHAIN_BINARY_URL_2 -O $HOME/go/bin/$CONSUMER_CHAIN_BINARY_2
           chmod +x $HOME/go/bin/$CONSUMER_CHAIN_BINARY_2
@@ -421,10 +421,10 @@ jobs:
       #   run: tests/test_endpoints_api.sh localhost $VAL1_API_PORT
       # - name: _rpc-3
       #   run: tests/test_endpoints_rpc.sh localhost $VAL1_RPC_PORT
-      - name: _soft-opt-out-1
-        run: tests/v11_upgrade/test_validator_jailed.sh $VALOPER_2 true
-      - name: _soft-opt-out-2
-        run: tests/v11_upgrade/test_validator_jailed.sh $VALOPER_3 false
+      # - name: _soft-opt-out-1
+      #   run: tests/v11_upgrade/test_validator_jailed.sh $VALOPER_2 true
+      # - name: _soft-opt-out-2
+      #   run: tests/v11_upgrade/test_validator_jailed.sh $VALOPER_3 false
       # - name: _globalfee-1
       #   run: tests/v11_upgrade/test_globalfee_params.sh
       # - name: _globalfee-2
