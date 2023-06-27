@@ -213,6 +213,8 @@ jobs:
           sleep 60
           $CONSUMER_CHAIN_BINARY q slashing params --home $CONSUMER_HOME_1
           $CONSUMER_CHAIN_BINARY q block --home $CONSUMER_HOME_1 | jq '.'
+          $CONSUMER_CHAIN_BINARY q slashing signing-infos --home $CONSUMER_HOME_1 -o json | jq '.'
+
       # - name: _consumera-ibc-1
       #   env:
       #     CONSUMER_CHAIN_ID: consumera
