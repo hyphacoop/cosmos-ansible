@@ -13,18 +13,16 @@ chmod +x $HOME/go/bin/$CHAIN_BINARY
 
 # Download archived home directory
 echo "Initializing node homes..."
+echo "Downloading archived state"
 wget -nv -O $HOME/archived-state.gz https://files.polypore.xyz/archived-state/latest_v10.tar.gz
+echo "Extracting archive"
 mkdir -p $HOME_1 
-tar xvf $HOME/archived-state.gz -C $HOME_1 --strip-components=1
-
-# Create self-delegation accounts
-echo $MNEMONIC_1 | $CHAIN_BINARY keys add $MONIKER_1 --keyring-backend test --home $HOME_1 --recover
+tar xf $HOME/archived-state.gz -C $HOME_1 --strip-components=1
 
 echo "Patching genesis file for fast governance..."
 jq -r ".app_state.gov.voting_params.voting_period = \"$VOTING_PERIOD\"" $HOME_1/config/genesis.json  > ./voting.json
 jq -r ".app_state.gov.deposit_params.min_deposit[0].amount = \"1\"" ./voting.json > ./gov.json
 mv ./gov.json $HOME_1/config/genesis.json
-
 
 echo "Patching config files..."
 # app.toml
