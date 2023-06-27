@@ -210,7 +210,7 @@ jobs:
         run: tests/patch_upgrade/patch_test_ccv.sh
       - name: Verify slashing params in consumer
         run: |
-          sleep 30
+          sleep 60
           $CONSUMER_CHAIN_BINARY q slashing params --home $CONSUMER_HOME_1
       # - name: _consumera-ibc-1
       #   env:
