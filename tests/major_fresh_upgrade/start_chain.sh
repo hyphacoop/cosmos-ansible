@@ -97,6 +97,9 @@ toml set --toml-path $HOME_2/config/app.toml grpc-web.enable false
 toml set --toml-path $HOME_3/config/app.toml grpc-web.enable false
 
 # config.toml
+# Set log level to debug
+toml set --toml-path $HOME_1/config/config.toml log_level "debug"
+
 # Set different ports for rpc
 toml set --toml-path $HOME_1/config/config.toml rpc.laddr "tcp://0.0.0.0:$VAL1_RPC_PORT"
 toml set --toml-path $HOME_2/config/config.toml rpc.laddr "tcp://0.0.0.0:$VAL2_RPC_PORT"
