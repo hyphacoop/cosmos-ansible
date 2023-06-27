@@ -8,12 +8,12 @@ sudo apt-get install curl jq wget -y
 CHAIN_BINARY_URL=https://github.com/cosmos/gaia/releases/download/$START_VERSION/gaiad-$START_VERSION-linux-amd64
 echo "Installing Gaia..."
 mkdir -p $HOME/go/bin
-wget $CHAIN_BINARY_URL -O $HOME/go/bin/$CHAIN_BINARY
+wget -nv $CHAIN_BINARY_URL -O $HOME/go/bin/$CHAIN_BINARY
 chmod +x $HOME/go/bin/$CHAIN_BINARY
 
 # Download archived home directory
 echo "Initializing node homes..."
-wget -O $HOME/archived-state.gz https://files.polypore.xyz/archived-state/latest_v10.tar.gz
+wget -nv -O $HOME/archived-state.gz https://files.polypore.xyz/archived-state/latest_v10.tar.gz
 mkdir -p $HOME_1 
 tar xvf $HOME/archived-state.gz -C $HOME_1 --strip-components=1
 
