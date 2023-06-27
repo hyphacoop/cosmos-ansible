@@ -14,6 +14,7 @@ chmod +x $HOME/go/bin/$CHAIN_BINARY
 # Download archived home directory
 echo "Initializing node homes..."
 wget -O $HOME/archived-state.gz https://files.polypore.xyz/archived-state/latest_v10.tar.gz
+tar xvf $HOME/archived-state.gz -C $HOME_1
 
 # Create self-delegation accounts
 echo $MNEMONIC_1 | $CHAIN_BINARY keys add $MONIKER_1 --keyring-backend test --home $HOME_1 --recover
