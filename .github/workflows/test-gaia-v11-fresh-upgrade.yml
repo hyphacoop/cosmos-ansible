@@ -130,7 +130,7 @@ jobs:
       VAL1_STAKE: 800000000
       VAL2_STAKE: 200000000
       VAL3_STAKE: 10000000
-      DOWNTIME_BLOCKS: 10
+      DOWNTIME_BLOCKS: 10000
       HERMES_VERSION: v1.5.1
     steps:
       - name: start-version
@@ -192,6 +192,7 @@ jobs:
       - name: Initialize consumer chain a
         env:
           CONSUMER_CHAIN_ID: consumera
+          DOWNTIME_BLOCKS: 10
         run: tests/major_fresh_upgrade/init_consumer.sh
       - name: Launch consumer chain a
         env:

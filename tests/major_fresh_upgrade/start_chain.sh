@@ -60,8 +60,8 @@ echo "Patching genesis file for fast governance..."
 jq -r ".app_state.gov.voting_params.voting_period = \"$VOTING_PERIOD\"" $HOME_1/config/genesis.json  > ./voting.json
 jq -r ".app_state.gov.deposit_params.min_deposit[0].amount = \"1\"" ./voting.json > ./gov.json
 
-echo "Setting slashing window to $DOWNTIME_BLOCKS..."
-jq -r --arg SLASH "$DOWNTIME_BLOCKS" '.app_state.slashing.params.signed_blocks_window |= $SLASH' ./gov.json > ./slashing.json
+echo "Setting slashing window to 10000..."
+jq -r --arg SLASH "10000" '.app_state.slashing.params.signed_blocks_window |= $SLASH' ./gov.json > ./slashing.json
 mv slashing.json $HOME_1/config/genesis.json
 
 echo "Copying genesis file to other nodes..."
