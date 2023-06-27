@@ -405,8 +405,8 @@ jobs:
       #     CONSUMER_HOME_1: /home/runner/.cong1
       #     CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY_3 }}
       #   run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-9 6
-      # - name: _consumera-blocks-4
-      #   run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT 5
+      - name: _consumera-blocks-4
+        run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT 5
       # - name: _consumerb-blocks-3
       #   run: tests/test_block_production.sh 127.0.0.1 27201 5
       # - name: _consumerc-blocks-2
