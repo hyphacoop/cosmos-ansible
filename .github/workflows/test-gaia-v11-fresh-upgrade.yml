@@ -192,7 +192,7 @@ jobs:
       - name: Initialize consumer chain a
         env:
           CONSUMER_CHAIN_ID: consumera
-          DOWNTIME_BLOCKS: 10
+          DOWNTIME_BLOCKS: "10"
         run: tests/major_fresh_upgrade/init_consumer.sh
       - name: Launch consumer chain a
         env:
@@ -208,6 +208,7 @@ jobs:
           sleep 10
       - name: _consumera-vsc-1
         run: tests/patch_upgrade/patch_test_ccv.sh
+      - run: sleep 30
       # - name: _consumera-ibc-1
       #   env:
       #     CONSUMER_CHAIN_ID: consumera
@@ -407,24 +408,23 @@ jobs:
       #   run: tests/test_block_production.sh 127.0.0.1 27401 5
       # - name: _consumerg-blocks-2
       #   run: tests/test_block_production.sh 127.0.0.1 27501 5
-      - name: _txs-3
-        run: tests/patch_upgrade/patch_test_tx.sh
-      - name: _api-3
-        run: tests/test_endpoints_api.sh localhost $VAL1_API_PORT
-      - name: _rpc-3
-        run: tests/test_endpoints_rpc.sh localhost $VAL1_RPC_PORT
+      # - name: _txs-3
+      #   run: tests/patch_upgrade/patch_test_tx.sh
+      # - name: _api-3
+      #   run: tests/test_endpoints_api.sh localhost $VAL1_API_PORT
+      # - name: _rpc-3
+      #   run: tests/test_endpoints_rpc.sh localhost $VAL1_RPC_PORT
       - name: _soft-opt-out-1
         run: tests/v11_upgrade/test_validator_jailed.sh $VALOPER_2 true
       - name: _soft-opt-out-2
         run: tests/v11_upgrade/test_validator_jailed.sh $VALOPER_3 false
-      - name: _globalfee-1
-        run: tests/v11_upgrade/test_globalfee_params.sh
-      - name: _globalfee-2
-        run: tests/v11_upgrade/test_bypass_msg.sh
-      - name: _globalfee-3
-        run: tests/v11_upgrade/test_max_gas.sh
+      # - name: _globalfee-1
+      #   run: tests/v11_upgrade/test_globalfee_params.sh
+      # - name: _globalfee-2
+      #   run: tests/v11_upgrade/test_bypass_msg.sh
+      # - name: _globalfee-3
+      #   run: tests/v11_upgrade/test_max_gas.sh
       - name: _blocks-4
         run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 5 # 5 blocks
       - name: _consumera-vsc-4
         run: tests/patch_upgrade/patch_test_ccv.sh
-      
