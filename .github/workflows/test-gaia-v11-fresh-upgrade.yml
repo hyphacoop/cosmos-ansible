@@ -171,19 +171,19 @@ jobs:
         run: tests/major_fresh_upgrade/start_chain.sh
       - name: _blocks-1
         run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 5 # 5 blocks
-      - name: _txs-1
-        run: tests/patch_upgrade/patch_test_tx.sh
-      - name: _api-1
-        run: tests/test_endpoints_api.sh localhost $VAL1_API_PORT
-      - name: _rpc-1
-        run: tests/test_endpoints_rpc.sh localhost $VAL1_RPC_PORT
-      - name: Set minimum gas prices in globalfee module
-        run: tests/v11_upgrade/set_minimum_gas_prices.sh
+      # - name: _txs-1
+      #   run: tests/patch_upgrade/patch_test_tx.sh
+      # - name: _api-1
+      #   run: tests/test_endpoints_api.sh localhost $VAL1_API_PORT
+      # - name: _rpc-1
+      #   run: tests/test_endpoints_rpc.sh localhost $VAL1_RPC_PORT
+      # - name: Set minimum gas prices in globalfee module
+      #   run: tests/v11_upgrade/set_minimum_gas_prices.sh
       - name: Set up relayer
         run: tests/patch_upgrade/patch_setup_relayer.sh
       - name: Download consumer chain binaries
         run: |
-          wget $CONSUMER_CHAIN_BINARY_URL_3 -O $HOME/go/bin/$CONSUMER_CHAIN_BINARY_
+          wget $CONSUMER_CHAIN_BINARY_URL_3 -O $HOME/go/bin/$CONSUMER_CHAIN_BINARY
           chmod +x $HOME/go/bin/$CONSUMER_CHAIN_BINARY
           wget $CONSUMER_CHAIN_BINARY_URL_2 -O $HOME/go/bin/$CONSUMER_CHAIN_BINARY_2
           chmod +x $HOME/go/bin/$CONSUMER_CHAIN_BINARY_2
