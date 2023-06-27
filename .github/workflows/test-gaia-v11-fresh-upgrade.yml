@@ -217,10 +217,9 @@ jobs:
           echo "Hermes log:"
           journalctl -u hermes
           echo "Provider log:"
-          journalctl -u val1
+          journalctl -u $PROVIDER_SERVICE_1
           echo "Consumer log:"
-          journalctl -u con1
-
+          journalctl -u $CONSUMER_SERVICE_1
       # - name: _consumera-ibc-1
       #   env:
       #     CONSUMER_CHAIN_ID: consumera
