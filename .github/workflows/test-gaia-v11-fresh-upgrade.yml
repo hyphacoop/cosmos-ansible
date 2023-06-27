@@ -183,7 +183,7 @@ jobs:
         run: tests/patch_upgrade/patch_setup_relayer.sh
       - name: Download consumer chain binaries
         run: |
-          wget $CONSUMER_CHAIN_BINARY_URL_3 -O $HOME/go/bin/$CONSUMER_CHAIN_BINARY
+          wget $CONSUMER_CHAIN_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_BINARY
           chmod +x $HOME/go/bin/$CONSUMER_CHAIN_BINARY
           wget $CONSUMER_CHAIN_BINARY_URL_2 -O $HOME/go/bin/$CONSUMER_CHAIN_BINARY_2
           chmod +x $HOME/go/bin/$CONSUMER_CHAIN_BINARY_2
