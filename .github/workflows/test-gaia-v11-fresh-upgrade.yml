@@ -235,6 +235,7 @@ jobs:
           CON1_PPROF_PORT: 6165
           CONSUMER_SERVICE_1: conb1.service
           CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY_2 }}
+          DOWNTIME_BLOCKS: "20"
         run: tests/major_fresh_upgrade/init_consumer.sh
       - name: Launch consumer chain b
         env:
@@ -260,45 +261,50 @@ jobs:
           CONSUMER_HOME_1: /home/runner/.conb1
           CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY_2 }}
         run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-3 3
-      # - name: Initialize consumer chain c
-      #   env:
-      #     CONSUMER_CHAIN_ID: consumerc
-      #     CONSUMER_HOME_1: /home/runner/.conc1
-      #     CON1_API_PORT: 25301
-      #     CON1_GRPC_PORT: 26301
-      #     CON1_RPC_PORT: 27301
-      #     CON1_P2P_PORT: 28301
-      #     CON1_PPROF_PORT: 6167
-      #     CONSUMER_SERVICE_1: conc1.service
-      #     CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY_3 }}
-      #   run: tests/major_fresh_upgrade/init_consumer.sh
-      # - name: Launch consumer chain c
-      #   env:
-      #     CONSUMER_CHAIN_ID: consumerc
-      #     CONSUMER_HOME_1: /home/runner/.conc1
-      #     CONSUMER_SERVICE_1: conc1.service
-      #   run: tests/major_fresh_upgrade/launch_consumer.sh
-      # - name: _consumerc-blocks-1
-      #   run: tests/test_block_production.sh 127.0.0.1 27301 5
-      # - name: Establish CCV channel for consumer c
-      #   run: |
-      #     hermes create connection --a-chain consumerc --a-client 07-tendermint-0 --b-client 07-tendermint-2
-      #     hermes create channel --a-chain consumerc --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
-      #     sudo systemctl restart hermes
-      #     sleep 10
-      # - name: _consumerc-vsc-1
-      #   env:
-      #     CON1_RPC_PORT: 27301
-      #   run: tests/patch_upgrade/patch_test_ccv.sh
-      # - name: _consumerc-ibc
-      #   env:
-      #     CONSUMER_CHAIN_ID: consumerc
-      #     CONSUMER_HOME_1: /home/runner/.conc1
-      #     CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY_3 }}
-      #   run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-5 4
+      - name: Initialize consumer chain c
+        env:
+          CONSUMER_CHAIN_ID: consumerc
+          CONSUMER_HOME_1: /home/runner/.conc1
+          CON1_API_PORT: 25301
+          CON1_GRPC_PORT: 26301
+          CON1_RPC_PORT: 27301
+          CON1_P2P_PORT: 28301
+          CON1_PPROF_PORT: 6167
+          CONSUMER_SERVICE_1: conc1.service
+          CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY_3 }}
+          DOWNTIME_BLOCKS: "20"
+        run: tests/major_fresh_upgrade/init_consumer.sh
+      - name: Launch consumer chain c
+        env:
+          CONSUMER_CHAIN_ID: consumerc
+          CONSUMER_HOME_1: /home/runner/.conc1
+          CONSUMER_SERVICE_1: conc1.service
+        run: tests/major_fresh_upgrade/launch_consumer.sh
+      - name: _consumerc-blocks-1
+        run: tests/test_block_production.sh 127.0.0.1 27301 5
+      - name: Establish CCV channel for consumer c
+        run: |
+          hermes create connection --a-chain consumerc --a-client 07-tendermint-0 --b-client 07-tendermint-2
+          hermes create channel --a-chain consumerc --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
+          sudo systemctl restart hermes
+          sleep 10
+      - name: _consumerc-vsc-1
+        env:
+          CON1_RPC_PORT: 27301
+        run: tests/patch_upgrade/patch_test_ccv.sh
+      - name: _consumerc-ibc
+        env:
+          CONSUMER_CHAIN_ID: consumerc
+          CONSUMER_HOME_1: /home/runner/.conc1
+          CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY_3 }}
+        run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-5 4
       - name: _consumera-blocks-2
         run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT 5
       - name: _consumera-vsc-2
+        run: tests/patch_upgrade/patch_test_ccv.sh
+      - name: _consumerb-vsc-2
+        env:
+          CON1_RPC_PORT: 27201
         run: tests/patch_upgrade/patch_test_ccv.sh
       - name: _blocks-2
         run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT
@@ -321,9 +327,13 @@ jobs:
         run: tests/patch_upgrade/patch_test_ccv.sh
       - name: _consumerb-blocks-2
         run: tests/test_block_production.sh 127.0.0.1 27201 5
-      - name: _consumerb-vsc-2
+      - name: _consumerb-vsc-3
         env:
           CON1_RPC_PORT: 27201
+        run: tests/patch_upgrade/patch_test_ccv.sh
+      - name: _consumerc-vsc-2
+        env:
+          CON1_RPC_PORT: 27301
         run: tests/patch_upgrade/patch_test_ccv.sh
       - name: _blocks-3
         run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 10 # blocks to wait for
@@ -415,8 +425,16 @@ jobs:
         run: tests/patch_upgrade/patch_test_ccv.sh
       - name: _consumerb-blocks-3
         run: tests/test_block_production.sh 127.0.0.1 27201 5
-      # - name: _consumerc-blocks-2
-      #   run: tests/test_block_production.sh 127.0.0.1 27301 5
+      - name: _consumerb-vsc-4
+        env:
+          CON1_RPC_PORT: 27201
+        run: tests/patch_upgrade/patch_test_ccv.sh
+      - name: _consumerc-blocks-2
+        run: tests/test_block_production.sh 127.0.0.1 27301 5
+      - name: _consumerc-vsc-3
+        env:
+          CON1_RPC_PORT: 27301
+        run: tests/patch_upgrade/patch_test_ccv.sh
       # - name: _consumerf-blocks-2
       #   run: tests/test_block_production.sh 127.0.0.1 27401 5
       # - name: _consumerg-blocks-2
