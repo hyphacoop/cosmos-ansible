@@ -20,7 +20,6 @@ echo "Installing Gaia..."
 mkdir -p $HOME/go/bin
 wget -nv $CHAIN_BINARY_URL -O $HOME/go/bin/$CHAIN_BINARY
 chmod +x $HOME/go/bin/$CHAIN_BINARY
-cp $HOME/go/bin/$CHAIN_BINARY $HOME_1/cosmovisor/current/bin/$CHAIN_BINARY
 
 echo "Patching config files..."
 # app.toml
@@ -54,7 +53,7 @@ toml set --toml-path $HOME_1/config/config.toml p2p.allow_duplicate_ip true
 
 echo "Setting up services..."
 echo "Creating script for $CHAIN_BINARY"
-echo "while true; do $HOME_1/cosmovisor/current/bin/$CHAIN_BINARY; sleep 1; done" > $HOME/service.sh
+echo "while true; do $HOME/go/bin/$CHAIN_BINARY; sleep 1; done" > $HOME/service.sh
 chmod +x $HOME/service.sh
 
 # Run service in screen session
