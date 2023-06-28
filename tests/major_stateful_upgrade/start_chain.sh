@@ -1,13 +1,6 @@
 #!/bin/bash
 # 1. Set up a two-validator provider chain.
 
-# Install Gaia binary
-CHAIN_BINARY_URL=https://github.com/cosmos/gaia/releases/download/$START_VERSION/gaiad-$START_VERSION-linux-amd64
-echo "Installing Gaia..."
-mkdir -p $HOME/go/bin
-wget -nv $CHAIN_BINARY_URL -O $HOME/go/bin/$CHAIN_BINARY
-chmod +x $HOME/go/bin/$CHAIN_BINARY
-
 # Download archived home directory
 echo "Initializing node homes..."
 echo "Downloading archived state"
@@ -16,10 +9,18 @@ echo "Extracting archive"
 mkdir -p $HOME_1 
 tar xf $HOME/archived-state.gz -C $HOME_1 --strip-components=1
 
-echo "Patching genesis file for fast governance..."
-jq -r ".app_state.gov.voting_params.voting_period = \"$VOTING_PERIOD\"" $HOME_1/config/genesis.json  > ./voting.json
-jq -r ".app_state.gov.deposit_params.min_deposit[0].amount = \"1\"" ./voting.json > ./gov.json
-mv ./gov.json $HOME_1/config/genesis.json
+# echo "Patching genesis file for fast governance..."
+# jq -r ".app_state.gov.voting_params.voting_period = \"$VOTING_PERIOD\"" $HOME_1/config/genesis.json  > ./voting.json
+# jq -r ".app_state.gov.deposit_params.min_deposit[0].amount = \"1\"" ./voting.json > ./gov.json
+# mv ./gov.json $HOME_1/config/genesis.json
+
+# Install Gaia binary
+CHAIN_BINARY_URL=$DOWNLOAD_URL
+echo "Installing Gaia..."
+mkdir -p $HOME/go/bin
+wget -nv $CHAIN_BINARY_URL -O $HOME/go/bin/$CHAIN_BINARY
+chmod +x $HOME/go/bin/$CHAIN_BINARY
+cp $HOME/go/bin/$CHAIN_BINARY $HOME_1/cosmovisor/current/bin/$CHAIN_BINARY
 
 echo "Patching config files..."
 # app.toml
@@ -52,21 +53,13 @@ toml set --toml-path $HOME_1/config/config.toml p2p.laddr "tcp://0.0.0.0:$VAL1_P
 toml set --toml-path $HOME_1/config/config.toml p2p.allow_duplicate_ip true
 
 echo "Setting up services..."
+echo "Creating script for $CHAIN_BINARY"
+echo "while true; do $HOME_1/cosmovisor/current/bin/$CHAIN_BINARY; sleep 1; done" > $HOME/service.sh
+chmod +x $HOME/service.sh
 
-sudo touch /etc/systemd/system/$PROVIDER_SERVICE_1
-echo "[Unit]"                               | sudo tee /etc/systemd/system/$PROVIDER_SERVICE_1
-echo "Description=Gaia service"       | sudo tee /etc/systemd/system/$PROVIDER_SERVICE_1 -a
-echo "After=network-online.target"          | sudo tee /etc/systemd/system/$PROVIDER_SERVICE_1 -a
-echo ""                                     | sudo tee /etc/systemd/system/$PROVIDER_SERVICE_1 -a
-echo "[Service]"                            | sudo tee /etc/systemd/system/$PROVIDER_SERVICE_1 -a
-echo "User=$USER"                            | sudo tee /etc/systemd/system/$PROVIDER_SERVICE_1 -a
-echo "ExecStart=$HOME/go/bin/$CHAIN_BINARY start --x-crisis-skip-assert-invariants --home $HOME_1" | sudo tee /etc/systemd/system/$PROVIDER_SERVICE_1 -a
-echo "Restart=no"                       | sudo tee /etc/systemd/system/$PROVIDER_SERVICE_1 -a
-echo "LimitNOFILE=4096"                     | sudo tee /etc/systemd/system/$PROVIDER_SERVICE_1 -a
-echo ""                                     | sudo tee /etc/systemd/system/$PROVIDER_SERVICE_1 -a
-echo "[Install]"                            | sudo tee /etc/systemd/system/$PROVIDER_SERVICE_1 -a
-echo "WantedBy=multi-user.target"           | sudo tee /etc/systemd/system/$PROVIDER_SERVICE_1 -a
-
-sudo systemctl daemon-reload
-sudo systemctl enable $PROVIDER_SERVICE_1 --now
-
+# Run service in screen session
+mkdir $HOME/artifact
+echo "Starting $CHAIN_BINARY"
+screen -L -Logfile $HOME/artifact/service.log -S service -d -m bash '~/service.sh'
+# set screen to flush log to 0
+screen -r service -p0 -X logfile flush 0

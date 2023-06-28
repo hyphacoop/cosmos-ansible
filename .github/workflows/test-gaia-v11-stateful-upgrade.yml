@@ -127,6 +127,18 @@ jobs:
           sudo python -m pip install toml-cli
       - name: Print RPC port
         run: echo $VAL1_RPC_PORT
+      - name: Test software upgrade for published releases
+        if: ${{ matrix.upgrade_version != 'main' }}
+        env:
+          DOWNLOAD_URL: https://github.com/cosmos/gaia/releases/download/${{ matrix.upgrade_version }}/gaiad-${{ matrix.upgrade_version }}-linux-amd64
+        run: |
+          echo $DOWNLOAD_URL
+      - name: Test software upgrade for main branch
+        if: ${{ matrix.upgrade_version == 'main' }}
+        env:
+          DOWNLOAD_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/gaiad-linux-main/gaiad-linux
+        run: |
+          echo $DOWNLOAD_URL
       - name: Start chain
         env:
           START_VERSION: ${{matrix.gaia_version}}
@@ -213,19 +225,6 @@ jobs:
       #   run: tests/patch_upgrade/patch_test_ccv.sh
       # - name: _blocks-2
       #   run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT
-      # - name: Test software upgrade for published releases
-      #   if: ${{ matrix.upgrade_version != 'main' }}
-      #   env:
-      #     DOWNLOAD_URL: https://github.com/cosmos/gaia/releases/download/${{ matrix.upgrade_version }}/gaiad-${{ matrix.upgrade_version }}-linux-amd64
-      #   run: |
-      #     echo $DOWNLOAD_URL
-      #     tests/major_fresh_upgrade/software_upgrade.sh 127.0.0.1 $VAL1_RPC_PORT v11
-      # - name: Test software upgrade for main branch
-      #   if: ${{ matrix.upgrade_version == 'main' }}
-      #   env:
-      #     DOWNLOAD_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/gaiad-linux-main/gaiad-linux
-      #   run: |
-      #     tests/major_fresh_upgrade/software_upgrade.sh 127.0.0.1 $VAL1_RPC_PORT v11
       # - name: _consumera-blocks-3
       #   run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT 5
       # - name: _consumera-vsc-3
