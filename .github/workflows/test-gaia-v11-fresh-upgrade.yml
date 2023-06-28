@@ -192,7 +192,6 @@ jobs:
       - name: Initialize consumer chain a
         env:
           CONSUMER_CHAIN_ID: consumera
-          DOWNTIME_BLOCKS: "20"
         run: tests/major_fresh_upgrade/init_consumer.sh
       - name: Launch consumer chain a
         env:
@@ -235,7 +234,6 @@ jobs:
           CON1_PPROF_PORT: 6165
           CONSUMER_SERVICE_1: conb1.service
           CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY_2 }}
-          DOWNTIME_BLOCKS: "20"
         run: tests/major_fresh_upgrade/init_consumer.sh
       - name: Launch consumer chain b
         env:
