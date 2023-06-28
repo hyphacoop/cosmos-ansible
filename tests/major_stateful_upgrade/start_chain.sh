@@ -59,6 +59,6 @@ chmod +x $HOME/service.sh
 # Run service in screen session
 mkdir $HOME/artifact
 echo "Starting $CHAIN_BINARY"
-screen -L -Logfile $HOME/artifact/service.log -S service -d -m bash '~/service.sh'
+screen -L -Logfile $HOME/artifact/service.log -S service -d -m bash $HOME/service.sh
 # set screen to flush log to 0
 screen -r service -p0 -X logfile flush 0
