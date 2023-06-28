@@ -207,18 +207,6 @@ jobs:
           sleep 10
       - name: _consumera-vsc-1
         run: tests/patch_upgrade/patch_test_ccv.sh
-      # - name: Verify slashing params in consumer
-      #   run: |
-      #     sleep 120
-      #     $CONSUMER_CHAIN_BINARY q slashing params --home $CONSUMER_HOME_1
-      #     $CONSUMER_CHAIN_BINARY q block --home $CONSUMER_HOME_1 | jq '.'
-      #     $CONSUMER_CHAIN_BINARY q slashing signing-infos --home $CONSUMER_HOME_1 -o json | jq '.'
-      #     echo "Hermes log:"
-      #     journalctl -u hermes
-      #     echo "Provider log:"
-      #     journalctl -u $PROVIDER_SERVICE_1
-      #     echo "Consumer log:"
-      #     journalctl -u $CONSUMER_SERVICE_1
       - name: _consumera-ibc-1
         env:
           CONSUMER_CHAIN_ID: consumera
@@ -301,8 +289,6 @@ jobs:
         env:
           CON1_RPC_PORT: 27201
         run: tests/patch_upgrade/patch_test_ccv.sh
-      - name: _blocks-2
-        run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT
       - name: Test software upgrade for published releases
         if: ${{ matrix.upgrade_version != 'main' }}
         env:
@@ -316,6 +302,16 @@ jobs:
           DOWNLOAD_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/gaiad-linux-main/gaiad-linux
         run: |
           tests/major_fresh_upgrade/software_upgrade.sh 127.0.0.1 $VAL1_RPC_PORT v11
+      - name: _blocks-2
+        run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 5
+      - name: _txs-2
+        env:
+          BASE_FEES: 2000
+        run: tests/patch_upgrade/patch_test_tx.sh
+      - name: _api-2
+        run: tests/test_endpoints_api.sh localhost $VAL1_API_PORT
+      - name: _rpc-2
+        run: tests/test_endpoints_rpc.sh localhost $VAL1_RPC_PORT
       - name: _consumera-vsc-3
         run: tests/patch_upgrade/patch_test_ccv.sh
       - name: _consumerb-vsc-3
@@ -326,16 +322,6 @@ jobs:
         env:
           CON1_RPC_PORT: 27301
         run: tests/patch_upgrade/patch_test_ccv.sh
-      - name: _blocks-3
-        run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 10 # blocks to wait for
-      - name: _txs-2
-        env:
-          BASE_FEES: 2000
-        run: tests/patch_upgrade/patch_test_tx.sh
-      - name: _api-2
-        run: tests/test_endpoints_api.sh localhost $VAL1_API_PORT
-      - name: _rpc-2
-        run: tests/test_endpoints_rpc.sh localhost $VAL1_RPC_PORT
       - name: Initialize consumer chain f
         env:
           CONSUMER_CHAIN_ID: consumerf
@@ -444,8 +430,6 @@ jobs:
         run: tests/v11_upgrade/test_bypass_msg.sh
       - name: _globalfee-3
         run: tests/v11_upgrade/test_max_gas.sh
-      - name: _blocks-4
-        run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 5 # 5 blocks
       - name: Check validators
         run: |
           $CHAIN_BINARY q staking validators --home $HOME_1 -o json | jq '.'
