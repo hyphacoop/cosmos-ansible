@@ -441,4 +441,4 @@ jobs:
         run: tests/patch_upgrade/patch_test_ccv.sh
       - name: Check validators
         run: |
-          $CHAIN_BINARY q validators --home $HOME_1 -o json | jq '.'
+          $CHAIN_BINARY q staking validators --home $HOME_1 -o json | jq '.'
