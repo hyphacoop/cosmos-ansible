@@ -306,4 +306,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: archived-upgrade-${{ matrix.gaia_version }}-${{ matrix.upgrade_version }}
-          path: ${{ env.HOME }}/artifact/
+          path: ~/artifact/
