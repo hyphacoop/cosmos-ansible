@@ -301,3 +301,9 @@ jobs:
       #   run: tests/v11_upgrade/test_bypass_msg.sh
       # - name: _globalfee-3
       #   run: tests/v11_upgrade/test_max_gas.sh
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: archived-upgrade-${{ matrix.gaia_version }}-${{ matrix.upgrade_version }}
+          path: ${{ env.HOME }}/artifact/
