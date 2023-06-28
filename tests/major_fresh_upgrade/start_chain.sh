@@ -5,8 +5,8 @@
 sudo apt-get install curl jq wget -y
 
 # Install Gaia binary
-# CHAIN_BINARY_URL=https://github.com/cosmos/gaia/releases/download/$START_VERSION/gaiad-$START_VERSION-linux-amd64
-CHAIN_BINARY_URL=https://github.com/hyphacoop/cosmos-builds/releases/download/gaiad-linux-sandbox/gaiad-linux
+CHAIN_BINARY_URL=https://github.com/cosmos/gaia/releases/download/$START_VERSION/gaiad-$START_VERSION-linux-amd64
+# CHAIN_BINARY_URL=https://github.com/hyphacoop/cosmos-builds/releases/download/gaiad-linux-sandbox/gaiad-linux
 echo "Installing Gaia..."
 mkdir -p $HOME/go/bin
 wget $CHAIN_BINARY_URL -O $HOME/go/bin/$CHAIN_BINARY
@@ -98,7 +98,7 @@ toml set --toml-path $HOME_3/config/app.toml grpc-web.enable false
 
 # config.toml
 # Set log level to debug
-toml set --toml-path $HOME_1/config/config.toml log_level "debug"
+# toml set --toml-path $HOME_1/config/config.toml log_level "debug"
 
 # Set different ports for rpc
 toml set --toml-path $HOME_1/config/config.toml rpc.laddr "tcp://0.0.0.0:$VAL1_RPC_PORT"
