@@ -439,3 +439,6 @@ jobs:
         run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 5 # 5 blocks
       - name: _consumera-vsc-4
         run: tests/patch_upgrade/patch_test_ccv.sh
+      - name: Check validators
+        run: |
+          $CHAIN_BINARY q validators --home $HOME_1 -o json | jq '.'
