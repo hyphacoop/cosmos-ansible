@@ -133,14 +133,14 @@ jobs:
           DOWNLOAD_URL: https://github.com/cosmos/gaia/releases/download/${{ matrix.upgrade_version }}/gaiad-${{ matrix.upgrade_version }}-linux-amd64
         run: |
           echo "$DOWNLOAD_URL"
-          echo "$DOWNLOAD_URL" >> $GITHUB_ENV
+          echo "DOWNLOAD_URL=$DOWNLOAD_URL" >> $GITHUB_ENV
       - name: Test software upgrade for main branch
         if: ${{ matrix.upgrade_version == 'main' }}
         env:
           DOWNLOAD_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/gaiad-linux-main/gaiad-linux
         run: |
           echo "$DOWNLOAD_URL"
-          echo "$DOWNLOAD_URL" >> $GITHUB_ENV
+          echo "DOWNLOAD_URL=$DOWNLOAD_URL" >> $GITHUB_ENV
       - name: Start chain
         env:
           START_VERSION: ${{matrix.gaia_version}}
