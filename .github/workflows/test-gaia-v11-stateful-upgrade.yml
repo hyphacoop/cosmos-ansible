@@ -47,7 +47,7 @@ jobs:
     outputs:
       upgrade_versions: ${{ steps.generate-upgrade.outputs.upgrade_versions }}
   test-upgrade:
-    runs-on: self-hosted-debian-11 
+    runs-on: self-hosted-debian-11
     needs: set-version-matrix
     strategy:
       matrix:
@@ -301,6 +301,11 @@ jobs:
       #   run: tests/v11_upgrade/test_bypass_msg.sh
       # - name: _globalfee-3
       #   run: tests/v11_upgrade/test_max_gas.sh
+      - name: Stop services
+        if: always()
+        run: |
+          killall screen
+          sleep 20
       - name: Upload artifacts
         if: always()
         uses: actions/upload-artifact@v3
