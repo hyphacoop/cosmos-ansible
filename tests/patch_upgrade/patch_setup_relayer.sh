@@ -25,6 +25,7 @@ echo $MNEMONIC_4 > mnemonic.txt
 hermes keys add --chain $CHAIN_ID --mnemonic-file mnemonic.txt
 hermes keys add --chain consumera --mnemonic-file mnemonic.txt
 hermes keys add --chain consumerb --mnemonic-file mnemonic.txt
+hermes keys add --chain consumerc --mnemonic-file mnemonic.txt
 hermes keys add --chain consumerf --mnemonic-file mnemonic.txt
 
 # echo "Creating connection..."
@@ -36,11 +37,11 @@ hermes keys add --chain consumerf --mnemonic-file mnemonic.txt
 echo "Creating service..."
 sudo touch /etc/systemd/system/hermes.service
 echo "[Unit]"                               | sudo tee /etc/systemd/system/hermes.service
-echo "Description=Hermes service"       | sudo tee /etc/systemd/system/hermes.service -a
+echo "Description=Hermes service"           | sudo tee /etc/systemd/system/hermes.service -a
 echo "After=network-online.target"          | sudo tee /etc/systemd/system/hermes.service -a
 echo ""                                     | sudo tee /etc/systemd/system/hermes.service -a
 echo "[Service]"                            | sudo tee /etc/systemd/system/hermes.service -a
-echo "User=$USER"                            | sudo tee /etc/systemd/system/hermes.service -a
+echo "User=$USER"                           | sudo tee /etc/systemd/system/hermes.service -a
 echo "ExecStart=$HOME/.hermes/hermes --config $HOME/.hermes/config.toml start" | sudo tee /etc/systemd/system/hermes.service -a
 echo "Restart=no"                       | sudo tee /etc/systemd/system/hermes.service -a
 echo "LimitNOFILE=4096"                     | sudo tee /etc/systemd/system/hermes.service -a
