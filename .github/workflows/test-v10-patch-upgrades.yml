@@ -79,6 +79,8 @@ jobs:
       GAS: auto
       GAS_ADJUSTMENT: 1.2
       HERMES_VERSION: v1.5.1
+      MNEMONIC_4: ${{ vars.MNEMONIC_4 }}
+      MONIKER_4: relayer
     steps:
       - name: start-version
         run: echo ${{matrix.start_version}}
