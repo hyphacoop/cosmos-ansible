@@ -1,0 +1,325 @@
+---
+
+name: Test v10 Patch Upgrades
+on:
+  workflow_dispatch:
+  schedule:
+    # Once a day at 13:10
+    - cron: '10 13 * * 1'
+  push:
+jobs:
+  set-version-matrix:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v3
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install requests
+      - name: Obtain latest non-rc release
+        id: set-start
+        run: |
+          versions=$(tests/patch_upgrade/patch_upgrade_matrix.py)
+          echo $versions
+          echo "matrix=$versions" >> $GITHUB_OUTPUT
+    outputs:
+      version_matrix: ${{ steps.set-start.outputs.matrix }}
+
+  patch-upgrade:
+    runs-on: ubuntu-22.04
+    needs: set-version-matrix
+    strategy:
+      matrix:
+        ${{ fromJSON(needs.set-version-matrix.outputs.version_matrix) }}
+      fail-fast: false
+    environment: patch-upgrade-workflow
+    env:
+      PROVIDER_SERVICE_1: ${{ vars.PROVIDER_SERVICE_1 }}
+      PROVIDER_SERVICE_2: ${{ vars.PROVIDER_SERVICE_2 }}
+      CHAIN_BINARY: ${{ vars.CHAIN_BINARY }}
+      HOME_1: ${{ vars.HOME_1 }}
+      HOME_2: ${{ vars.HOME_2 }}
+      CHAIN_ID: ${{ vars.CHAIN_ID }}
+      MONIKER_1: ${{ vars.MONIKER_1 }}
+      MONIKER_2: ${{ vars.MONIKER_2 }}
+      MNEMONIC_1: ${{ vars.MNEMONIC_1 }}
+      MNEMONIC_2: ${{ vars.MNEMONIC_2 }}
+      DENOM: ${{ vars.DENOM }}
+      VAL_FUNDS: ${{ vars.VAL_FUNDS }}
+      VAL_STAKE: ${{ vars.VAL_STAKE }}
+      VAL_STAKE_STEP: ${{ vars.VAL_STAKE_STEP }}
+      VOTING_PERIOD: ${{ vars.VOTING_PERIOD }}
+      VAL1_RPC_PORT: ${{ vars.VAL1_RPC_PORT }}
+      VAL2_RPC_PORT: ${{ vars.VAL2_RPC_PORT }}
+      WALLET_1: ${{ vars.WALLET_1 }}
+      WALLET_2: ${{ vars.WALLET_2 }}
+      VALOPER_1: ${{ vars.VALOPER_1 }}
+      CONSUMER_CHAIN_BINARY_URL: ${{ vars.CONSUMER_CHAIN_BINARY_URL }}
+      CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY }}
+      CONSUMER_DENOM: ${{ vars.CONSUMER_DENOM }}
+      CONSUMER_HOME_1: /home/runner/.cona1
+      CONSUMER_HOME_2: /home/runner/.cona2
+      CON1_API_PORT: 25101
+      CON2_API_PORT: 25102
+      CON1_GRPC_PORT: 26101
+      CON2_GRPC_PORT: 26102
+      CON1_RPC_PORT: 27101
+      CON2_RPC_PORT: 27102
+      CON1_P2P_PORT: 28101
+      CON2_P2P_PORT: 28102
+      CON1_PPROF_PORT: 6163
+      CON2_PPROF_PORT: 6164
+      CONSUMER_SERVICE_1: cona1.service
+      CONSUMER_SERVICE_2: cona2.service
+      BASE_FEES: 1500
+      HIGH_FEES: 10000
+      GAS: auto
+      GAS_ADJUSTMENT: 1.2
+      HERMES_VERSION: v1.5.1
+    steps:
+      - name: start-version
+        run: echo ${{matrix.start_version}}
+      - name: target-version
+        run: echo ${{matrix.target_branch}}
+      - name: upgrade-coverage
+        run: echo ${{matrix.upgrade_coverage}}
+      - name: Target RC
+        if: ${{ contains(matrix.target_branch, 'rc') }}
+        run: |
+          echo "${{matrix.target_branch}}"
+      - name: Target commit
+        if: ${{ !contains(matrix.target_branch, 'rc') }}
+        run: |
+          BUILD_TAG=gaiad-linux-${{matrix.target_branch}}
+          TARGET_COMMIT=$(curl -s -L -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" https://api.github.com/repos/hyphacoop/cosmos-builds/releases/tags/$BUILD_TAG | jq -r '.name')
+          echo $TARGET_COMMIT
+      - name: Consumer chain binary URL
+        run: echo $CONSUMER_CHAIN_BINARY_URL
+      - name: Update PATH
+        run: |
+          echo "$HOME/go/bin" >> $GITHUB_PATH
+          echo "$HOME/.hermes" >> $GITHUB_PATH
+      - name: Bypass the grub-efi-amd64-signed package
+        run: sudo apt-mark hold grub-efi-amd64-signed
+      - run: echo "Test upgrading ${{matrix.start_version}} to ${{matrix.target_branch}}"
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.10'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install requests toml-cli
+
+      - name: Start chains
+        env:
+          START_VERSION: ${{matrix.start_version}}
+        run: tests/patch_upgrade/patch_start_chains.sh
+
+      - name: Download consumer chain binary
+        run: |
+          wget $CONSUMER_CHAIN_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_BINARY
+          chmod +x $HOME/go/bin/$CONSUMER_CHAIN_BINARY
+
+      - name: blocks-1
+        run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT
+      - name: signatures-1
+        run: tests/patch_upgrade/patch_test_signatures.sh $VAL1_RPC_PORT 2  # two validators
+      - name: txs-1
+        run: tests/patch_upgrade/patch_test_tx.sh
+      - name: api-1
+        run: tests/test_endpoints_api.sh localhost 25001
+      - name: rpc-1
+        run: tests/test_endpoints_rpc.sh localhost $VAL1_RPC_PORT
+
+      - name: Set up relayer
+        run: tests/patch_upgrade/patch_setup_relayer.sh
+
+      - name: Initialize consumer chain a
+        env:
+          CONSUMER_CHAIN_ID: consumera
+        run: tests/patch_upgrade/patch_init_consumer.sh
+      - name: Launch consumer chain a
+        env:
+          CONSUMER_CHAIN_ID: consumera
+        run: tests/patch_upgrade/patch_launch_consumer.sh 1
+      - name: consumera-blocks-1
+        run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT
+      - name: consumera-signatures-1
+        run: tests/patch_upgrade/patch_test_signatures.sh $CON1_RPC_PORT 2  # two validators
+      - name: Establish CCV channel for consumer a
+        run: |
+          hermes create connection --a-chain consumera --a-client 07-tendermint-0 --b-client 07-tendermint-0
+          hermes create channel --a-chain consumera --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
+          sudo systemctl restart hermes
+          sleep 10
+      - name: consumera-vsc-1
+        run: tests/patch_upgrade/patch_test_ccv.sh
+      - name: consumera-ibc-1
+        env:
+          CONSUMER_CHAIN_ID: consumera
+        run: tests/patch_upgrade/patch_test_ibc_transfer.sh channel-1 2
+
+      - name: Initialize consumer chain b
+        env:
+          CONSUMER_CHAIN_ID: consumerb
+          CONSUMER_HOME_1: /home/runner/.conb1
+          CONSUMER_HOME_2: /home/runner/.conb2
+          CON1_API_PORT: 25201
+          CON2_API_PORT: 25202
+          CON1_GRPC_PORT: 26201
+          CON2_GRPC_PORT: 26202
+          CON1_RPC_PORT: 27201
+          CON2_RPC_PORT: 27202
+          CON1_P2P_PORT: 28201
+          CON2_P2P_PORT: 28202
+          CON1_PPROF_PORT: 6165
+          CON2_PPROF_PORT: 6166
+          CONSUMER_SERVICE_1: conb1.service
+          CONSUMER_SERVICE_2: conb2.service
+        run: tests/patch_upgrade/patch_init_consumer.sh
+      - name: Launch consumer chain b
+        env:
+          CONSUMER_CHAIN_ID: consumerb
+          CONSUMER_HOME_1: /home/runner/.conb1
+          CONSUMER_HOME_2: /home/runner/.conb2
+          CONSUMER_SERVICE_1: conb1.service
+          CONSUMER_SERVICE_2: conb2.service
+        run: tests/patch_upgrade/patch_launch_consumer.sh 2
+      - name: consumerb-blocks
+        run: tests/test_block_production.sh 127.0.0.1 27201
+      - name: consumerb-signatures
+        run: tests/patch_upgrade/patch_test_signatures.sh 27201 2  # two validators
+      - name: Establish CCV channel for consumer b
+        run: |
+          hermes create connection --a-chain consumerb --a-client 07-tendermint-0 --b-client 07-tendermint-1
+          hermes create channel --a-chain consumerb --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
+          sudo systemctl restart hermes
+          sleep 10
+      - name: consumerb-vsc
+        env:
+          CON1_RPC_PORT: 27201
+        run: tests/patch_upgrade/patch_test_ccv.sh
+      - name: consumerb-ibc
+        env:
+          CONSUMER_CHAIN_ID: consumerb
+          CONSUMER_HOME_1: /home/runner/.conb1
+          CONSUMER_HOME_2: /home/runner/.conb2
+        run: tests/patch_upgrade/patch_test_ibc_transfer.sh channel-3 3
+      - name: consumerb-key
+        env:
+          CONSUMER_CHAIN_ID: consumerb
+        run: tests/patch_upgrade/patch_test_key_assignment.sh
+      - name: Stop consumer chain
+        env:
+          CONSUMER_CHAIN_ID: consumerb
+        run: tests/patch_upgrade/patch_stop_consumer.sh 3
+      - name: consumerb-remove
+        run: tests/patch_upgrade/patch_test_consumer_removed.sh
+      - name: consumera-blocks-2
+        run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT
+      - name: consumera-signatures-2
+        run: tests/patch_upgrade/patch_test_signatures.sh $CON1_RPC_PORT 2  # two validators
+      - name: blocks-2
+        run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT
+      - name: signatures-2
+        run: tests/patch_upgrade/patch_test_signatures.sh $VAL1_RPC_PORT 2  # two validators
+
+      - name: Full upgrade to rc build
+        if: ${{ contains(matrix.target_branch, 'rc') && matrix.upgrade_coverage == 'full' }}
+        env:
+          UPGRADE_BINARY_URL: https://github.com/cosmos/gaia/releases/download/${{matrix.target_branch}}/gaiad-${{matrix.target_branch}}-linux-amd64
+        run: tests/patch_upgrade/patch_test_full_upgrade.sh
+      - name: Full upgrade to branch build
+        if: ${{ !contains(matrix.target_branch, 'rc') && matrix.upgrade_coverage == 'full' }}
+        env:
+          UPGRADE_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/gaiad-linux-${{matrix.target_branch}}/gaiad-linux
+        run: tests/patch_upgrade/patch_test_full_upgrade.sh
+
+      - name: Partial upgrade to rc build
+        if: ${{ contains(matrix.target_branch, 'rc') && matrix.upgrade_coverage == 'partial' }}
+        env:
+          UPGRADE_BINARY_URL: https://github.com/cosmos/gaia/releases/download/${{matrix.target_branch}}/gaiad-${{matrix.target_branch}}-linux-amd64
+        run: tests/patch_upgrade/patch_test_partial_upgrade.sh
+      - name: Partial upgrade to branch build
+        if: ${{ !contains(matrix.target_branch, 'rc') && matrix.upgrade_coverage == 'partial'}}
+        env:
+          UPGRADE_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/gaiad-linux-${{matrix.target_branch}}/gaiad-linux
+        run: tests/patch_upgrade/patch_test_partial_upgrade.sh
+
+      - name: blocks-3
+        run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT
+      - name: signatures-3
+        run: tests/patch_upgrade/patch_test_signatures.sh $VAL1_RPC_PORT 2  # two validators
+      - name: txs-2
+        run: tests/patch_upgrade/patch_test_tx.sh
+      - name: api-2
+        run: tests/test_endpoints_api.sh localhost 25001
+      - name: rpc-2
+        run: tests/test_endpoints_rpc.sh localhost $VAL1_RPC_PORT
+      - name: consumera-vsc-2
+        run: tests/patch_upgrade/patch_test_ccv.sh
+
+
+      - name: Initialize consumer chain c
+        env:
+          CONSUMER_CHAIN_ID: consumerc
+          CONSUMER_HOME_1: /home/runner/.conc1
+          CONSUMER_HOME_2: /home/runner/.conc2
+          CON1_API_PORT: 25301
+          CON2_API_PORT: 25302
+          CON1_GRPC_PORT: 26301
+          CON2_GRPC_PORT: 26302
+          CON1_RPC_PORT: 27301
+          CON2_RPC_PORT: 27302
+          CON1_P2P_PORT: 28301
+          CON2_P2P_PORT: 28302
+          CON1_PPROF_PORT: 6167
+          CON2_PPROF_PORT: 6168
+          CONSUMER_SERVICE_1: conc1.service
+          CONSUMER_SERVICE_2: conc2.service
+        run: tests/patch_upgrade/patch_init_consumer.sh
+      - name: Launch consumer chain c
+        env:
+          CONSUMER_CHAIN_ID: consumerc
+          CONSUMER_HOME_1: /home/runner/.conc1
+          CONSUMER_HOME_2: /home/runner/.conc2
+          CONSUMER_SERVICE_1: conc1.service
+          CONSUMER_SERVICE_2: conc2.service
+        run: tests/patch_upgrade/patch_launch_consumer.sh 4
+      - name: consumerc-blocks
+        run: tests/test_block_production.sh 127.0.0.1 27301
+      - name: consumerc-signatures
+        run: tests/patch_upgrade/patch_test_signatures.sh 27301 2  # two validators
+      - name: Establish CCV channel for consumer c
+        run: |
+          hermes create connection --a-chain consumerc --a-client 07-tendermint-0 --b-client 07-tendermint-2
+          hermes create channel --a-chain consumerc --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
+          sudo systemctl restart hermes
+          sleep 10
+      - name: consumerc-vsc
+        env:
+          CON1_RPC_PORT: 27301
+        run: tests/patch_upgrade/patch_test_ccv.sh
+      - name: consumerc-ibc
+        env:
+          CONSUMER_CHAIN_ID: consumerc
+          CONSUMER_HOME_1: /home/runner/.conc1
+          CONSUMER_HOME_2: /home/runner/.conc2
+        run: tests/patch_upgrade/patch_test_ibc_transfer.sh channel-5 4
+      - name: Stop consumer chain
+        env:
+          CONSUMER_CHAIN_ID: consumerc
+        run: tests/patch_upgrade/patch_stop_consumer.sh 5
+      - name: consumerc-remove
+        run: tests/patch_upgrade/patch_test_consumer_removed.sh
+
+      - name: blocks-4
+        run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT
+      - name: signatures-4
+        run: tests/patch_upgrade/patch_test_signatures.sh $VAL1_RPC_PORT 2  # two validators
