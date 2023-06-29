@@ -51,6 +51,9 @@ toml set --toml-path $HOME_1/config/config.toml p2p.laddr "tcp://0.0.0.0:$VAL1_P
 # Allow duplicate IPs in p2p
 toml set --toml-path $HOME_1/config/config.toml p2p.allow_duplicate_ip true
 
+# Set client ports for rpc
+toml set --toml-path $HOME_1/config/client.toml node "tcp://localhost:$VAL1_RPC_PORT"
+
 echo "Setting up services..."
 echo "Creating script for $CHAIN_BINARY"
 echo "while true; do $HOME/go/bin/$CHAIN_BINARY start --home $HOME_1; sleep 1; done" > $HOME/service.sh
