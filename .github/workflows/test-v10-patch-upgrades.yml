@@ -5,7 +5,6 @@ on:
   repository_dispatch:
     types: [new_v10_build]
   workflow_dispatch:
-  push:
 jobs:
   set-version-matrix:
     runs-on: ubuntu-22.04
