@@ -7,7 +7,6 @@ echo "Running with $CONSUMER_CHAIN_BINARY."
 echo "Initializing consumer homes..."
 $CONSUMER_CHAIN_BINARY config chain-id $CONSUMER_CHAIN_ID --home $CONSUMER_HOME_1
 $CONSUMER_CHAIN_BINARY config keyring-backend test --home $CONSUMER_HOME_1
-$CONSUMER_CHAIN_BINARY config broadcast-mode block --home $CONSUMER_HOME_1
 $CHAIN_BINARY config node tcp://localhost:$CON1_RPC_PORT --home $CONSUMER_HOME_1
 $CONSUMER_CHAIN_BINARY init $MONIKER_1 --chain-id $CONSUMER_CHAIN_ID --home $CONSUMER_HOME_1
 
@@ -29,6 +28,8 @@ echo $MNEMONIC_4 | $CONSUMER_CHAIN_BINARY keys add $MONIKER_4 --keyring-backend 
 # Add funds to accounts
 $CONSUMER_CHAIN_BINARY add-genesis-account $MONIKER_1 $VAL_FUNDS$CONSUMER_DENOM --home $CONSUMER_HOME_1
 $CONSUMER_CHAIN_BINARY add-genesis-account $MONIKER_4 $VAL_FUNDS$CONSUMER_DENOM --home $CONSUMER_HOME_1
+$CONSUMER_CHAIN_BINARY genesis add-genesis-account $MONIKER_1 $VAL_FUNDS$CONSUMER_DENOM --home $CONSUMER_HOME_1
+$CONSUMER_CHAIN_BINARY genesis add-genesis-account $MONIKER_4 $VAL_FUNDS$CONSUMER_DENOM --home $CONSUMER_HOME_1
 
 echo "Patching config files..."
 # app.toml
@@ -60,8 +61,9 @@ toml set --toml-path $CONSUMER_HOME_1/config/config.toml p2p.laddr "tcp://0.0.0.
 # Allow duplicate IPs in p2p
 toml set --toml-path $CONSUMER_HOME_1/config/config.toml p2p.allow_duplicate_ip true
 
-# Set fast_sync to false
+# Set fast_sync to false - or block_sync for ICS v3
 toml set --toml-path $CONSUMER_HOME_1/config/config.toml fast_sync false
+toml set --toml-path $CONSUMER_HOME_1/config/config.toml block_sync false
 
 echo "Setting up services..."
 

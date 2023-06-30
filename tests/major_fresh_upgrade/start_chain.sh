@@ -6,6 +6,7 @@ sudo apt-get install curl jq wget -y
 
 # Install Gaia binary
 CHAIN_BINARY_URL=https://github.com/cosmos/gaia/releases/download/$START_VERSION/gaiad-$START_VERSION-linux-amd64
+# CHAIN_BINARY_URL=https://github.com/hyphacoop/cosmos-builds/releases/download/gaiad-linux-sandbox/gaiad-linux
 echo "Installing Gaia..."
 mkdir -p $HOME/go/bin
 wget $CHAIN_BINARY_URL -O $HOME/go/bin/$CHAIN_BINARY
@@ -60,8 +61,8 @@ echo "Patching genesis file for fast governance..."
 jq -r ".app_state.gov.voting_params.voting_period = \"$VOTING_PERIOD\"" $HOME_1/config/genesis.json  > ./voting.json
 jq -r ".app_state.gov.deposit_params.min_deposit[0].amount = \"1\"" ./voting.json > ./gov.json
 
-echo "Setting slashing window to $DOWNTIME_BLOCKS..."
-jq -r --arg SLASH "$DOWNTIME_BLOCKS" '.app_state.slashing.params.signed_blocks_window |= $SLASH' ./gov.json > ./slashing.json
+echo "Setting slashing window to 10000..."
+jq -r --arg SLASH "10000" '.app_state.slashing.params.signed_blocks_window |= $SLASH' ./gov.json > ./slashing.json
 mv slashing.json $HOME_1/config/genesis.json
 
 echo "Copying genesis file to other nodes..."
@@ -96,6 +97,9 @@ toml set --toml-path $HOME_2/config/app.toml grpc-web.enable false
 toml set --toml-path $HOME_3/config/app.toml grpc-web.enable false
 
 # config.toml
+# Set log level to debug
+# toml set --toml-path $HOME_1/config/config.toml log_level "debug"
+
 # Set different ports for rpc
 toml set --toml-path $HOME_1/config/config.toml rpc.laddr "tcp://0.0.0.0:$VAL1_RPC_PORT"
 toml set --toml-path $HOME_2/config/config.toml rpc.laddr "tcp://0.0.0.0:$VAL2_RPC_PORT"

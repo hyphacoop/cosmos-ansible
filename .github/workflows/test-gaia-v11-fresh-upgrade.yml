@@ -5,6 +5,7 @@ on:
   repository_dispatch:
     types: [new_main_build]
   workflow_dispatch:
+  push:
 jobs:
   set-version-matrix:
     runs-on: ubuntu-22.04
@@ -56,6 +57,8 @@ jobs:
       CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY }}
       CONSUMER_CHAIN_BINARY_URL_2: ${{ vars.CONSUMER_CHAIN_BINARY_URL_2 }}
       CONSUMER_CHAIN_BINARY_2: ${{ vars.CONSUMER_CHAIN_BINARY_2 }}
+      CONSUMER_CHAIN_BINARY_URL_3: ${{ vars.CONSUMER_CHAIN_BINARY_URL_3 }}
+      CONSUMER_CHAIN_BINARY_3: ${{ vars.CONSUMER_CHAIN_BINARY_3 }}
       CHAIN_ID: ${{ vars.CHAIN_ID }}
       DENOM: ${{ vars.DENOM }}
       VAL_FUNDS: ${{ vars.VAL_FUNDS }}
@@ -184,7 +187,9 @@ jobs:
           chmod +x $HOME/go/bin/$CONSUMER_CHAIN_BINARY
           wget $CONSUMER_CHAIN_BINARY_URL_2 -O $HOME/go/bin/$CONSUMER_CHAIN_BINARY_2
           chmod +x $HOME/go/bin/$CONSUMER_CHAIN_BINARY_2
-      - name: Initialize consumer chain a
+          wget $CONSUMER_CHAIN_BINARY_URL_3 -O $HOME/go/bin/$CONSUMER_CHAIN_BINARY_3
+          chmod +x $HOME/go/bin/$CONSUMER_CHAIN_BINARY_3
+      - name: Initialize consumer chain v1-1
         env:
           CONSUMER_CHAIN_ID: consumera
         run: tests/major_fresh_upgrade/init_consumer.sh
@@ -206,8 +211,6 @@ jobs:
         env:
           CONSUMER_CHAIN_ID: consumera
         run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-1 2
-      - name: Check validators
-        run: $CHAIN_BINARY q staking validators --home $HOME_1
       - name: Initialize consumer chain b
         env:
           CONSUMER_CHAIN_ID: consumerb
@@ -244,12 +247,48 @@ jobs:
           CONSUMER_HOME_1: /home/runner/.conb1
           CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY_2 }}
         run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-3 3
-      - name: _consumera-blocks-2
-        run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT 5
+      - name: Initialize consumer chain c
+        env:
+          CONSUMER_CHAIN_ID: consumerc
+          CONSUMER_HOME_1: /home/runner/.conc1
+          CON1_API_PORT: 25301
+          CON1_GRPC_PORT: 26301
+          CON1_RPC_PORT: 27301
+          CON1_P2P_PORT: 28301
+          CON1_PPROF_PORT: 6167
+          CONSUMER_SERVICE_1: conc1.service
+          CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY_3 }}
+        run: tests/major_fresh_upgrade/init_consumer.sh
+      - name: Launch consumer chain c
+        env:
+          CONSUMER_CHAIN_ID: consumerc
+          CONSUMER_HOME_1: /home/runner/.conc1
+          CONSUMER_SERVICE_1: conc1.service
+        run: tests/major_fresh_upgrade/launch_consumer.sh
+      - name: _consumerc-blocks-1
+        run: tests/test_block_production.sh 127.0.0.1 27301 5
+      - name: Establish CCV channel for consumer c
+        run: |
+          hermes create connection --a-chain consumerc --a-client 07-tendermint-0 --b-client 07-tendermint-2
+          hermes create channel --a-chain consumerc --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
+          sudo systemctl restart hermes
+          sleep 10
+      - name: _consumerc-vsc-1
+        env:
+          CON1_RPC_PORT: 27301
+        run: tests/patch_upgrade/patch_test_ccv.sh
+      - name: _consumerc-ibc
+        env:
+          CONSUMER_CHAIN_ID: consumerc
+          CONSUMER_HOME_1: /home/runner/.conc1
+          CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY_3 }}
+        run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-5 4
       - name: _consumera-vsc-2
         run: tests/patch_upgrade/patch_test_ccv.sh
-      - name: _blocks-2
-        run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT
+      - name: _consumerb-vsc-2
+        env:
+          CON1_RPC_PORT: 27201
+        run: tests/patch_upgrade/patch_test_ccv.sh
       - name: Test software upgrade for published releases
         if: ${{ matrix.upgrade_version != 'main' }}
         env:
@@ -263,18 +302,8 @@ jobs:
           DOWNLOAD_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/gaiad-linux-main/gaiad-linux
         run: |
           tests/major_fresh_upgrade/software_upgrade.sh 127.0.0.1 $VAL1_RPC_PORT v11
-      - name: _consumera-blocks-3
-        run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT 5
-      - name: _consumera-vsc-3
-        run: tests/patch_upgrade/patch_test_ccv.sh
-      - name: _consumerb-blocks-2
-        run: tests/test_block_production.sh 127.0.0.1 27201 5
-      - name: _consumerb-vsc-2
-        env:
-          CON1_RPC_PORT: 27201
-        run: tests/patch_upgrade/patch_test_ccv.sh
-      - name: _blocks-3
-        run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 10 # blocks to wait for
+      - name: _blocks-2
+        run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 5
       - name: _txs-2
         env:
           BASE_FEES: 2000
@@ -283,9 +312,16 @@ jobs:
         run: tests/test_endpoints_api.sh localhost $VAL1_API_PORT
       - name: _rpc-2
         run: tests/test_endpoints_rpc.sh localhost $VAL1_RPC_PORT
-      - name: Check validators
-        run: |
-          $CHAIN_BINARY q staking validators --home $HOME_1
+      - name: _consumera-vsc-3
+        run: tests/patch_upgrade/patch_test_ccv.sh
+      - name: _consumerb-vsc-3
+        env:
+          CON1_RPC_PORT: 27201
+        run: tests/patch_upgrade/patch_test_ccv.sh
+      - name: _consumerc-vsc-2
+        env:
+          CON1_RPC_PORT: 27301
+        run: tests/patch_upgrade/patch_test_ccv.sh
       - name: Initialize consumer chain f
         env:
           CONSUMER_CHAIN_ID: consumerf
@@ -297,7 +333,6 @@ jobs:
           CON1_PPROF_PORT: 6169
           CONSUMER_SERVICE_1: conf1.service
           CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY_2 }}
-          DOWNTIME_BLOCKS: 20
         run: tests/major_fresh_upgrade/init_consumer.sh
       - name: Launch consumer chain f
         env:
@@ -305,15 +340,15 @@ jobs:
           CONSUMER_HOME_1: /home/runner/.conf1
           CONSUMER_SERVICE_1: conf1.service
         run: tests/major_fresh_upgrade/launch_consumer.sh
-      - name: _consumerf-blocks
+      - name: _consumerf-blocks-1
         run: tests/test_block_production.sh 127.0.0.1 27401 5
       - name: Establish CCV channel for consumer f
         run: |
-          hermes create connection --a-chain consumerf --a-client 07-tendermint-0 --b-client 07-tendermint-2
+          hermes create connection --a-chain consumerf --a-client 07-tendermint-0 --b-client 07-tendermint-3
           hermes create channel --a-chain consumerf --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
           sudo systemctl restart hermes
           sleep 30
-      - name: _consumerf-vsc
+      - name: _consumerf-vsc-1
         env:
           CON1_RPC_PORT: 27401
         run: tests/patch_upgrade/patch_test_ccv.sh
@@ -322,41 +357,69 @@ jobs:
           CONSUMER_CHAIN_ID: consumerf
           CONSUMER_HOME_1: /home/runner/.conf1
           CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY_2 }}
-        run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-5 4
-      - name: _consumera-blocks-4
-        run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT 5
+        run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-7 5
+      - name: Initialize consumer chain g
+        env:
+          CONSUMER_CHAIN_ID: consumerg
+          CONSUMER_HOME_1: /home/runner/.cong1
+          CON1_API_PORT: 25501
+          CON1_GRPC_PORT: 26501
+          CON1_RPC_PORT: 27501
+          CON1_P2P_PORT: 28501
+          CON1_PPROF_PORT: 6170
+          CONSUMER_SERVICE_1: cong1.service
+          CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY_3 }}
+          DOWNTIME_BLOCKS: 20
+        run: tests/major_fresh_upgrade/init_consumer.sh
+      - name: Launch consumer chain g
+        env:
+          CONSUMER_CHAIN_ID: consumerg
+          CONSUMER_HOME_1: /home/runner/.cong1
+          CONSUMER_SERVICE_1: cong1.service
+        run: |
+          tests/major_fresh_upgrade/launch_consumer.sh
+      - name: _consumerg-blocks-1
+        run: tests/test_block_production.sh 127.0.0.1 27501 5
+      - name: Establish CCV channel for consumer g
+        run: |
+          hermes create connection --a-chain consumerg --a-client 07-tendermint-0 --b-client 07-tendermint-4
+          hermes create channel --a-chain consumerg --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
+          sudo systemctl restart hermes
+          sleep 30
+      - name: _consumerg-vsc-1
+        env:
+          CON1_RPC_PORT: 27501
+        run: tests/patch_upgrade/patch_test_ccv.sh
+      - name: _consumerg-ibc
+        env:
+          CONSUMER_CHAIN_ID: consumerg
+          CONSUMER_HOME_1: /home/runner/.cong1
+          CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY_3 }}
+        run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-9 6
       - name: _consumera-vsc-4
         run: tests/patch_upgrade/patch_test_ccv.sh
-      - name: _blocks-4
-        run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 5 # 5 blocks
+      - name: _consumerb-vsc-4
+        env:
+          CON1_RPC_PORT: 27201
+        run: tests/patch_upgrade/patch_test_ccv.sh
+      - name: _consumerc-vsc-3
+        env:
+          CON1_RPC_PORT: 27301
+        run: tests/patch_upgrade/patch_test_ccv.sh
+      - name: _consumerf-vsc-2
+        env:
+          CON1_RPC_PORT: 27401
+        run: tests/patch_upgrade/patch_test_ccv.sh
+      - name: _consumerg-vsc-2
+        env:
+          CON1_RPC_PORT: 27501
+        run: tests/patch_upgrade/patch_test_ccv.sh
       - name: _txs-3
         run: tests/patch_upgrade/patch_test_tx.sh
       - name: _api-3
         run: tests/test_endpoints_api.sh localhost $VAL1_API_PORT
       - name: _rpc-3
         run: tests/test_endpoints_rpc.sh localhost $VAL1_RPC_PORT
-      - name: Print consumer genesis files
-        run: |
-          echo "chain a:"
-          jq '.app_state.slashing.params' /home/runner/.cona1/config/genesis.json
-          jq '.app_state.ccvconsumer.params' /home/runner/.cona1/config/genesis.json
-          echo "chain b:"
-          jq '.app_state.slashing.params' /home/runner/.conb1/config/genesis.json
-          jq '.app_state.ccvconsumer.params' /home/runner/.conb1/config/genesis.json
-          echo "chain f:"
-          jq '.app_state.slashing.params' /home/runner/.conf1/config/genesis.json
-          jq '.app_state.ccvconsumer.params' /home/runner/.conf1/config/genesis.json
-      - name: Check validators
-        env:
-          CONSUMER_CHAIN_ID: consumerf
-          CONSUMER_HOME_1: /home/runner/.conf1
-          CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY_2 }}
-        run: |
-          echo "$CONSUMER_CHAIN_BINARY q block --home $CONSUMER_HOME_1"
-          $CONSUMER_CHAIN_BINARY q block --home $CONSUMER_HOME_1
-          echo "Consumer chain f is at block $($CONSUMER_CHAIN_BINARY q block --home $CONSUMER_HOME_1 | jq -r '.block.header.height')."
-          $CHAIN_BINARY q staking validators --home $HOME_1
-          echo "Consumer f slashing params: $($CONSUMER_CHAIN_BINARY slashing params --home $CONSUMER_HOME_1)"
       - name: _soft-opt-out-1
         run: tests/v11_upgrade/test_validator_jailed.sh $VALOPER_2 true
       - name: _soft-opt-out-2
@@ -367,3 +430,6 @@ jobs:
         run: tests/v11_upgrade/test_bypass_msg.sh
       - name: _globalfee-3
         run: tests/v11_upgrade/test_max_gas.sh
+      - name: Check validators
+        run: |
+          $CHAIN_BINARY q staking validators --home $HOME_1 -o json | jq '.'

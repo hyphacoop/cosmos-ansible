@@ -31,7 +31,7 @@ sleep $VOTING_PERIOD
 
 echo "Collecting the CCV state..."
 $CHAIN_BINARY q provider consumer-genesis $CONSUMER_CHAIN_ID -o json --home $HOME_1 > ccv-pre.json
-jq '.params |= . + {"soft_opt_out_threshold": "0.05"}' ccv-pre.json > ccv.json
+jq '.params |= . + {"soft_opt_out_threshold": "0.10"}' ccv-pre.json > ccv.json
 jq '.' ccv.json
 
 echo "Patching the consumer genesis file..."
@@ -41,6 +41,6 @@ cp consumer-genesis.json $CONSUMER_HOME_1/config/genesis.json
 echo "Starting the consumer chain..."
 sudo systemctl enable $CONSUMER_SERVICE_1 --now
 
-sleep 20
-sudo journalctl -u $CONSUMER_SERVICE_1 | tail -n 200
+# sleep 20
+# sudo journalctl -u $CONSUMER_SERVICE_1 | tail -n 200
 # sudo journalctl -u $CONSUMER_SERVICE_2 | tail -n 200
