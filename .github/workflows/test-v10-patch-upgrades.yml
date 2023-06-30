@@ -2,10 +2,9 @@
 
 name: Test v10 Patch Upgrades
 on:
+  repository_dispatch:
+    types: [new_v10_build]
   workflow_dispatch:
-  schedule:
-    # Once a day at 13:10
-    - cron: '10 13 * * 1'
   push:
 jobs:
   set-version-matrix:
@@ -137,7 +136,7 @@ jobs:
       - name: api-1
         run: tests/test_endpoints_api.sh localhost 25001
       - name: rpc-1
-        run: tests/test_endpoints_rpc.sh localhost $VAL1_RPC_PORT
+        run: tests/patch_upgrade/patch_test_endpoints_rpc.sh localhost $VAL1_RPC_PORT
 
       - name: Set up relayer
         run: tests/patch_upgrade/patch_setup_relayer.sh
@@ -263,7 +262,7 @@ jobs:
       - name: api-2
         run: tests/test_endpoints_api.sh localhost 25001
       - name: rpc-2
-        run: tests/test_endpoints_rpc.sh localhost $VAL1_RPC_PORT
+        run: tests/patch_upgrade/patch_test_endpoints_rpc.sh localhost $VAL1_RPC_PORT
       - name: consumera-vsc-2
         run: tests/patch_upgrade/patch_test_ccv.sh
 
