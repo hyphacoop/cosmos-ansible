@@ -1,7 +1,6 @@
 # Ansible Cosmos Network Creator
 
 [![Lint](https://github.com/hyphacoop/cosmos-ansible/actions/workflows/lint.yml/badge.svg?branch=main)](https://github.com/hyphacoop/cosmos-ansible/actions/workflows/lint.yml)
-[![Test Gaia Versions](https://github.com/hyphacoop/cosmos-ansible/actions/workflows/test-gaia-versions.yml/badge.svg?branch=main)](https://github.com/hyphacoop/cosmos-ansible/actions/workflows/test-gaia-versions.yml)
 [![Join RS Testnet](https://github.com/hyphacoop/cosmos-ansible/actions/workflows/test-join-rs-testnet.yml/badge.svg)](https://github.com/hyphacoop/cosmos-ansible/actions/workflows/test-join-rs-testnet.yml)
 
 ✨ An Ansible toolkit for Cosmos networks 💫
