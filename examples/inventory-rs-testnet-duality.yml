@@ -15,7 +15,7 @@ all:
     consensus_timeout_commit: 2s
     chain_home_clear: true
     node_unsafe_reset: true
-    p2p_seeds: "cebd80328abca02408d1b7199f9b1a835a14aa31@p2p.testnet-1.duality.xyz:26656"
+    p2p_seeds: "cebd80328abca02408d1b7199f9b1a835a14aa31@p2p.testnet-1.duality.xyz:26656,08ec17e86dac67b9da70deb20177655495a55407@duality-seed.rs-testnet.polypore.xyz:26656"
     reboot: true
   children:
     node:
