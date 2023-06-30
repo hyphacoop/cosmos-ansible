@@ -57,7 +57,7 @@ jobs:
         run: echo "transport = local" >> ansible.cfg
       - name: Run playbook
         run: |
-          ansible-playbook node.yml -i examples/inventory-rs-testnet-pion-1.yml --extra-vars "target=local reboot=false chain_home={{ node_user_home }}/.neutrond node_user=runner enable_swap=false use_cosmovisor=false node_service_name=neutrond"
+          ansible-playbook node.yml -i examples/inventory-rs-testnet-pion-1.yml --extra-vars "target=local reboot=false chain_home={{ node_user_home }}/.neutrond node_user=runner enable_swap=true swap_size=16384 use_cosmovisor=false node_service_name=neutrond"
       - name: Check neutrond service
         run: systemctl status neutrond
       - name: Check blocks are being produced
