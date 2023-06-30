@@ -1,7 +1,9 @@
 ---
 
-name: Test Patch Upgrade
+name: Test v10 Patch Upgrades
 on:
+  repository_dispatch:
+    types: [new_v10_build]
   workflow_dispatch:
 jobs:
   set-version-matrix:
@@ -74,6 +76,9 @@ jobs:
       HIGH_FEES: 10000
       GAS: auto
       GAS_ADJUSTMENT: 1.2
+      HERMES_VERSION: v1.5.1
+      MNEMONIC_4: ${{ vars.MNEMONIC_4 }}
+      MONIKER_4: relayer
     steps:
       - name: start-version
         run: echo ${{matrix.start_version}}
@@ -130,7 +135,7 @@ jobs:
       - name: api-1
         run: tests/test_endpoints_api.sh localhost 25001
       - name: rpc-1
-        run: tests/test_endpoints_rpc.sh localhost $VAL1_RPC_PORT
+        run: tests/patch_upgrade/patch_test_endpoints_rpc.sh localhost $VAL1_RPC_PORT
 
       - name: Set up relayer
         run: tests/patch_upgrade/patch_setup_relayer.sh
@@ -256,10 +261,9 @@ jobs:
       - name: api-2
         run: tests/test_endpoints_api.sh localhost 25001
       - name: rpc-2
-        run: tests/test_endpoints_rpc.sh localhost $VAL1_RPC_PORT
+        run: tests/patch_upgrade/patch_test_endpoints_rpc.sh localhost $VAL1_RPC_PORT
       - name: consumera-vsc-2
         run: tests/patch_upgrade/patch_test_ccv.sh
-
 
       - name: Initialize consumer chain c
         env:
