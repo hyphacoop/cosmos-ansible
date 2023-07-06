@@ -146,7 +146,7 @@ jobs:
           START_VERSION: ${{matrix.gaia_version}}
         run: tests/major_stateful_upgrade/start_chain.sh
       - name: _blocks-1
-        run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 5 # 5 blocks
+        run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 50 # 5 blocks
       - name: _txs-1
         run: tests/patch_upgrade/patch_test_tx.sh
       - name: _api-1
