@@ -148,7 +148,7 @@ jobs:
       - name: _blocks-1
         run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 50 # 5 blocks
       - name: _txs-1
-        run: tests/patch_upgrade/patch_test_tx.sh
+        run: tests/test_tx_stateful.sh
       - name: _api-1
         run: tests/test_endpoints_api.sh localhost $VAL1_API_PORT
       - name: _rpc-1
