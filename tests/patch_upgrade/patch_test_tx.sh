@@ -34,6 +34,7 @@ sleep 10
 
 # Check the funds again
 echo $($CHAIN_BINARY q bank balances $WALLET_1 --home $HOME_1 -o json)
+$CHAIN_BINARY q bank balances $WALLET_1 --home $HOME_1
 ending_balance=$($CHAIN_BINARY q bank balances $WALLET_1 --home $HOME_1 -o json | jq -r '.balances[] | select(.denom=="uatom").amount')
 echo "Ending balance: $ending_balance"
 delta=$[ $ending_balance - $starting_balance]
