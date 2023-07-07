@@ -61,6 +61,7 @@ jobs:
       CHAIN_ID: ${{ vars.CHAIN_ID }}
       MONIKER_1: ${{ vars.MONIKER_1 }}
       MNEMONIC_1: ${{ vars.MNEMONIC_1 }}
+      MNEMONIC_2: ${{ vars.MNEMONIC_2 }}
       DENOM: ${{ vars.DENOM }}
       VAL_FUNDS: ${{ vars.VAL_FUNDS }}
       VAL_STAKE: ${{ vars.VAL_STAKE }}
