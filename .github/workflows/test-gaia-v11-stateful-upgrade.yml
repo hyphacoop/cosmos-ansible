@@ -91,6 +91,16 @@ jobs:
       GAS: auto
       GAS_ADJUSTMENT: 1.2
     steps:
+      # Get system info
+      - run: ifconfig
+      - run: lscpu
+      - run: df -h
+      - run: free -m
+      - run: uname -a
+      - run: lsb_release -a
+      - run: echo "GitHub branch is ${{ github.ref }}"
+      - run: whoami
+      - run: pwd
       - name: start-version
         run: echo ${{matrix.gaia_version}}
       - name: target-version
