@@ -28,15 +28,9 @@ sleep 20
 echo "Withdrawing rewards for test account..."
 starting_balance=$($CHAIN_BINARY q bank balances $WALLET_1 --home $HOME_1 -o json | jq -r '.balances[] | select(.denom=="uatom").amount')
 echo "Starting balance: $starting_balance"
-$CHAIN_BINARY q distribution rewards $WALLET_1 $VALOPER_1 --home $HOME_1
-sleep 30
-$CHAIN_BINARY q distribution rewards $WALLET_1 $VALOPER_1 --home $HOME_1
-sleep 30
-$CHAIN_BINARY q distribution rewards $WALLET_1 $VALOPER_1 --home $HOME_1
-TXHASH=$($CHAIN_BINARY tx distribution withdraw-all-rewards --home $HOME_1 --from $MONIKER_1 --keyring-backend test --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM --chain-id $CHAIN_ID -y -o json -b block | jq '.txhash' | tr -d '"')
-sleep 30
-$CHAIN_BINARY q distribution rewards $WALLET_1 $VALOPER_1 --home $HOME_1
+TXHASH=$($CHAIN_BINARY tx distribution withdraw-rewards $VALOPER_1 --home $HOME_1 --from $MONIKER_1 --keyring-backend test --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM --chain-id $CHAIN_ID -y -o json -b block | jq '.txhash' | tr -d '"')
 check_code $TXHASH
+sleep 10
 
 # Check the funds again
 echo $($CHAIN_BINARY q bank balances $WALLET_1 --home $HOME_1 -o json)
@@ -46,7 +40,7 @@ delta=$[ $ending_balance - $starting_balance]
 if [ $delta -gt 0 ]; then
     echo "$delta uatom were withdrawn successfully."
 else
-    echo "Rewards could not be withdrawn."
+    echo "Rewards could not be withdrawn. Delta is: $delta"
     exit 1
 fi
 
