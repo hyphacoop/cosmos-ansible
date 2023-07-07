@@ -60,6 +60,7 @@ jobs:
       HOME_1: ${{ vars.HOME_1 }}
       CHAIN_ID: ${{ vars.CHAIN_ID }}
       MONIKER_1: ${{ vars.MONIKER_1 }}
+      MONIKER_2: ${{ vars.MONIKER_2 }}
       MNEMONIC_1: ${{ vars.MNEMONIC_1 }}
       MNEMONIC_2: ${{ vars.MNEMONIC_2 }}
       DENOM: ${{ vars.DENOM }}
