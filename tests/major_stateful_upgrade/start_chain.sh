@@ -54,6 +54,9 @@ toml set --toml-path $HOME_1/config/config.toml p2p.allow_duplicate_ip true
 # Set client ports for rpc
 toml set --toml-path $HOME_1/config/client.toml node "tcp://localhost:$VAL1_RPC_PORT"
 
+# Create self-delegation accounts
+echo $MNEMONIC_2 | $CHAIN_BINARY keys add $MONIKER_2 --keyring-backend test --home $HOME_1 --recover
+
 echo "Setting up services..."
 echo "Creating script for $CHAIN_BINARY"
 echo "while true; do $HOME/go/bin/$CHAIN_BINARY start --home $HOME_1; sleep 1; done" > $HOME/service.sh
