@@ -34,6 +34,8 @@ $CHAIN_BINARY q distribution rewards $WALLET_1 $VALOPER_1 --home $HOME_1
 sleep 30
 $CHAIN_BINARY q distribution rewards $WALLET_1 $VALOPER_1 --home $HOME_1
 TXHASH=$($CHAIN_BINARY tx distribution withdraw-rewards $VALOPER_1 --home $HOME_1 --from $MONIKER_1 --keyring-backend test --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM --chain-id $CHAIN_ID -y -o json -b block | jq '.txhash' | tr -d '"')
+sleep 30
+$CHAIN_BINARY q distribution rewards $WALLET_1 $VALOPER_1 --home $HOME_1
 check_code $TXHASH
 
 # Check the funds again
