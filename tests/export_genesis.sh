@@ -2,7 +2,7 @@
 set -e
 
 # cosmos next upgrade version name
-cosmos_upgrade_name="v10"
+cosmos_upgrade_name="v11"
 
 # cosmos-genesis-tinkerer repo config
 gh_branch="main"
@@ -161,8 +161,8 @@ echo "Uploading Tinkered Mainnet genesis to files.polypore.xyz"
 scp mainnet-genesis-tinkered/tinkered-genesis_${current_block_time}_${chain_version}_${current_block}.json.gz gh-actions@files.polypore.xyz:/var/www/html/genesis/mainnet-genesis-tinkered/
 
 # Update latest file symlinks
-ssh gh-actions@files.polypore.xyz ln -sf /var/www/html/genesis/mainnet-genesis-export/mainnet-genesis_${current_block_time}_${chain_version}_${current_block}.json.gz /var/www/html/genesis/mainnet-genesis-export/latest_v$(echo $chain_version | cut  -c 2).json.gz
-ssh gh-actions@files.polypore.xyz ln -sf /var/www/html/genesis/mainnet-genesis-tinkered/tinkered-genesis_${current_block_time}_${chain_version}_${current_block}.json.gz /var/www/html/genesis/mainnet-genesis-tinkered/latest_v$(echo $chain_version | cut  -c 2).json.gz
+ssh gh-actions@files.polypore.xyz ln -sf /var/www/html/genesis/mainnet-genesis-export/mainnet-genesis_${current_block_time}_${chain_version}_${current_block}.json.gz /var/www/html/genesis/mainnet-genesis-export/latest_v$(echo $chain_version | awk -F "." '{ print substr($1,2) }').json.gz
+ssh gh-actions@files.polypore.xyz ln -sf /var/www/html/genesis/mainnet-genesis-tinkered/tinkered-genesis_${current_block_time}_${chain_version}_${current_block}.json.gz /var/www/html/genesis/mainnet-genesis-tinkered/latest_v$(echo $chain_version | awk -F "." '{ print substr($1,2) }').json.gz
 
 # cleanup
 echo "Cleanup ~gaia/.gaia"
@@ -269,7 +269,7 @@ then
 
     # Update latest file symlinks
     echo "Updating latest file symlinks"
-    ssh gh-actions@files.polypore.xyz ln -sf /var/www/html/archived-state/$chain_version-$upgrade_height-stateful-upgrade.tar.gz /var/www/html/archived-state/latest_v$(echo $chain_version | cut  -c 2).tar.gz
+    ssh gh-actions@files.polypore.xyz ln -sf /var/www/html/archived-state/$chain_version-$upgrade_height-stateful-upgrade.tar.gz /var/www/html/archived-state/latest_v$(echo $chain_version | awk -F "." '{ print substr($1,2) }').tar.gz
 fi
 
 # Print current date and time
