@@ -50,5 +50,3 @@ fi
 echo "Unbonding funds from test account to validator..."
 TXHASH=$($CHAIN_BINARY tx staking unbond $VALOPER_1 $VAL_STAKE$DENOM --home $HOME_1 --from $MONIKER_1 --keyring-backend test --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --fees $HIGH_FEES$DENOM --chain-id $CHAIN_ID -y -o json -b block | jq '.txhash' | tr -d '"')
 check_code $TXHASH
-
-$CHAIN_BINARY q staking validators --home $HOME_1
