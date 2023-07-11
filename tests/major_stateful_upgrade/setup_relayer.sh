@@ -9,7 +9,7 @@ rm hermes
 rm hermes*gz
 
 echo "Downloading Hermes..."
-wget https://github.com/informalsystems/hermes/releases/download/v1.4.0/hermes-v1.4.0-x86_64-unknown-linux-gnu.tar.gz -O hermes-v1.4.0.tar.gz
+wget -nv https://github.com/informalsystems/hermes/releases/download/v1.4.0/hermes-v1.4.0-x86_64-unknown-linux-gnu.tar.gz -O hermes-v1.4.0.tar.gz
 tar -xzvf hermes-v1.4.0.tar.gz
 mkdir -p ~/.hermes
 cp hermes ~/.hermes/hermes

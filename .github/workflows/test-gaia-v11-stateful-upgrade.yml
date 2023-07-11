@@ -168,7 +168,7 @@ jobs:
       - name: Set minimum gas prices in globalfee module
         run: tests/v11_upgrade/set_minimum_gas_prices.sh
       - name: Set up relayer
-        run: tests/patch_upgrade/patch_setup_relayer.sh
+        run: tests/major_stateful_upgrade/setup_relayer.sh
       # - name: Download consumer chain binaries
       #   run: |
       #     wget $CONSUMER_CHAIN_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_BINARY
