@@ -167,17 +167,17 @@ jobs:
         run: tests/test_endpoints_rpc.sh localhost $VAL1_RPC_PORT
       - name: Set minimum gas prices in globalfee module
         run: tests/v11_upgrade/set_minimum_gas_prices.sh
-      # - name: Set up relayer
-      #   run: tests/patch_upgrade/patch_setup_relayer.sh
-      # - name: Download consumer chain binaries
-      #   run: |
-      #     wget $CONSUMER_CHAIN_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_BINARY
-      #     chmod +x $HOME/go/bin/$CONSUMER_CHAIN_BINARY
-      #     wget $CONSUMER_CHAIN_BINARY_URL_2 -O $HOME/go/bin/$CONSUMER_CHAIN_BINARY_2
-      #     chmod +x $HOME/go/bin/$CONSUMER_CHAIN_BINARY_2
-      # - name: Initialize consumer chain a
-      #   env:
-      #     CONSUMER_CHAIN_ID: consumera
+      - name: Set up relayer
+        run: tests/patch_upgrade/patch_setup_relayer.sh
+      - name: Download consumer chain binaries
+        run: |
+          wget $CONSUMER_CHAIN_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_BINARY
+          chmod +x $HOME/go/bin/$CONSUMER_CHAIN_BINARY
+          wget $CONSUMER_CHAIN_BINARY_URL_2 -O $HOME/go/bin/$CONSUMER_CHAIN_BINARY_2
+          chmod +x $HOME/go/bin/$CONSUMER_CHAIN_BINARY_2
+      - name: Initialize consumer chain a
+        env:
+          CONSUMER_CHAIN_ID: consumera
       #   run: tests/major_fresh_upgrade/init_consumer.sh
       # - name: Launch consumer chain a
       #   env:
