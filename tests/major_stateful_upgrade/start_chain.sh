@@ -59,12 +59,12 @@ echo $MNEMONIC_2 | $CHAIN_BINARY keys add $MONIKER_2 --keyring-backend test --ho
 
 echo "Setting up services..."
 echo "Creating script for $CHAIN_BINARY"
-echo "while true; do $HOME/go/bin/$CHAIN_BINARY start --home $HOME_1; sleep 1; done" > $HOME/service.sh
-chmod +x $HOME/service.sh
+echo "while true; do $HOME/go/bin/$CHAIN_BINARY start --home $HOME_1; sleep 1; done" > $HOME/$PROVIDER_SERVICE_1.sh
+chmod +x $HOME/$PROVIDER_SERVICE_1.sh
 
 # Run service in screen session
 mkdir $HOME/artifact
 echo "Starting $CHAIN_BINARY"
-screen -L -Logfile $HOME/artifact/service.log -S service -d -m bash $HOME/service.sh
+screen -L -Logfile $HOME/artifact/$PROVIDER_SERVICE_1.log -S $CHAIN_BINARY -d -m bash $HOME/$PROVIDER_SERVICE_1.sh
 # set screen to flush log to 0
-screen -r service -p0 -X logfile flush 0
+screen -r $PROVIDER_SERVICE_1 -p0 -X logfile flush 0
