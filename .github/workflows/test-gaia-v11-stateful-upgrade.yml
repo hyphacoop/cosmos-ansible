@@ -24,6 +24,10 @@ jobs:
       - run: echo "GitHub branch is ${{ github.ref }}"
       - run: whoami
       - run: pwd
+      - name: Update Apt
+        run: |
+          sudo apt update
+          sudo apt dist-upgrade -y
       - name: Check out repository code
         uses: actions/checkout@v3
       - name: Set up Python
