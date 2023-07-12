@@ -322,7 +322,8 @@ jobs:
         if: always()
         run: |
           mkdir ~/artifact/configs
-          cp -rp ${{ vars.HOME_1 }}/config/!\(genesis.json\) ~/artifact/configs/
+          rm ${{ vars.HOME_1 }}/config/genesis.json
+          cp -rp ${{ vars.HOME_1 }}/config/ ~/artifact/configs/
           cp -p ~/.hermes/config.toml ~/artifact/configs/hermes-config.toml
       - name: Upload artifacts
         if: always()
