@@ -18,7 +18,7 @@ cp ~/hermes-linux ~/.hermes/hermes
 export PATH="$PATH:~/.hermes"
 
 echo "Setting up Hermes config..."
-cp tests/patch_upgrade/hermes-config.toml ~/.hermes/config.toml
+cp tests/major_stateful_upgrade/hermes-config.toml ~/.hermes/config.toml
 
 echo "Adding relayer keys..."
 echo $MNEMONIC_1 > mnemonic.txt
