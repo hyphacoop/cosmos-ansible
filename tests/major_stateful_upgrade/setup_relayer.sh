@@ -15,9 +15,11 @@ rm hermes*gz
 # chmod +x ~/hermes-linux
 
 echo "Build Hermes..."
+working_directory="$(pwd)"
 sudo apt install build-essential wget pkg-config musl-tools -y
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 source "$HOME/.cargo/env"
+cd "$HOME"
 git clone https://github.com/informalsystems/hermes.git
 cd hermes
 git checkout v1.5.1
@@ -25,6 +27,7 @@ cargo build --release --bin hermes
 mkdir -p ~/.hermes
 cp target/release/hermes ~/.hermes/hermes
 export PATH="$PATH:~/.hermes"
+cd $working_directory
 
 echo "Setting up Hermes config..."
 cp tests/major_stateful_upgrade/hermes-config.toml ~/.hermes/config.toml
