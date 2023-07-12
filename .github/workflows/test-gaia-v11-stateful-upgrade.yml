@@ -323,8 +323,8 @@ jobs:
         run: |
           mkdir ~/artifact/configs
           rm ${{ vars.HOME_1 }}/config/genesis.json
-          cp -rp ${{ vars.HOME_1 }}/config/ ~/artifact/configs/
-          cp -p ~/.hermes/config.toml ~/artifact/configs/hermes-config.toml
+          cp -rp ${{ vars.HOME_1 }}/config/ ~/artifact/configs/${{ vars.HOME_1 }}
+          cp -rp ~/.hermes/ ~/artifact/configs/hermes/
       - name: Upload artifacts
         if: always()
         uses: actions/upload-artifact@v3
