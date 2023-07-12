@@ -23,7 +23,7 @@ git clone https://github.com/informalsystems/hermes.git
 cd hermes
 git checkout v1.5.1
 cargo build --release --bin hermes
-cp target/x86_64-unknown-linux-musl/release/hermes ~/.hermes/hermes
+cp target/release/hermes ~/.hermes/hermes
 export PATH="$PATH:~/.hermes"
 
 echo "Setting up Hermes config..."
