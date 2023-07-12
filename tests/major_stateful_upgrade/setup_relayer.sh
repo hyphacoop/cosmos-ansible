@@ -1,6 +1,8 @@
 #!/bin/bash
 # Set up a relayer and IBC channels
 
+set +e
+
 PROVIDER_CLIENT=$1
 
 # Clear existing installation
@@ -10,7 +12,7 @@ rm hermes*gz
 
 echo "Downloading Hermes..."
 wget -nv https://github.com/hyphacoop/cosmos-builds/releases/download/hermes-linux/hermes-linux -O ~/hermes-linux
-chmod +x hermes-linux
+chmod +x ~/hermes-linux
 mkdir -p ~/.hermes
 cp ~/hermes-linux ~/.hermes/hermes
 export PATH="$PATH:~/.hermes"
