@@ -9,7 +9,7 @@ rm hermes
 rm hermes*gz
 
 echo "Downloading Hermes..."
-wget -nv https://github.com/hyphacoop/cosmos-builds/releases/download/hermes-linux/hermes-linux -O hermes-linux
+wget -nv https://github.com/hyphacoop/cosmos-builds/releases/download/hermes-linux/hermes-linux -O ~/hermes-linux
 chmod +x hermes-linux
 mkdir -p ~/.hermes
 cp ~/hermes-linux ~/.hermes/hermes
