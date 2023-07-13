@@ -1,5 +1,6 @@
 #!/bin/bash
 # Launch a consumer chain
+mkdir $HOME/artifact
 
 echo "Patching add template with spawn time..."
 spawn_time=$(date -u --iso-8601=ns | sed s/+00:00/Z/ | sed s/,/./)
@@ -17,6 +18,7 @@ echo $proposal
 gaiadout=$($proposal)
 echo "gaiad output:"
 echo "$gaiadout"
+echo "$gaiadout" > ~/artifact/$CONSUMER_CHAIN_ID-tx.txt
 
 txhash=$(echo "$gaiadout" | jq -r .txhash)
 # Wait for the proposal to go on chain
@@ -47,7 +49,6 @@ cp consumer-genesis.json $CONSUMER_HOME_1/config/genesis.json
 
 echo "Starting the consumer chain..."
 # Run service in screen session
-mkdir $HOME/artifact
 echo "Starting $CONSUMER_CHAIN_BINARY"
 screen -L -Logfile $HOME/artifact/$CONSUMER_SERVICE_1.log -S $CONSUMER_SERVICE_1 -d -m bash $HOME/$CONSUMER_SERVICE_1.sh
 # set screen to flush log to 0
