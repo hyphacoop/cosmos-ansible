@@ -1,15 +1,15 @@
 #!/bin/bash
 # Initialize a consumer chain
 
-echo "Running with $CONSUMER_CONSUMER_CHAIN_BINARY."
+echo "Running with $CONSUMER_CHAIN_BINARY."
 
 # Initialize home directories
 echo "Initializing consumer homes..."
-$CONSUMER_CONSUMER_CHAIN_BINARY config chain-id $CONSUMER_CHAIN_ID --home $CONSUMER_HOME_1
-$CONSUMER_CONSUMER_CHAIN_BINARY config keyring-backend test --home $CONSUMER_HOME_1
-$CONSUMER_CONSUMER_CHAIN_BINARY config broadcast-mode block --home $CONSUMER_HOME_1
-$CONSUMER_CHAIN_BINARY config node tcp://localhost:$CON1_RPC_PORT --home $CONSUMER_HOME_1
-$CONSUMER_CONSUMER_CHAIN_BINARY init $MONIKER_1 --chain-id $CONSUMER_CHAIN_ID --home $CONSUMER_HOME_1
+$CONSUMER_CHAIN_BINARY config chain-id $CONSUMER_CHAIN_ID --home $CONSUMER_HOME_1
+$CONSUMER_CHAIN_BINARY config keyring-backend test --home $CONSUMER_HOME_1
+$CONSUMER_CHAIN_BINARY config broadcast-mode block --home $CONSUMER_HOME_1
+$CHAIN_BINARY config node tcp://localhost:$CON1_RPC_PORT --home $CONSUMER_HOME_1
+$CONSUMER_CHAIN_BINARY init $MONIKER_1 --chain-id $CONSUMER_CHAIN_ID --home $CONSUMER_HOME_1
 
 echo "Copying keys from provider nodes to consumer ones..."
 cp $HOME_1/config/priv_validator_key.json $CONSUMER_HOME_1/config/priv_validator_key.json
@@ -19,10 +19,10 @@ cp $HOME_1/config/node_key.json $CONSUMER_HOME_1/config/node_key.json
 sed -i s%stake%$CONSUMER_DENOM%g $CONSUMER_HOME_1/config/genesis.json
 
 # Create self-delegation accounts
-echo $MNEMONIC_1 | $CONSUMER_CONSUMER_CHAIN_BINARY keys add $MONIKER_1 --keyring-backend test --home $CONSUMER_HOME_1 --recover
+echo $MNEMONIC_1 | $CONSUMER_CHAIN_BINARY keys add $MONIKER_1 --keyring-backend test --home $CONSUMER_HOME_1 --recover
 
 # Add funds to accounts
-$CONSUMER_CONSUMER_CHAIN_BINARY add-genesis-account $MONIKER_1 $VAL_FUNDS$CONSUMER_DENOM --home $CONSUMER_HOME_1
+$CONSUMER_CHAIN_BINARY add-genesis-account $MONIKER_1 $VAL_FUNDS$CONSUMER_DENOM --home $CONSUMER_HOME_1
 
 echo "Patching config files..."
 # app.toml
