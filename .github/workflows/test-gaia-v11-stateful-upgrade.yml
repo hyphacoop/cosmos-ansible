@@ -175,18 +175,18 @@ jobs:
         run: tests/major_stateful_upgrade/setup_relayer.sh
       - name: Download consumer chain binaries
         run: |
-          wget $CONSUMER_CHAIN_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_BINARY
+          wget -nv $CONSUMER_CHAIN_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_BINARY
           chmod +x $HOME/go/bin/$CONSUMER_CHAIN_BINARY
-          wget $CONSUMER_CHAIN_BINARY_URL_2 -O $HOME/go/bin/$CONSUMER_CHAIN_BINARY_2
+          wget -nv $CONSUMER_CHAIN_BINARY_URL_2 -O $HOME/go/bin/$CONSUMER_CHAIN_BINARY_2
           chmod +x $HOME/go/bin/$CONSUMER_CHAIN_BINARY_2
       - name: Initialize consumer chain a
         env:
           CONSUMER_CHAIN_ID: consumera
-        run: tests/major_fresh_upgrade/init_consumer.sh
+        run: tests/major_stateful_upgrade/init_consumer.sh
       - name: Launch consumer chain a
         env:
           CONSUMER_CHAIN_ID: consumera
-        run: tests/major_fresh_upgrade/launch_consumer.sh
+        run: tests/major_stateful_upgrade/launch_consumer.sh
       - name: _consumera-blocks-1
         run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT 10
       # - name: Establish CCV channel for consumer a

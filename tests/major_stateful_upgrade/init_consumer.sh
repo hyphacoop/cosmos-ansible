@@ -58,10 +58,3 @@ echo "Setting up services..."
 echo "Creating script for $CONSUMER_CHAIN_BINARY"
 echo "while true; do $HOME/go/bin/$CONSUMER_CHAIN_BINARY start --home $HOME_1; sleep 1; done" > $HOME/$CONSUMER_SERVICE_1.sh
 chmod +x $HOME/$CONSUMER_SERVICE_1.sh
-
-# Run service in screen session
-mkdir $HOME/artifact
-echo "Starting $CONSUMER_CHAIN_BINARY"
-screen -L -Logfile $HOME/artifact/$CONSUMER_SERVICE_1.log -S $CONSUMER_SERVICE_1 -d -m bash $HOME/$CONSUMER_SERVICE_1.sh
-# set screen to flush log to 0
-screen -r $CONSUMER_SERVICE_1 -p0 -X logfile flush 0
