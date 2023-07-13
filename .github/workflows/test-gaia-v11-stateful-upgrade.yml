@@ -81,7 +81,7 @@ jobs:
       CONSUMER_DENOM: ${{ vars.CONSUMER_DENOM }}
       CONSUMER_CHAIN_BINARY_URL_2: ${{ vars.CONSUMER_CHAIN_BINARY_URL_2 }}
       CONSUMER_CHAIN_BINARY_2: ${{ vars.CONSUMER_CHAIN_BINARY_2 }}
-      CONSUMER_HOME_1: /home/runner/.cona1
+      CONSUMER_HOME_1: /home/github/.cona1
       CON1_API_PORT: 25101
       CON1_GRPC_PORT: 26101
       CON1_RPC_PORT: 27101
@@ -204,7 +204,7 @@ jobs:
       # - name: Initialize consumer chain b
       #   env:
       #     CONSUMER_CHAIN_ID: consumerb
-      #     CONSUMER_HOME_1: /home/runner/.conb1
+      #     CONSUMER_HOME_1: /home/github/.conb1
       #     CON1_API_PORT: 25201
       #     CON1_GRPC_PORT: 26201
       #     CON1_RPC_PORT: 27201
@@ -216,7 +216,7 @@ jobs:
       # - name: Launch consumer chain b
       #   env:
       #     CONSUMER_CHAIN_ID: consumerb
-      #     CONSUMER_HOME_1: /home/runner/.conb1
+      #     CONSUMER_HOME_1: /home/github/.conb1
       #     CONSUMER_SERVICE_1: conb1.service
       #   run: tests/major_fresh_upgrade/launch_consumer.sh
       # - name: _consumerb-blocks-1
@@ -234,7 +234,7 @@ jobs:
       # - name: _consumerb-ibc
       #   env:
       #     CONSUMER_CHAIN_ID: consumerb
-      #     CONSUMER_HOME_1: /home/runner/.conb1
+      #     CONSUMER_HOME_1: /home/github/.conb1
       #     CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY_2 }}
       #   run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-3 3
       # - name: _consumera-blocks-2
@@ -266,7 +266,7 @@ jobs:
       # - name: Initialize consumer chain f
       #   env:
       #     CONSUMER_CHAIN_ID: consumerf
-      #     CONSUMER_HOME_1: /home/runner/.conf1
+      #     CONSUMER_HOME_1: /home/github/.conf1
       #     CON1_API_PORT: 25401
       #     CON1_GRPC_PORT: 26401
       #     CON1_RPC_PORT: 27401
@@ -278,7 +278,7 @@ jobs:
       # - name: Launch consumer chain f
       #   env:
       #     CONSUMER_CHAIN_ID: consumerf
-      #     CONSUMER_HOME_1: /home/runner/.conf1
+      #     CONSUMER_HOME_1: /home/github/.conf1
       #     CONSUMER_SERVICE_1: conf1.service
       #   run: tests/major_fresh_upgrade/launch_consumer.sh
       # - name: _consumerf-blocks
@@ -296,7 +296,7 @@ jobs:
       # - name: _consumerf-ibc
       #   env:
       #     CONSUMER_CHAIN_ID: consumerf
-      #     CONSUMER_HOME_1: /home/runner/.conf1
+      #     CONSUMER_HOME_1: /home/github/.conf1
       #     CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY_2 }}
       #   run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-5 4
       # - name: _consumera-blocks-4
