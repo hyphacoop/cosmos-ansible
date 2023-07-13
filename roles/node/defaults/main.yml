@@ -51,7 +51,7 @@ cosmovisor_auto_download: true
 
 # Go configuration
 go_arch: "{{binary_arch_map[ansible_architecture]}}"
-go_version: 1.20
+go_version: '1.20'
 
 # app.toml
 ## app.toml: Base Configuration
