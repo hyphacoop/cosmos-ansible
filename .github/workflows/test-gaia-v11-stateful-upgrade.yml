@@ -140,7 +140,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo python -m pip install --upgrade pip
-          sudo python -m pip install toml-cli
+          sudo python -m pip install toml-cli toml
       - name: Print RPC port
         run: echo $VAL1_RPC_PORT
       - name: Test software upgrade for published releases
