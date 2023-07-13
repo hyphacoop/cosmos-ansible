@@ -7,6 +7,10 @@ jq -r --arg SPAWNTIME "$spawn_time" '.spawn_time |= $SPAWNTIME' tests/patch_upgr
 sed "s%\"chain_id\": \"\"%\"chain_id\": \"$CONSUMER_CHAIN_ID\"%g" proposal-add-spawn.json > proposal-add-$CONSUMER_CHAIN_ID.json
 rm proposal-add-spawn.json
 
+echo "Proposal file proposal-add-$CONSUMER_CHAIN_ID.json"
+jq -r '.' proposal-add-$CONSUMER_CHAIN_ID.json
+cp proposal-add-$CONSUMER_CHAIN_ID.json ~/artifact/
+
 echo "Submitting proposal..."
 proposal="$CHAIN_BINARY tx gov submit-proposal consumer-addition proposal-add-$CONSUMER_CHAIN_ID.json --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM --from $WALLET_1 --keyring-backend test --home $HOME_1 --chain-id $CHAIN_ID -b block -y -o json"
 echo $proposal
