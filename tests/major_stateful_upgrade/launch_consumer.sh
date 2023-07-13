@@ -14,7 +14,11 @@ cp proposal-add-$CONSUMER_CHAIN_ID.json ~/artifact/
 echo "Submitting proposal..."
 proposal="$CHAIN_BINARY tx gov submit-proposal consumer-addition proposal-add-$CONSUMER_CHAIN_ID.json --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM --from $WALLET_1 --keyring-backend test --home $HOME_1 --chain-id $CHAIN_ID -b block -y -o json"
 echo $proposal
-txhash=$($proposal | jq -r .txhash)
+gaiadout=$($proposal)
+echo "gaiad output:"
+echo "$gaiadout"
+
+txhash=$(echo "$gaiadout" | jq -r .txhash)
 # Wait for the proposal to go on chain
 sleep 6
 
