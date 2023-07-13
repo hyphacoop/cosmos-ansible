@@ -21,6 +21,10 @@ mkdir -p $HOME/go/bin
 wget -nv $CHAIN_BINARY_URL -O $HOME/go/bin/$CHAIN_BINARY
 chmod +x $HOME/go/bin/$CHAIN_BINARY
 
+echo "Patching genesis file..."
+jq -r ".app_state.staking.params.unbonding_time = \"1814400s\"" $HOME_1/config/genesis.json  > ./unbonding.json
+mv ./unbonding.json $HOME_1/config/genesis.json
+
 echo "Patching config files..."
 # app.toml
 # minimum_gas_prices

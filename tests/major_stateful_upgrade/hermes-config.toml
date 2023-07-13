@@ -90,7 +90,7 @@ trusting_period = '5days'
 trust_threshold = { numerator = '1', denominator = '3' }
 
 [[chains]]
-id = 'testnet'
+id = 'local-testnet'
 rpc_addr = 'http://localhost:27001'
 grpc_addr = 'http://localhost:26001'
 websocket_addr = 'ws://localhost:27001/websocket'
