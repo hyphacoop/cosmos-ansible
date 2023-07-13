@@ -329,6 +329,7 @@ jobs:
           rm ${{ vars.HOME_1 }}/config/genesis.json
           cp -rp ${{ vars.HOME_1 }}/config/ ~/artifact/configs/val1
           cp -rp ~/.hermes/ ~/artifact/configs/hermes/
+          cp -rp ${{ vars.CONSUMER_HOME_1 }}/config/ ~/artifact/configs/.cona1
       - name: Upload artifacts
         if: always()
         uses: actions/upload-artifact@v3
