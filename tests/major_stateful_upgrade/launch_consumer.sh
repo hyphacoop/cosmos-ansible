@@ -27,8 +27,9 @@ $CHAIN_BINARY q gov tally $proposal_id --home $HOME_1
 echo "Waiting for proposal to pass..."
 sleep $VOTING_PERIOD
 
-echo "gaiad q params subspace staking UnbondingTime"
-gaiad q params subspace staking UnbondingTime
+sleep $VOTING_PERIOD
+echo "$CHAIN_BINARY q params subspace staking UnbondingTime --home $HOME_1"
+$CHAIN_BINARY q params subspace staking UnbondingTime --home $HOME_1
 
 echo "Patching add template with spawn time..."
 spawn_time=$(date -u --iso-8601=ns | sed s/+00:00/Z/ | sed s/,/./)
