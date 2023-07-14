@@ -26,7 +26,6 @@ $CHAIN_BINARY q gov tally $proposal_id --home $HOME_1
 echo "Waiting for proposal to pass..."
 sleep $VOTING_PERIOD
 
-sleep $VOTING_PERIOD
 $CHAIN_BINARY q gov proposal $proposal_id --home $HOME_1
 echo "$CHAIN_BINARY q params subspace staking UnbondingTime --home $HOME_1"
 $CHAIN_BINARY q params subspace staking UnbondingTime --home $HOME_1
