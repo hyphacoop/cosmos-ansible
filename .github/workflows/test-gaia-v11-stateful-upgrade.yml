@@ -196,8 +196,8 @@ jobs:
           hermes create channel --a-chain consumera --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
           sudo systemctl restart hermes
           sleep 10
-      # - name: _consumera-vsc-1
-      #   run: tests/patch_upgrade/patch_test_ccv.sh
+      - name: _consumera-vsc-1
+        run: tests/patch_upgrade/patch_test_ccv.sh
       # - name: _consumera-ibc-1
       #   env:
       #     CONSUMER_CHAIN_ID: consumera
