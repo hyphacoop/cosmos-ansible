@@ -194,8 +194,9 @@ jobs:
           client_id=$(gaiad --home $HOME/.val1 q provider list-consumer-chains --output json | jq -r '.chains[] | select(.chain_id=="consumera").client_id')
           hermes create connection --a-chain consumera --a-client 07-tendermint-0 --b-client $client_id
           hermes create channel --a-chain consumera --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
-          sudo systemctl restart hermes
-          sleep 10
+          killall hermes
+          echo "Wait for hermes to start..."
+          sleep 180
       - name: _consumera-vsc-1
         run: tests/patch_upgrade/patch_test_ccv.sh
       # - name: _consumera-ibc-1
