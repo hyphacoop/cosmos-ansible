@@ -199,8 +199,11 @@ jobs:
           CONSUMER_CHAIN_ID: consumera
         run: |
           client_id=$(gaiad --home $HOME/.val1 q provider list-consumer-chains --output json | jq -r '.chains[] | select(.chain_id=="consumera").client_id')
-          connection_id=$(hermes --json query client connections --chain local-testnet --client 07-tendermint-1153 | jq -r '. | select(.result).result[]')
-          transfer_channel=$(hermes --json query connection channels --chain local-testnet --connection $connection_id | jq -r '. | select(.result).result[] | select(.port_id=="transfer").channel_id')
+          echo "Client ID: $client_id"
+          connection_id=$(hermes --json query client connections --chain local-testnet --client $client_id | jq -r '. | select(.result).result[]')
+          echo "Connection ID: $connection_id"
+          channel_id=$(hermes --json query connection channels --chain local-testnet --connection $connection_id | jq -r '. | select(.result).result[] | select(.port_id=="transfer").channel_id')
+          echo "Channel ID: $channel_id"
           tests/major_stateful_upgrade/test_consumer_ibc_transfer.sh $channel_id 2
       # - name: _globalfee-1
       #   run: tests/v11_upgrade/test_globalfee_params.sh
