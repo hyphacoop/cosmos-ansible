@@ -51,6 +51,9 @@ toml set --toml-path $CONSUMER_HOME_1/config/config.toml rpc.pprof_laddr "localh
 # Set different ports for p2p
 toml set --toml-path $CONSUMER_HOME_1/config/config.toml p2p.laddr "tcp://0.0.0.0:$CON1_P2P_PORT"
 
+# Turn off block_sync
+toml set --toml-path $CONSUMER_HOME_1/config/config.toml block_sync "false"
+
 # Allow duplicate IPs in p2p
 toml set --toml-path $CONSUMER_HOME_1/config/config.toml p2p.allow_duplicate_ip true
 
