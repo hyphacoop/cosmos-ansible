@@ -56,5 +56,5 @@ toml set --toml-path $CONSUMER_HOME_1/config/config.toml p2p.allow_duplicate_ip 
 
 echo "Setting up services..."
 echo "Creating script for $CONSUMER_CHAIN_BINARY"
-echo "while true; do $HOME/go/bin/$CONSUMER_CHAIN_BINARY start --home $HOME_1; sleep 1; done" > $HOME/$CONSUMER_SERVICE_1.sh
+echo "while true; do $HOME/go/bin/$CONSUMER_CHAIN_BINARY start --home $CONSUMER_HOME_1; sleep 1; done" > $HOME/$CONSUMER_SERVICE_1.sh
 chmod +x $HOME/$CONSUMER_SERVICE_1.sh
