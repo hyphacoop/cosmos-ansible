@@ -189,12 +189,13 @@ jobs:
         run: tests/major_stateful_upgrade/launch_consumer.sh
       - name: _consumera-blocks-1
         run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT 10
-      # - name: Establish CCV channel for consumer a
-      #   run: |
-      #     hermes create connection --a-chain consumera --a-client 07-tendermint-0 --b-client 07-tendermint-0
-      #     hermes create channel --a-chain consumera --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
-      #     sudo systemctl restart hermes
-      #     sleep 10
+      - name: Establish CCV channel for consumer a
+        run: |
+          client_id=$(gaiad q provider list-consumer-chains --output json | jq -r '.chains[] | select(.chain_id=="consumera").client_id')
+          hermes create connection --a-chain consumera --a-client 07-tendermint-0 --b-client $client_id
+          hermes create channel --a-chain consumera --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
+          sudo systemctl restart hermes
+          sleep 10
       # - name: _consumera-vsc-1
       #   run: tests/patch_upgrade/patch_test_ccv.sh
       # - name: _consumera-ibc-1
@@ -336,3 +337,7 @@ jobs:
         with:
           name: archived-upgrade-${{ matrix.gaia_version }}-${{ matrix.upgrade_version }}
           path: ~/artifact/
+      - name: Keep alive for 10 hours
+        if: always()
+        run: |
+          sleep 10h
