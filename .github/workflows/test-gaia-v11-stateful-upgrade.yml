@@ -205,12 +205,12 @@ jobs:
           channel_id=$(hermes --json query connection channels --chain local-testnet --connection $connection_id | jq -r '. | select(.result).result[] | select(.port_id=="transfer").channel_id')
           echo "Channel ID: $channel_id"
           tests/major_stateful_upgrade/test_consumer_ibc_transfer.sh $channel_id 2
-      # - name: _globalfee-1
-      #   run: tests/v11_upgrade/test_globalfee_params.sh
-      # - name: _globalfee-2
-      #   run: tests/v11_upgrade/test_bypass_msg.sh
-      # - name: _globalfee-3
-      #   run: tests/v11_upgrade/test_max_gas.sh
+      - name: _globalfee-1
+        run: tests/v11_upgrade/test_globalfee_params.sh
+      - name: _globalfee-2
+        run: tests/v11_upgrade/test_bypass_msg.sh
+      - name: _globalfee-3
+        run: tests/v11_upgrade/test_max_gas.sh
 
       # - name: Stop services
       #   if: always()
