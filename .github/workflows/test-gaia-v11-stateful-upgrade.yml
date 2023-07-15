@@ -166,8 +166,8 @@ jobs:
       #   run: tests/test_endpoints_api.sh localhost $VAL1_API_PORT
       # - name: _rpc-1
       #   run: tests/test_endpoints_rpc.sh localhost $VAL1_RPC_PORT
-      # - name: Set minimum gas prices in globalfee module
-      #   run: tests/v11_upgrade/set_minimum_gas_prices.sh
+      - name: Set minimum gas prices in globalfee module
+        run: tests/v11_upgrade/set_minimum_gas_prices.sh
       - name: Set up relayer
         run: tests/major_stateful_upgrade/setup_relayer.sh
       - name: Download consumer chain binaries
