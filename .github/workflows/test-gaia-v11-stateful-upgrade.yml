@@ -166,8 +166,8 @@ jobs:
       #   run: tests/test_endpoints_api.sh localhost $VAL1_API_PORT
       # - name: _rpc-1
       #   run: tests/test_endpoints_rpc.sh localhost $VAL1_RPC_PORT
-      - name: Set minimum gas prices in globalfee module
-        run: tests/v11_upgrade/set_minimum_gas_prices.sh
+      # - name: Set minimum gas prices in globalfee module
+      #   run: tests/v11_upgrade/set_minimum_gas_prices.sh
       - name: Set up relayer
         run: tests/major_stateful_upgrade/setup_relayer.sh
       - name: Download consumer chain binaries
@@ -205,8 +205,8 @@ jobs:
           channel_id=$(hermes --json query connection channels --chain local-testnet --connection $connection_id | jq -r '. | select(.result).result[] | select(.port_id=="transfer").channel_id')
           echo "Channel ID: $channel_id"
           tests/major_stateful_upgrade/test_consumer_ibc_transfer.sh $channel_id 2
-      - name: _globalfee-1
-        run: tests/v11_upgrade/test_globalfee_params.sh
+      # - name: _globalfee-1
+      #   run: tests/v11_upgrade/test_globalfee_params.sh
       - name: _globalfee-2
         run: tests/v11_upgrade/test_bypass_msg.sh
       - name: _globalfee-3

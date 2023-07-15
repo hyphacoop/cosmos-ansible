@@ -1,6 +1,11 @@
 #!/bin/bash
 # Add bypass message type
 
+if [ ! $VOTING_PERIOD ]
+then
+    VOTING_PERIOD=6
+fi
+
 echo "Testing withdraw-all-rewards transaction with 0 fees before adding it to the bypass message list..."
 withdraw_rewards="$CHAIN_BINARY tx distribution withdraw-all-rewards --from $WALLET_1 -b block -y -o json --home $HOME_1"
 echo $withdraw_rewards
@@ -30,7 +35,7 @@ $vote
 
 # Wait for the voting period to be over
 echo "Waiting for the voting period to end..."
-sleep 8
+sleep $VOTING_PERIOD
 
 $CHAIN_BINARY q globalfee params -o json --home $HOME_1 > globalfee-params-withdraw-bypass.json
 jq '.' globalfee-params-withdraw-bypass.json
