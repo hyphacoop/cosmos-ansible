@@ -173,6 +173,9 @@ jobs:
         run: tests/test_endpoints_api.sh localhost $VAL1_API_PORT
       - name: _rpc-1
         run: tests/test_endpoints_rpc.sh localhost $VAL1_RPC_PORT
+      - name: Delegate to mainnet validator
+        run:
+          gaiad tx staking delegate $DELEGATE_1 $DELEGATE_1_AMOUNT$DENOM --from val --keyring-backend test --gas auto --gas-adjustment 1.2 --fees 1000uatom -y --chain-id local-testnet
       # - name: Set minimum gas prices in globalfee module
       #   run: tests/v11_upgrade/set_minimum_gas_prices.sh
       - name: Set up relayer
@@ -186,9 +189,6 @@ jobs:
           CONSUMER_CHAIN_ID: consumera
           DOWNTIME_BLOCKS: 20
         run: tests/major_stateful_upgrade/init_consumer.sh
-      - name: Delegate to mainnet validator
-        run:
-          gaiad tx staking delegate $DELEGATE_1 $DELEGATE_1_AMOUNT$DENOM --from val --keyring-backend test --gas auto --gas-adjustment 1.2 --fees 1000uatom -y --chain-id local-testnet
       - name: Launch consumer chain a
         env:
           CONSUMER_CHAIN_ID: consumera
