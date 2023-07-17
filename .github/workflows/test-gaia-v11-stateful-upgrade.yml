@@ -175,7 +175,7 @@ jobs:
         run: tests/test_endpoints_rpc.sh localhost $VAL1_RPC_PORT
       - name: Delegate to mainnet validator
         run:
-          gaiad tx staking delegate $DELEGATE_1 $DELEGATE_1_AMOUNT$DENOM --from val --keyring-backend test --gas auto --gas-adjustment 1.2 --fees 1000uatom -y --chain-id local-testnet
+          gaiad tx staking delegate $DELEGATE_1 $DELEGATE_1_AMOUNT$DENOM --from val --keyring-backend test --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y --chain-id $CHAIN_ID --home $HOME_1
       # - name: Set minimum gas prices in globalfee module
       #   run: tests/v11_upgrade/set_minimum_gas_prices.sh
       - name: Set up relayer
