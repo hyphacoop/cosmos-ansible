@@ -32,16 +32,21 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install requests
+      - name: Get latest gaiad stable release
+        run: |
+          GAIA_LATEST=$(curl --silent "https://api.github.com/repos/cosmos/gaia/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+          echo "Latest version of gaiad is: $GAIA_LATEST"
+          echo "GAIA_LATEST=$GAIA_LATEST" >> $GITHUB_ENV
       - name: Generate starting versions
         id: generate-start
         run: |
-          start=$(tests/generate_version_matrix.py v10.0.2)
+          start=$(tests/generate_version_matrix.py $GAIA_LATEST)
           echo $start
           echo "start_versions=$start" >> $GITHUB_OUTPUT
       - name: Generate upgrade versions
         id: generate-upgrade
         run: |
-          upgrade=$(tests/generate_upgrade_matrix_fresh.py v10.0.2)
+          upgrade=$(tests/generate_upgrade_matrix_fresh.py $GAIA_LATEST)
           echo $upgrade
           echo "upgrade_versions=$upgrade" >> $GITHUB_OUTPUT
     outputs:
