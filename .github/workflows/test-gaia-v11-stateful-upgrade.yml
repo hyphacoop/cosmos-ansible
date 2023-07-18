@@ -83,6 +83,8 @@ jobs:
       VALOPER_1: ${{ vars.VALOPER_1 }}
       CONSUMER_CHAIN_BINARY_URL: ${{ vars.CONSUMER_CHAIN_BINARY_URL }}
       CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY }}
+      CONSUMER_CHAIN_BINARY_URL_2: ${{ vars.CONSUMER_CHAIN_BINARY_URL_2 }}
+      CONSUMER_CHAIN_BINARY_2: ${{ vars.CONSUMER_CHAIN_BINARY_2 }}
       CONSUMER_DENOM: ${{ vars.CONSUMER_DENOM }}
       CONSUMER_HOME_1: /home/github/.cona1
       CON1_API_PORT: 25101
@@ -182,46 +184,46 @@ jobs:
         run: |
           wget -nv $CONSUMER_CHAIN_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_BINARY
           chmod +x $HOME/go/bin/$CONSUMER_CHAIN_BINARY
-          wget $CONSUMER_CHAIN_BINARY_URL_2 -O $HOME/go/bin/$CONSUMER_CHAIN_BINARY_2
+          wget -nv $CONSUMER_CHAIN_BINARY_URL_2 -O $HOME/go/bin/$CONSUMER_CHAIN_BINARY_2
           chmod +x $HOME/go/bin/$CONSUMER_CHAIN_BINARY_2
-      # - name: Initialize consumer chain a
-      #   env:
-      #     CONSUMER_CHAIN_ID: consumera
-      #     DOWNTIME_BLOCKS: 20
-      #   run: tests/major_stateful_upgrade/init_consumer.sh
-      # - name: Launch consumer chain a
-      #   env:
-      #     CONSUMER_CHAIN_ID: consumera
-      #   run: tests/major_stateful_upgrade/launch_consumer.sh
-      # - name: _consumera-blocks-1
-      #   run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT 10
-      # - name: Establish CCV channel for consumer a
-      #   run: |
-      #     client_id=$(gaiad --home $HOME/.val1 q provider list-consumer-chains --output json | jq -r '.chains[] | select(.chain_id=="consumera").client_id')
-      #     hermes create connection --a-chain consumera --a-client 07-tendermint-0 --b-client $client_id
-      #     hermes create channel --a-chain consumera --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
-      #     killall hermes
-      #     echo "Wait for hermes to start..."
-      #     sleep 180
-      # - name: _consumera-vsc-1
-      #   run: tests/patch_upgrade/patch_test_ccv.sh
-      # - name: _consumera-ibc-1
-      #   env:
-      #     CONSUMER_CHAIN_ID: consumera
-      #   run: |
-      #     client_id=$(gaiad --home $HOME/.val1 q provider list-consumer-chains --output json | jq -r '.chains[] | select(.chain_id=="consumera").client_id')
-      #     echo "Client ID: $client_id"
-      #     connection_id=$(hermes --json query client connections --chain local-testnet --client $client_id | jq -r '. | select(.result).result[]')
-      #     echo "Connection ID: $connection_id"
-      #     channel_id=$(hermes --json query connection channels --chain local-testnet --connection $connection_id | jq -r '. | select(.result).result[] | select(.port_id=="transfer").channel_id')
-      #     echo "Channel ID: $channel_id"
-      #     tests/major_stateful_upgrade/test_consumer_ibc_transfer.sh $channel_id 2
-      # - name: _globalfee-2
-      #   run: tests/v11_upgrade/test_bypass_msg.sh
-      # - name: _globalfee-3
-      #   run: tests/v11_upgrade/test_max_gas.sh
-      # - name: _soft-opt-out-1
-      #   run: tests/v11_upgrade/test_validator_jailed.sh $DELEGATE_1 true
+      - name: Initialize consumer chain a
+        env:
+          CONSUMER_CHAIN_ID: consumera
+          DOWNTIME_BLOCKS: 20
+        run: tests/major_stateful_upgrade/init_consumer.sh
+      - name: Launch consumer chain a
+        env:
+          CONSUMER_CHAIN_ID: consumera
+        run: tests/major_stateful_upgrade/launch_consumer.sh
+      - name: _consumera-blocks-1
+        run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT 10
+      - name: Establish CCV channel for consumer a
+        run: |
+          client_id=$(gaiad --home $HOME/.val1 q provider list-consumer-chains --output json | jq -r '.chains[] | select(.chain_id=="consumera").client_id')
+          hermes create connection --a-chain consumera --a-client 07-tendermint-0 --b-client $client_id
+          hermes create channel --a-chain consumera --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
+          killall hermes
+          echo "Wait for hermes to start..."
+          sleep 180
+      - name: _consumera-vsc-1
+        run: tests/patch_upgrade/patch_test_ccv.sh
+      - name: _consumera-ibc-1
+        env:
+          CONSUMER_CHAIN_ID: consumera
+        run: |
+          client_id=$(gaiad --home $HOME/.val1 q provider list-consumer-chains --output json | jq -r '.chains[] | select(.chain_id=="consumera").client_id')
+          echo "Client ID: $client_id"
+          connection_id=$(hermes --json query client connections --chain local-testnet --client $client_id | jq -r '. | select(.result).result[]')
+          echo "Connection ID: $connection_id"
+          channel_id=$(hermes --json query connection channels --chain local-testnet --connection $connection_id | jq -r '. | select(.result).result[] | select(.port_id=="transfer").channel_id')
+          echo "Channel ID: $channel_id"
+          tests/major_stateful_upgrade/test_consumer_ibc_transfer.sh $channel_id 2
+      - name: _globalfee-2
+        run: tests/v11_upgrade/test_bypass_msg.sh
+      - name: _globalfee-3
+        run: tests/v11_upgrade/test_max_gas.sh
+      - name: _soft-opt-out-1
+        run: tests/v11_upgrade/test_validator_jailed.sh $DELEGATE_1 true
       - name: Initialize consumer chain b with ICS v2.0.0
         env:
           CONSUMER_CHAIN_ID: consumerb
