@@ -66,7 +66,11 @@ echo "while true; do $HOME/go/bin/$CHAIN_BINARY start --home $HOME_1; sleep 1; d
 chmod +x $HOME/$PROVIDER_SERVICE_1.sh
 
 # Run service in screen session
-mkdir $HOME/artifact
+if [ ! -d $HOME/artifact ]
+then
+    mkdir $HOME/artifact
+fi
+
 echo "Starting $CHAIN_BINARY"
 screen -L -Logfile $HOME/artifact/$PROVIDER_SERVICE_1.log -S $PROVIDER_SERVICE_1 -d -m bash $HOME/$PROVIDER_SERVICE_1.sh
 # set screen to flush log to 0
