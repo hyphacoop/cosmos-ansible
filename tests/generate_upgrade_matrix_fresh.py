@@ -4,7 +4,8 @@ import json
 import sys
 import re
 
-SKIP_VERSIONS = []
+SKIP_STARTING_VERSIONS = ['v11.0.0-rc0']
+SKIP_TARGET_VERSIONS = []
 
 # Must provide a cutoff version, e.g. 'v6.0.4'
 starting_version = sys.argv[1].split('.')
@@ -39,26 +40,24 @@ for rc in rc_releases:
     if rc.split('-')[0] not in releases:
         releases.append(rc)
 
-# Trim list further to remove all releases listed in the SKIP_VERSIONS list
-filtered_releases = [release for release in releases if
-                     release not in SKIP_VERSIONS ]
-
 # Set upgrade versions to target for each release
-matrix = {release: [] for release in filtered_releases}
+matrix = {release: [] for release in releases}
 
 for start_version, _ in matrix.items():
     matrix[start_version] = [
         release
-        for release in filtered_releases
+        for release in releases
         if int(release.split('.')[0][1:]) > int(start_version.split('.')[0][1:])]
 
 # Assemble matrix include section:
 includes = []
 for version, upgrades in matrix.items():
-    for upgrade in upgrades:
-        includes.append({'gaia_version': version, 'upgrade_version': upgrade})
-    # Add main branch build
-    includes.append({'gaia_version': version, 'upgrade_version': 'main'})
+    if version not in SKIP_STARTING_VERSIONS:
+        for upgrade in upgrades:
+            if upgrade not in SKIP_TARGET_VERSIONS:
+                includes.append({'gaia_version': version, 'upgrade_version': upgrade})
+        # Add main branch build
+        includes.append({'gaia_version': version, 'upgrade_version': 'main'})
 
 upgrade_json = json.dumps({'include': includes})
 print(upgrade_json)
