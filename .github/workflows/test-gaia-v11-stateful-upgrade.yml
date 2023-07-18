@@ -241,6 +241,10 @@ jobs:
           CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY_2 }}
         run: tests/major_stateful_upgrade/init_consumer.sh
       - name: Launch consumer chain b
+        env:
+          CONSUMER_CHAIN_ID: consumerb
+          CONSUMER_HOME_1: /home/github/.conb1
+          CONSUMER_SERVICE_1: conb1.service
         run: tests/major_stateful_upgrade/launch_consumer.sh
       - name: _consumerb-blocks-1
         run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT 10
@@ -253,8 +257,13 @@ jobs:
           echo "Wait for hermes to start..."
           sleep 180
       - name: _consumerb-vsc-1
+        env:
+          CON1_RPC_PORT: 27201
         run: tests/patch_upgrade/patch_test_ccv.sh
       - name: _consumerb-ibc-1
+        env:
+          CONSUMER_CHAIN_ID: consumerb
+          CONSUMER_HOME_1: /home/github/.conb1
         run: |
           client_id=$(gaiad --home $HOME/.val1 q provider list-consumer-chains --output json | jq -r '.chains[] | select(.chain_id=="consumerb").client_id')
           echo "Client ID: $client_id"
