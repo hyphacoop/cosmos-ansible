@@ -14,7 +14,7 @@ all:
     addrbook_url: "https://quicksync.io/addrbook.cosmos.json"
     minimum_gas_prices: "0.0025uatom"
     enable_swap: true
-    swap_size: 32768
+    swap_size: 65536
     reboot: true
   children:
     node:
