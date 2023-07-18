@@ -169,13 +169,13 @@ jobs:
         run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 50 # 5 blocks
       - name: _txs-1
         run: tests/major_stateful_upgrade/test_tx.sh
+      - name: Delegate to mainnet validator
+        run:
+          gaiad tx staking delegate $DELEGATE_1 $DELEGATE_1_AMOUNT$DENOM --from $MONIKER_2 --keyring-backend test --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y --chain-id $CHAIN_ID --home $HOME_1
       - name: _api-1
         run: tests/test_endpoints_api.sh localhost $VAL1_API_PORT
       - name: _rpc-1
         run: tests/test_endpoints_rpc.sh localhost $VAL1_RPC_PORT
-      - name: Delegate to mainnet validator
-        run:
-          gaiad tx staking delegate $DELEGATE_1 $DELEGATE_1_AMOUNT$DENOM --from val --keyring-backend test --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y --chain-id $CHAIN_ID --home $HOME_1
       # - name: Set minimum gas prices in globalfee module
       #   run: tests/v11_upgrade/set_minimum_gas_prices.sh
       - name: Set up relayer
