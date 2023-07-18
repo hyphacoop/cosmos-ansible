@@ -5,6 +5,7 @@ on:
   repository_dispatch:
     types: [new_main_build]
   workflow_dispatch:
+  push:
 jobs:
   set-version-matrix:
     runs-on: ubuntu-22.04
@@ -28,12 +29,12 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install requests
-      - name: Generate starting versions
-        id: generate-start
-        run: |
-          start=$(tests/generate_version_matrix.py v10.0.0)
-          echo $start
-          echo "start_versions=$start" >> $GITHUB_OUTPUT
+      # - name: Generate starting versions
+      #   id: generate-start
+      #   run: |
+      #     start=$(tests/generate_version_matrix.py v10.0.0)
+      #     echo $start
+      #     echo "start_versions=$start" >> $GITHUB_OUTPUT
       - name: Generate upgrade versions
         id: generate-upgrade
         run: |
