@@ -46,7 +46,7 @@ jobs:
       - name: Generate upgrade versions
         id: generate-upgrade
         run: |
-          upgrade=$(tests/generate_upgrade_matrix_fresh.py $GAIA_LATEST)
+          upgrade=$(tests/generate_upgrade_matrix_stateful.py $GAIA_LATEST)
           echo $upgrade
           echo "upgrade_versions=$upgrade" >> $GITHUB_OUTPUT
     outputs:
@@ -229,6 +229,8 @@ jobs:
         run: tests/v11_upgrade/test_max_gas.sh
       - name: _soft-opt-out-1
         run: tests/v11_upgrade/test_validator_jailed.sh $DELEGATE_1 true
+      - name: _soft-opt-out-2
+        run: tests/v11_upgrade/test_validator_jailed.sh cosmosvaloper10nzaaeh2kq28t3nqsh5m8kmyv90vx7ym5mpakx false
       - name: Initialize consumer chain b with ICS v2.0.0
         env:
           CONSUMER_CHAIN_ID: consumerb
