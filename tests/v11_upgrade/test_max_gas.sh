@@ -1,6 +1,11 @@
 #!/bin/bash
 # Set max gas to 1,000
 
+if [ ! $VOTING_PERIOD ]
+then
+    VOTING_PERIOD=6
+fi
+
 $CHAIN_BINARY q params subspace globalfee MaxTotalBypassMinFeeMsgGasUsage --home $HOME_1
 
 echo "Submitting proposal to update the bypass max usage..."
@@ -23,7 +28,7 @@ sleep 6
 
 # Wait for the voting period to be over
 echo "Waiting for the voting period to end..."
-sleep 6
+sleep $VOTING_PERIOD
 
 # Query the globalfee params
 $CHAIN_BINARY q globalfee params -o json --home $HOME_1 > globalfee-bypass-gas.json

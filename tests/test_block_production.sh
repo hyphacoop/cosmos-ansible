@@ -29,9 +29,9 @@ test_counter=0
 max_tests=2100
 echo "Current gaiad version: $chain_version"
 echo "Block height: $cur_height"
-echo "Waiting to reach block height $stop_height..."
 height=0
 stop_height=$[ $cur_height + $height_offset ]
+echo "Waiting to reach block height $stop_height..."
 until [ $height -ge $stop_height ]
 do
     sleep 5

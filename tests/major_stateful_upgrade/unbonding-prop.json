@@ -1,0 +1,12 @@
+{
+    "title": "Set unbonding time to 21 days",
+    "description": "Set the unbonding time to 21 days",
+    "deposit": "10000000uatom",
+    "changes": [
+        {
+            "subspace": "staking",
+            "key": "UnbondingTime",
+            "value": "1814400000000000"
+        }
+    ]
+}
