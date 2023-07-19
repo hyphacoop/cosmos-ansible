@@ -287,9 +287,6 @@ jobs:
           cp -rp ${{ vars.HOME_1 }}/config/ ~/artifact/configs/val1
           cp -rp ~/.hermes/ ~/artifact/configs/hermes/
           cp -rp ~/.cona1/config/ ~/artifact/configs/cona1
-      - name: Sleep for 10 hours
-        if: always()
-        run: sleep 10h
       - name: Upload artifacts
         if: always()
         uses: actions/upload-artifact@v3
