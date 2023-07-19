@@ -273,14 +273,11 @@ jobs:
           channel_id=$(hermes --json query connection channels --chain local-testnet --connection $connection_id | jq -r '. | select(.result).result[] | select(.port_id=="transfer").channel_id')
           echo "Channel ID: $channel_id"
           tests/major_stateful_upgrade/test_consumer_ibc_transfer.sh $channel_id 3
-      # - name: Stop services
-      #   if: always()
-      #   run: |
-      #     killall screen
-      #     killall gaiad
-      #     killall consumerd
-      #     killall hermes
-      #     sleep 20
+      - name: Stop services
+        if: always()
+        run: |
+          killall screen
+          sleep 20
       - name: Save config files
         if: always()
         run: |
