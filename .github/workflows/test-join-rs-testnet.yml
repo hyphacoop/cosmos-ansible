@@ -6,6 +6,7 @@ on:
   schedule:
     # At 14:30 on M/W/F.
     - cron: '30 14 * * 1,3,5'
+  push:
 jobs:
   test-provider:
     runs-on: ubuntu-22.04
@@ -64,7 +65,7 @@ jobs:
         run: |
           chain_height=$(curl -s $RPC_ENDPOINT/block | jq -r '.result.block.header.height')
           tests/test_block_production.sh 127.0.0.1 26657 10
-  test-duality-rehearsal-1:
+  test-duality-testnet-1:
     runs-on: ubuntu-22.04
     env:
       RPC_ENDPOINT: https://rpc.duality.rs-testnet.polypore.xyz
@@ -85,7 +86,7 @@ jobs:
         run: echo "transport = local" >> ansible.cfg
       - name: Run playbook
         run: |
-          ansible-playbook node.yml -i examples/inventory-rs-testnet-duality.yml --extra-vars "target=local reboot=false chain_home={{ node_user_home }}/.duality node_user=runner enable_swap=false use_cosmovisor=false node_service_name=dualityd go_version=1.18.5"
+          ansible-playbook node.yml -i examples/inventory-rs-testnet-duality.yml --extra-vars "target=local reboot=false chain_home={{ node_user_home }}/.duality node_user=runner enable_swap=false use_cosmovisor=false node_service_name=dualityd"
       - name: Check dualityd service
         run: systemctl status dualityd
       - name: Check blocks are being produced
