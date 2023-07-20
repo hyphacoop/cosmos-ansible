@@ -114,7 +114,7 @@ jobs:
         run: echo "transport = local" >> ansible.cfg
       - name: Run playbook
         run: |
-          ansible-playbook node.yml -i examples/inventory-rs-testnet-stride.yml --extra-vars "target=local reboot=false chain_home={{ node_user_home }}/.stride node_user=runner enable_swap=false use_cosmovisor=false node_service_name=strided statesync_enabled=true statesync_rpc_servers="$RPC_ENDPOINT,$RPC_ENDPOINT"'
+          ansible-playbook node.yml -i examples/inventory-rs-testnet-stride.yml --extra-vars "target=local reboot=false chain_home={{ node_user_home }}/.stride node_user=runner enable_swap=false use_cosmovisor=false node_service_name=strided statesync_enabled=true statesync_rpc_servers=\"$RPC_ENDPOINT,$RPC_ENDPOINT\""
       - name: Check strided service
         run: systemctl status strided
       - name: Check blocks are being produced
