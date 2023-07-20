@@ -116,7 +116,8 @@ jobs:
         run: |
           ansible-playbook node.yml -i examples/inventory-rs-testnet-stride.yml --extra-vars "target=local reboot=false chain_home={{ node_user_home }}/.stride node_user=runner enable_swap=false use_cosmovisor=false node_service_name=strided statesync_enabled=true statesync_rpc_servers=\"$RPC_ENDPOINT,$RPC_ENDPOINT\""
       - name: Check strided service
-        run: systemctl status strided
+        run: |
+          journalctl -u strided
       - name: Check blocks are being produced
         run: |
           chain_height=$(curl -s $RPC_ENDPOINT/block | jq -r '.result.block.header.height')
