@@ -7,6 +7,8 @@ all:
     chain_version: ed3fcf9512ee136a03b58a7cd1d21b0e002de06f
     go_version: '1.19'
     genesis_url: "https://github.com/cosmos/testnets/raw/master/replicated-security/stride-ics-testnet-two-1/ccv.json"
+    major_version: 10
+    patch_version: 0
     chain_binary_name: strided
     chain_id: stride-ics-testnet-1
     node_user: stride
