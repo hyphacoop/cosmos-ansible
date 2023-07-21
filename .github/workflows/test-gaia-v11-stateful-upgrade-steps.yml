@@ -6,11 +6,6 @@ on:
 jobs:
   test-upgrade:
     runs-on: self-hosted-ubuntu-22.04
-    needs: set-version-matrix
-    strategy:
-      matrix:
-        ${{ fromJSON(needs.set-version-matrix.outputs.upgrade_versions) }}
-      fail-fast: false
     environment: major-upgrade-stateful-workflow
     env:
       PROVIDER_SERVICE_1: ${{ vars.PROVIDER_SERVICE_1 }}
