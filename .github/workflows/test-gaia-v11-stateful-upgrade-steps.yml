@@ -4,7 +4,7 @@ name: Test Gaia Stateful Upgrade - v11
 on:
   workflow_call:
 jobs:
-  test-upgrade-ubuntu-22.04:
+  test-upgrade-ubuntu-22-04:
     runs-on: self-hosted-ubuntu-22.04
     needs: set-version-matrix
     strategy:
