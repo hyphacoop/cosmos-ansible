@@ -7,10 +7,6 @@ jobs:
   test-upgrade:
     runs-on: self-hosted-ubuntu-22.04
     environment: major-upgrade-stateful-workflow
-    strategy:
-      matrix:
-        ${{ fromJSON(needs.set-version-matrix.outputs.upgrade_versions) }}
-      fail-fast: false
     env:
       PROVIDER_SERVICE_1: ${{ vars.PROVIDER_SERVICE_1 }}
       CHAIN_BINARY: ${{ vars.CHAIN_BINARY }}
@@ -68,10 +64,10 @@ jobs:
         run: |
           sudo apt update
           sudo apt dist-upgrade -y
-      # - name: start-version
-      #   run: echo ${{matrix.gaia_version}}
-      # - name: target-version
-      #   run: echo ${{matrix.upgrade_version}}
+      - name: start-version
+        run: echo ${{matrix.gaia_version}}
+      - name: target-version
+        run: echo ${{matrix.upgrade_version}}
       # - name: target-commit
       #   if: ${{ matrix.upgrade_version == 'main' }}
       #   run: |
