@@ -78,7 +78,7 @@ jobs:
     with:
       runs-on-os: ${{ needs.set-version-matrix.outputs.debian_11 }}
     uses: ./.github/workflows/test-gaia-v11-stateful-upgrade-steps.yml
-    test-upgrade-debian-12:
+  test-upgrade-debian-12:
     needs: [set-version-matrix, test-upgrade-debian-11]
     strategy:
       matrix:
