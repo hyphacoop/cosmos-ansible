@@ -53,6 +53,7 @@ jobs:
         id: runs-on-os
         run: |
           echo "ubuntu_2204=self-hosted-ubuntu-22.04" >> $GITHUB_OUTPUT
+          echo "debian_11=self-hosted-debian-11" >> $GITHUB_OUTPUT
     outputs:
       upgrade_versions: ${{ steps.generate-upgrade.outputs.upgrade_versions }}
       ubuntu_2204: ${{ steps.runs-on-os.outputs.ubuntu_2204 }}
@@ -64,4 +65,13 @@ jobs:
       fail-fast: false
     with:
       runs-on-os: ${{ needs.set-version-matrix.outputs.ubuntu_2204 }}
+    uses: ./.github/workflows/test-gaia-v11-stateful-upgrade-steps.yml
+  test-upgrade-debian-11:
+    needs: set-version-matrix
+    strategy:
+      matrix:
+        ${{ fromJSON(needs.set-version-matrix.outputs.upgrade_versions) }}
+      fail-fast: false
+    with:
+      runs-on-os: ${{ needs.set-version-matrix.outputs.debian_11 }}
     uses: ./.github/workflows/test-gaia-v11-stateful-upgrade-steps.yml
