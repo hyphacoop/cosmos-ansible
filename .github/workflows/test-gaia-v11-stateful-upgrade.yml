@@ -52,7 +52,7 @@ jobs:
     outputs:
       upgrade_versions: ${{ steps.generate-upgrade.outputs.upgrade_versions }}
   test-upgrade:
-    runs-on: self-hosted-ubuntu-22.04
+    runs-on: self-hosted-debian-12
     needs: set-version-matrix
     strategy:
       matrix:
@@ -138,17 +138,16 @@ jobs:
       - name: Install required packages
         run: |
           sudo apt update
-          sudo apt -y install python-is-python3 python3-distutils screen curl jq wget
+          sudo apt -y install python-is-python3 python3-distutils screen curl jq wget python3-venv python3-pip
       - name: Check out repository code
         uses: actions/checkout@v3
-      - name: Install pip
-        run: |
-          wget https://bootstrap.pypa.io/get-pip.py -O /tmp/get-pip.py
-          sudo python /tmp/get-pip.py
+      - name: Init Python venv
+        run: python -m venv env
       - name: Install dependencies
         run: |
-          sudo python -m pip install --upgrade pip
-          sudo python -m pip install toml-cli
+          source env/bin/activate
+          python -m pip install --upgrade pip
+          python -m pip install toml-cli
       - name: Print RPC port
         run: echo $VAL1_RPC_PORT
       - name: Test software upgrade for published releases
