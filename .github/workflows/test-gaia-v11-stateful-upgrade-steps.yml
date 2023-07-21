@@ -5,7 +5,7 @@ on:
   workflow_call:
 jobs:
   test-upgrade:
-    runs-on: ${{ runs-on-os }}
+    runs-on: ${{ vars.runs-on-os }}
     environment: major-upgrade-stateful-workflow
     env:
       PROVIDER_SERVICE_1: ${{ vars.PROVIDER_SERVICE_1 }}
