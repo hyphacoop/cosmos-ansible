@@ -49,13 +49,18 @@ jobs:
           upgrade=$(tests/generate_upgrade_matrix_stateful.py $GAIA_LATEST)
           echo $upgrade
           echo "upgrade_versions=$upgrade" >> $GITHUB_OUTPUT
+      - name: Store OS variables
+        id: runs-on-os
+        run: |
+          echo "ubuntu_2204=self-hosted-ubuntu-22.04" >> $GITHUB_OUTPUT
     outputs:
       upgrade_versions: ${{ steps.generate-upgrade.outputs.upgrade_versions }}
   test-upgrade-ubuntu-2204:
-    run: echo "os=self-hosted-ubuntu-22.04" >> $GITHUB_OUTPUT
     needs: set-version-matrix
     strategy:
       matrix:
         ${{ fromJSON(needs.set-version-matrix.outputs.upgrade_versions) }}
       fail-fast: false
+    with:
+      runs-on-os: ${{ needs.set-version.outputs.ubuntu_2204 }}
     uses: ./.github/workflows/test-gaia-v11-stateful-upgrade-steps.yml
