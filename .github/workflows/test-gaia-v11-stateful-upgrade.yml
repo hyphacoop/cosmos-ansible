@@ -52,6 +52,7 @@ jobs:
     outputs:
       upgrade_versions: ${{ steps.generate-upgrade.outputs.upgrade_versions }}
   test-upgrade:
+    needs: set-version-matrix
     strategy:
       matrix:
         ${{ fromJSON(needs.set-version-matrix.outputs.upgrade_versions) }}
