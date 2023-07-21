@@ -55,6 +55,7 @@ jobs:
           echo "ubuntu_2204=self-hosted-ubuntu-22.04" >> $GITHUB_OUTPUT
     outputs:
       upgrade_versions: ${{ steps.generate-upgrade.outputs.upgrade_versions }}
+      ubuntu_2204: ${{ steps.runs-on-os.outputs.ubuntu_2204 }}
   test-upgrade-ubuntu-2204:
     needs: set-version-matrix
     strategy:
