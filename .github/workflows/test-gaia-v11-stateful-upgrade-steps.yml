@@ -3,6 +3,10 @@
 name: Test Gaia Stateful Upgrade - v11
 on:
   workflow_call:
+    input:
+      runs-on-os:
+        required: true
+        type: string
 jobs:
   test-upgrade:
     runs-on: ${{ inputs.runs-on-os }}
