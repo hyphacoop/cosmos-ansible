@@ -142,10 +142,10 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v3
       - name: Init Python venv
-        run: python -m venv env
+        run: python -m venv ~/env
       - name: Install dependencies
         run: |
-          source env/bin/activate
+          source ~/env/bin/activate
           python -m pip install --upgrade pip
           python -m pip install toml-cli
       - name: Print RPC port
