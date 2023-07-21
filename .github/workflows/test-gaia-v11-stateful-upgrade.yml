@@ -64,17 +64,15 @@ jobs:
       matrix:
         ${{ fromJSON(needs.set-version-matrix.outputs.upgrade_versions) }}
       fail-fast: false
-      max-parallel: 1
     with:
       runs-on-os: ${{ needs.set-version-matrix.outputs.ubuntu_2204 }}
     uses: ./.github/workflows/test-gaia-v11-stateful-upgrade-steps.yml
   test-upgrade-debian-11:
-    needs: set-version-matrix
+    needs: test-upgrade-ubuntu-2204
     strategy:
       matrix:
         ${{ fromJSON(needs.set-version-matrix.outputs.upgrade_versions) }}
       fail-fast: false
-      max-parallel: 1
     with:
       runs-on-os: ${{ needs.set-version-matrix.outputs.debian_11 }}
     uses: ./.github/workflows/test-gaia-v11-stateful-upgrade-steps.yml
