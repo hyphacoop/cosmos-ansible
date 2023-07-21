@@ -5,6 +5,7 @@ on:
   workflow_call:
 jobs:
   test-upgrade:
+    runs-on: self-hosted-ubuntu-22.04
     environment: major-upgrade-stateful-workflow
     env:
       PROVIDER_SERVICE_1: ${{ vars.PROVIDER_SERVICE_1 }}

@@ -51,8 +51,8 @@ jobs:
           echo "upgrade_versions=$upgrade" >> $GITHUB_OUTPUT
     outputs:
       upgrade_versions: ${{ steps.generate-upgrade.outputs.upgrade_versions }}
-  test-upgrade:
-    runs-on: self-hosted-ubuntu-22.04
+  test-upgrade-ubuntu-2204:
+    run: echo "os=self-hosted-ubuntu-22.04" >> $GITHUB_OUTPUT
     needs: set-version-matrix
     strategy:
       matrix:
