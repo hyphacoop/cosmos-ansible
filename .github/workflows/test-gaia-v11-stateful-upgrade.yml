@@ -62,5 +62,5 @@ jobs:
         ${{ fromJSON(needs.set-version-matrix.outputs.upgrade_versions) }}
       fail-fast: false
     with:
-      runs-on-os: ${{ needs.set-version-matrix.outputs.ubuntu_2204 }}
+      runs-on-os: self-hosted-ubuntu-22.04
     uses: ./.github/workflows/test-gaia-v11-stateful-upgrade-steps.yml
