@@ -58,4 +58,5 @@ jobs:
       matrix:
         ${{ fromJSON(needs.set-version-matrix.outputs.upgrade_versions) }}
       fail-fast: false
-    uses: ./.github/workflows/test-gaia-v11-stateful-upgrade-steps.yml
+    steps:
+      - uses: ./.github/workflows/test-gaia-v11-stateful-upgrade-steps.yml
