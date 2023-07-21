@@ -4,7 +4,7 @@ all:
   vars:
     chain_home_clear: true
     chain_version: v10.0.2
-    genesis_url: "https://files.polypore.xyz/genesis/mainnet-genesis-tinkered/latest_v9.json.gz"
+    genesis_url: "https://files.polypore.xyz/genesis/mainnet-genesis-tinkered/latest_v10.json.gz"
     ansible_user: root
     enable_swap: true  # Set this for machines with <32GB RAM
     swap_size: 32768
