@@ -75,13 +75,13 @@ jobs:
           sudo apt update
           sudo apt dist-upgrade -y
       - name: start-version
-        run: echo ${{input.gaia_version}}
+        run: echo ${{inputs.gaia_version}}
       - name: target-version
-        run: echo ${{input.upgrade_version}}
+        run: echo ${{inputs.upgrade_version}}
       - name: target-commit
-        if: ${{ input.upgrade_version == 'main' }}
+        if: ${{ inputs.upgrade_version == 'main' }}
         run: |
-          BUILD_TAG=gaiad-linux-${{input.upgrade_version}}
+          BUILD_TAG=gaiad-linux-${{inputs.upgrade_version}}
           TARGET_COMMIT=$(curl -s -L -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" https://api.github.com/repos/hyphacoop/cosmos-builds/releases/tags/$BUILD_TAG | jq -r '.name')
           echo $TARGET_COMMIT
       - name: Consumer chain binary URLs
@@ -109,14 +109,14 @@ jobs:
       - name: Print RPC port
         run: echo $VAL1_RPC_PORT
       - name: Test software upgrade for published releases
-        if: ${{ input.upgrade_version != 'main' }}
+        if: ${{ inputs.upgrade_version != 'main' }}
         env:
-          DOWNLOAD_URL: https://github.com/cosmos/gaia/releases/download/${{ input.upgrade_version }}/gaiad-${{ input.upgrade_version }}-linux-amd64
+          DOWNLOAD_URL: https://github.com/cosmos/gaia/releases/download/${{ inputs.upgrade_version }}/gaiad-${{ inputs.upgrade_version }}-linux-amd64
         run: |
           echo "$DOWNLOAD_URL"
           echo "DOWNLOAD_URL=$DOWNLOAD_URL" >> $GITHUB_ENV
       - name: Test software upgrade for main branch
-        if: ${{ input.upgrade_version == 'main' }}
+        if: ${{ inputs.upgrade_version == 'main' }}
         env:
           DOWNLOAD_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/gaiad-linux-main/gaiad-linux
         run: |
@@ -124,7 +124,7 @@ jobs:
           echo "DOWNLOAD_URL=$DOWNLOAD_URL" >> $GITHUB_ENV
       - name: Start chain
         env:
-          START_VERSION: ${{input.gaia_version}}
+          START_VERSION: ${{inputs.gaia_version}}
         run: tests/major_stateful_upgrade/start_chain.sh
       - name: _blocks-1
         run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 50 # 5 blocks
@@ -251,5 +251,5 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v3
         with:
-          name: archived-upgrade-${{ input.gaia_version }}-${{ input.upgrade_version }}
+          name: archived-upgrade-${{ inputs.gaia_version }}-${{ inputs.upgrade_version }}
           path: ~/artifact/
