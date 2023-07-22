@@ -72,7 +72,7 @@ jobs:
       upgrade_version: ${{ matrix.upgrade_version }}
     uses: ./.github/workflows/test-gaia-v11-stateful-upgrade-steps.yml
   test-upgrade-debian-11:
-    needs: [set-version-matrix, test-upgrade-ubuntu-2204]
+    needs: set-version-matrix
     strategy:
       matrix:
         ${{ fromJSON(needs.set-version-matrix.outputs.upgrade_versions) }}
@@ -84,7 +84,7 @@ jobs:
 
     uses: ./.github/workflows/test-gaia-v11-stateful-upgrade-steps.yml
   test-upgrade-debian-12:
-    needs: [set-version-matrix, test-upgrade-debian-11]
+    needs: set-version-matrix
     strategy:
       matrix:
         ${{ fromJSON(needs.set-version-matrix.outputs.upgrade_versions) }}
