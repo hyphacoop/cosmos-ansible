@@ -10,7 +10,7 @@ on:
     - cron: '15 13 * * 1'
   push:
 concurrency:
-  group: my-unique-concurrency-group
+  group: self-hosted-runners
 jobs:
   set-version-matrix:
     runs-on: ubuntu-22.04
