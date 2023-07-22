@@ -7,10 +7,10 @@ on:
       runs-on-os:
         required: true
         type: string
-      gaia_version
+      gaia_version:
         required: true
         type: string
-      upgrade_version
+      upgrade_version:
         required: true
         type: string
 jobs:
