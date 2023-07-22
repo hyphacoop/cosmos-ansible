@@ -66,6 +66,7 @@ jobs:
     strategy:
       matrix:
         os: [self-hosted-ubuntu-22.04, self-hosted-debian-11, self-hosted-debian-12]
+        ${{ fromJSON(needs.set-version-matrix.outputs.upgrade_versions) }}
       fail-fast: false
     with:
       runs-on-os: ${{ matrix.os }}
