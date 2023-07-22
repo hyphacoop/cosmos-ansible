@@ -68,6 +68,7 @@ jobs:
       fail-fast: false
     with:
       runs-on-os: ${{ needs.set-version-matrix.outputs.ubuntu_2204 }}
+      upgrade_versions: ${{}}
     uses: ./.github/workflows/test-gaia-v11-stateful-upgrade-steps.yml
   test-upgrade-debian-11:
     needs: [set-version-matrix, test-upgrade-ubuntu-2204]
@@ -77,6 +78,9 @@ jobs:
       fail-fast: false
     with:
       runs-on-os: ${{ needs.set-version-matrix.outputs.debian_11 }}
+      gaia_version: ${{ matrix.gaia_version }}
+      upgrade_version: ${{ matrix.upgrade_version }}
+      
     uses: ./.github/workflows/test-gaia-v11-stateful-upgrade-steps.yml
   test-upgrade-debian-12:
     needs: [set-version-matrix, test-upgrade-debian-11]
