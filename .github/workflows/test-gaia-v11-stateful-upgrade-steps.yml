@@ -251,5 +251,5 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v3
         with:
-          name: archived-upgrade-${{ inputs.gaia_version }}-${{ inputs.upgrade_version }}
+          name: ${{ inputs.runs-on-os }}_archived-upgrade-${{ inputs.gaia_version }}-${{ inputs.upgrade_version }}
           path: ~/artifact/
