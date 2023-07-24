@@ -13,6 +13,16 @@ jobs:
   test-public-testnet:
     runs-on: self-hosted-ubuntu-22.04
     steps:
+      # Get system info
+      - run: ifconfig
+      - run: lscpu
+      - run: df -h
+      - run: free -m
+      - run: uname -a
+      - run: lsb_release -a
+      - run: echo "GitHub branch is ${{ github.ref }}"
+      - run: whoami
+      - run: pwd
       - name: mkdir ~/artifact
         run: mkdir ~/artifact
       - name: Update Apt
@@ -49,12 +59,19 @@ jobs:
           echo "while true; do $HOME/go/bin/gaiad start --home $HOME/.gaia; sleep 1; done" > $HOME/gaiad.sh
           chmod +x $HOME/gaiad.sh
       - name: Start service in screen
-        run: screen -L -Logfile $HOME/artifact/$PROVIDER_SERVICE_1.log -S gaiad -d -m bash $HOME/gaiad.sh
+        run: screen -L -Logfile $HOME/artifact/gaiad.log -S gaiad -d -m bash $HOME/gaiad.sh
       - name: Check blocks are being produced
         run: |
           height=$(curl -s http://rpc.state-sync-01.theta-testnet.polypore.xyz:26657/block | jq -r '.result.block.header.height')
           echo "Waiting for block $[ $height + 100 ]..."
           tests/test_block_production.sh 127.0.0.1 26657 100
+      - name: Stop services
+        if: always()
+        run: |
+          killall gaiad.sh
+          killall gaiad
+          killall screen
+          sleep 20
       - name: Upload artifacts
         if: always()
         uses: actions/upload-artifact@v3
