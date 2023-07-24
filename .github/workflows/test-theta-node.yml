@@ -30,7 +30,7 @@ jobs:
         run: |
           source ~/env/bin/activate
           python -m pip install --upgrade pip
-          python -m pip install toml-cli ansible
+          python -m pip install toml toml-cli ansible
       - name: Configure ansible.cfg
         run: |
           source ~/env/bin/activate
