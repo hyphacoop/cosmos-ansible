@@ -1,5 +1,6 @@
 #!/bin/bash
 # Initialize a consumer chain
+source ~/env/bin/activate
 
 echo "Running with $CONSUMER_CHAIN_BINARY."
 

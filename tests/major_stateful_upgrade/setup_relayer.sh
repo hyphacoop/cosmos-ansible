@@ -1,5 +1,6 @@
 #!/bin/bash
 # Set up a relayer and IBC channels
+source ~/env/bin/activate
 
 set +e
 

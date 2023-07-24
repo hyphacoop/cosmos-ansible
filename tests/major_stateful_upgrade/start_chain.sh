@@ -1,5 +1,6 @@
 #!/bin/bash
 # 1. Set up a two-validator provider chain.
+source ~/env/bin/activate
 
 # Download archived home directory
 echo "Initializing node homes..."
