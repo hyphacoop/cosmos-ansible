@@ -15,6 +15,13 @@ jobs:
     steps:
       - name: mkdir ~/artifact
         run: mkdir ~/artifact
+      - name: Update Apt
+        run: |
+          sudo apt update
+          sudo apt dist-upgrade -y
+      - name: Install required packages
+        run: |
+          sudo apt -y install python-is-python3 python3-distutils screen curl jq wget python3-venv python3-pip
       - name: Check out repository code
         uses: actions/checkout@v3
       - name: Init Python venv
