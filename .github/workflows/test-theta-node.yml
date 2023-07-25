@@ -68,7 +68,7 @@ jobs:
       - name: Stop services
         if: always()
         run: |
-          killall gaiad.sh
+          killall $HOME/gaiad.sh
           killall gaiad
           killall screen
           sleep 20
