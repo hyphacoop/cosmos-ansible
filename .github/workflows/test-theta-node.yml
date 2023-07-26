@@ -53,7 +53,7 @@ jobs:
         run: |
           source ~/env/bin/activate
           chain_version=$(curl -s https://rpc.state-sync-01.theta-testnet.polypore.xyz/abci_info? | jq -r '.result.response.version' | awk '{ print "v"$0'})
-          ansible-playbook node.yml -i examples/inventory-public-testnet.yml --extra-vars "target=local reboot=false chain_version=$chain_version chain_home={{ node_user_home }}/.gaia node_user=runner enable_swap=false cosmovisor_invariants_flag='' chain_start=false"
+          ansible-playbook node.yml -i examples/inventory-public-testnet.yml --extra-vars "target=local reboot=false chain_version=$chain_version chain_home={{ node_user_home }}/.gaia node_user=runner enable_swap=false cosmovisor_invariants_flag='' chain_start=false use_cosmovisor=false"
       - name: Create service script
         run: |
           echo "while true; do $HOME/go/bin/gaiad start --home $HOME/.gaia; sleep 1; done" > $HOME/gaiad.sh
@@ -68,8 +68,6 @@ jobs:
       - name: Stop services
         if: always()
         run: |
-          killall $HOME/gaiad.sh
-          killall gaiad
           killall screen
           sleep 20
       - name: Upload artifacts
