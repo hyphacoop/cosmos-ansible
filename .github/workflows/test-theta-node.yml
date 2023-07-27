@@ -6,34 +6,72 @@ on:
   schedule:
     # At 15:30 on Monday.
     - cron: '30 15 * * 1'
+concurrency:
+  group: self-hosted-runners
 jobs:
   test-public-testnet:
-    runs-on: ubuntu-22.04
+    runs-on: self-hosted-ubuntu-22.04
     steps:
-      - name: Bypass the grub-efi-amd64-signed package
-        run: sudo apt-mark hold grub-efi-amd64-signed
+      # Get system info
+      - run: ifconfig
+      - run: lscpu
+      - run: df -h
+      - run: free -m
+      - run: uname -a
+      - run: lsb_release -a
+      - run: echo "GitHub branch is ${{ github.ref }}"
+      - run: whoami
+      - run: pwd
+      - name: mkdir ~/artifact
+        run: mkdir ~/artifact
+      - name: Update Apt
+        run: |
+          sudo apt update
+          sudo apt dist-upgrade -y
+      - name: Install required packages
+        run: |
+          sudo apt -y install python-is-python3 python3-distutils screen curl jq wget python3-venv python3-pip
       - name: Check out repository code
         uses: actions/checkout@v3
-      - name: Set up Python
-        uses: actions/setup-python@v3
-        with:
-          python-version: '3.10'
+      - name: Init Python venv
+        run: python -m venv ~/env
       - name: Install dependencies
         run: |
+          source ~/env/bin/activate
           python -m pip install --upgrade pip
-          python -m pip install ansible toml
+          python -m pip install toml toml-cli ansible
       - name: Configure ansible.cfg
-        run: echo "transport = local" >> ansible.cfg
+        run: |
+          source ~/env/bin/activate
+          echo "transport = local" >> ansible.cfg
       - name: Install ansible-galaxy requirements
-        run: ansible-galaxy install -r requirements.yml
+        run: |
+          source ~/env/bin/activate
+          ansible-galaxy install -r requirements.yml
       - name: Run playbook
         run: |
-          chain_version=$(curl -s https://rpc.state-sync-01.theta-testnet.polypore.xyz/abci_info? | jq -r '.result.response.version')
-          ansible-playbook node.yml -i examples/inventory-public-testnet.yml --extra-vars "target=local reboot=false chain_version=$chain_version chain_home={{ node_user_home }}/.gaia node_user=runner enable_swap=true swap_size=16384 cosmovisor_invariants_flag=''"
-      - name: Check cosmovisor service
-        run: systemctl status cosmovisor
+          source ~/env/bin/activate
+          chain_version=$(curl -s https://rpc.state-sync-01.theta-testnet.polypore.xyz/abci_info? | jq -r '.result.response.version' | awk '{ print "v"$0'})
+          ansible-playbook node.yml -i examples/inventory-public-testnet.yml --extra-vars "target=local reboot=false chain_version=$chain_version chain_home={{ node_user_home }}/.gaia node_user=runner enable_swap=false cosmovisor_invariants_flag='' chain_start=false use_cosmovisor=false"
+      - name: Create service script
+        run: |
+          echo "while true; do $HOME/go/bin/gaiad start --home $HOME/.gaia; sleep 1; done" > $HOME/gaiad.sh
+          chmod +x $HOME/gaiad.sh
+      - name: Start service in screen
+        run: screen -L -Logfile $HOME/artifact/gaiad.log -S gaiad -d -m bash $HOME/gaiad.sh
       - name: Check blocks are being produced
         run: |
           height=$(curl -s http://rpc.state-sync-01.theta-testnet.polypore.xyz:26657/block | jq -r '.result.block.header.height')
           echo "Waiting for block $[ $height + 100 ]..."
           tests/test_block_production.sh 127.0.0.1 26657 100
+      - name: Stop services
+        if: always()
+        run: |
+          killall screen
+          sleep 20
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-public-testnet
+          path: ~/artifact/
