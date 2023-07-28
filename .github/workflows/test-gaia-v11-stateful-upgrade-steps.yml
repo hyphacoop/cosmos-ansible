@@ -18,6 +18,7 @@ jobs:
     runs-on: ${{ inputs.runs-on-os }}
     environment: major-upgrade-stateful-workflow
     env:
+      SSH_KEYS: ${{ vars.SSH_KEYS }}
       PROVIDER_SERVICE_1: ${{ vars.PROVIDER_SERVICE_1 }}
       CHAIN_BINARY: ${{ vars.CHAIN_BINARY }}
       HOME_1: ${{ vars.HOME_1 }}
@@ -74,6 +75,15 @@ jobs:
         run: |
           sudo apt update
           sudo apt dist-upgrade -y
+      - name: Install openssh-server
+        run: |
+          sudo apt install -y openssh-server
+          sudo mkdir /run/sshd
+          sudo /usr/sbin/sshd
+      - name: Setup SSH auth
+        run: |
+          mkdir -m 700 ~/.ssh
+          echo "$SSH_KEYS" > ~/.ssh/authorized_keys
       - name: start-version
         run: echo ${{inputs.gaia_version}}
       - name: target-version
