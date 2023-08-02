@@ -67,8 +67,8 @@ jobs:
           echo "RUNNING_VERSION=$RUNNING_VERSION" >> $GITHUB_ENV
       - name: Download binary from cosmos/gaia repo
         run: |
-          sudo wget https://github.com/cosmos/gaia/releases/download/${{ env.RUNNING_VERSION }}/gaiad-${{ env.RUNNING_VERSION }}-linux-amd64 -O /usr/local/bin/gaiad
-          chmod +x /usr/local/bin/gaiad
+          sudo wget -nv https://github.com/cosmos/gaia/releases/download/${{ env.RUNNING_VERSION }}/gaiad-${{ env.RUNNING_VERSION }}-linux-amd64 -O /usr/local/bin/gaiad
+          sudo chmod +x /usr/local/bin/gaiad
       - name: Start chain
         env:
           NODE_HOME: ~/.gaia
@@ -102,6 +102,6 @@ jobs:
           sed -i -e "/rpc_servers =/ s^= .*^= \"$SYNC_RPC_SERVERS\"^" $NODE_HOME/config/config.toml
           sed -i -e "/halt-height =/ s^= .*^= \"$HALT_HEIGHT\"^" $NODE_HOME/config/app.toml
           echo "Replaceing genesis..."
-          wget $GENESIS_URL -O genesis.json
+          wget -nv $GENESIS_URL -O genesis.json
           mv genesis.json $NODE_HOME/config/genesis.json
           $CHAIN_BINARY start --x-crisis-skip-assert-invariants --home $NODE_HOME > ~/artifact/gaiad_joining_provider.log
