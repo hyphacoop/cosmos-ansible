@@ -17,7 +17,8 @@ echo "Using ($voting_period_seconds)s voting period to calculate the upgrade hei
     
 # Calculate upgrade height
 echo "Calculate upgrade height"
-let voting_blocks_delta=$voting_period_seconds/5+3
+block_time=1
+let voting_blocks_delta=$voting_period_seconds/$block_time+3
 height=$(curl -s http://$gaia_host:$gaia_port/block | jq -r .result.block.header.height)
 upgrade_height=$(($height+$voting_blocks_delta))
 echo "Upgrade block height set to $upgrade_height."
@@ -30,9 +31,6 @@ proposal="$CHAIN_BINARY --output json tx gov submit-proposal software-upgrade $u
 echo "Submitting the upgrade proposal."
 echo $proposal
 txhash=$($proposal | jq -r .txhash)
-
-# Wait for the proposal to go on chain
-# sleep 6
 
 # Get proposal ID from txhash
 echo "Getting proposal ID from txhash..."
