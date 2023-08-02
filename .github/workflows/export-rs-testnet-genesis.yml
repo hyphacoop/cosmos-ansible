@@ -69,12 +69,11 @@ jobs:
         run: |
           sudo wget -nv https://github.com/cosmos/gaia/releases/download/${{ env.RUNNING_VERSION }}/gaiad-${{ env.RUNNING_VERSION }}-linux-amd64 -O /usr/local/bin/gaiad
           sudo chmod +x /usr/local/bin/gaiad
-      - name: Start chain
+      - name: Initializing chain
         env:
           NODE_HOME: /home/runner/.gaia
           NODE_MONIKER: provider
           SERVICE_NAME: provider
-          GAIA_VERSION: v11.0.0-rc0
           CHAIN_ID: provider
           CHAIN_BINARY: 'gaiad'
           GENESIS_URL: https://github.com/cosmos/testnets/raw/master/replicated-security/provider/provider-genesis.json
@@ -103,4 +102,10 @@ jobs:
           echo "Replaceing genesis..."
           wget -nv $GENESIS_URL -O genesis.json
           mv genesis.json $NODE_HOME/config/genesis.json
-          $CHAIN_BINARY start --x-crisis-skip-assert-invariants --home $NODE_HOME > ~/artifact/gaiad_joining_provider.log
+          echo "halt-height set to: $HALT_HEIGHT"
+          echo "HALT_HEIGHT=$HALT_HEIGHT" >> $GITHUB_ENV
+      - name: Start Chain
+        env:
+          NODE_HOME: /home/runner/.gaia
+          CHAIN_BINARY: 'gaiad'
+        run: $CHAIN_BINARY start --x-crisis-skip-assert-invariants --home $NODE_HOME > ~/artifact/gaiad_joining_provider.log
