@@ -1,0 +1,108 @@
+---
+name: Export mainnet genesis
+on:
+  workflow_dispatch:
+  # schedule:
+  #   # At 05:30 on Monday.
+  #   - cron: '30 5 * * 1'
+  push:
+
+jobs:
+  build:
+    runs-on: self-hosted-debian-12
+    steps:
+      # Get system info
+      - run: ifconfig
+      - run: lscpu
+      - run: df -h
+      - run: free -m
+      - run: uname -a
+      - run: lsb_release -a
+      - run: echo "GitHub branch is ${{ github.ref }}"
+      - run: whoami
+      - run: pwd
+      - name: mkdir ~/artifact
+        run: mkdir ~/artifact
+      - name: Update Apt
+        run: |
+          sudo apt update
+          sudo apt dist-upgrade -y
+      - name: Install openssh-server
+        run: |
+          sudo apt install -y openssh-server
+          sudo mkdir /run/sshd
+          sudo /usr/sbin/sshd
+      - name: Setup SSH auth
+        run: |
+          mkdir -m 700 ~/.ssh
+          echo "$SSH_KEYS" > ~/.ssh/authorized_keys
+
+      - name: Set SSH key
+        run: |
+          if [ ! -d ~/.ssh ]
+          then
+            mkdir -m 700 ~/.ssh
+          fi
+          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - name: Init Python venv
+        run: python -m venv ~/env
+      - name: Install dependencies
+        run: |
+          source ~/env/bin/activate
+          python -m pip install --upgrade pip
+          python -m pip install toml-cli
+
+      - name: Get current running gaiad version
+        run: |
+          # RUNNING_VERSION=$(curl -s https://rpc.provider-sentry-01.rs-testnet.polypore.xyz/abci_info | jq -r '.result.version')
+          RUNNING_VERSION="v11.0.0-rc0"
+          echo "Running gaiad version: $RUNNING_VERSION"
+          echo "RUNNING_VERSION=$RUNNING_VERSION" >> $GITHUB_ENV
+      - name: Get current height
+        run: |
+          HALT_HEIGHT=$[$(curl -s https://rpc.provider-sentry-01.rs-testnet.polypore.xyz/status | jq -r '.result.sync_info.latest_block_height')+100]
+          echo "Stop height is: $HALT_HEIGHT"
+          echo "RUNNING_VERSION=$RUNNING_VERSION" >> $GITHUB_ENV
+      - name: Download binary from cosmos/gaia repo
+        if: ${{ inputs.upgrade_version != 'main' }}
+        run: |
+          sudo wget https://github.com/cosmos/gaia/releases/download/${{ RUNNING_VERSION }}/gaiad-${{ RUNNING_VERSION }}-linux-amd64 -O /usr/local/bin/gaiad
+          chmod +x /usr/local/bin/gaiad
+      - name: Start chain
+        env:
+          NODE_HOME=~/.gaia
+          NODE_MONIKER=provider
+          SERVICE_NAME=provider
+          GAIA_VERSION=v11.0.0-rc0
+          CHAIN_ID=provider
+          CHAIN_BINARY='gaiad'
+          GENESIS_URL=https://github.com/cosmos/testnets/raw/master/replicated-security/provider/provider-genesis.json
+          SEEDS="08ec17e86dac67b9da70deb20177655495a55407@provider-seed-01.rs-testnet.polypore.xyz:26656,4ea6e56300a2f37b90e58de5ee27d1c9065cf871@provider-seed-02.rs-testnet.polypore.xyz:26656"
+          SYNC_RPC_1=https://rpc.provider-state-sync-01.rs-testnet.polypore.xyz:443
+          SYNC_RPC_2=https://rpc.provider-state-sync-02.rs-testnet.polypore.xyz:443
+          SYNC_RPC_SERVERS="$SYNC_RPC_1,$SYNC_RPC_2"
+        run: |
+          echo "Initializing $NODE_HOME..."
+          $CHAIN_BINARY config chain-id $CHAIN_ID --home $NODE_HOME
+          $CHAIN_BINARY config keyring-backend test --home $NODE_HOME
+          $CHAIN_BINARY config broadcast-mode block --home $NODE_HOME
+          $CHAIN_BINARY init $NODE_MONIKER --chain-id $CHAIN_ID --home $NODE_HOME
+          sed -i -e "/seeds =/ s^= .*^= \"$SEEDS\"^" $NODE_HOME/config/config.toml
+          echo "Configuring state sync..."
+          CURRENT_BLOCK=$(curl -s $SYNC_RPC_1/block | jq -r '.result.block.header.height')
+          TRUST_HEIGHT=$[$CURRENT_BLOCK-1000]
+          TRUST_BLOCK=$(curl -s $SYNC_RPC_1/block\?height\=$TRUST_HEIGHT)
+          TRUST_HASH=$(echo $TRUST_BLOCK | jq -r '.result.block_id.hash')
+          sed -i -e '/enable =/ s/= .*/= true/' $NODE_HOME/config/config.toml
+          sed -i -e '/trust_period =/ s/= .*/= "8h0m0s"/' $NODE_HOME/config/config.toml
+          sed -i -e "/trust_height =/ s/= .*/= $TRUST_HEIGHT/" $NODE_HOME/config/config.toml
+          sed -i -e "/trust_hash =/ s/= .*/= \"$TRUST_HASH\"/" $NODE_HOME/config/config.toml
+          sed -i -e "/rpc_servers =/ s^= .*^= \"$SYNC_RPC_SERVERS\"^" $NODE_HOME/config/config.toml
+          sed -i -e "/halt-height =/ s^= .*^= \"$HALT_HEIGHT\"^" $NODE_HOME/config/app.toml
+          echo "Replaceing genesis..."
+          wget $GENESIS_URL -O genesis.json
+          mv genesis.json $NODE_HOME/config/genesis.json
+          $CHAIN_BINARY start --x-crisis-skip-assert-invariants --home $NODE_HOME > ~/artifact/gaiad_joining_provider.log
