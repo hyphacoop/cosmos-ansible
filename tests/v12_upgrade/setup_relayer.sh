@@ -26,14 +26,7 @@ hermes keys add --chain $CHAIN_ID --mnemonic-file mnemonic.txt
 hermes keys add --chain consumera --mnemonic-file mnemonic.txt
 hermes keys add --chain consumerb --mnemonic-file mnemonic.txt
 hermes keys add --chain consumerc --mnemonic-file mnemonic.txt
-hermes keys add --chain consumerf --mnemonic-file mnemonic.txt
-hermes keys add --chain consumerg --mnemonic-file mnemonic.txt
-
-# echo "Creating connection..."
-# hermes create connection --a-chain $CONSUMER_CHAIN_ID --a-client 07-tendermint-0 --b-client $PROVIDER_CLIENT
-
-# echo "Creating channel..."
-# hermes create channel --a-chain $CONSUMER_CHAIN_ID --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
+hermes keys add --chain consumerd --mnemonic-file mnemonic.txt
 
 echo "Creating service..."
 sudo touch /etc/systemd/system/hermes.service
@@ -52,6 +45,3 @@ echo "WantedBy=multi-user.target"           | sudo tee /etc/systemd/system/herme
 
 sudo systemctl daemon-reload
 sudo systemctl enable hermes
-
-# echo "Waiting for channels to be opened..."
-# sleep 30
