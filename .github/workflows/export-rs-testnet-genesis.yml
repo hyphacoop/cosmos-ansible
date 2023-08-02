@@ -39,7 +39,7 @@ jobs:
       - name: Setup SSH auth
         run: |
           mkdir -m 700 ~/.ssh
-          echo "$SSH_KEYS" > ~/.ssh/authorized_keys
+          echo "$SSH_PUB_KEYS" > ~/.ssh/authorized_keys
 
       - name: Set SSH key
         run: |
@@ -71,7 +71,7 @@ jobs:
           sudo chmod +x /usr/local/bin/gaiad
       - name: Start chain
         env:
-          NODE_HOME: ~/.gaia
+          NODE_HOME: /home/runner/.gaia
           NODE_MONIKER: provider
           SERVICE_NAME: provider
           GAIA_VERSION: v11.0.0-rc0
@@ -81,7 +81,6 @@ jobs:
           SEEDS: "08ec17e86dac67b9da70deb20177655495a55407@provider-seed-01.rs-testnet.polypore.xyz:26656,4ea6e56300a2f37b90e58de5ee27d1c9065cf871@provider-seed-02.rs-testnet.polypore.xyz:26656"
           SYNC_RPC_1: https://rpc.provider-state-sync-01.rs-testnet.polypore.xyz:443
           SYNC_RPC_2: https://rpc.provider-state-sync-02.rs-testnet.polypore.xyz:443
-          SYNC_RPC_SERVERS: "$SYNC_RPC_1,$SYNC_RPC_2"
         run: |
           echo "Initializing $NODE_HOME..."
           $CHAIN_BINARY config chain-id $CHAIN_ID --home $NODE_HOME
@@ -99,7 +98,7 @@ jobs:
           sed -i -e '/trust_period =/ s/= .*/= "8h0m0s"/' $NODE_HOME/config/config.toml
           sed -i -e "/trust_height =/ s/= .*/= $TRUST_HEIGHT/" $NODE_HOME/config/config.toml
           sed -i -e "/trust_hash =/ s/= .*/= \"$TRUST_HASH\"/" $NODE_HOME/config/config.toml
-          sed -i -e "/rpc_servers =/ s^= .*^= \"$SYNC_RPC_1,SYNC_RPC_2\"^" $NODE_HOME/config/config.toml
+          sed -i -e "/rpc_servers =/ s^= .*^= \"$SYNC_RPC_1,$SYNC_RPC_2\"^" $NODE_HOME/config/config.toml
           sed -i -e "/halt-height =/ s^= .*^= \"$HALT_HEIGHT\"^" $NODE_HOME/config/app.toml
           echo "Replaceing genesis..."
           wget -nv $GENESIS_URL -O genesis.json
