@@ -67,7 +67,7 @@ jobs:
           echo "RUNNING_VERSION=$RUNNING_VERSION" >> $GITHUB_ENV
       - name: Download binary from cosmos/gaia repo
         run: |
-          sudo wget https://github.com/cosmos/gaia/releases/download/${{ vars.RUNNING_VERSION }}/gaiad-${{ vars.RUNNING_VERSION }}-linux-amd64 -O /usr/local/bin/gaiad
+          sudo wget https://github.com/cosmos/gaia/releases/download/${{ env.RUNNING_VERSION }}/gaiad-${{ env.RUNNING_VERSION }}-linux-amd64 -O /usr/local/bin/gaiad
           chmod +x /usr/local/bin/gaiad
       - name: Start chain
         env:
