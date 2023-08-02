@@ -111,7 +111,7 @@ jobs:
         run: $CHAIN_BINARY start --x-crisis-skip-assert-invariants --home $NODE_HOME > ~/artifact/gaiad_joining_provider.log
       - name: Export Genesis
         run: |
-          mkdir /home/runner/rs-testnet-export
+          mkdir /home/runner/rs-genesis-export
           gaiad export --height ${{ env.HALT_HEIGHT }} 2> /home/runner/rs-genesis-export/rs-genesis_${{ env.RUNNING_VERSION }}_${{ env.HALT_HEIGHT }}.json
       - name: Sleep 10h
         run: sleep 10h
