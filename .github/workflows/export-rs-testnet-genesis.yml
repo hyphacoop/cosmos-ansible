@@ -61,13 +61,7 @@ jobs:
           RUNNING_VERSION="v11.0.0-rc0"
           echo "Running gaiad version: $RUNNING_VERSION"
           echo "RUNNING_VERSION=$RUNNING_VERSION" >> $GITHUB_ENV
-      - name: Get current height
-        run: |
-          HALT_HEIGHT=$[$(curl -s https://rpc.provider-sentry-01.rs-testnet.polypore.xyz/status | jq -r '.result.sync_info.latest_block_height')+100]
-          echo "Stop height is: $HALT_HEIGHT"
-          echo "RUNNING_VERSION=$RUNNING_VERSION" >> $GITHUB_ENV
       - name: Download binary from cosmos/gaia repo
-        if: ${{ inputs.upgrade_version != 'main' }}
         run: |
           sudo wget https://github.com/cosmos/gaia/releases/download/${{ RUNNING_VERSION }}/gaiad-${{ RUNNING_VERSION }}-linux-amd64 -O /usr/local/bin/gaiad
           chmod +x /usr/local/bin/gaiad
@@ -96,6 +90,7 @@ jobs:
           TRUST_HEIGHT=$[$CURRENT_BLOCK-1000]
           TRUST_BLOCK=$(curl -s $SYNC_RPC_1/block\?height\=$TRUST_HEIGHT)
           TRUST_HASH=$(echo $TRUST_BLOCK | jq -r '.result.block_id.hash')
+          HALT_HEIGHT=$[$CURRENT_BLOCK+100]
           sed -i -e '/enable =/ s/= .*/= true/' $NODE_HOME/config/config.toml
           sed -i -e '/trust_period =/ s/= .*/= "8h0m0s"/' $NODE_HOME/config/config.toml
           sed -i -e "/trust_height =/ s/= .*/= $TRUST_HEIGHT/" $NODE_HOME/config/config.toml
