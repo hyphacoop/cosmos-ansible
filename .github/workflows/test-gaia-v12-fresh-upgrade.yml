@@ -216,7 +216,7 @@ jobs:
       - name: _consumera-vsc-1
         env:
           CON1_RPC_PORT: 27201
-        run: tests/patch_upgrade/patch_test_ccv.sh
+        run: tests/major_fresh_upgrade/test_ccv.sh
       - name: _consumera-ibc
         env:
           CONSUMER_CHAIN_ID: consumera
@@ -252,7 +252,7 @@ jobs:
       - name: _consumerb-vsc-1
         env:
           CON1_RPC_PORT: 27301
-        run: tests/patch_upgrade/patch_test_ccv.sh
+        run: tests/major_fresh_upgrade/test_ccv.sh
       - name: _consumerb-ibc
         env:
           CONSUMER_CHAIN_ID: consumerb
@@ -262,7 +262,7 @@ jobs:
       - name: _consumera-vsc-2
         env:
           CON1_RPC_PORT: 27201
-        run: tests/patch_upgrade/patch_test_ccv.sh
+        run: tests/major_fresh_upgrade/test_ccv.sh
       - name: Test software upgrade for published releases
         if: ${{ matrix.upgrade_version != 'main' }}
         env:
@@ -286,50 +286,50 @@ jobs:
         run: tests/test_endpoints_api.sh localhost $VAL1_API_PORT
       - name: _rpc-2
         run: tests/test_endpoints_rpc.sh localhost $VAL1_RPC_PORT
-      # - name: _consumera-vsc-3
-      #   env:
-      #     CON1_RPC_PORT: 27201
-      #   run: tests/patch_upgrade/patch_test_ccv.sh
-      # - name: _consumerb-vsc-2
-      #   env:
-      #     CON1_RPC_PORT: 27301
-      #   run: tests/patch_upgrade/patch_test_ccv.sh
-      # - name: Initialize consumer chain c with ICS v2.0.0
-      #   env:
-      #     CONSUMER_CHAIN_ID: consumerc
-      #     CONSUMER_HOME_1: /home/runner/.conc1
-      #     CON1_API_PORT: 25401
-      #     CON1_GRPC_PORT: 26401
-      #     CON1_RPC_PORT: 27401
-      #     CON1_P2P_PORT: 28401
-      #     CON1_PPROF_PORT: 6169
-      #     CONSUMER_SERVICE_1: conc1.service
-      #     CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY_2 }}
-      #   run: tests/major_fresh_upgrade/init_consumer.sh
-      # - name: Launch consumer chain c
-      #   env:
-      #     CONSUMER_CHAIN_ID: consumerc
-      #     CONSUMER_HOME_1: /home/runner/.conc1
-      #     CONSUMER_SERVICE_1: conc1.service
-      #   run: tests/major_fresh_upgrade/launch_consumer.sh
-      # - name: _consumerc-blocks-1
-      #   run: tests/test_block_production.sh 127.0.0.1 27401 5
-      # - name: Establish CCV channel for consumer c
-      #   run: |
-      #     hermes create connection --a-chain consumerc --a-client 07-tendermint-0 --b-client 07-tendermint-2
-      #     hermes create channel --a-chain consumerc --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
-      #     sudo systemctl restart hermes
-      #     sleep 30
-      # - name: _consumerc-vsc-1
-      #   env:
-      #     CON1_RPC_PORT: 27401
-      #   run: tests/patch_upgrade/patch_test_ccv.sh
-      # - name: _consumerc-ibc
-      #   env:
-      #     CONSUMER_CHAIN_ID: consumerc
-      #     CONSUMER_HOME_1: /home/runner/.conc1
-      #     CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY_2 }}
-      #   run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-5 4
+      - name: _consumera-vsc-3
+        env:
+          CON1_RPC_PORT: 27201
+        run: tests/major_fresh_upgrade/test_ccv.sh
+      - name: _consumerb-vsc-2
+        env:
+          CON1_RPC_PORT: 27301
+        run: tests/major_fresh_upgrade/test_ccv.sh
+      - name: Initialize consumer chain c with ICS v2.0.0
+        env:
+          CONSUMER_CHAIN_ID: consumerc
+          CONSUMER_HOME_1: /home/runner/.conc1
+          CON1_API_PORT: 25401
+          CON1_GRPC_PORT: 26401
+          CON1_RPC_PORT: 27401
+          CON1_P2P_PORT: 28401
+          CON1_PPROF_PORT: 6169
+          CONSUMER_SERVICE_1: conc1.service
+          CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY_2 }}
+        run: tests/major_fresh_upgrade/init_consumer.sh
+      - name: Launch consumer chain c
+        env:
+          CONSUMER_CHAIN_ID: consumerc
+          CONSUMER_HOME_1: /home/runner/.conc1
+          CONSUMER_SERVICE_1: conc1.service
+        run: tests/major_fresh_upgrade/launch_consumer.sh
+      - name: _consumerc-blocks-1
+        run: tests/test_block_production.sh 127.0.0.1 27401 5
+      - name: Establish CCV channel for consumer c
+        run: |
+          hermes create connection --a-chain consumerc --a-client 07-tendermint-0 --b-client 07-tendermint-2
+          hermes create channel --a-chain consumerc --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
+          sudo systemctl restart hermes
+          sleep 30
+      - name: _consumerc-vsc-1
+        env:
+          CON1_RPC_PORT: 27401
+        run: tests/major_fresh_upgrade/test_ccv.sh
+      - name: _consumerc-ibc
+        env:
+          CONSUMER_CHAIN_ID: consumerc
+          CONSUMER_HOME_1: /home/runner/.conc1
+          CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY_2 }}
+        run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-5 4
       # - name: Initialize consumer chain d with ICS v3.1.0
       #   env:
       #     CONSUMER_CHAIN_ID: consumerd
@@ -361,7 +361,7 @@ jobs:
       # - name: _consumerd-vsc-1
       #   env:
       #     CON1_RPC_PORT: 27501
-      #   run: tests/patch_upgrade/patch_test_ccv.sh
+      #   run: tests/major_fresh_upgrade/test_ccv.sh
       # - name: _consumerd-ibc
       #   env:
       #     CONSUMER_CHAIN_ID: consumerd
@@ -371,19 +371,19 @@ jobs:
       # - name: _consumera-vsc-4
       #   env:
       #     CON1_RPC_PORT: 27201
-      #   run: tests/patch_upgrade/patch_test_ccv.sh
+      #   run: tests/major_fresh_upgrade/test_ccv.sh
       # - name: _consumerb-vsc-3
       #   env:
       #     CON1_RPC_PORT: 27301
-      #   run: tests/patch_upgrade/patch_test_ccv.sh
+      #   run: tests/major_fresh_upgrade/test_ccv.sh
       # - name: _consumerc-vsc-2
       #   env:
       #     CON1_RPC_PORT: 27401
-      #   run: tests/patch_upgrade/patch_test_ccv.sh
+      #   run: tests/major_fresh_upgrade/test_ccv.sh
       # - name: _consumerd-vsc-2
       #   env:
       #     CON1_RPC_PORT: 27501
-      #   run: tests/patch_upgrade/patch_test_ccv.sh
+      #   run: tests/major_fresh_upgrade/test_ccv.sh
       # - name: _txs-3
       #   run: tests/patch_upgrade/patch_test_tx.sh
       # - name: _api-3

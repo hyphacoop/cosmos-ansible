@@ -9,7 +9,7 @@ EXPECTED_DENOMS=$2
 echo "Sending $DENOM to $CONSUMER_CHAIN_ID..."
 $CHAIN_BINARY --home $HOME_1 tx ibc-transfer transfer transfer $PROVIDER_CHANNEL $WALLET_1 1000$DENOM --from $WALLET_1 --keyring-backend test --gas 500000 --fees 2000$DENOM -b block -y
 echo "Waiting for the transfer to reach the consumer chain..."
-sleep 30
+sleep 10
 DENOM_AMOUNT=$($CONSUMER_CHAIN_BINARY --home $CONSUMER_HOME_1 q bank balances $WALLET_1 -o json | jq -r '.balances | length')
 if [ $DENOM_AMOUNT -lt 2 ]; then
     echo "Only one denom found in consumer wallet."
@@ -21,7 +21,7 @@ echo "Found at least two denoms in the consumer wallet."
 echo "Sending $CONSUMER_DENOM to $CHAIN_ID..."
 $CONSUMER_CHAIN_BINARY --home $CONSUMER_HOME_1 tx ibc-transfer transfer transfer channel-1 $WALLET_1 1000$CONSUMER_DENOM --from $WALLET_1 --keyring-backend test -y
 echo "Waiting for the transfer to reach the provider chain..."
-sleep 60
+sleep 20
 $CHAIN_BINARY --home $HOME_1 q bank balances $WALLET_1 -o json
 DENOM_AMOUNT=$($CHAIN_BINARY --home $HOME_1 q bank balances $WALLET_1 -o json | jq -r '.balances | length')
 if [ $DENOM_AMOUNT -lt $EXPECTED_DENOMS ]; then
