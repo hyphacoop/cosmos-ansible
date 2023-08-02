@@ -1,8 +1,11 @@
 ---
 
-name: Test Gaia Fresh State Upgrade - v11
+name: Test Gaia Fresh State Upgrade - v12
 on:
+  repository_dispatch:
+    types: [new_main_build]
   workflow_dispatch:
+  push:
 jobs:
   set-version-matrix:
     runs-on: ubuntu-22.04
@@ -29,13 +32,13 @@ jobs:
       - name: Generate starting versions
         id: generate-start
         run: |
-          start=$(tests/generate_version_matrix.py v10.0.0)
+          start=$(tests/generate_version_matrix.py v11.0.0)
           echo $start
           echo "start_versions=$start" >> $GITHUB_OUTPUT
       - name: Generate upgrade versions
         id: generate-upgrade
         run: |
-          upgrade=$(tests/generate_upgrade_matrix_fresh.py v10.0.0)
+          upgrade=$(tests/generate_upgrade_matrix_fresh.py v11.0.0)
           echo $upgrade
           echo "upgrade_versions=$upgrade" >> $GITHUB_OUTPUT
     outputs:
@@ -174,8 +177,6 @@ jobs:
         run: tests/test_endpoints_api.sh localhost $VAL1_API_PORT
       - name: _rpc-1
         run: tests/test_endpoints_rpc.sh localhost $VAL1_RPC_PORT
-      - name: Set minimum gas prices in globalfee module
-        run: tests/v11_upgrade/set_minimum_gas_prices.sh
       - name: Set up relayer
         run: tests/patch_upgrade/patch_setup_relayer.sh
       - name: Download consumer chain binaries
@@ -186,28 +187,6 @@ jobs:
           chmod +x $HOME/go/bin/$CONSUMER_CHAIN_BINARY_2
           wget $CONSUMER_CHAIN_BINARY_URL_3 -O $HOME/go/bin/$CONSUMER_CHAIN_BINARY_3
           chmod +x $HOME/go/bin/$CONSUMER_CHAIN_BINARY_3
-      - name: Initialize consumer chain a with ICS v1.2.0-multiden
-        env:
-          CONSUMER_CHAIN_ID: consumera
-        run: tests/major_fresh_upgrade/init_consumer.sh
-      - name: Launch consumer chain a
-        env:
-          CONSUMER_CHAIN_ID: consumera
-        run: tests/major_fresh_upgrade/launch_consumer.sh
-      - name: _consumera-blocks-1
-        run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT 5
-      - name: Establish CCV channel for consumer a
-        run: |
-          hermes create connection --a-chain consumera --a-client 07-tendermint-0 --b-client 07-tendermint-0
-          hermes create channel --a-chain consumera --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
-          sudo systemctl restart hermes
-          sleep 10
-      - name: _consumera-vsc-1
-        run: tests/patch_upgrade/patch_test_ccv.sh
-      - name: _consumera-ibc-1
-        env:
-          CONSUMER_CHAIN_ID: consumera
-        run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-1 2
       - name: Initialize consumer chain b with ICS v2.0.0
         env:
           CONSUMER_CHAIN_ID: consumerb
@@ -230,7 +209,7 @@ jobs:
         run: tests/test_block_production.sh 127.0.0.1 27201 5
       - name: Establish CCV channel for consumer b
         run: |
-          hermes create connection --a-chain consumerb --a-client 07-tendermint-0 --b-client 07-tendermint-1
+          hermes create connection --a-chain consumerb --a-client 07-tendermint-0 --b-client 07-tendermint-0
           hermes create channel --a-chain consumerb --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
           sudo systemctl restart hermes
           sleep 10
@@ -243,7 +222,7 @@ jobs:
           CONSUMER_CHAIN_ID: consumerb
           CONSUMER_HOME_1: /home/runner/.conb1
           CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY_2 }}
-        run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-3 3
+        run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-1 2
       - name: Initialize consumer chain c with ICS v3.1.0
         env:
           CONSUMER_CHAIN_ID: consumerc
@@ -266,7 +245,7 @@ jobs:
         run: tests/test_block_production.sh 127.0.0.1 27301 5
       - name: Establish CCV channel for consumer c
         run: |
-          hermes create connection --a-chain consumerc --a-client 07-tendermint-0 --b-client 07-tendermint-2
+          hermes create connection --a-chain consumerc --a-client 07-tendermint-0 --b-client 07-tendermint-1
           hermes create channel --a-chain consumerc --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
           sudo systemctl restart hermes
           sleep 10
@@ -279,9 +258,7 @@ jobs:
           CONSUMER_CHAIN_ID: consumerc
           CONSUMER_HOME_1: /home/runner/.conc1
           CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY_3 }}
-        run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-5 4
-      - name: _consumera-vsc-2
-        run: tests/patch_upgrade/patch_test_ccv.sh
+        run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-3 3
       - name: _consumerb-vsc-2
         env:
           CON1_RPC_PORT: 27201
@@ -292,13 +269,13 @@ jobs:
           DOWNLOAD_URL: https://github.com/cosmos/gaia/releases/download/${{ matrix.upgrade_version }}/gaiad-${{ matrix.upgrade_version }}-linux-amd64
         run: |
           echo $DOWNLOAD_URL
-          tests/major_fresh_upgrade/software_upgrade.sh 127.0.0.1 $VAL1_RPC_PORT v11
+          tests/major_fresh_upgrade/software_upgrade.sh 127.0.0.1 $VAL1_RPC_PORT v12
       - name: Test software upgrade for main branch
         if: ${{ matrix.upgrade_version == 'main' }}
         env:
           DOWNLOAD_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/gaiad-linux-main/gaiad-linux
         run: |
-          tests/major_fresh_upgrade/software_upgrade.sh 127.0.0.1 $VAL1_RPC_PORT v11
+          tests/major_fresh_upgrade/software_upgrade.sh 127.0.0.1 $VAL1_RPC_PORT v12
       - name: _blocks-2
         run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 5
       - name: _txs-2
@@ -309,8 +286,6 @@ jobs:
         run: tests/test_endpoints_api.sh localhost $VAL1_API_PORT
       - name: _rpc-2
         run: tests/test_endpoints_rpc.sh localhost $VAL1_RPC_PORT
-      - name: _consumera-vsc-3
-        run: tests/patch_upgrade/patch_test_ccv.sh
       - name: _consumerb-vsc-3
         env:
           CON1_RPC_PORT: 27201
@@ -341,7 +316,7 @@ jobs:
         run: tests/test_block_production.sh 127.0.0.1 27401 5
       - name: Establish CCV channel for consumer f
         run: |
-          hermes create connection --a-chain consumerf --a-client 07-tendermint-0 --b-client 07-tendermint-3
+          hermes create connection --a-chain consumerf --a-client 07-tendermint-0 --b-client 07-tendermint-2
           hermes create channel --a-chain consumerf --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
           sudo systemctl restart hermes
           sleep 30
@@ -354,7 +329,7 @@ jobs:
           CONSUMER_CHAIN_ID: consumerf
           CONSUMER_HOME_1: /home/runner/.conf1
           CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY_2 }}
-        run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-7 5
+        run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-5 4
       - name: Initialize consumer chain g with ICS v3.1.0
         env:
           CONSUMER_CHAIN_ID: consumerg
@@ -379,7 +354,7 @@ jobs:
         run: tests/test_block_production.sh 127.0.0.1 27501 5
       - name: Establish CCV channel for consumer g
         run: |
-          hermes create connection --a-chain consumerg --a-client 07-tendermint-0 --b-client 07-tendermint-4
+          hermes create connection --a-chain consumerg --a-client 07-tendermint-0 --b-client 07-tendermint-3
           hermes create channel --a-chain consumerg --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
           sudo systemctl restart hermes
           sleep 30
@@ -392,9 +367,7 @@ jobs:
           CONSUMER_CHAIN_ID: consumerg
           CONSUMER_HOME_1: /home/runner/.cong1
           CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY_3 }}
-        run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-9 6
-      - name: _consumera-vsc-4
-        run: tests/patch_upgrade/patch_test_ccv.sh
+        run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-7 5
       - name: _consumerb-vsc-4
         env:
           CON1_RPC_PORT: 27201
@@ -418,15 +391,9 @@ jobs:
       - name: _rpc-3
         run: tests/test_endpoints_rpc.sh localhost $VAL1_RPC_PORT
       - name: _soft-opt-out-1
-        run: tests/v11_upgrade/test_validator_jailed.sh $VALOPER_2 true
+        run: teststest_validator_jailed.sh $VALOPER_2 true
       - name: _soft-opt-out-2
-        run: tests/v11_upgrade/test_validator_jailed.sh $VALOPER_3 false
-      - name: _globalfee-1
-        run: tests/v11_upgrade/test_globalfee_params.sh
-      - name: _globalfee-2
-        run: tests/v11_upgrade/test_bypass_msg.sh
-      - name: _globalfee-3
-        run: tests/v11_upgrade/test_max_gas.sh
+        run: teststest_validator_jailed.sh $VALOPER_3 false
       - name: Check validators
         run: |
           $CHAIN_BINARY q staking validators --home $HOME_1 -o json | jq '.'
