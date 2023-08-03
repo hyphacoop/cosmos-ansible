@@ -22,20 +22,20 @@ echo $MNEMONIC_1 | $STRIDE_CHAIN_BINARY keys add $MONIKER_1 --keyring-backend te
 echo $MNEMONIC_4 | $STRIDE_CHAIN_BINARY keys add $MONIKER_2 --keyring-backend test --recover --home $STRIDE_HOME_1
 
 echo "Patching genesis with ustrd denom..."
-jq '.app_state.crisis.constant_fee.denom = "ustrd"' $STRIDE_HOME_1/config/genesis.json > temp/stride-genesis-1.json
-jq '.app_state.gov.params.min_deposit[0].denom = "ustrd"' temp/stride-genesis-1.json > temp/stride-genesis-2.json
-jq '.app_state.mint.params.mint_denom = "ustrd"' temp/stride-genesis-2.json > temp/stride-genesis-3.json
-jq '.app_state.staking.params.bond_denom = "ustrd"' temp/stride-genesis-3.json > temp/stride-genesis-4.json
+jq '.app_state.crisis.constant_fee.denom = "ustrd"' $STRIDE_HOME_1/config/genesis.json > stride-genesis-1.json
+jq '.app_state.gov.params.min_deposit[0].denom = "ustrd"' stride-genesis-1.json > stride-genesis-2.json
+jq '.app_state.mint.params.mint_denom = "ustrd"' stride-genesis-2.json > stride-genesis-3.json
+jq '.app_state.staking.params.bond_denom = "ustrd"' stride-genesis-3.json > stride-genesis-4.json
 
 echo "Patching genesis file for fast governance..."
-jq '(.app_state.epochs.epochs[] | select(.identifier=="day") ).duration = "120s"' temp/stride-genesis-4.json  > temp/stride-genesis-5.json
-jq '(.app_state.epochs.epochs[] | select(.identifier=="stride_epoch") ).duration = "120s"' temp/stride-genesis-5.json  > temp/stride-genesis-6.json
-jq '.app_state.gov.voting_params.voting_period = "30s"' temp/stride-genesis-6.json  > temp/stride-genesis-7.json
-jq '.app_state.gov.params.voting_period = "30s"' temp/stride-genesis-7.json  > temp/stride-genesis-8.json
+jq '(.app_state.epochs.epochs[] | select(.identifier=="day") ).duration = "120s"' stride-genesis-4.json  > stride-genesis-5.json
+jq '(.app_state.epochs.epochs[] | select(.identifier=="stride_epoch") ).duration = "120s"' stride-genesis-5.json  > stride-genesis-6.json
+jq '.app_state.gov.voting_params.voting_period = "30s"' stride-genesis-6.json  > stride-genesis-7.json
+jq '.app_state.gov.params.voting_period = "30s"' stride-genesis-7.json  > stride-genesis-8.json
 
 echo "Setting slashing to 5 missed blocks..."
-jq -r '.app_state.slashing.params.signed_blocks_window = "40"' temp/stride-genesis-8.json > temp/consumer-slashing.json
-cp temp/consumer-slashing.json $STRIDE_HOME_1/config/genesis.json
+jq -r '.app_state.slashing.params.signed_blocks_window = "40"' stride-genesis-8.json > consumer-slashing.json
+cp consumer-slashing.json $STRIDE_HOME_1/config/genesis.json
 
 # Add funds to accounts
 $STRIDE_CHAIN_BINARY add-genesis-account $MONIKER_1 1000000000$STRIDE_DENOM --home $STRIDE_HOME_1
