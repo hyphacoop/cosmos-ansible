@@ -184,9 +184,9 @@ jobs:
             echo "Current block is: $current_block"
             sleep 5
           done
-          tail -20 /home/runner/artifact/gaiad_upgrade.log
           echo "exiting gaia and screen"
           killall gaiad screen
+          tail -30 /home/runner/artifact/gaiad_upgrade.log
       - name: Compress and upload files
         run: |
           cp cosmos-genesis-tinkerer/tinkered_genesis.json /home/runner/rs-genesis-export/rs-provider-tinkered-genesis_${{ env.RUNNING_VERSION }}_${{ env.HALT_HEIGHT }}.json
@@ -196,14 +196,14 @@ jobs:
           echo "Compressing rs-provider-tinkered-genesis_${{ env.RUNNING_VERSION }}_${{ env.HALT_HEIGHT }}.json ..."
           gzip rs-provider-tinkered-genesis_${{ env.RUNNING_VERSION }}_${{ env.HALT_HEIGHT }}.json
           echo "Uploading exported genesis to files.polypore.xyz"
-          scp -v rs-provider-genesis_${{ env.RUNNING_VERSION }}_${{ env.HALT_HEIGHT }}.json.gz gh-actions@files.polypore.xyz:/var/www/html/genesis/rs-testnet-provider-export/
+          scp rs-provider-genesis_${{ env.RUNNING_VERSION }}_${{ env.HALT_HEIGHT }}.json.gz gh-actions@files.polypore.xyz:/var/www/html/genesis/rs-testnet-provider-export/
           echo "Uploading Tinkered genesis to files.polypore.xyz"
-          scp -v rs-provider-tinkered-genesis_${{ env.RUNNING_VERSION }}_${{ env.HALT_HEIGHT }}.json.gz gh-actions@files.polypore.xyz:/var/www/html/genesis/rs-testnet-provider-tinkered/
+          scp rs-provider-tinkered-genesis_${{ env.RUNNING_VERSION }}_${{ env.HALT_HEIGHT }}.json.gz gh-actions@files.polypore.xyz:/var/www/html/genesis/rs-testnet-provider-tinkered/
           echo "Compressing ~/.gaia ..."
           cd /home/runner/
           tar cf ${{ env.RUNNING_VERSION }}_${{ env.upgrade_height }}-provider-stateful-upgrade.tar.gz .gaia
           echo "Uploading archived state to files.polypore.xyz"
-          scp -v ${{ env.RUNNING_VERSION }}_${{ env.upgrade_height }}-provider-stateful-upgrade.tar.gz gh-actions@files.polypore.xyz:/var/www/html/archived-state/rs-testnet-provider/
+          scp ${{ env.RUNNING_VERSION }}_${{ env.upgrade_height }}-provider-stateful-upgrade.tar.gz gh-actions@files.polypore.xyz:/var/www/html/archived-state/rs-testnet-provider/
           # Update latest file symlinks
           ssh gh-actions@files.polypore.xyz ln -sf /var/www/html/genesis/rs-testnet-provider-export/rs-provider-genesis_${{ env.RUNNING_VERSION }}_${{ env.HALT_HEIGHT }}.json.gz /var/www/html/genesis/rs-testnet-provider-export/latest_v$(echo ${{ env.RUNNING_VERSION }} | awk -F "." '{ print substr($1,2) }').json.gz
           ssh gh-actions@files.polypore.xyz ln -sf /var/www/html/genesis/mainnet-genesis-tinkered/rs-provider-tinkered-genesis_${{ env.RUNNING_VERSION }}_${{ env.HALT_HEIGHT }}.json.gz /var/www/html/genesis/mainnet-genesis-tinkered/latest_v$(echo ${{ env.RUNNING_VERSION }} | awk -F "." '{ print substr($1,2) }').json.gz
