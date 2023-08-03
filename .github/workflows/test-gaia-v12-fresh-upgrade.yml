@@ -60,7 +60,7 @@ jobs:
       CONSUMER_CHAIN_BINARY_URL_3: ${{ vars.CONSUMER_CHAIN_BINARY_URL_3 }}
       CONSUMER_CHAIN_BINARY_3: ${{ vars.CONSUMER_CHAIN_BINARY_3 }}
       STRIDE_SOV_CHAIN_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/stride-v11.0.0/stride-v11.0.0-linux-amd64
-      STRIDE_CON_CHAIN_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/stride-v11.0.0/stride-v12.1.0-linux-amd64
+      STRIDE_CON_CHAIN_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/stride-v12.1.0/stride-v12.1.0-linux-amd64
       STRIDE_CHAIN_BINARY: strided
       STRIDE_HOME_1: /home/runner/.stride1
       STRIDE_SERVICE_1: stride1.service
@@ -161,6 +161,7 @@ jobs:
           echo "$CONSUMER_CHAIN_BINARY_2 runs off $CONSUMER_CHAIN_BINARY_URL_2"
       - name: Update PATH
         run: |
+          mkdir -p $HOME/go/bin
           echo "$HOME/go/bin" >> $GITHUB_PATH
           echo "$HOME/.hermes" >> $GITHUB_PATH
       - name: Bypass the grub-efi-amd64-signed package
