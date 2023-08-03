@@ -45,7 +45,6 @@ jobs:
           then
             mkdir -m 700 ~/.ssh
           fi
-          mkdir -m 700 ~/.ssh
           echo "$SSH_PUB_KEYS" > ~/.ssh/authorized_keys
 
       - name: Set SSH key
