@@ -142,7 +142,7 @@ jobs:
           $CHAIN_BINARY config keyring-backend test --home $NODE_HOME
           $CHAIN_BINARY config broadcast-mode block --home $NODE_HOME
           $CHAIN_BINARY init $NODE_MONIKER --chain-id $CHAIN_ID --home $NODE_HOME
-          sed -i -e "/fast_sync =/ s^= .*^= \"false"^" $NODE_HOME/config/config.toml
+          sed -i -e "/fast_sync =/ s^= .*^= \"false\"^" $NODE_HOME/config/config.toml
           echo "Restoring validator-40 node / validator keys"
           cp examples/validator-keys/validator-40/node_key.json $NODE_HOME/config/node_key.json
           cp examples/validator-keys/validator-40/priv_validator_key.json $NODE_HOME/config/priv_validator_key.json
