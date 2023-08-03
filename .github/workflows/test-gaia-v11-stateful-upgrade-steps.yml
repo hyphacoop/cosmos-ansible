@@ -135,6 +135,7 @@ jobs:
       - name: Start chain
         env:
           START_VERSION: ${{inputs.gaia_version}}
+          ARCHIVE_URL: "https://files.polypore.xyz/archived-state/latest_v10.tar.gz"
         run: tests/major_stateful_upgrade/start_chain.sh
       - name: _blocks-1
         run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 50 # 5 blocks

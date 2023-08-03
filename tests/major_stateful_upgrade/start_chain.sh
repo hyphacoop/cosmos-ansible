@@ -5,7 +5,7 @@ source ~/env/bin/activate
 # Download archived home directory
 echo "Initializing node homes..."
 echo "Downloading archived state"
-wget -nv -O $HOME/archived-state.gz https://files.polypore.xyz/archived-state/rs-testnet-provider/latest_v11.json.gz
+wget -nv -O $HOME/archived-state.gz $ARCHIVE_URL
 echo "Extracting archive"
 mkdir -p $HOME_1 
 tar xf $HOME/archived-state.gz -C $HOME_1 --strip-components=1
