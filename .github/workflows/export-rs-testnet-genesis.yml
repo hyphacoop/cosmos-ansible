@@ -118,6 +118,7 @@ jobs:
           source /home/runner/env/bin/activate
           git clone https://github.com/hyphacoop/cosmos-genesis-tinkerer.git
           cd cosmos-genesis-tinkerer
+          git checkout tinker-rs-testnet
           pip install -r requirements.txt
           ln -s /home/runner/rs-genesis-export/rs-genesis_${{ env.RUNNING_VERSION }}_${{ env.HALT_HEIGHT }}.json tests/rs-testnet_genesis.json
           python example_rs-testnet_genesis.py
