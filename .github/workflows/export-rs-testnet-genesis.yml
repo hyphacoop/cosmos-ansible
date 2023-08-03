@@ -180,7 +180,9 @@ jobs:
           do
             current_block=$(curl -s 127.0.0.1:26657/block | jq -r .result.block.header.height)
             echo "Current block is: $current_block"
+            sleep 5
           done
+          tail -20 /home/runner/artifact/gaiad_upgrade.log
           echo "exiting gaia and screen"
           killall gaiad screen
 
