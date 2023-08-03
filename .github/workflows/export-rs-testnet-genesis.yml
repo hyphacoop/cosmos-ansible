@@ -46,6 +46,7 @@ jobs:
             mkdir -m 700 ~/.ssh
           fi
           echo "$SSH_PUB_KEYS" > ~/.ssh/authorized_keys
+          ssh-keyscan files.polypore.xyz >> ~/.ssh/known_hosts
 
       - name: Set SSH key
         run: |
