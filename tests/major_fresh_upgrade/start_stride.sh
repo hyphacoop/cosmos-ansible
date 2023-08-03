@@ -84,8 +84,7 @@ toml set --toml-path $STRIDE_HOME_1/config/config.toml block_sync false
 
 echo "Setting up services..."
 
-rm /etc/systemd/system/$STRIDE_SERVICE_1
-touch /etc/systemd/system/$STRIDE_SERVICE_1
+sudo touch /etc/systemd/system/$STRIDE_SERVICE_1
 echo "[Unit]"                               | sudo tee /etc/systemd/system/$STRIDE_SERVICE_1
 echo "Description=Stride1 service"       | sudo tee /etc/systemd/system/$STRIDE_SERVICE_1 -a
 echo "After=network-online.target"          | sudo tee /etc/systemd/system/$STRIDE_SERVICE_1 -a
