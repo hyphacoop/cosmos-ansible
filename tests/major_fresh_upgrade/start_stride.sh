@@ -65,7 +65,7 @@ toml set --toml-path $STRIDE_HOME_1/config/app.toml grpc-web.enable false
 
 # config.toml
 # Set different ports for rpc
-toml set --toml-path $STRIDE_HOME_1/config/config.toml rpc.laddr "tcp://0.0.0.0:37$STRIDE_RPC_1"
+toml set --toml-path $STRIDE_HOME_1/config/config.toml rpc.laddr "tcp://0.0.0.0:$STRIDE_RPC_1"
 
 # Set different ports for rpc pprof
 toml set --toml-path $STRIDE_HOME_1/config/config.toml rpc.pprof_laddr "localhost:$STRIDE_PPROF_1"
