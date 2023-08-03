@@ -56,8 +56,8 @@ jobs:
       HIGH_FEES: 10000
       GAS: auto
       GAS_ADJUSTMENT: 1.2
-      DELEGATE_1: ${{ vars.DELEGATE_1 }}
-      DELEGATE_1_AMOUNT: ${{ vars.DELEGATE_1_AMOUNT }}
+      DELEGATE_2: ${{ vars.DELEGATE_2 }}
+      DELEGATE_2_AMOUNT: ${{ vars.DELEGATE_2_AMOUNT }}
     steps:
       # Get system info
       - run: ifconfig
@@ -141,10 +141,9 @@ jobs:
         run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 50 # 5 blocks
       - name: _txs-1
         run: tests/major_stateful_upgrade/test_tx.sh
-      # - name: Delegate to mainnet validator
-      #   run:
-      #     # gaiad tx staking delegate $DELEGATE_1 $DELEGATE_1_AMOUNT$DENOM --from $MONIKER_2 --keyring-backend test --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y --chain-id $CHAIN_ID --home $HOME_1
-      #     gaiad tx staking delegate $DELEGATE_1 $DELEGATE_1_AMOUNT$DENOM --from $MONIKER_2 --keyring-backend test --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y --chain-id $CHAIN_ID --home $HOME_1
+      - name: Delegate to mainnet validator
+        run:
+          gaiad tx staking delegate $DELEGATE_2 $DELEGATE_2_AMOUNT$DENOM --from $MONIKER_2 --keyring-backend test --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y --chain-id $CHAIN_ID --home $HOME_1
       - name: _api-1
         run: tests/test_endpoints_api.sh localhost $VAL1_API_PORT
       - name: _rpc-1
@@ -192,10 +191,10 @@ jobs:
           channel_id=$(hermes --json query connection channels --chain local-testnet --connection $connection_id | jq -r '. | select(.result).result[] | select(.port_id=="transfer").channel_id')
           echo "Channel ID: $channel_id"
           tests/major_stateful_upgrade/test_consumer_ibc_transfer.sh $channel_id 2
-      # - name: _soft-opt-out-1
-      #   run: tests/v11_upgrade/test_validator_jailed.sh $DELEGATE_1 true
-      # - name: _soft-opt-out-2
-      #   run: tests/v11_upgrade/test_validator_jailed.sh cosmosvaloper10nzaaeh2kq28t3nqsh5m8kmyv90vx7ym5mpakx false
+      - name: _soft-opt-out-1
+        run: tests/v11_upgrade/test_validator_jailed.sh $DELEGATE_2 true
+      - name: _soft-opt-out-2
+        run: tests/v11_upgrade/test_validator_jailed.sh cosmosvaloper1e5yfpc8l6g4808fclmlyd38tjgxuwshnmjkrq6 false
       - name: Initialize consumer chain b with ICS v2.0.0
         env:
           CONSUMER_CHAIN_ID: consumerb
