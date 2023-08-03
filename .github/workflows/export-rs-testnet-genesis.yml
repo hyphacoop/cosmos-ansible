@@ -10,7 +10,7 @@ on:
 jobs:
   build:
     runs-on: self-hosted-debian-12
-    environment: major-upgrade-stateful-workflow
+    environment: export-rs-testnet
     env:
       SSH_PUB_KEYS: ${{ vars.SSH_PUB_KEYS }}
     steps:
