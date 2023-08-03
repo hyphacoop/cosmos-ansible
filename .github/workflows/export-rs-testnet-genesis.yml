@@ -10,6 +10,9 @@ on:
 jobs:
   build:
     runs-on: self-hosted-debian-12
+    environment: major-upgrade-stateful-workflow
+    env:
+      SSH_PUB_KEYS: ${{ vars.SSH_PUB_KEYS }}
     steps:
       # Get system info
       - run: ifconfig
@@ -38,6 +41,10 @@ jobs:
           sudo /usr/sbin/sshd
       - name: Setup SSH auth
         run: |
+          if [ ! -d ~/.ssh ]
+          then
+            mkdir -m 700 ~/.ssh
+          fi
           mkdir -m 700 ~/.ssh
           echo "$SSH_PUB_KEYS" > ~/.ssh/authorized_keys
 
@@ -47,7 +54,7 @@ jobs:
           then
             mkdir -m 700 ~/.ssh
           fi
-          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
+          echo "${{ secrets.SSH_PRIV_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
       - name: Check out repository code
         uses: actions/checkout@v3
@@ -112,7 +119,7 @@ jobs:
       - name: Export Genesis
         run: |
           mkdir /home/runner/rs-genesis-export
-          gaiad export --height ${{ env.HALT_HEIGHT }} 2> /home/runner/rs-genesis-export/rs-genesis_${{ env.RUNNING_VERSION }}_${{ env.HALT_HEIGHT }}.json
+          gaiad export --height ${{ env.HALT_HEIGHT }} 2> /home/runner/rs-genesis-export/rs-provider-genesis_${{ env.RUNNING_VERSION }}_${{ env.HALT_HEIGHT }}.json
       - name: Tinker Genesis
         run: |
           source /home/runner/env/bin/activate
@@ -120,14 +127,9 @@ jobs:
           cd cosmos-genesis-tinkerer
           git checkout tinker-rs-testnet
           pip install -r requirements.txt
-          ln -s /home/runner/rs-genesis-export/rs-genesis_${{ env.RUNNING_VERSION }}_${{ env.HALT_HEIGHT }}.json tests/rs-testnet_genesis.json
+          ln -s /home/runner/rs-genesis-export/rs-provider-genesis_${{ env.RUNNING_VERSION }}_${{ env.HALT_HEIGHT }}.json tests/rs-testnet_genesis.json
           python example_rs-testnet_genesis.py
           cp tinkered_genesis.json /home/runner/
-      - name: Upload tinkered genesis
-        run: |
-          echo "Uploading genesis to files.polypore.xyz"
-          # scp cosmos-genesis-tinkerer/tinkered_genesis.json ...
-          # scp /home/runner/rs-genesis-export/rs-genesis_${{ env.RUNNING_VERSION }}_${{ env.HALT_HEIGHT }}.json ...
       - name: Initializing chain with tinkered genesis
         env:
           NODE_HOME: /home/runner/.gaia
@@ -185,6 +187,22 @@ jobs:
           tail -20 /home/runner/artifact/gaiad_upgrade.log
           echo "exiting gaia and screen"
           killall gaiad screen
+      - name: Compress and upload tinkered genesis
+        run: |
+          cp cosmos-genesis-tinkerer/tinkered_genesis.json /home/runner/rs-genesis-export/rs-provider-tinkered-genesis_${{ env.RUNNING_VERSION }}_${{ env.HALT_HEIGHT }}.json
+          cd /home/runner/rs-genesis-export/
+          echo "Compressing rs-provider-genesis_${{ env.RUNNING_VERSION }}_${{ env.HALT_HEIGHT }}.json ..."
+          gzip rs-provider-genesis_${{ env.RUNNING_VERSION }}_${{ env.HALT_HEIGHT }}.json
+          echo "Compressing rs-provider-tinkered-genesis_${{ env.RUNNING_VERSION }}_${{ env.HALT_HEIGHT }}.json ..."
+          gzip rs-provider-tinkered-genesis_${{ env.RUNNING_VERSION }}_${{ env.HALT_HEIGHT }}.json
+          echo "Uploading exported genesis to files.polypore.xyz"
+          scp rs-provider-genesis_${{ env.RUNNING_VERSION }}_${{ env.HALT_HEIGHT }}.json.gz gh-actions@files.polypore.xyz:/var/www/html/genesis/rs-testnet-provider-export/
+          echo "Uploading Tinkered genesis to files.polypore.xyz"
+          scp rs-provider-tinkered-genesis_${{ env.RUNNING_VERSION }}_${{ env.HALT_HEIGHT }}.json.gz gh-actions@files.polypore.xyz:/var/www/html/genesis/rs-testnet-provider-tinkered/
+
+          # Update latest file symlinks
+          ssh gh-actions@files.polypore.xyz ln -sf /var/www/html/genesis/rs-testnet-provider-export/rs-provider-genesis_${{ env.RUNNING_VERSION }}_${{ env.HALT_HEIGHT }}.json.gz /var/www/html/genesis/rs-testnet-provider-export/latest_v$(echo ${{ env.RUNNING_VERSION }} | awk -F "." '{ print substr($1,2) }').json.gz
+          ssh gh-actions@files.polypore.xyz ln -sf /var/www/html/genesis/mainnet-genesis-tinkered/rs-provider-tinkered-genesis_${{ env.RUNNING_VERSION }}_${{ env.HALT_HEIGHT }}.json.gz /var/www/html/genesis/mainnet-genesis-tinkered/latest_v$(echo ${{ env.RUNNING_VERSION }} | awk -F "." '{ print substr($1,2) }').json.gz
 
       - name: Sleep 10h
         if: ${{ always() && !cancelled() }}
