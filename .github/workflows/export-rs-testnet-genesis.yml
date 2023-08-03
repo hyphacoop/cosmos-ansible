@@ -57,7 +57,7 @@ jobs:
         run: |
           source ~/env/bin/activate
           python -m pip install --upgrade pip
-          python -m pip install toml-cli
+          python -m pip install toml-cli requests
 
       - name: Get current running gaiad version
         run: |
@@ -69,7 +69,7 @@ jobs:
         run: |
           sudo wget -nv https://github.com/cosmos/gaia/releases/download/${{ env.RUNNING_VERSION }}/gaiad-${{ env.RUNNING_VERSION }}-linux-amd64 -O /usr/local/bin/gaiad
           sudo chmod +x /usr/local/bin/gaiad
-      - name: Initializing chain
+      - name: Initializing chain to sync with RS Testnet
         env:
           NODE_HOME: /home/runner/.gaia
           NODE_MONIKER: provider
@@ -113,5 +113,74 @@ jobs:
         run: |
           mkdir /home/runner/rs-genesis-export
           gaiad export --height ${{ env.HALT_HEIGHT }} 2> /home/runner/rs-genesis-export/rs-genesis_${{ env.RUNNING_VERSION }}_${{ env.HALT_HEIGHT }}.json
+      - name: Tinker Genesis
+        run: |
+          source /home/runner/env/bin/activate
+          git clone https://github.com/hyphacoop/cosmos-genesis-tinkerer.git
+          cd cosmos-genesis-tinkerer
+          pip install -r requirements.txt
+          ln -s /home/runner/rs-genesis-export/rs-genesis_${{ env.RUNNING_VERSION }}_${{ env.HALT_HEIGHT }}.json tests/rs-testnet_genesis.json
+          python example_rs-testnet_genesis.py
+          cp tinkered_genesis.json /home/runner/
+      - name: Upload tinkered genesis
+        run: |
+          echo "Uploading genesis to files.polypore.xyz"
+          # scp cosmos-genesis-tinkerer/tinkered_genesis.json ...
+          # scp /home/runner/rs-genesis-export/rs-genesis_${{ env.RUNNING_VERSION }}_${{ env.HALT_HEIGHT }}.json ...
+      - name: Initializing chain with tinkered genesis
+        env:
+          NODE_HOME: /home/runner/.gaia
+          NODE_MONIKER: test-node
+          CHAIN_ID: local-testnet
+          CHAIN_BINARY: 'gaiad'
+        run: |
+          echo "Removing $NODE_HOME..."
+          rm -rf $NODE_HOME
+          echo "Initializing $NODE_HOME..."
+          $CHAIN_BINARY config chain-id $CHAIN_ID --home $NODE_HOME
+          $CHAIN_BINARY config keyring-backend test --home $NODE_HOME
+          $CHAIN_BINARY config broadcast-mode block --home $NODE_HOME
+          $CHAIN_BINARY init $NODE_MONIKER --chain-id $CHAIN_ID --home $NODE_HOME
+          sed -i -e "/fast_sync =/ s^= .*^= \"false"^" $NODE_HOME/config/config.toml
+          echo "Restoring validator-40 node / validator keys"
+          cp examples/validator-keys/validator-40/node_key.json $NODE_HOME/config/node_key.json
+          cp examples/validator-keys/validator-40/priv_validator_key.json $NODE_HOME/config/priv_validator_key.json
+          echo "Replaceing genesis..."
+          cp cosmos-genesis-tinkerer/tinkered_genesis.json $NODE_HOME/config/genesis.json
+      - name: Start tinkered chain
+        run: screen -L -Logfile /home/runner/artifact/gaiad_upgrade.log -S gaiad -d -m gaiad start --x-crisis-skip-assert-invariants
+      - name: Submit and vote on the upgrade proposal
+        env:
+          UPGRADE_NAME: "v12" 
+        run: |
+          echo "Restoring validator key"
+          echo "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon art" | gaiad --output json keys add val --keyring-backend test --recover 2> ~/.gaia/validator.json
+          current_block=$(curl -s 127.0.0.1:26657/block | jq -r .result.block.header.height)
+          upgrade_height=$(($current_block+20))
+          echo "upgrade_height=$upgrade_height" >> $GITHUB_ENV
+          echo "Submitting the upgrade proposal..."
+          proposal="gaiad --output json tx gov submit-proposal software-upgrade $UPGRADE_NAME --from val --keyring-backend test --upgrade-height $upgrade_height --upgrade-info 'Test' --title gaia-upgrade --description 'test' --chain-id local-testnet --deposit 10uatom --fees 1000uatom --yes -b block"
+          echo $proposal
+          txhash=$($proposal | jq -r .txhash)
+          echo "Wait for the proposal to go on chain..."
+          sleep 8
+          echo "Get proposal ID from txhash..."
+          proposal_id=$(gaiad --output json q tx $txhash | jq -r '.logs[].events[] | select(.type=="submit_proposal") | .attributes[] | select(.key=="proposal_id") | .value')
+          echo "Submitting the \"yes\" vote to proposal $proposal_id..."
+          vote="gaiad tx gov vote $proposal_id yes --from val --keyring-backend test --chain-id local-testnet --fees 1000uatom --yes"
+          $vote
+      - name: Stop gaiad when reached upgrade height
+        run: |
+          current_block=0
+          echo "Upgrade height is: $env.upgrade_height"
+          while [ $current_block != ${{ env.upgrade_height }} ]
+          do
+            current_block=$(curl -s 127.0.0.1:26657/block | jq -r .result.block.header.height)
+            echo "Current block is: $current_block"
+          done
+          echo "exiting gaia and screen"
+          killall gaiad screen
+
       - name: Sleep 10h
+        if: ${{ always() && !cancelled() }}
         run: sleep 10h
