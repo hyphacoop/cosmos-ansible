@@ -1,9 +1,6 @@
 #!/bin/bash
 # 1. Set up a two-validator provider chain.
 
-# Install wget and jq
-sudo apt-get install curl jq wget -y
-
 # Install Gaia binary
 CHAIN_BINARY_URL=https://github.com/cosmos/gaia/releases/download/$START_VERSION/gaiad-$START_VERSION-linux-amd64
 # CHAIN_BINARY_URL=https://github.com/hyphacoop/cosmos-builds/releases/download/gaiad-linux-sandbox/gaiad-linux
