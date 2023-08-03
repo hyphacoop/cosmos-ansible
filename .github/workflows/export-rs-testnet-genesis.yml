@@ -2,9 +2,9 @@
 name: Export rs-testnet genesis
 on:
   workflow_dispatch:
-  # schedule:
-  #   # At 05:30 on Monday.
-  #   - cron: '30 5 * * 1'
+  schedule:
+    # At 05:30 on Tuesday.
+    - cron: '30 5 * * 2'
   push:
 
 jobs:
@@ -203,7 +203,3 @@ jobs:
           # Update latest file symlinks
           ssh gh-actions@files.polypore.xyz ln -sf /var/www/html/genesis/rs-testnet-provider-export/rs-provider-genesis_${{ env.RUNNING_VERSION }}_${{ env.HALT_HEIGHT }}.json.gz /var/www/html/genesis/rs-testnet-provider-export/latest_v$(echo ${{ env.RUNNING_VERSION }} | awk -F "." '{ print substr($1,2) }').json.gz
           ssh gh-actions@files.polypore.xyz ln -sf /var/www/html/genesis/mainnet-genesis-tinkered/rs-provider-tinkered-genesis_${{ env.RUNNING_VERSION }}_${{ env.HALT_HEIGHT }}.json.gz /var/www/html/genesis/mainnet-genesis-tinkered/latest_v$(echo ${{ env.RUNNING_VERSION }} | awk -F "." '{ print substr($1,2) }').json.gz
-
-      - name: Sleep 10h
-        if: ${{ always() && !cancelled() }}
-        run: sleep 10h
