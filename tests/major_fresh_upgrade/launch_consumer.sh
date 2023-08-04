@@ -40,7 +40,3 @@ cp consumer-genesis.json $CONSUMER_HOME_1/config/genesis.json
 
 echo "Starting the consumer chain..."
 sudo systemctl enable $CONSUMER_SERVICE_1 --now
-
-# sleep 20
-# sudo journalctl -u $CONSUMER_SERVICE_1 | tail -n 200
-# sudo journalctl -u $CONSUMER_SERVICE_2 | tail -n 200
