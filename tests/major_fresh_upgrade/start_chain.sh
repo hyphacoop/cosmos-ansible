@@ -180,8 +180,3 @@ echo "WantedBy=multi-user.target"           | sudo tee /etc/systemd/system/$PROV
 
 sudo systemctl daemon-reload
 sudo systemctl enable $PROVIDER_SERVICE_1 --now
-# sudo systemctl enable $PROVIDER_SERVICE_2 --now
-# sudo systemctl enable $PROVIDER_SERVICE_3 --now
-
-# sleep 10
-# sudo journalctl -u $PROVIDER_SERVICE_1
