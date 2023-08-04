@@ -10,7 +10,7 @@ height=$(curl -s http://localhost:$STRIDE_RPC_1/block | jq -r '.result.block.hea
 let voting_blocks_delta=$voting_period_seconds*2
 let upgrade_height=$height+$voting_blocks_delta
 
-printf "Submittng proposal to upgrade Stride...\n"
+printf "Submitting proposal to upgrade Stride at block height $upgrade_height...\n"
 $STRIDE_CHAIN_BINARY tx gov submit-legacy-proposal software-upgrade $UPGRADE_NAME \
     --title $UPGRADE_NAME --description "test upgrade" --deposit 10000000$STRIDE_DENOM --no-validate \
     --upgrade-height $upgrade_height --from $MONIKER_1 -y --fees 500$STRIDE_DENOM --home $STRIDE_HOME_1 --chain-id $STRIDE_CHAIN_ID
@@ -50,10 +50,10 @@ do
     printf "Stride height: $height\n"
 done
 
-sudo journalctl -u $STRIDE_SERVICE_1 | tail -n 50
+sudo journalctl -u $STRIDE_SERVICE_1 | tail -n 10
 printf "Stride has reached the upgrade height, stopping the service..."
 sudo systemctl stop $STRIDE_SERVICE_1
 
 printf "Installing the v12 binary..."
-wget $STRIDE_SOV_CHAIN_BINARY_URL -O $HOME/go/bin/$STRIDE_CHAIN_BINARY
+wget $STRIDE_SOV_CHAIN_BINARY_URL -O $HOME/go/bin/$STRIDE_CHAIN_BINARY -q
 chmod +x $HOME/go/bin/$STRIDE_CHAIN_BINARY
