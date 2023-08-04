@@ -5,7 +5,7 @@ import sys
 import re
 
 SKIP_STARTING_VERSIONS = ['v11.0.0-rc0','v11.0.0']
-SKIP_TARGET_VERSIONS = []
+SKIP_TARGET_VERSIONS = ['main']
 
 # Must provide a cutoff version, e.g. 'v6.0.4'
 starting_version = sys.argv[1].split('.')
@@ -57,7 +57,8 @@ for version, upgrades in matrix.items():
             if upgrade not in SKIP_TARGET_VERSIONS:
                 includes.append({'gaia_version': version, 'upgrade_version': upgrade})
         # Add main branch build
-        includes.append({'gaia_version': version, 'upgrade_version': 'main'})
+        if "main" not in SKIP_TARGET_VERSIONS:
+            includes.append({'gaia_version': version, 'upgrade_version': 'main'})
 
 upgrade_json = json.dumps({'include': includes})
 print(upgrade_json)
