@@ -58,7 +58,10 @@ jq -r ".app_state.gov.deposit_params.min_deposit[0].amount = \"1\"" ./voting.jso
 
 echo "Setting slashing window to 10000..."
 jq -r --arg SLASH "10000" '.app_state.slashing.params.signed_blocks_window |= $SLASH' ./gov.json > ./slashing.json
-mv slashing.json $HOME_1/config/genesis.json
+
+echo "Patching genesis for ICA messages..."
+jq -r '.app_state.interchainaccounts.host_genesis_state.params.allow_messages[0] = "*"' ./slashing.json > ./ica_host.json
+mv ica_host.json $HOME_1/config/genesis.json
 
 echo "Copying genesis file to other nodes..."
 cp $HOME_1/config/genesis.json $HOME_2/config/genesis.json 

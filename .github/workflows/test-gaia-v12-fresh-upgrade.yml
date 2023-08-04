@@ -439,3 +439,5 @@ jobs:
           CONSUMER_FEES: 1000
           RECIPIENT: stride1r5v5srda7xfth3hn2s26txvrcrntldjucq88rn
         run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-1 2
+      - name: Register and fund ICA
+        run: tests/v12_upgrade/setup_ica.sh
