@@ -115,7 +115,7 @@ toml set --toml-path $HOME_1/config/config.toml p2p.allow_duplicate_ip true
 toml set --toml-path $HOME_2/config/config.toml p2p.allow_duplicate_ip true
 toml set --toml-path $HOME_3/config/config.toml p2p.allow_duplicate_ip true
 
-echo "Setting a short timeout commit..."
+echo "Setting a short commit timeout..."
 toml set --toml-path $HOME_1/config/config.toml consensus.timeout_commit "1s"
 toml set --toml-path $HOME_2/config/config.toml consensus.timeout_commit "1s"
 toml set --toml-path $HOME_3/config/config.toml consensus.timeout_commit "1s"

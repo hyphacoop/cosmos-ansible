@@ -408,12 +408,13 @@ jobs:
       # - name: Check validators
       #   run: |
       #     $CHAIN_BINARY q staking validators --home $HOME_1 -o json | jq '.'
-      - name: Start sovereign Stride chain
+      - name: Start Stride chain
         run: tests/major_fresh_upgrade/start_stride.sh
       - name: _stride-blocks-1
         run: tests/test_block_production.sh 127.0.0.1 $STRIDE_RPC_1 5 # 5 blocks
-      - name: Upgrade Stride chain
+      - name: Prepare Stride chain upgrade # saves $STRIDE_REV_HEIGHT environment variable
         run: tests/major_fresh_upgrade/upgrade_stride.sh
-      - name: Print revision height
-        run: |
-          echo "Revision height: $STRIDE_REV_HEIGHT"
+      - name: Re-launch Stride as a consumer chain
+        run: tests/major_fresh_upgrade/launch_stride_consumer.sh
+      - name: _stride-blocks-2
+        run: tests/test_block_production.sh 127.0.0.1 $STRIDE_RPC_1 5 # 5 blocks

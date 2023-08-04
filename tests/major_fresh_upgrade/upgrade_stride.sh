@@ -1,5 +1,5 @@
 #!/bin/bash
-# Prepare upgrade to Stride v12
+# Prepare upgrade to v12
 
 UPGRADE_NAME=v12
 PROPOSAL_ID=1
@@ -10,7 +10,7 @@ height=$(curl -s http://localhost:$STRIDE_RPC_1/block | jq -r '.result.block.hea
 let voting_blocks_delta=$voting_period_seconds*2
 let upgrade_height=$height+$voting_blocks_delta
 
-printf "Submitting proposal to upgrade Stride at block height $upgrade_height...\n"
+printf "Submitting proposal to upgrade at block height $upgrade_height...\n"
 $STRIDE_CHAIN_BINARY tx gov submit-legacy-proposal software-upgrade $UPGRADE_NAME \
     --title $UPGRADE_NAME --description "test upgrade" --deposit 10000000$STRIDE_DENOM --no-validate \
     --upgrade-height $upgrade_height --from $MONIKER_1 -y --fees 500$STRIDE_DENOM --home $STRIDE_HOME_1 --chain-id $STRIDE_CHAIN_ID
@@ -18,10 +18,6 @@ $STRIDE_CHAIN_BINARY tx gov submit-legacy-proposal software-upgrade $UPGRADE_NAM
 sleep 3
 printf "\nVoting on upgrade proposal...\n"
 $STRIDE_CHAIN_BINARY tx gov vote $PROPOSAL_ID yes --from $MONIKER_1 -y --fees 500$STRIDE_DENOM --home $STRIDE_HOME_1 --chain-id $STRIDE_CHAIN_ID
-
-# sleep 8
-# printf "\nVOTE CONFIRMATION\n"
-# $STRIDE_CHAIN_BINARY query gov tally $PROPOSAL_ID --home $STRIDE_HOME_1
 
 printf "\nWaiting for proposal to pass...\n"
 while true; do
@@ -41,7 +37,7 @@ while true; do
     fi
 done
 
-printf "Waiting for upgrade height to halt the Stride chain...\n"
+printf "Waiting for upgrade height $upgrade_height to halt the chain...\n"
 height=0
 until [ $height -ge $upgrade_height ]
 do
