@@ -188,8 +188,8 @@ jobs:
       #   run: tests/test_endpoints_api.sh localhost $VAL1_API_PORT
       # - name: _rpc-1
       #   run: tests/test_endpoints_rpc.sh localhost $VAL1_RPC_PORT
-      # - name: Set up relayer
-      #   run: tests/v12_upgrade/setup_relayer.sh
+      - name: Set up relayer
+        run: tests/v12_upgrade/setup_relayer.sh
       # - name: Download consumer chain binaries
       #   run: |
       #     wget $CONSUMER_CHAIN_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_BINARY
@@ -418,3 +418,19 @@ jobs:
         run: tests/major_fresh_upgrade/launch_stride_consumer.sh
       - name: _stride-blocks-2
         run: tests/test_block_production.sh 127.0.0.1 $STRIDE_RPC_1 5 # 5 blocks
+      - name: Establish CCV channel for consumer d
+        run: |
+          hermes create connection --a-chain consumerd --a-client 07-tendermint-0 --b-client 07-tendermint-0
+          hermes create channel --a-chain consumerd --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
+          sudo systemctl restart hermes
+          sleep 10
+      - name: _consumerd-vsc-1
+        env:
+          CON1_RPC_PORT: 37001
+        run: tests/major_fresh_upgrade/test_ccv.sh
+      - name: _consumerd-ibc-1
+        env:
+          CONSUMER_CHAIN_ID: consumerd
+          CONSUMER_HOME_1: /home/runner/.stride1
+          CONSUMER_CHAIN_BINARY: strided
+        run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-1 2

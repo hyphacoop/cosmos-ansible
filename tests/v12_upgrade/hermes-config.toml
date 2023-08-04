@@ -78,14 +78,14 @@ ccv_consumer_chain = true
 
 [[chains]]
 id = 'consumerd'
-rpc_addr = 'http://localhost:27501'
-grpc_addr = 'http://localhost:26501'
-websocket_addr = 'ws://localhost:27501/websocket'
+rpc_addr = 'http://localhost:37001'
+grpc_addr = 'http://localhost:36001'
+websocket_addr = 'ws://localhost:37001/websocket'
 rpc_timeout = '15s'
-account_prefix = 'cosmos'
+account_prefix = 'stride'
 key_name = 'wallet'
 store_prefix = 'ibc'
-gas_price = { price = 0.0, denom = 'ucon' }
+gas_price = { price = 0.0, denom = 'ustrd' }
 gas_multiplier = 1.2
 max_gas = 10000000
 clock_drift = '10s'
