@@ -4,8 +4,10 @@
 echo "Patching add template with spawn time..."
 spawn_time=$(date -u --iso-8601=ns | sed s/+00:00/Z/ | sed s/,/./)
 jq -r --arg SPAWNTIME "$spawn_time" '.spawn_time |= $SPAWNTIME' tests/patch_upgrade/proposal-add-template.json > proposal-add-spawn.json
-jq -r --arg HEIGHT "$STRIDE_REV_HEIGHT" '.initial_height.revision_height |= $HEIGHT' proposal-add-spawn.json > proposal-add-rev-height.json
-jq -r --arg CHAINID "$STRIDE_CHAIN_ID" '.chain_id |= $CHAINID' proposal-add-rev-height.json > proposal-add-$STRIDE_CHAIN_ID.json
+jq -r --argjson HEIGHT "$STRIDE_REV_HEIGHT" '.initial_height.revision_height |= $HEIGHT' proposal-add-spawn.json > proposal-add-rev-height.json
+jq -r --arg CHAINID "$STRIDE_CHAIN_ID" '.chain_id |= "$CHAINID"' proposal-add-rev-height.json > proposal-add-$STRIDE_CHAIN_ID.json
+
+jq '.' proposal-add-$STRIDE_CHAIN_ID.json
 
 echo "Submitting proposal..."
 proposal="$CHAIN_BINARY tx gov submit-proposal consumer-addition proposal-add-$STRIDE_CHAIN_ID.json --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM --from $WALLET_2 --keyring-backend test --home $HOME_1 --chain-id $CHAIN_ID -b block -y -o json"
