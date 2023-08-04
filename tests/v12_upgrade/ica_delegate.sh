@@ -2,7 +2,7 @@
 
 echo "Sending tx staking delegate to host chain..."
 $CHAIN_BINARY q staking validator $VALOPER_1 -o json --home $HOME_1 | jq '.'
-message=$(jq -r --arg ADDRESS "$ICA_ADDRESS" '.delegator_address = $ADDRESS' v12_upgrade/msg-delegate.json)
+message=$(jq -r --arg ADDRESS "$ICA_ADDRESS" '.delegator_address = $ADDRESS' tests/v12_upgrade/msg-delegate.json)
 echo "Generating packet JSON..."
 $STRIDE_CHAIN_BINARY tx interchain-accounts host generate-packet-data "$message" > delegate_packet.json
 echo "Sending tx..."
