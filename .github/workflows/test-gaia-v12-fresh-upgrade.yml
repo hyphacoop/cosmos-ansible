@@ -414,3 +414,6 @@ jobs:
         run: tests/test_block_production.sh 127.0.0.1 $STRIDE_RPC_1 5 # 5 blocks
       - name: Upgrade Stride chain
         run: tests/major_fresh_upgrade/upgrade_stride.sh
+      - name: Print revision height
+        run: |
+          echo "Revision height: $STRIDE_REV_HEIGHT"

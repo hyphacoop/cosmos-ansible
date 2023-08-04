@@ -57,3 +57,7 @@ sudo systemctl stop $STRIDE_SERVICE_1
 printf "Installing the v12 binary...\n"
 wget $STRIDE_CON_CHAIN_BINARY_URL -O $HOME/go/bin/$STRIDE_CHAIN_BINARY -q
 chmod +x $HOME/go/bin/$STRIDE_CHAIN_BINARY
+
+printf "Setting the revision height...\n"
+let rev_height=$upgrade_height+3
+echo "STRIDE_REV_HEIGHT=$rev_height" >> $GITHUB_ENV
