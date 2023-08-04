@@ -5,7 +5,7 @@ echo "Patching add template with spawn time..."
 spawn_time=$(date -u --iso-8601=ns | sed s/+00:00/Z/ | sed s/,/./)
 jq -r --arg SPAWNTIME "$spawn_time" '.spawn_time |= $SPAWNTIME' tests/patch_upgrade/proposal-add-template.json > proposal-add-spawn.json
 jq -r --argjson HEIGHT "$STRIDE_REV_HEIGHT" '.initial_height.revision_height |= $HEIGHT' proposal-add-spawn.json > proposal-add-rev-height.json
-jq -r --arg CHAINID "$STRIDE_CHAIN_ID" '.chain_id |= "$CHAINID"' proposal-add-rev-height.json > proposal-add-$STRIDE_CHAIN_ID.json
+jq -r --arg CHAINID "$STRIDE_CHAIN_ID" '.chain_id |= $CHAINID' proposal-add-rev-height.json > proposal-add-$STRIDE_CHAIN_ID.json
 
 jq '.' proposal-add-$STRIDE_CHAIN_ID.json
 
@@ -28,6 +28,8 @@ $CHAIN_BINARY q gov tally $proposal_id --home $HOME_1
 
 echo "Waiting for proposal to pass..."
 sleep $VOTING_PERIOD
+
+$CHAIN_BINARY q gov proposal $proposal_id --home $HOME_1
 
 echo "Collecting the CCV state..."
 $CHAIN_BINARY q provider consumer-genesis $STRIDE_CHAIN_ID -o json --home $HOME_1 > ccv-pre.json
