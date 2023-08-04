@@ -57,7 +57,8 @@ for version, upgrades in matrix.items():
             if upgrade not in SKIP_TARGET_VERSIONS:
                 includes.append({'gaia_version': version, 'upgrade_version': upgrade})
         # Add main branch build
-        includes.append({'gaia_version': version, 'upgrade_version': 'main'})
+        if "main" not in SKIP_TARGET_VERSIONS:
+            includes.append({'gaia_version': version, 'upgrade_version': 'main'})
 
 upgrade_json = json.dumps({'include': includes})
 print(upgrade_json)
