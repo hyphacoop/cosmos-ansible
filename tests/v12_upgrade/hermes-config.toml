@@ -85,7 +85,7 @@ rpc_timeout = '15s'
 account_prefix = 'stride'
 key_name = 'wallet'
 store_prefix = 'ibc'
-gas_price = { price = 0.0, denom = 'ustrd' }
+gas_price = { price = 0.0025, denom = 'ustrd' }
 gas_multiplier = 1.2
 max_gas = 10000000
 clock_drift = '10s'
