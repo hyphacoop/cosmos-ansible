@@ -64,7 +64,7 @@ jobs:
       STRIDE_CHAIN_BINARY: strided
       STRIDE_HOME_1: /home/runner/.stride1
       STRIDE_SERVICE_1: stride1.service
-      STRIDE_CHAIN_ID: stride-1
+      STRIDE_CHAIN_ID: consumerd
       STRIDE_DENOM: ustrd
       STRIDE_API_1: 35001
       STRIDE_GRPC_1: 36001

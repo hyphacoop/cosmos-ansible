@@ -41,7 +41,7 @@ while true; do
     fi
 done
 
-printf "Waiting for upgrade height to halt the Stride chain..."
+printf "Waiting for upgrade height to halt the Stride chain...\n"
 height=0
 until [ $height -ge $upgrade_height ]
 do
@@ -51,9 +51,9 @@ do
 done
 
 sudo journalctl -u $STRIDE_SERVICE_1 | tail -n 10
-printf "Stride has reached the upgrade height, stopping the service..."
+printf "Stride has reached the upgrade height, stopping the service...\n"
 sudo systemctl stop $STRIDE_SERVICE_1
 
-printf "Installing the v12 binary..."
-wget $STRIDE_SOV_CHAIN_BINARY_URL -O $HOME/go/bin/$STRIDE_CHAIN_BINARY -q
+printf "Installing the v12 binary...\n"
+wget $STRIDE_CON_CHAIN_BINARY_URL -O $HOME/go/bin/$STRIDE_CHAIN_BINARY -q
 chmod +x $HOME/go/bin/$STRIDE_CHAIN_BINARY
