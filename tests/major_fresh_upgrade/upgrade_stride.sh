@@ -31,7 +31,7 @@ while true; do
         sleep 1
     elif [[ "$status" == "PROPOSAL_STATUS_PASSED" ]]; then
         echo "Proposal passed!"
-        exit 0
+        break
     elif [[ "$status" == "PROPOSAL_STATUS_REJECTED" ]]; then
         echo "Proposal Failed!"
         exit 1
