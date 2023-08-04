@@ -4,7 +4,7 @@
 UPGRADE_NAME=v12
 PROPOSAL_ID=1
 
-voting_period=$($STRIDE_CHAIN_BINARY q params | jq -r 'voting_params.voting_period')
+voting_period=$($STRIDE_CHAIN_BINARY q params | jq -r '.voting_params.voting_period')
 voting_period_seconds=${voting_period::-1}
 height=$(curl -s http://localhost:$STRIDE_RPC_1/block | jq -r 'result.block.header.height')
 let voting_blocks_delta=$voting_period_seconds*2
