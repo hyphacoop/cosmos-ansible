@@ -46,7 +46,7 @@ height=0
 until [ $height -ge $upgrade_height ]
 do
     sleep 1
-    height=$(curl -s http://localhost:$STRIDE_RPC_1/block | jq -r 'result.block.header.height')
+    height=$(curl -s http://localhost:$STRIDE_RPC_1/block | jq -r '.result.block.header.height')
     printf "Stride height: $height\n"
 done
 
