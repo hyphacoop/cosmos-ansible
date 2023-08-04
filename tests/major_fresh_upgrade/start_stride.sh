@@ -1,5 +1,5 @@
 #!/bin/bash
-# 1. Set up a one-validator Stride chain.
+# Set up a one-validator Stride v11 chain.
 
 # Install Stride binary
 echo "Installing Stride..."
@@ -30,8 +30,8 @@ jq '.app_state.staking.params.bond_denom = "ustrd"' stride-genesis-3.json > stri
 echo "Patching genesis file for fast governance..."
 jq '(.app_state.epochs.epochs[] | select(.identifier=="day") ).duration = "120s"' stride-genesis-4.json  > stride-genesis-5.json
 jq '(.app_state.epochs.epochs[] | select(.identifier=="stride_epoch") ).duration = "120s"' stride-genesis-5.json  > stride-genesis-6.json
-jq '.app_state.gov.voting_params.voting_period = "30s"' stride-genesis-6.json  > stride-genesis-7.json
-jq '.app_state.gov.params.voting_period = "30s"' stride-genesis-7.json  > stride-genesis-8.json
+jq '.app_state.gov.voting_params.voting_period = "10s"' stride-genesis-6.json  > stride-genesis-7.json
+jq '.app_state.gov.params.voting_period = "10s"' stride-genesis-7.json  > stride-genesis-8.json
 
 echo "Setting slashing to 5 missed blocks..."
 jq -r '.app_state.slashing.params.signed_blocks_window = "40"' stride-genesis-8.json > consumer-slashing.json

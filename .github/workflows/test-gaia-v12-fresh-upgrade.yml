@@ -412,3 +412,5 @@ jobs:
         run: tests/major_fresh_upgrade/start_stride.sh
       - name: _stride-blocks-1
         run: tests/test_block_production.sh 127.0.0.1 $STRIDE_RPC_1 5 # 5 blocks
+      - name: Upgrade Stride chain
+        run: tests/major_fresh_upgrade/upgrade_stride.sh
