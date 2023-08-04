@@ -3,7 +3,7 @@
 
 # Install Stride binary
 echo "Installing Stride..."
-wget $STRIDE_SOV_CHAIN_BINARY_URL -O $HOME/go/bin/$STRIDE_CHAIN_BINARY
+wget $STRIDE_SOV_CHAIN_BINARY_URL -O $HOME/go/bin/$STRIDE_CHAIN_BINARY -q
 chmod +x $HOME/go/bin/$STRIDE_CHAIN_BINARY
 
 # Initialize home directories
