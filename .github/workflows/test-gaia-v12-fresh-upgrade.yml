@@ -140,6 +140,7 @@ jobs:
       MNEMONIC_4: ${{ vars.MNEMONIC_4 }}
       WALLET_4: ${{ vars.WALLET_4 }}
       MONIKER_4: ${{ vars.MONIKER_4 }}
+      MNEMONIC_5: ${{ vars.MNEMONIC_5 }}
       WALLET_5: ${{ vars.WALLET_5 }}
       MONIKER_5: ${{ vars.MONIKER_5 }}
       VAL1_STAKE: 800000000
