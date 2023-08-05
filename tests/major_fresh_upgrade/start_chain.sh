@@ -36,6 +36,8 @@ echo $MNEMONIC_4 | $CHAIN_BINARY keys add $MONIKER_4 --keyring-backend test --ho
 echo $MNEMONIC_5 | $CHAIN_BINARY keys add $MONIKER_5 --keyring-backend test --home $HOME_1 --recover
 
 # Update genesis file with right denom
+cat $HOME_1/config/genesis.json
+exit 1
 sed -i s%stake%$DENOM%g $HOME_1/config/genesis.json
 
 # Add funds to accounts
