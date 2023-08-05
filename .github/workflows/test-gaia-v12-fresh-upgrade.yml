@@ -398,11 +398,11 @@ jobs:
         run: tests/test_validator_jailed.sh $VALOPER_3 false
       - name: Register and fund ICA
         run: tests/v12_upgrade/setup_ica.sh
-      # - name: _lsm-bond-1
-      #   run: tests/v12_upgrade/lsm_validator_bond.sh
-      # - name: _lsm-tokenize-1
-      #   run: tests/v12_upgrade/lsm_tokenize.sh
-      # - name: _lsm-redeem-1
-      #   run: tests/v12_upgrade/lsm_redeem.sh
+      - name: _lsm-bond-1
+        run: tests/v12_upgrade/lsm_validator_bond.sh
+      - name: _lsm-tokenize-1
+        run: tests/v12_upgrade/lsm_tokenize.sh
+      - name: _lsm-redeem-1
+        run: tests/v12_upgrade/lsm_redeem.sh
       # - name: ICA delegate
       #   run: tests/v12_upgrade/ica_delegate.sh
