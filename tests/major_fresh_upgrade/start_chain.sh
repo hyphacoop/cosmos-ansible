@@ -37,7 +37,8 @@ echo $MNEMONIC_5 | $CHAIN_BINARY keys add $MONIKER_5 --keyring-backend test --ho
 
 # Update genesis file with right denom
 echo "Setting denom to $DENOM..."
-jq -r --arg denom "$DENOM" '.app_state.crisis.denom |= $denom' $HOME_1/config/genesis.json > crisis.json
+cat $HOME_1/config/genesis.json
+jq -r --arg denom "$DENOM" '.app_state.crisis.constant_fee.denom |= $denom' $HOME_1/config/genesis.json > crisis.json
 jq -r --arg denom "$DENOM" '.app_state.gov.deposit_params.min_deposit.denom |= $denom' crisis.json > min_deposit.json
 jq -r --arg denom "$DENOM" '.app_state.mint.params.mint_denom |= $denom' min_deposit.json > mint.json
 cp mint.json $HOME_1/config/genesis.json
