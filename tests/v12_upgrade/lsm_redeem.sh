@@ -10,9 +10,9 @@ sleep 2
 # sleep 2
 
 echo "Redeeming tokens from $WALLET_3..."
-$CHAIN_BINARY tx staking redeem-tokens 20000000$tokenized_denom --from $WALLET_3 --home $HOME_1 -o json --gas auto --gas-adjustment --fees $BASE_FEES$DENOM -b block -y | jq '.'
+$CHAIN_BINARY tx staking redeem-tokens 20000000$tokenized_denom --from $WALLET_3 --home $HOME_1 -o json --gas auto --gas-adjustment 1.2 --fees $BASE_FEES$DENOM -b block -y | jq '.'
 echo "Redeeming tokens from $WALLET_4..."
-$CHAIN_BINARY tx staking redeem-tokens 20000000$tokenized_denom --from $WALLET_4 --home $HOME_1 -o json --gas auto --gas-adjustment --fees $BASE_FEES$DENOM -b block -y | jq '.'
+$CHAIN_BINARY tx staking redeem-tokens 20000000$tokenized_denom --from $WALLET_4 --home $HOME_1 -o json --gas auto --gas-adjustment 1.2 --fees $BASE_FEES$DENOM -b block -y | jq '.'
 # echo "Transferring $WALLET_5 IBC tokens to LSM chain with..."
 # ibc_denom=ibc/$($CONSUMER_CHAIN_BINARY q ibc-transfer denom-hash transfer/channel-1/$tokenized_denom --home ~/.cona1 -o json | jq -r '.hash')
 # echo "IBC denom: $ibc_denom"
