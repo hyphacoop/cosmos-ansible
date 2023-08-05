@@ -20,6 +20,7 @@ cp $HOME_1/config/priv_validator_key.json $STRIDE_HOME_1/config/priv_validator_k
 # Create self-delegation accounts
 echo $MNEMONIC_1 | $STRIDE_CHAIN_BINARY keys add $MONIKER_1 --keyring-backend test --recover --home $STRIDE_HOME_1
 echo $MNEMONIC_4 | $STRIDE_CHAIN_BINARY keys add $MONIKER_4 --keyring-backend test --recover --home $STRIDE_HOME_1
+echo $MNEMONIC_5 | $STRIDE_CHAIN_BINARY keys add $MONIKER_4 --keyring-backend test --recover --home $STRIDE_HOME_1
 
 echo "Patching genesis with ustrd denom..."
 jq '.app_state.crisis.constant_fee.denom = "ustrd"' $STRIDE_HOME_1/config/genesis.json > stride-genesis-1.json

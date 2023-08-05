@@ -2,7 +2,8 @@
 # 1. Set up a two-validator provider chain.
 
 # Install Gaia binary
-CHAIN_BINARY_URL=https://github.com/cosmos/gaia/releases/download/$START_VERSION/gaiad-$START_VERSION-linux-amd64
+# CHAIN_BINARY_URL=https://github.com/cosmos/gaia/releases/download/$START_VERSION/gaiad-$START_VERSION-linux-amd64
+CHAIN_BINARY_URL=https://github.com/hyphacoop/cosmos-builds/releases/download/gaiad-test/gaiad-test
 echo "Installing Gaia..."
 wget $CHAIN_BINARY_URL -O $HOME/go/bin/$CHAIN_BINARY -q
 chmod +x $HOME/go/bin/$CHAIN_BINARY
@@ -32,6 +33,7 @@ echo $MNEMONIC_1 | $CHAIN_BINARY keys add $MONIKER_1 --keyring-backend test --ho
 echo $MNEMONIC_2 | $CHAIN_BINARY keys add $MONIKER_2 --keyring-backend test --home $HOME_1 --recover
 echo $MNEMONIC_3 | $CHAIN_BINARY keys add $MONIKER_3 --keyring-backend test --home $HOME_1 --recover
 echo $MNEMONIC_4 | $CHAIN_BINARY keys add $MONIKER_4 --keyring-backend test --home $HOME_1 --recover
+echo $MNEMONIC_5 | $CHAIN_BINARY keys add $MONIKER_5 --keyring-backend test --home $HOME_1 --recover
 
 # Update genesis file with right denom
 sed -i s%stake%$DENOM%g $HOME_1/config/genesis.json
@@ -41,6 +43,7 @@ $CHAIN_BINARY add-genesis-account $MONIKER_1 $VAL_FUNDS$DENOM --home $HOME_1
 $CHAIN_BINARY add-genesis-account $MONIKER_2 $VAL_FUNDS$DENOM --home $HOME_1
 $CHAIN_BINARY add-genesis-account $MONIKER_3 $VAL_FUNDS$DENOM --home $HOME_1
 $CHAIN_BINARY add-genesis-account $MONIKER_4 $VAL_FUNDS$DENOM --home $HOME_1
+$CHAIN_BINARY add-genesis-account $MONIKER_5 $VAL_FUNDS$DENOM --home $HOME_1
 
 echo "Creating and collecting gentxs..."
 mkdir -p $HOME_1/config/gentx
