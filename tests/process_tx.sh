@@ -12,6 +12,7 @@ check_code()
 
 submit_tx()
 {
+    echo $1
     hash=$($1 | jq -r '.txhash')
     check=$(check_code $hash)
     if [ check -eq 1 ]; then
