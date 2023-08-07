@@ -21,7 +21,7 @@ echo "Transferring $WALLET_5 IBC tokens to LSM chain with..."
 ibc_denom=ibc/$($CONSUMER_CHAIN_BINARY q ibc-transfer denom-hash transfer/channel-1/$tokenized_denom --home $STRIDE_HOME_1 -o json | jq -r '.hash')
 echo "IBC denom: $ibc_denom"
 echo "Sending tokens from $WALLET_5 to $CHAIN_ID for redeem operation..."
-submit_tx "tx ibc-transfer transfer transfer channel-1 $WALLET_5 10000000$ibc_denom --from $STRIDE_WALLET_5 -o json --gas auto --gas-adjustment 1.2  --fees $CONSUMER_FEES$STRIDE_DENOM -y" $STRIDE_CHAIN_BINARY $STRIDE_HOME_1
+submit_tx "tx ibc-transfer transfer transfer channel-1 $WALLET_5 10000000$ibc_denom --from $STRIDE_WALLET_5 -o json --gas auto --gas-adjustment 1.2 --fees $CONSUMER_FEES$STRIDE_DENOM -y" $STRIDE_CHAIN_BINARY $STRIDE_HOME_1
 echo "Waiting for IBC tokens to reach $CHAIN_ID..."
 sleep 10
 echo "Redeeming tokens from $WALLET_5..."

@@ -406,6 +406,8 @@ jobs:
       - name: _lsm-tokenize-1
         run: tests/v12_upgrade/lsm_tokenize.sh
       - name: _lsm-redeem-1
+        env:
+          CONSUMER_FEES: 1000
         run: tests/v12_upgrade/lsm_redeem.sh
       # - name: ICA delegate
       #   run: tests/v12_upgrade/ica_delegate.sh
