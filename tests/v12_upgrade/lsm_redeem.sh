@@ -5,7 +5,7 @@ source tests/process_tx.sh
 tokenized_denom="$VALOPER_1/1"
 
 echo "Sending tokens from $WALLET_3 to $WALLET_4 via bank send..."
-submit_tx "$CHAIN_BINARY tx bank send $WALLET_3 $WALLET_4 20000000$tokenized_denom --from $WALLET_3 -o json --home $HOME_1 --gas auto --gas-adjustment 1.2  --fees $BASE_FEES$DENOM -b block -y"
+submit_tx "tx bank send $WALLET_3 $WALLET_4 20000000$tokenized_denom --from $WALLET_3 -o json --gas auto --gas-adjustment 1.2  --fees $BASE_FEES$DENOM -b block -y" $CHAIN_BINARY $HOME_1
 exit 0
 
 # sleep 2

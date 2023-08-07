@@ -1,7 +1,10 @@
-check_code()
+check_hash()
 {
+  # $1: tx hash
+  # $2: binary
+  # $3: home folder
   txhash=$1
-  code=$($CHAIN_BINARY q tx $txhash -o json | jq '.code')
+  code=$($2 q tx $txhash -o json --home $3 | jq '.code')
   if [ $code -eq 0 ]
   then
     return 0
@@ -12,9 +15,13 @@ check_code()
 
 submit_tx()
 {
-    echo $1
-    hash=$($1 | jq -r '.txhash')
-    check=$(check_code $hash)
+    # $1: transaction
+    # $2: binary
+    # $2: home folder
+    full_tx="$2 $1 --home $$3"
+    echo $full_tx
+    hash=$($full_tx | jq -r '.txhash')
+    check=$(check_hash $hash $2)
     if [ check -eq 1 ]; then
       printf "Transaction failed:\n$1\n"
       exit 1
