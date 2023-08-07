@@ -8,10 +8,8 @@ check_hash()
   $2 q tx $txhash -o json --home $3
   if [ $code -eq 0 ]
   then
-    echo "Successful transaction."
     return 0
   else
-    echo "Failed transaction."
     return 1
   fi
 }
