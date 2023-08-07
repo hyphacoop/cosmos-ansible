@@ -18,7 +18,7 @@ submit_tx()
     # $1: transaction
     # $2: binary
     # $3: home folder
-    full_tx="$2 $1 --home $$3"
+    full_tx="$2 $1 --home $3"
     echo $full_tx
     hash=$($full_tx | jq -r '.txhash')
     check=$(check_hash $2 $hash $3)
