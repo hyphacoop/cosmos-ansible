@@ -5,7 +5,6 @@ check_hash()
   # $3: home folder
   txhash=$1
   code=$($2 q tx $txhash -o json --home $3 | jq -r '.code')
-  $2 q tx $txhash -o json --home $3
   if [ $code -eq 0 ]
   then
     return 0
