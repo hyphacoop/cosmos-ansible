@@ -1,7 +1,10 @@
 #!/bin/bash
 
+source tests/process_tx.sh
+
 delegation=100000000
 tokenize=50000000
+tokenized_denom=$VALOPER_1/1
 delegator_shares_1=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.delegator_shares')
 liquid_shares_1=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.total_liquid_shares')
 
@@ -27,10 +30,9 @@ if [[ $liquid_shares_diff -ne $delegation ]]; then
     exit 1
 fi
 
-lsm_denom=$VALOPER_1/1
-liquid_balance=$($CHAIN_BINARY q bank balances $WALLET_3 --home $HOME_1 -o json | jq -r --arg DENOM "$lsm_denom" '.balances[] | select(.denom==$DENOM).amount')
+liquid_balance=$($CHAIN_BINARY q bank balances $WALLET_3 --home $HOME_1 -o json | jq -r --arg DENOM "$tokenized_denom" '.balances[] | select(.denom==$DENOM).amount')
 echo "Liquid balance: $liquid_balance"
 if [[ $liquid_balance -ne $tokenize ]]; then
-    echo "Tokenize unsusccessful: unexpected liquid token balance"
+    echo "Tokenize unsuccessful: unexpected liquid token balance"
     exit 1
 fi
