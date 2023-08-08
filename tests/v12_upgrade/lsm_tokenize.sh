@@ -30,7 +30,7 @@ fi
 
 liquid_balance=$($CHAIN_BINARY q bank balances $WALLET_3 --home $HOME_1 -o json | jq -r --arg DENOM "$tokenized_denom" '.balances[] | select(.denom==$DENOM).amount')
 echo "Liquid balance: $liquid_balance"
-if [[ $liquid_balance -ne $tokenize ]]; then
+if [[ ${liquid_balance%.*} -ne $tokenize ]]; then
     echo "Tokenize unsuccessful: unexpected liquid token balance"
     exit 1
 fi
