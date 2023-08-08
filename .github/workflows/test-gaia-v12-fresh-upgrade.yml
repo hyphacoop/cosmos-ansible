@@ -351,7 +351,7 @@ jobs:
       #     CONSUMER_HOME_1: /home/runner/.conc1
       #     CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY_2 }}
       #   run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-5 4
-      
+
       - name: Start Stride chain
         run: tests/major_fresh_upgrade/start_stride.sh
       - name: _stride-blocks-1
