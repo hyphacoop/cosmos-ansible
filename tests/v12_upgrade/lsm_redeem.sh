@@ -6,6 +6,7 @@ bank_send_amount=20000000
 ibc_transfer_amount=10000000
 tokenized_denom="$VALOPER_1/1"
 
+$CHAIN_BINARY q staking delegations $WALLET_3 --home $HOME_1 -o json | jq -r '.'
 echo "Sending tokens from $WALLET_3 to $WALLET_4 via bank send..."
 submit_tx "tx bank send $WALLET_3 $WALLET_4 $bank_send_amount$tokenized_denom --from $WALLET_3 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -b block -y" $CHAIN_BINARY $HOME_1
 # sleep 2
@@ -40,3 +41,6 @@ echo "Redeeming tokens from $WALLET_5..."
 submit_tx "tx staking redeem-tokens 10000000$tokenized_denom --from $WALLET_5 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -b block -y" $CHAIN_BINARY $HOME_1
 $CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.'
 
+$CHAIN_BINARY q staking delegations $WALLET_3 --home $HOME_1 -o json | jq -r '.'
+$CHAIN_BINARY q staking delegations $WALLET_4 --home $HOME_1 -o json | jq -r '.'
+$CHAIN_BINARY q staking delegations $WALLET_5 --home $HOME_1 -o json | jq -r '.'
