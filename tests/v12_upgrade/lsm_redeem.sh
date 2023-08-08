@@ -6,7 +6,7 @@ bank_send_amount=20000000
 ibc_transfer_amount=10000000
 tokenized_denom="$VALOPER_1/1"
 
-wallet_3_delegations_1=$($CHAIN_BINARY q staking delegations $WALLET_3 --home $HOME_1 -o json | jq -r --arg ADDRESS $VALOPER_1 '.delegation_responses | select(.delegation.validator_address==$ADDRESS).delegation.shares)'
+wallet_3_delegations_1=$($CHAIN_BINARY q staking delegations $WALLET_3 --home $HOME_1 -o json | jq -r --arg ADDRESS $VALOPER_1 '.delegation_responses | select(.delegation.validator_address==$ADDRESS).delegation.shares)')
 echo "Wallet_1 delegations: $wallet_1_delegations_1"
 
 echo "Sending tokens from $WALLET_3 to $WALLET_4 via bank send..."
