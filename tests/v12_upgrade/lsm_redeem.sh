@@ -23,10 +23,13 @@ if [[ $ibc_balance -ne $ibc_transfer_amount ]]; then
     exit 1
 fi
 
+$CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.'
 echo "Redeeming tokens from $WALLET_3..."
 submit_tx "tx staking redeem-tokens 20000000$tokenized_denom --from $WALLET_3 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -b block -y" $CHAIN_BINARY $HOME_1
+$CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.'
 echo "Redeeming tokens from $WALLET_4..."
 submit_tx "tx staking redeem-tokens 20000000$tokenized_denom --from $WALLET_4 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -b block -y" $CHAIN_BINARY $HOME_1
+$CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.'
 echo "Transferring $WALLET_5 IBC tokens to LSM chain with..."
 echo "IBC denom: $ibc_denom"
 echo "Sending tokens from $WALLET_5 to $CHAIN_ID for redeem operation..."
@@ -35,4 +38,5 @@ echo "Waiting for IBC tokens to reach $CHAIN_ID..."
 sleep 10
 echo "Redeeming tokens from $WALLET_5..."
 submit_tx "tx staking redeem-tokens 10000000$tokenized_denom --from $WALLET_5 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -b block -y" $CHAIN_BINARY $HOME_1
+$CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.'
 
