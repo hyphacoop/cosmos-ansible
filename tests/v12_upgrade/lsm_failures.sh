@@ -24,7 +24,7 @@ submit_bad_tx "tx staking tokenize-share $VALOPER_1 20000000$DENOM $WALLET_4 --f
 bonded_tokens=$($CHAIN_BINARY q staking pool --home $HOME_1 -o json | jq -r '.bonded_tokens')
 validator_delegations=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.delegator_shares')
 cap_per_validator=$(echo "$bonded_tokens*$validator_cap_param" | bc)
-glabl_cap=$(echo $bonded_tokens*$global_cap_param | bc)
+global_cap=$(echo "$bonded_tokens*$global_cap_param" | bc)
 echo "Validator shares cap: ${cap_per_validator%.*}"
 echo "Global shares cap: ${global_cap%.*}"
 
