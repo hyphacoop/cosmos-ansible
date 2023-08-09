@@ -37,9 +37,7 @@ submit_bad_tx()
     # $3: home folder
     full_tx="$2 $1 --home $3"
     echo $full_tx
-    hash=$($full_tx | jq -r '.txhash')
-    sleep 5
-    check_hash $hash $2 $3
+    $full_tx
     if [[ $? -eq 0 ]]; then
       printf "Transaction succeeded:\n$1\n"
       exit 1
