@@ -215,7 +215,7 @@ jobs:
           CON1_P2P_PORT: 28101
           CON1_PPROF_PORT: 29101
           CONSUMER_SERVICE_1: cona1.service
-          CONSUMER_HOME_2: /home/runner/.cona1
+          CONSUMER_HOME_2: /home/runner/.cona2
           CON2_API_PORT: 25102
           CON2_GRPC_PORT: 26102
           CON2_RPC_PORT: 27102
