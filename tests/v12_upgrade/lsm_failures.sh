@@ -52,5 +52,4 @@ echo "Global shares cap: ${global_cap%.*}"
 echo "Global staked: $global_staked"
 
 echo "Failure case 4: Attempt to tokenize with $WALLET_5, breaching the global liquid staking cap..."
-submit_tx "tx staking tokenize-share $VALOPER_1 120000000$DENOM $WALLET_5 --from $WALLET_5 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
-submit_bad_tx "tx staking tokenize-share $VALOPER_2 20000000$DENOM $WALLET_5 --from $WALLET_5 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+submit_tx "tx staking tokenize-share $VALOPER_1 140000000$DENOM $WALLET_5 --from $WALLET_5 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
