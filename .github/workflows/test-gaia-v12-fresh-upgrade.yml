@@ -411,5 +411,7 @@ jobs:
         run: tests/v12_upgrade/lsm_redeem.sh
       - name: Validator unbond
         run: tests/v12_upgrade/lsm_validator_unbond.sh
+      - name: _lsm-failures-1
+        run: tests/v12_upgrade/lsm_failures.sh
       # - name: ICA delegate
       #   run: tests/v12_upgrade/ica_delegate.sh

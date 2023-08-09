@@ -28,3 +28,20 @@ submit_tx()
       exit 1
     fi
 }
+
+
+submit_bad_tx()
+{
+    # $1: transaction
+    # $2: binary
+    # $3: home folder
+    full_tx="$2 $1 --home $3"
+    echo $full_tx
+    hash=$($full_tx | jq -r '.txhash')
+    sleep 5
+    check_hash $hash $2 $3
+    if [[ $? -eq 0 ]]; then
+      printf "Transaction succeeded:\n$1\n"
+      exit 1
+    fi
+}
