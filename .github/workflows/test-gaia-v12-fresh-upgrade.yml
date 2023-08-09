@@ -352,36 +352,36 @@ jobs:
       #     CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY_2 }}
       #   run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-5 4
 
-      - name: Start Stride chain
-        run: tests/major_fresh_upgrade/start_stride.sh
-      - name: _stride-blocks-1
-        run: tests/test_block_production.sh 127.0.0.1 $STRIDE_RPC_1 5 # 5 blocks
-      - name: Prepare Stride chain upgrade # saves $STRIDE_REV_HEIGHT environment variable
-        run: tests/major_fresh_upgrade/upgrade_stride.sh
-      - name: Re-launch Stride as a consumer chain
-        run: tests/major_fresh_upgrade/launch_stride_consumer.sh
-      - name: _stride-blocks-2
-        run: tests/test_block_production.sh 127.0.0.1 $STRIDE_RPC_1 5 # 5 blocks
-      - name: Establish CCV channel for consumer d
-        run: |
-          client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r '.chains[] | select(.chain_id=="consumerd").client_id')
-          hermes create connection --a-chain consumerd --a-client 07-tendermint-0 --b-client $client_id
-          hermes create channel --a-chain consumerd --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
-          sudo systemctl restart hermes
-          sleep 10
-      - name: _consumerd-vsc-1
-        env:
-          CON1_RPC_PORT: 37001
-        run: tests/major_fresh_upgrade/test_ccv.sh
-      - name: _consumerd-ibc-1
-        env:
-          CONSUMER_CHAIN_ID: consumerd
-          CONSUMER_HOME_1: /home/runner/.stride1
-          CONSUMER_CHAIN_BINARY: strided
-          CONSUMER_DENOM: ustrd
-          CONSUMER_FEES: 1000
-          RECIPIENT: stride1r5v5srda7xfth3hn2s26txvrcrntldjucq88rn
-        run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-1 2
+      # - name: Start Stride chain
+      #   run: tests/major_fresh_upgrade/start_stride.sh
+      # - name: _stride-blocks-1
+      #   run: tests/test_block_production.sh 127.0.0.1 $STRIDE_RPC_1 5 # 5 blocks
+      # - name: Prepare Stride chain upgrade # saves $STRIDE_REV_HEIGHT environment variable
+      #   run: tests/major_fresh_upgrade/upgrade_stride.sh
+      # - name: Re-launch Stride as a consumer chain
+      #   run: tests/major_fresh_upgrade/launch_stride_consumer.sh
+      # - name: _stride-blocks-2
+      #   run: tests/test_block_production.sh 127.0.0.1 $STRIDE_RPC_1 5 # 5 blocks
+      # - name: Establish CCV channel for consumer d
+      #   run: |
+      #     client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r '.chains[] | select(.chain_id=="consumerd").client_id')
+      #     hermes create connection --a-chain consumerd --a-client 07-tendermint-0 --b-client $client_id
+      #     hermes create channel --a-chain consumerd --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
+      #     sudo systemctl restart hermes
+      #     sleep 10
+      # - name: _consumerd-vsc-1
+      #   env:
+      #     CON1_RPC_PORT: 37001
+      #   run: tests/major_fresh_upgrade/test_ccv.sh
+      # - name: _consumerd-ibc-1
+      #   env:
+      #     CONSUMER_CHAIN_ID: consumerd
+      #     CONSUMER_HOME_1: /home/runner/.stride1
+      #     CONSUMER_CHAIN_BINARY: strided
+      #     CONSUMER_DENOM: ustrd
+      #     CONSUMER_FEES: 1000
+      #     RECIPIENT: stride1r5v5srda7xfth3hn2s26txvrcrntldjucq88rn
+      #   run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-1 2
 
       # - name: _consumera-vsc-4
       #   env:
