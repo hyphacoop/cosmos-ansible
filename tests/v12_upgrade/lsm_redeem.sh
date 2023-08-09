@@ -7,7 +7,7 @@ ibc_transfer_amount=10000000
 tokenized_denom="$VALOPER_1/1"
 
 wallet_3_delegations_1=$($CHAIN_BINARY q staking delegations $WALLET_3 --home $HOME_1 -o json | jq -r --arg ADDRESS "$VALOPER_1" '.delegation_responses[] | select(.delegation.validator_address==$ADDRESS).delegation.shares')
-echo "Wallet_1 delegations: $wallet_1_delegations_1"
+echo "Wallet_3 delegations: $wallet_3_delegations_1"
 
 echo "Sending tokens from $WALLET_3 to $WALLET_4 via bank send..."
 submit_tx "tx bank send $WALLET_3 $WALLET_4 $bank_send_amount$tokenized_denom --from $WALLET_3 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -b block -y" $CHAIN_BINARY $HOME_1
@@ -16,11 +16,10 @@ echo "Sending tokens from $WALLET_3 to $WALLET_5 via ibc transfer..."
 submit_tx "tx ibc-transfer transfer transfer channel-1 $STRIDE_WALLET_5 $ibc_transfer_amount$tokenized_denom --from $WALLET_3 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -b block -y" $CHAIN_BINARY $HOME_1
 echo "Waiting for IBC tokens to reach $STRIDE_CHAIN_ID..."
 sleep 20
-# $STRIDE_CHAIN_BINARY q bank balances $STRIDE_WALLET_5 --home $STRIDE_HOME_1 -o json
-ibc_denom=ibc/$($STRIDE_CHAIN_BINARY q ibc-transfer denom-hash transfer/channel-1/$tokenized_denom --home $STRIDE_HOME_1 -o json | jq -r '.hash')
 
+ibc_denom=ibc/$($STRIDE_CHAIN_BINARY q ibc-transfer denom-hash transfer/channel-1/$tokenized_denom --home $STRIDE_HOME_1 -o json | jq -r '.hash')
 ibc_balance=$($STRIDE_CHAIN_BINARY q bank balances $STRIDE_WALLET_5 --home $STRIDE_HOME_1 -o json | jq -r --arg DENOM "$ibc_denom" '.balances[] | select(.denom==$DENOM).amount')
-echo "IBC-wrapped liquid token balance: $ibc_balance"
+echo "IBC-wrapped liquid token balance: $ibc_balance$ibc_denom"
 if [[ $ibc_balance -ne $ibc_transfer_amount ]]; then
     echo "Tokenize unsuccessful: unexpected ibc-wrapped liquid token balance"
     exit 1
