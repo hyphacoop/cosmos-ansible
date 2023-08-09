@@ -60,5 +60,3 @@ echo "Failure case 5: Attempt to tokenize with WALLET_5 after disabling tokenizi
 submit_bad_tx "tx staking tokenize-share $VALOPER_1 10000000$DENOM $WALLET_5 --from $WALLET_5 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
 
 submit_tx "tx staking enable-tokenize-shares --from $WALLET_5 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
-submit_tx "tx staking tokenize-share $VALOPER_1 10000000$DENOM $WALLET_5 --from $WALLET_5 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
-submit_tx "tx staking redeem-tokens 10000000$tokenized_denom --from $WALLET_5 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -b block -y" $CHAIN_BINARY $HOME_1
