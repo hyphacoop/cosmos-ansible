@@ -49,7 +49,7 @@ wallet_3_delegation_balance=$($CHAIN_BINARY q staking delegations $WALLET_3 --ho
 wallet_4_delegation_balance=$($CHAIN_BINARY q staking delegations $WALLET_4 --home $HOME_1 -o json | jq -r --arg ADDRESS "$VALOPER_1" '.delegation_responses[] | select(.delegation.validator_address==$ADDRESS).balance.amount')
 wallet_5_delegation_balance=$($CHAIN_BINARY q staking delegations $WALLET_5 --home $HOME_1 -o json | jq -r --arg ADDRESS "$VALOPER_1" '.delegation_responses[] | select(.delegation.validator_address==$ADDRESS).balance.amount')
 validator_bond_shares=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.total_validator_bond_shares')
-validator_liquid_shares=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.total_validator_liquid_shares')
+validator_liquid_shares=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.total_liquid_shares')
 $CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json
 
 echo "Wallet 3 delegation shares increase: $wallet_3_delegations_diff"
@@ -99,7 +99,3 @@ if [[ ${validator_liquid_shares%.*} -ne 0  ]]; then
     echo "Redeem unsuccessful: unexpected validator liquid shares amount"
     exit 1
 fi
-
-echo "Validator unbond from $WALLET_2..."
-submit_tx "tx staking unbond-validator $VALOPER_1 --from $WALLET_2 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT -y --fees $BASE_FEES$DENOM" $CHAIN_BINARY $HOME_1
-$CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json
