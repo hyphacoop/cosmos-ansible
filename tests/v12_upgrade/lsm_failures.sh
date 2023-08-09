@@ -43,7 +43,7 @@ echo "Validator_delegations: ${validator_delegations%.*}"
 echo "Validator shares cap: ${validator_cap%.*}"
 
 echo "Failure case 3: Attempt to tokenize with WALLET_5, breaching the validator liquid staking cap..."
-submit_bad_tx "tx staking tokenize-share $VALOPER_1 100000000$DENOM $WALLET_5 --from $WALLET_5 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+submit_bad_tx "tx staking tokenize-share $VALOPER_2 100000000$DENOM $WALLET_5 --from $WALLET_5 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
 
 bonded_tokens=$($CHAIN_BINARY q staking pool --home $HOME_1 -o json | jq -r '.bonded_tokens')
 global_staked=$($CHAIN_BINARY q staking total-liquid-staked --home $HOME_1 -o json | jq -r '.')
