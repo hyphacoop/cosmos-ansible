@@ -64,7 +64,7 @@ if [[ $wallet_3_delegation_balance -ne 70000000 ]]; then
 fi
 
 echo "Wallet 4 delegation shares: ${wallet_4_delegations%.*}"
-if [[ ${wallet_4_delegations_diff%.*} -ne $bank_send_amount ]]; then
+if [[ ${wallet_4_delegations%.*} -ne $bank_send_amount ]]; then
     echo "Redeem unsuccessful: unexpected delegation shares for wallet 4"
     exit 1
 fi
@@ -76,7 +76,7 @@ if [[ $wallet_4_delegation_balance -ne $bank_send_amount ]]; then
 fi
 
 echo "Wallet 5 delegation shares: ${wallet_5_delegations%.*}"
-if [[ ${wallet_5_delegations_diff%.*} -ne $ibc_transfer_amount ]]; then
+if [[ ${wallet_5_delegations%.*} -ne $ibc_transfer_amount ]]; then
     echo "Redeem unsuccessful: unexpected delegation shares for wallet 5"
     exit 1
 fi
