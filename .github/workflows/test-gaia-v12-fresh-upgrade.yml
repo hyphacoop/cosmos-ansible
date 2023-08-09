@@ -232,6 +232,11 @@ jobs:
           CONSUMER_HOME_2: /home/runner/.cona2
           CONSUMER_SERVICE_2: cona2.service
         run: tests/major_fresh_upgrade/launch_consumer.sh
+      - name: Check consumer service
+        run: |
+          sleep 5
+          journalctl -u cona1.service
+          journalctl -u cona2.service
       - name: _consumera-blocks-1
         env:
           CON1_RPC_PORT: 27101
