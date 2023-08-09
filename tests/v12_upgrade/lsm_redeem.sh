@@ -50,6 +50,7 @@ wallet_4_delegation_balance=$($CHAIN_BINARY q staking delegations $WALLET_4 --ho
 wallet_5_delegation_balance=$($CHAIN_BINARY q staking delegations $WALLET_5 --home $HOME_1 -o json | jq -r --arg ADDRESS "$VALOPER_1" '.delegation_responses[] | select(.delegation.validator_address==$ADDRESS).balance.amount')
 validator_bond_shares=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.total_validator_bond_shares')
 validator_liquid_shares=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.total_validator_liquid_shares')
+$CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json
 
 echo "Wallet 3 delegation shares increase: $wallet_3_delegations_diff"
 if [[ $wallet_3_delegations_diff -ne 20000000 ]]; then
@@ -87,13 +88,13 @@ if [[ $wallet_5_delegation_balance -ne $ibc_transfer_amount ]]; then
     exit 1
 fi
 
-echo "Validator bond shares difference: ${validator_bond_shares%.*}"
+echo "Validator bond shares: ${validator_bond_shares%.*}"
 if [[ ${validator_bond_shares%.*} -ne 100000000  ]]; then
     echo "Redeem unsuccessful: unexpected validator bond shares amount"
     exit 1
 fi
 
-echo "Validator bond shares difference: ${validator_liquid_shares%.*}"
+echo "Validator liquid shares: ${validator_liquid_shares%.*}"
 if [[ ${validator_liquid_shares%.*} -ne 0  ]]; then
     echo "Redeem unsuccessful: unexpected validator liquid shares amount"
     exit 1
