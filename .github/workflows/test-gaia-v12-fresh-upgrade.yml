@@ -215,6 +215,7 @@ jobs:
           CON1_P2P_PORT: 28101
           CON1_PPROF_PORT: 29101
           CONSUMER_SERVICE_1: cona1.service
+          CONSUMER_HOME_2: /home/runner/.cona1
           CON2_API_PORT: 25102
           CON2_GRPC_PORT: 26102
           CON2_RPC_PORT: 27102
@@ -232,7 +233,9 @@ jobs:
           CONSUMER_SERVICE_2: cona2.service
         run: tests/major_fresh_upgrade/launch_consumer.sh
       - name: _consumera-blocks-1
-        run: tests/test_block_production.sh 127.0.0.1 27201 5
+        env:
+          CON1_RPC_PORT: 27101
+        run: tests/test_block_production.sh 127.0.0.1 CON1_RPC_PORT 5
       - name: Establish CCV channel for consumer a
         run: |
           client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r '.chains[] | select(.chain_id=="consumera").client_id')
