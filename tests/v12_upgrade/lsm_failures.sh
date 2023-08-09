@@ -28,7 +28,7 @@ cap_per_validator=$(echo "$bonded_tokens*$validator_cap_param" | bc)
 global_cap=$(echo "$bonded_tokens*$global_cap_param" | bc)
 echo "Validator shares cap: ${cap_per_validator%.*}"
 echo "Global shares cap: ${global_cap%.*}"
-echo "Global staked: $global_stakes"
+echo "Global staked: $global_staked"
 # echo "Global total: 
 echo "Failure case 3: Attempt to tokenize with WALLET_5, breaching the validator liquid staking cap..."
 submit_bad_tx "tx staking tokenize-share $VALOPER_1 120000000$DENOM $WALLET_5 --from $WALLET_5 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
