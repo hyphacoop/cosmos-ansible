@@ -9,7 +9,7 @@ $CHAIN_BINARY q staking delegations $WALLET_4 --home $HOME_1 -o json | jq -r '.'
 $CHAIN_BINARY q bank balances $WALLET_4 --home $HOME_1 -o json | jq -r '.'
 
 echo "Attempt to tokenize with $WALLET_4..."
-submit_bad_tx "tx staking tokenize-share $VALOPER_1 20000000$DENOM $WALLET_4 --from $WALLET_4 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+submit_tx "tx staking tokenize-share $VALOPER_1 20000000$DENOM $WALLET_4 --from $WALLET_4 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
 
 $CHAIN_BINARY q staking delegations $WALLET_4 --home $HOME_1 -o json | jq -r '.'
 $CHAIN_BINARY q bank balances $WALLET_4 --home $HOME_1 -o json | jq -r '.'
