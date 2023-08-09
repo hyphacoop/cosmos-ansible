@@ -205,37 +205,45 @@ jobs:
           chmod +x $HOME/go/bin/$CONSUMER_CHAIN_BINARY_2
           wget $CONSUMER_CHAIN_BINARY_URL_3 -O $HOME/go/bin/$CONSUMER_CHAIN_BINARY_3 -q
           chmod +x $HOME/go/bin/$CONSUMER_CHAIN_BINARY_3
-      # - name: Initialize consumer chain a with ICS v2.0.0
-      #   env:
-      #     CONSUMER_CHAIN_ID: consumera
-      #     CONSUMER_HOME_1: /home/runner/.cona1
-      #     CON1_API_PORT: 25201
-      #     CON1_GRPC_PORT: 26201
-      #     CON1_RPC_PORT: 27201
-      #     CON1_P2P_PORT: 28201
-      #     CON1_PPROF_PORT: 6165
-      #     CONSUMER_SERVICE_1: cona1.service
-      #     CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY_2 }}
-      #   run: tests/major_fresh_upgrade/init_consumer.sh
-      # - name: Launch consumer chain a
-      #   env:
-      #     CONSUMER_CHAIN_ID: consumera
-      #     CONSUMER_HOME_1: /home/runner/.cona1
-      #     CONSUMER_SERVICE_1: cona1.service
-      #   run: tests/major_fresh_upgrade/launch_consumer.sh
-      # - name: _consumera-blocks-1
-      #   run: tests/test_block_production.sh 127.0.0.1 27201 5
-      # - name: Establish CCV channel for consumer a
-      #   run: |
-      #     client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r '.chains[] | select(.chain_id=="consumera").client_id')
-      #     hermes create connection --a-chain consumera --a-client 07-tendermint-0 --b-client $client_id
-      #     hermes create channel --a-chain consumera --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
-      #     sudo systemctl restart hermes
-      #     sleep 10
-      # - name: _consumera-vsc-1
-      #   env:
-      #     CON1_RPC_PORT: 27201
-      #   run: tests/major_fresh_upgrade/test_ccv.sh
+      - name: Initialize consumer chain a with ICS v2.0.0
+        env:
+          CONSUMER_CHAIN_ID: consumera
+          CONSUMER_HOME_1: /home/runner/.cona1
+          CON1_API_PORT: 25101
+          CON1_GRPC_PORT: 26101
+          CON1_RPC_PORT: 27101
+          CON1_P2P_PORT: 28101
+          CON1_PPROF_PORT: 29101
+          CONSUMER_SERVICE_1: cona1.service
+          CON2_API_PORT: 25102
+          CON2_GRPC_PORT: 26102
+          CON2_RPC_PORT: 27102
+          CON2_P2P_PORT: 28102
+          CON2_PPROF_PORT: 29102
+          CONSUMER_SERVICE_2: cona2.service
+          CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY_2 }}
+        run: tests/major_fresh_upgrade/init_consumer.sh
+      - name: Launch consumer chain a
+        env:
+          CONSUMER_CHAIN_ID: consumera
+          CONSUMER_HOME_1: /home/runner/.cona1
+          CONSUMER_SERVICE_1: cona1.service
+          CONSUMER_HOME_2: /home/runner/.cona2
+          CONSUMER_SERVICE_2: cona2.service
+        run: tests/major_fresh_upgrade/launch_consumer.sh
+      - name: _consumera-blocks-1
+        run: tests/test_block_production.sh 127.0.0.1 27201 5
+      - name: Establish CCV channel for consumer a
+        run: |
+          client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r '.chains[] | select(.chain_id=="consumera").client_id')
+          hermes create connection --a-chain consumera --a-client 07-tendermint-0 --b-client $client_id
+          hermes create channel --a-chain consumera --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
+          sudo systemctl restart hermes
+          sleep 10
+      - name: _consumera-vsc-1
+        env:
+          CON1_RPC_PORT: 27201
+        run: tests/major_fresh_upgrade/test_ccv.sh
       # - name: _consumera-ibc
       #   env:
       #     CONSUMER_CHAIN_ID: consumera
@@ -382,6 +390,8 @@ jobs:
       #     CONSUMER_FEES: 1000
       #     RECIPIENT: stride1r5v5srda7xfth3hn2s26txvrcrntldjucq88rn
       #   run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-1 2
+      # - name: ICA delegate
+      #   run: tests/v12_upgrade/ica_delegate.sh
 
       # - name: _consumera-vsc-4
       #   env:
@@ -411,5 +421,3 @@ jobs:
         run: tests/v12_upgrade/lsm_redeem.sh
       - name: _lsm-failures-1
         run: tests/v12_upgrade/lsm_failures.sh
-      # - name: ICA delegate
-      #   run: tests/v12_upgrade/ica_delegate.sh

@@ -27,9 +27,9 @@ port = 3001
 
 [[chains]]
 id = 'consumera'
-rpc_addr = 'http://localhost:27201'
-grpc_addr = 'http://localhost:26201'
-websocket_addr = 'ws://localhost:27201/websocket'
+rpc_addr = 'http://localhost:27101'
+grpc_addr = 'http://localhost:26101'
+websocket_addr = 'ws://localhost:27101/websocket'
 rpc_timeout = '15s'
 account_prefix = 'cosmos'
 key_name = 'wallet'
