@@ -4,6 +4,7 @@ source tests/process_tx.sh
 
 wallet_4_delegations=20000000
 wallet_5_delegations=150000000
+tokenized_denom="$VALOPER_1/1"
 
 validator_cap_param=$($CHAIN_BINARY q staking params --home $HOME_1 -o json | jq -r '.validator_liquid_staking_cap')
 global_cap_param=$($CHAIN_BINARY q staking params --home $HOME_1 -o json | jq -r '.global_liquid_staking_cap')
@@ -51,5 +52,13 @@ global_cap=$(echo "$bonded_tokens*$global_cap_param" | bc)
 echo "Global shares cap: ${global_cap%.*}"
 echo "Global staked: $global_staked"
 
-echo "Failure case 4: Attempt to tokenize with $WALLET_5, breaching the global liquid staking cap..."
+echo "Failure case 4: Attempt to tokenize with WALLET_5, breaching the global liquid staking cap..."
 submit_bad_tx "tx staking tokenize-share $VALOPER_1 140000000$DENOM $WALLET_5 --from $WALLET_5 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+
+submit_tx "tx staking disable-tokenize-shares --from $WALLET_5 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+echo "Failure case 5: Attempt to tokenize with WALLET_5 after disabling tokenizing..."
+submit_bad_tx "tx staking tokenize-share $VALOPER_1 10000000$DENOM $WALLET_5 --from $WALLET_5 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+
+submit_tx "tx staking enable-tokenize-shares --from $WALLET_5 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+submit_tx "tx staking tokenize-share $VALOPER_1 10000000$DENOM $WALLET_5 --from $WALLET_5 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+submit_tx "tx staking redeem-tokens 10000000$tokenized_denom --from $WALLET_5 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -b block -y" $CHAIN_BINARY $HOME_1
