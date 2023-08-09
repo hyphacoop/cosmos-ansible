@@ -26,5 +26,3 @@ if [[ $shares_diff -ne $delegation  ]]; then
     echo "Validator bond unsuccessful."
     exit 1
 fi
-
-$CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.'

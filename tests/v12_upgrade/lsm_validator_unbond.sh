@@ -10,3 +10,5 @@ if [[ ${validator_bond_shares%.*} -ne 0  ]]; then
     echo "Unbond unsuccessful: unexpected validator bond shares amount"
     exit 1
 fi
+
+$CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.'
