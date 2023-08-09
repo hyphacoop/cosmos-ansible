@@ -2,8 +2,6 @@
 
 name: Test Gaia Fresh State Upgrade - v11
 on:
-  repository_dispatch:
-    types: [new_main_build]
   workflow_dispatch:
 jobs:
   set-version-matrix:

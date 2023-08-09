@@ -1,0 +1,423 @@
+---
+
+name: Test Gaia Fresh State Upgrade - v12
+on:
+  repository_dispatch:
+    types: [new_main_build]
+  workflow_dispatch:
+  push:
+jobs:
+  set-version-matrix:
+    runs-on: ubuntu-22.04
+    steps:
+      # Get system info
+      - run: ifconfig
+      - run: arp -a
+      - run: sudo dmidecode
+      - run: df -h
+      - run: free -m
+      - run: uname -a
+      - run: lsb_release -a
+      - run: echo "GitHub branch is ${{ github.ref }}"
+      - run: whoami
+      - run: pwd
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v3
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install requests
+      - name: Generate starting versions
+        id: generate-start
+        run: |
+          start=$(tests/generate_version_matrix.py v11.0.0)
+          echo $start
+          echo "start_versions=$start" >> $GITHUB_OUTPUT
+      - name: Generate upgrade versions
+        id: generate-upgrade
+        run: |
+          upgrade=$(tests/generate_upgrade_matrix_fresh.py v11.0.0)
+          echo $upgrade
+          echo "upgrade_versions=$upgrade" >> $GITHUB_OUTPUT
+    outputs:
+      upgrade_versions: ${{ steps.generate-upgrade.outputs.upgrade_versions }}
+  test-upgrade:
+    runs-on: ubuntu-22.04
+    needs: set-version-matrix
+    strategy:
+      matrix:
+        ${{ fromJSON(needs.set-version-matrix.outputs.upgrade_versions) }}
+      fail-fast: false
+    environment: major-upgrade-fresh-workflow
+    env:
+      CHAIN_BINARY: ${{ vars.CHAIN_BINARY }}
+      CONSUMER_CHAIN_BINARY_URL: ${{ vars.CONSUMER_CHAIN_BINARY_URL }}
+      CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY }}
+      CONSUMER_CHAIN_BINARY_URL_2: ${{ vars.CONSUMER_CHAIN_BINARY_URL_2 }}
+      CONSUMER_CHAIN_BINARY_2: ${{ vars.CONSUMER_CHAIN_BINARY_2 }}
+      CONSUMER_CHAIN_BINARY_URL_3: ${{ vars.CONSUMER_CHAIN_BINARY_URL_3 }}
+      CONSUMER_CHAIN_BINARY_3: ${{ vars.CONSUMER_CHAIN_BINARY_3 }}
+      STRIDE_SOV_CHAIN_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/stride-v11.0.0/stride-v11.0.0-linux-amd64
+      STRIDE_CON_CHAIN_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/stride-v12.1.0/stride-v12.1.0-linux-amd64
+      STRIDE_CHAIN_BINARY: strided
+      STRIDE_HOME_1: /home/runner/.stride1
+      STRIDE_SERVICE_1: stride1.service
+      STRIDE_CHAIN_ID: consumerd
+      STRIDE_DENOM: ustrd
+      STRIDE_WALLET_1: stride1r5v5srda7xfth3hn2s26txvrcrntldjucq88rn
+      STRIDE_WALLET_5: stride17n3vkvg6lwf98p3kanlhlyjk6zkrfla9zrhma6
+      STRIDE_API_1: 35001
+      STRIDE_GRPC_1: 36001
+      STRIDE_RPC_1: 37001
+      STRIDE_P2P_1: 38001
+      STRIDE_PPROF_1: 39001
+      CHAIN_ID: ${{ vars.CHAIN_ID }}
+      DENOM: ${{ vars.DENOM }}
+      VAL_FUNDS: ${{ vars.VAL_FUNDS }}
+      VAL_STAKE: ${{ vars.VAL_STAKE }}
+      VAL_STAKE_STEP: ${{ vars.VAL_STAKE_STEP }}
+      VOTING_PERIOD: ${{ vars.VOTING_PERIOD }}
+      CONSUMER_DENOM: ${{ vars.CONSUMER_DENOM }}
+      BASE_FEES: 1500
+      HIGH_FEES: 10000
+      GAS: auto
+      GAS_ADJUSTMENT: 1.2
+      HOME_1: /home/runner/.val1
+      CONSUMER_HOME_1: /home/runner/.cona1
+      VAL1_API_PORT: 25001
+      VAL1_GRPC_PORT: 26001
+      VAL1_RPC_PORT: 27001
+      VAL1_P2P_PORT: 28001
+      VAL1_PPROF_PORT: 29001
+      CON1_API_PORT: 25101
+      CON1_GRPC_PORT: 26101
+      CON1_RPC_PORT: 27101
+      CON1_P2P_PORT: 28101
+      CON1_PPROF_PORT: 29101
+      PROVIDER_SERVICE_1: gaia1.service
+      CONSUMER_SERVICE_1: cona1.service
+      MONIKER_1: val1
+      MNEMONIC_1: ${{ vars.MNEMONIC_1 }}
+      VALOPER_1: ${{ vars.VALOPER_1 }}
+      WALLET_1: ${{ vars.WALLET_1 }}
+      HOME_2: /home/runner/.val2
+      CONSUMER_HOME_2: /home/runner/.cona2
+      VAL2_API_PORT: 25002
+      VAL2_GRPC_PORT: 26002
+      VAL2_RPC_PORT: 27002
+      VAL2_P2P_PORT: 28002
+      VAL2_PPROF_PORT: 29002
+      CON2_API_PORT: 25102
+      CON2_GRPC_PORT: 26102
+      CON2_RPC_PORT: 27102
+      CON2_P2P_PORT: 28102
+      CON2_PPROF_PORT: 29102
+      PROVIDER_SERVICE_2: gaia2.service
+      CONSUMER_SERVICE_2: cona2.service
+      MONIKER_2: val2
+      MNEMONIC_2: ${{ vars.MNEMONIC_2 }}
+      VALOPER_2: ${{ vars.VALOPER_2 }}
+      WALLET_2: ${{ vars.WALLET_2 }}
+      HOME_3: /home/runner/.val3
+      CONSUMER_HOME_3: /home/runner/.cona3
+      VAL3_API_PORT: 25003
+      VAL3_GRPC_PORT: 26003
+      VAL3_RPC_PORT: 27003
+      VAL3_P2P_PORT: 28003
+      VAL3_PPROF_PORT: 29003
+      CON3_API_PORT: 25103
+      CON3_GRPC_PORT: 26103
+      CON3_RPC_PORT: 27103
+      CON3_P2P_PORT: 28103
+      CON3_PPROF_PORT: 29103
+      PROVIDER_SERVICE_3: gaia3.service
+      CONSUMER_SERVICE_3: cona3.service
+      MONIKER_3: val3
+      MNEMONIC_3: ${{ vars.MNEMONIC_3 }}
+      VALOPER_3: ${{ vars.VALOPER_3 }}
+      WALLET_3: ${{ vars.WALLET_3 }}
+      MNEMONIC_4: ${{ vars.MNEMONIC_4 }}
+      WALLET_4: ${{ vars.WALLET_4 }}
+      MONIKER_4: ${{ vars.MONIKER_4 }}
+      MNEMONIC_5: ${{ vars.MNEMONIC_5 }}
+      WALLET_5: ${{ vars.WALLET_5 }}
+      MONIKER_5: ${{ vars.MONIKER_5 }}
+      VAL1_STAKE: 800000000
+      VAL2_STAKE: 200000000
+      VAL3_STAKE: 10000000
+      CONSUMER_FEES: 0
+      RECIPIENT: cosmos1r5v5srda7xfth3hn2s26txvrcrntldjumt8mhl
+      DOWNTIME_BLOCKS: 10000
+      HERMES_VERSION: v1.5.1
+    steps:
+      - name: start-version
+        run: echo ${{matrix.gaia_version}}
+      - name: target-version
+        run: echo ${{matrix.upgrade_version}}
+      - name: target-commit
+        if: ${{ matrix.upgrade_version == 'main' }}
+        run: |
+          BUILD_TAG=gaiad-linux-${{matrix.upgrade_version}}
+          TARGET_COMMIT=$(curl -s -L -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" https://api.github.com/repos/hyphacoop/cosmos-builds/releases/tags/$BUILD_TAG | jq -r '.name')
+          echo $TARGET_COMMIT
+      - name: Consumer chain binary URLs
+        run: |
+          echo "$CONSUMER_CHAIN_BINARY runs off $CONSUMER_CHAIN_BINARY_URL"
+          echo "$CONSUMER_CHAIN_BINARY_2 runs off $CONSUMER_CHAIN_BINARY_URL_2"
+      - name: Update PATH
+        run: |
+          mkdir -p $HOME/go/bin
+          echo "$HOME/go/bin" >> $GITHUB_PATH
+          echo "$HOME/.hermes" >> $GITHUB_PATH
+      - name: Bypass the grub-efi-amd64-signed package
+        run: sudo apt-mark hold grub-efi-amd64-signed
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.10'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install toml-cli
+      - name: Start chain
+        env:
+          START_VERSION: ${{matrix.gaia_version}}
+        run: tests/major_fresh_upgrade/start_chain.sh
+      - name: _blocks-1
+        run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 5 # 5 blocks
+      # - name: _txs-1
+      #   run: tests/patch_upgrade/patch_test_tx.sh
+      # - name: _api-1
+      #   run: tests/test_endpoints_api.sh localhost $VAL1_API_PORT
+      # - name: _rpc-1
+      #   run: tests/test_endpoints_rpc.sh localhost $VAL1_RPC_PORT
+      - name: Set up relayer
+        run: tests/v12_upgrade/setup_relayer.sh
+      - name: Download consumer chain binaries
+        run: |
+          wget $CONSUMER_CHAIN_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_BINARY -q
+          chmod +x $HOME/go/bin/$CONSUMER_CHAIN_BINARY
+          wget $CONSUMER_CHAIN_BINARY_URL_2 -O $HOME/go/bin/$CONSUMER_CHAIN_BINARY_2 -q
+          chmod +x $HOME/go/bin/$CONSUMER_CHAIN_BINARY_2
+          wget $CONSUMER_CHAIN_BINARY_URL_3 -O $HOME/go/bin/$CONSUMER_CHAIN_BINARY_3 -q
+          chmod +x $HOME/go/bin/$CONSUMER_CHAIN_BINARY_3
+      - name: Initialize consumer chain a with ICS v2.0.0
+        env:
+          CONSUMER_CHAIN_ID: consumera
+          CONSUMER_HOME_1: /home/runner/.cona1
+          CON1_API_PORT: 25101
+          CON1_GRPC_PORT: 26101
+          CON1_RPC_PORT: 27101
+          CON1_P2P_PORT: 28101
+          CON1_PPROF_PORT: 29101
+          CONSUMER_SERVICE_1: cona1.service
+          CON2_API_PORT: 25102
+          CON2_GRPC_PORT: 26102
+          CON2_RPC_PORT: 27102
+          CON2_P2P_PORT: 28102
+          CON2_PPROF_PORT: 29102
+          CONSUMER_SERVICE_2: cona2.service
+          CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY_2 }}
+        run: tests/major_fresh_upgrade/init_consumer.sh
+      - name: Launch consumer chain a
+        env:
+          CONSUMER_CHAIN_ID: consumera
+          CONSUMER_HOME_1: /home/runner/.cona1
+          CONSUMER_SERVICE_1: cona1.service
+          CONSUMER_HOME_2: /home/runner/.cona2
+          CONSUMER_SERVICE_2: cona2.service
+        run: tests/major_fresh_upgrade/launch_consumer.sh
+      - name: _consumera-blocks-1
+        run: tests/test_block_production.sh 127.0.0.1 27201 5
+      - name: Establish CCV channel for consumer a
+        run: |
+          client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r '.chains[] | select(.chain_id=="consumera").client_id')
+          hermes create connection --a-chain consumera --a-client 07-tendermint-0 --b-client $client_id
+          hermes create channel --a-chain consumera --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
+          sudo systemctl restart hermes
+          sleep 10
+      - name: _consumera-vsc-1
+        env:
+          CON1_RPC_PORT: 27201
+        run: tests/major_fresh_upgrade/test_ccv.sh
+      # - name: _consumera-ibc
+      #   env:
+      #     CONSUMER_CHAIN_ID: consumera
+      #     CONSUMER_HOME_1: /home/runner/.cona1
+      #     CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY_2 }}
+      #   run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-1 2
+      # - name: Initialize consumer chain b with ICS v3.1.0
+      #   env:
+      #     CONSUMER_CHAIN_ID: consumerb
+      #     CONSUMER_HOME_1: /home/runner/.conb1
+      #     CON1_API_PORT: 25301
+      #     CON1_GRPC_PORT: 26301
+      #     CON1_RPC_PORT: 27301
+      #     CON1_P2P_PORT: 28301
+      #     CON1_PPROF_PORT: 6167
+      #     CONSUMER_SERVICE_1: conb1.service
+      #     CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY_3 }}
+      #   run: tests/major_fresh_upgrade/init_consumer.sh
+      # - name: Launch consumer chain b
+      #   env:
+      #     CONSUMER_CHAIN_ID: consumerb
+      #     CONSUMER_HOME_1: /home/runner/.conb1
+      #     CONSUMER_SERVICE_1: conb1.service
+      #   run: tests/major_fresh_upgrade/launch_consumer.sh
+      # - name: _consumerb-blocks-1
+      #   run: tests/test_block_production.sh 127.0.0.1 27301 5
+      # - name: Establish CCV channel for consumer b
+      #   run: |
+      #     client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r '.chains[] | select(.chain_id=="consumerb").client_id')
+      #     hermes create connection --a-chain consumerb --a-client 07-tendermint-0 --b-client 07-tendermint-1
+      #     hermes create channel --a-chain consumerb --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
+      #     sudo systemctl restart hermes
+      #     sleep 10
+      # - name: _consumerb-vsc-1
+      #   env:
+      #     CON1_RPC_PORT: 27301
+      #   run: tests/major_fresh_upgrade/test_ccv.sh
+      # - name: _consumerb-ibc
+      #   env:
+      #     CONSUMER_CHAIN_ID: consumerb
+      #     CONSUMER_HOME_1: /home/runner/.conb1
+      #     CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY_3 }}
+      #   run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-3 3
+      # - name: _consumera-vsc-2
+      #   env:
+      #     CON1_RPC_PORT: 27201
+      #   run: tests/major_fresh_upgrade/test_ccv.sh
+      # - name: Test software upgrade for published releases
+      #   if: ${{ matrix.upgrade_version != 'main' }}
+      #   env:
+      #     DOWNLOAD_URL: https://github.com/cosmos/gaia/releases/download/${{ matrix.upgrade_version }}/gaiad-${{ matrix.upgrade_version }}-linux-amd64
+      #   run: |
+      #     echo $DOWNLOAD_URL
+      #     tests/major_fresh_upgrade/software_upgrade.sh 127.0.0.1 $VAL1_RPC_PORT v12
+      # - name: Test software upgrade for main branch
+      #   if: ${{ matrix.upgrade_version == 'main' }}
+      #   env:
+      #     DOWNLOAD_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/gaiad-linux-main/gaiad-linux
+      #   run: |
+      #     tests/major_fresh_upgrade/software_upgrade.sh 127.0.0.1 $VAL1_RPC_PORT v12
+      # - name: _blocks-2
+      #   run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 5
+      # - name: _txs-2
+      #   env:
+      #     BASE_FEES: 2000
+      #   run: tests/patch_upgrade/patch_test_tx.sh
+      # - name: _api-2
+      #   run: tests/test_endpoints_api.sh localhost $VAL1_API_PORT
+      # - name: _rpc-2
+      #   run: tests/test_endpoints_rpc.sh localhost $VAL1_RPC_PORT
+      # - name: _consumera-vsc-3
+      #   env:
+      #     CON1_RPC_PORT: 27201
+      #   run: tests/major_fresh_upgrade/test_ccv.sh
+      # - name: _consumerb-vsc-2
+      #   env:
+      #     CON1_RPC_PORT: 27301
+      #   run: tests/major_fresh_upgrade/test_ccv.sh
+      # - name: Initialize consumer chain c with ICS v2.0.0
+      #   env:
+      #     CONSUMER_CHAIN_ID: consumerc
+      #     CONSUMER_HOME_1: /home/runner/.conc1
+      #     CON1_API_PORT: 25401
+      #     CON1_GRPC_PORT: 26401
+      #     CON1_RPC_PORT: 27401
+      #     CON1_P2P_PORT: 28401
+      #     CON1_PPROF_PORT: 6169
+      #     CONSUMER_SERVICE_1: conc1.service
+      #     CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY_2 }}
+      #   run: tests/major_fresh_upgrade/init_consumer.sh
+      # - name: Launch consumer chain c
+      #   env:
+      #     CONSUMER_CHAIN_ID: consumerc
+      #     CONSUMER_HOME_1: /home/runner/.conc1
+      #     CONSUMER_SERVICE_1: conc1.service
+      #   run: tests/major_fresh_upgrade/launch_consumer.sh
+      # - name: _consumerc-blocks-1
+      #   run: tests/test_block_production.sh 127.0.0.1 27401 5
+      # - name: Establish CCV channel for consumer c
+      #   run: |
+      #     client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r '.chains[] | select(.chain_id=="consumerc").client_id')
+      #     hermes create connection --a-chain consumerc --a-client 07-tendermint-0 --b-client $client_id
+      #     hermes create channel --a-chain consumerc --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
+      #     sudo systemctl restart hermes
+      #     sleep 10
+      # - name: _consumerc-vsc-1
+      #   env:
+      #     CON1_RPC_PORT: 27401
+      #   run: tests/major_fresh_upgrade/test_ccv.sh
+      # - name: _consumerc-ibc
+      #   env:
+      #     CONSUMER_CHAIN_ID: consumerc
+      #     CONSUMER_HOME_1: /home/runner/.conc1
+      #     CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY_2 }}
+      #   run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-5 4
+
+      # - name: Start Stride chain
+      #   run: tests/major_fresh_upgrade/start_stride.sh
+      # - name: _stride-blocks-1
+      #   run: tests/test_block_production.sh 127.0.0.1 $STRIDE_RPC_1 5 # 5 blocks
+      # - name: Prepare Stride chain upgrade # saves $STRIDE_REV_HEIGHT environment variable
+      #   run: tests/major_fresh_upgrade/upgrade_stride.sh
+      # - name: Re-launch Stride as a consumer chain
+      #   run: tests/major_fresh_upgrade/launch_stride_consumer.sh
+      # - name: _stride-blocks-2
+      #   run: tests/test_block_production.sh 127.0.0.1 $STRIDE_RPC_1 5 # 5 blocks
+      # - name: Establish CCV channel for consumer d
+      #   run: |
+      #     client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r '.chains[] | select(.chain_id=="consumerd").client_id')
+      #     hermes create connection --a-chain consumerd --a-client 07-tendermint-0 --b-client $client_id
+      #     hermes create channel --a-chain consumerd --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
+      #     sudo systemctl restart hermes
+      #     sleep 10
+      # - name: _consumerd-vsc-1
+      #   env:
+      #     CON1_RPC_PORT: 37001
+      #   run: tests/major_fresh_upgrade/test_ccv.sh
+      # - name: _consumerd-ibc-1
+      #   env:
+      #     CONSUMER_CHAIN_ID: consumerd
+      #     CONSUMER_HOME_1: /home/runner/.stride1
+      #     CONSUMER_CHAIN_BINARY: strided
+      #     CONSUMER_DENOM: ustrd
+      #     CONSUMER_FEES: 1000
+      #     RECIPIENT: stride1r5v5srda7xfth3hn2s26txvrcrntldjucq88rn
+      #   run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-1 2
+      # - name: ICA delegate
+      #   run: tests/v12_upgrade/ica_delegate.sh
+
+      # - name: _consumera-vsc-4
+      #   env:
+      #     CON1_RPC_PORT: 27201
+      #   run: tests/major_fresh_upgrade/test_ccv.sh
+      # - name: _consumerb-vsc-3
+      #   env:
+      #     CON1_RPC_PORT: 27301
+      #   run: tests/major_fresh_upgrade/test_ccv.sh
+      # - name: _consumerc-vsc-2
+      #   env:
+      #     CON1_RPC_PORT: 27401
+      #   run: tests/major_fresh_upgrade/test_ccv.sh
+      # - name: _soft-opt-out-1
+      #   run: tests/test_validator_jailed.sh $VALOPER_2 true
+      # - name: _soft-opt-out-2
+      #   run: tests/test_validator_jailed.sh $VALOPER_3 false
+      # - name: Register and fund ICA
+        # run: tests/v12_upgrade/setup_ica.sh
+      - name: _lsm-bond-1
+        run: tests/v12_upgrade/lsm_validator_bond.sh
+      - name: _lsm-tokenize-1
+        run: tests/v12_upgrade/lsm_tokenize.sh
+      - name: _lsm-redeem-1
+        env:
+          CONSUMER_FEES: 1000
+        run: tests/v12_upgrade/lsm_redeem.sh
+      - name: _lsm-failures-1
+        run: tests/v12_upgrade/lsm_failures.sh
