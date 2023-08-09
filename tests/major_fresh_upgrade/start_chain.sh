@@ -69,8 +69,13 @@ jq -r ".app_state.gov.deposit_params.min_deposit[0].amount = \"1\"" ./voting.jso
 echo "Setting slashing window to 10000..."
 jq -r --arg SLASH "10000" '.app_state.slashing.params.signed_blocks_window |= $SLASH' ./gov.json > ./slashing.json
 
+echo "Patching genesis file for LSM params..."
+jq -r '.app_state.staking.params.validator_bond_factor = "10.000000000000000000"' slashing.json > lsm-1.json
+jq -r '.app_state.staking.params.global_liquid_staking_cap = "0.200000000000000000"' lsm-1.json > lsm-2.json
+jq -r '.app_state.staking.params.validator_liquid_staking_cap = "0.100000000000000000"' lsm-2.json > lsm-3.json
+
 echo "Patching genesis for ICA messages..."
-jq -r '.app_state.interchainaccounts.host_genesis_state.params.allow_messages[0] = "*"' ./slashing.json > ./ica_host.json
+jq -r '.app_state.interchainaccounts.host_genesis_state.params.allow_messages[0] = "*"' lsm-3.json > ./ica_host.json
 mv ica_host.json $HOME_1/config/genesis.json
 
 echo "Copying genesis file to other nodes..."
