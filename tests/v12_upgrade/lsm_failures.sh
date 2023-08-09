@@ -26,6 +26,7 @@ validator_delegations=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOM
 global_staked=$($CHAIN_BINARY q staking total-liquid-staked --home $HOME_1 -o json | jq -r '.')
 cap_per_validator=$(echo "$bonded_tokens*$validator_cap_param" | bc)
 global_cap=$(echo "$bonded_tokens*$global_cap_param" | bc)
+echo "Validator_delegations: ${validator_delegations%.*}"
 echo "Validator shares cap: ${cap_per_validator%.*}"
 echo "Global shares cap: ${global_cap%.*}"
 echo "Global staked: $global_staked"
