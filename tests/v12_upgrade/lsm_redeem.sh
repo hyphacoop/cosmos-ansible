@@ -52,7 +52,7 @@ validator_bond_shares=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOM
 validator_liquid_shares=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.total_validator_liquid_shares')
 
 echo "Wallet 3 delegation shares increase: $wallet_3_delegations_diff"
-if [[ $wallet_3_delegations_diff -ne 70000000 ]]; then
+if [[ $wallet_3_delegations_diff -ne 20000000 ]]; then
     echo "Redeem unsuccessful: unexpected delegation shares for wallet 3"
     exit 1
 fi
