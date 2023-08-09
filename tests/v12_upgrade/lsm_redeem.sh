@@ -52,13 +52,13 @@ wallet_4_delegation_balance=$($CHAIN_BINARY q staking delegations $WALLET_4 --ho
 # $CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json
 
 echo "Wallet 3 delegation shares increase: $wallet_3_delegations_diff"
-if [[ $wallet_3_delegations_diff -ne 20000000 ]]; then
+if [[ $wallet_3_delegations_diff -ne 30000000 ]]; then
     echo "Redeem unsuccessful: unexpected delegation shares for wallet 3"
     exit 1
 fi
 
 echo "Wallet 3 delegation balance: $wallet_3_delegation_balance"
-if [[ $wallet_3_delegation_balance -ne 70000000 ]]; then
+if [[ $wallet_3_delegation_balance -ne 80000000 ]]; then
     echo "Redeem unsuccessful: unexpected delegation balance for wallet 3"
     exit 1
 fi
