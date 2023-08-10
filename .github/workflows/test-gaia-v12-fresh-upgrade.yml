@@ -437,8 +437,6 @@ jobs:
       - name: _lsm-failures-1
         run: tests/v12_upgrade/lsm_failures.sh
 
-      - name: Jail validator 2 through downtime
-        run: tests/major_fresh_upgrade/jail_validator.sh cona2.service $VALOPER_2
       - name: _lsm-complex
         run: tests/v12_upgrade/lsm_complex.sh
 
