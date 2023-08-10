@@ -41,12 +41,12 @@ fi
 # ** SCENARIO 1 **
 echo "** SCENARIO 1: delegate - tokenize - slash - redeem **"
 echo "Delegating with tokenizing_account..."
-submit_tx "tx staking delegate $VALOPER_2 $tokenize$DENOM --from liquid_account_1 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+submit_tx "tx staking delegate $VALOPER_2 $tokenize$DENOM --from $liquid_address_1 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
 delegation_balance_pre_tokenize=$($CHAIN_BINARY q staking delegations $liquid_address_1 --home $HOME_1 -o json | jq -r '.delegation_responses[0].balance.amount')
 slash_fraction=$($CHAIN_BINARY q slashing params --home $HOME_1 -o json | jq -r '.slash_fraction_downtime')
 expected_balance=$(echo "$delegation_balance_pre_tokenize-($delegation_balance_pre_tokenize*$slash_fraction)" | bc)
 echo "Tokenizing with tokenizing account..."
-submit_tx "tx staking tokenize-share $VALOPER_2 $tokenize$DENOM $liquid_address_1 --from liquid_account_1 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+submit_tx "tx staking tokenize-share $VALOPER_2 $tokenize$DENOM $liquid_address_1 --from $liquid_address_1 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
 echo "Slashing validator 2..."
 tests/major_fresh_upgrade/jail_validator.sh $PROVIDER_SERVICE_2 $VALOPER_2
 echo "Redeeming with tokenizing account..."
@@ -66,14 +66,29 @@ echo "Unjailing validator 2..."
 tests/major_fresh_upgrade/unjail_validator.sh $PROVIDER_SERVICE_2 $VAL2_RPC_PORT $WALLET_2 $VALOPER_2
 echo "Unbonding from tokenizing account..."
 submit_tx "tx staking unbond $VALOPER_2 ${delegation_balance_post_redeem%.*}$DENOM --from $liquid_address_1 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+echo "Unbonding from bonding account..."
+delegation_balance=$($CHAIN_BINARY q staking delegations $bonding_address --home $HOME_1 -o json | jq -r '.delegation_responses[0].balance.amount')
+submit_tx "tx staking unbond $VALOPER_2 ${delegation_balance%.*}$DENOM --from $bonding_address -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
 
 $CHAIN_BINARY q staking delegations-to $VALOPER_2 --home $HOME_1 -o json | jq '.'
 $CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq '.'
 
 # ** SCENARIO 2 **
 echo "** SCENARIO 2: delegate - slash - tokenize - redeem **"
+echo "Delegating with bonding_account..."
+submit_tx "tx staking delegate $VALOPER_2 $delegation$DENOM --from $bonding_address -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+echo "Validator bond with bonding_account..."
+submit_tx "tx staking validator-bond $VALOPER_2 --from $bonding_address -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT -y --fees $BASE_FEES$DENOM" $CHAIN_BINARY $HOME_1
+
+$CHAIN_BINARY q staking delegations-to $VALOPER_2 --home $HOME_1 -o json | jq '.'
+$CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq '.'
+
 echo "Delegating with tokenizing_account..."
 submit_tx "tx staking delegate $VALOPER_2 $tokenize$DENOM --from $liquid_address_2 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+
+$CHAIN_BINARY q staking delegations-to $VALOPER_2 --home $HOME_1 -o json | jq '.'
+$CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq '.'
+
 echo "Slashing validator 2..."
 tests/major_fresh_upgrade/jail_validator.sh $PROVIDER_SERVICE_2 $VALOPER_2
 downtime_period=$($CHAIN_BINARY q slashing params --home $HOME_1 -o json | jq -r '.downtime_jail_duration')
@@ -81,6 +96,10 @@ sleep ${downtime_period%?}
 echo "Unjailing validator 2..."
 tests/major_fresh_upgrade/unjail_validator.sh $PROVIDER_SERVICE_2 $VAL2_RPC_PORT $WALLET_2 $VALOPER_2
 delegation_balance_pre_tokenize=$($CHAIN_BINARY q staking delegations $liquid_address_2 --home $HOME_1 -o json | jq -r '.delegation_responses[0].balance.amount')
+
+$CHAIN_BINARY q staking delegations-to $VALOPER_2 --home $HOME_1 -o json | jq '.'
+$CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq '.'
+
 echo "Tokenizing with tokenizing account..."
 submit_tx "tx staking tokenize-share $VALOPER_2 $delegation_balance_pre_tokenize$DENOM $liquid_address_2 --from liquid_account_2 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
 echo "Redeeming with tokenizing account..."
