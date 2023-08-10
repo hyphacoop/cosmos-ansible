@@ -71,6 +71,8 @@ tests/major_fresh_upgrade/unjail_validator.sh $PROVIDER_SERVICE_2 $VAL2_RPC_PORT
 # delegation_balance=$($CHAIN_BINARY q staking delegations $bonding_address --home $HOME_1 -o json | jq -r '.delegation_responses[0].balance.amount')
 # submit_tx "tx staking unbond $VALOPER_2 ${delegation_balance%.*}$DENOM --from $bonding_address -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
 
+echo "Waiting for new block window..."
+sleep 15
 # ** SCENARIO 2 **
 echo "** SCENARIO 2: delegate - slash - tokenize - redeem **"
 # echo "Delegating with bonding_account..."
