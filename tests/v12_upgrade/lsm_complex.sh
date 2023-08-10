@@ -46,7 +46,8 @@ echo "Redeeming with tokenizing account..."
 submit_tx "tx staking redeem-tokens $tokenize$tokenized_denom --from liquid_account -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
 $CHAIN_BINARY q staking delegations $liquid_address --home $HOME_1 -o json | jq '.'
 delegation_balance_post_redeem=$($CHAIN_BINARY q staking delegations $liquid_address --home $HOME_1 -o json | jq -r '.delegation_responses[0].balance.amount')
-expected_balance=$(echo "$delegation_balance_pre_tokenize-($delegation_balance_pre_tokenize*0.01)" | bc)
+slash_fraction=$($CHAIN_BINARY q slashing params --home $HOME_1 -o json | jq -r '.slash_fraction_downtime')
+expected_balance=$(echo "$delegation_balance_pre_tokenize-($delegation_balance_pre_tokenize*$slash_fraction)" | bc)
 echo "New balance: $delegation_balance_post_redeem"
 echo "Expected new balance: $expected_balance"
 echo "Unjailing validator 2..."
