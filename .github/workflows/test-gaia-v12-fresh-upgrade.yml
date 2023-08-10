@@ -238,7 +238,7 @@ jobs:
           CONSUMER_CHAIN_ID: consumera
           CONSUMER_SERVICE_1: cona1.service
           CONSUMER_SERVICE_2: cona2.service
-        run:
+        run: |
           sudo systemctl enable $CONSUMER_SERVICE_1 --now
           sudo systemctl enable $CONSUMER_SERVICE_2 --now
       - name: _consumera-blocks-1
