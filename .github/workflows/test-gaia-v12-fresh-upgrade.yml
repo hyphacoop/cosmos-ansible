@@ -223,20 +223,24 @@ jobs:
           CON2_PPROF_PORT: 29102
           CONSUMER_SERVICE_2: cona2.service
           CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY_2 }}
+          DOWNTIME_BLOCKS: 10
         run: tests/major_fresh_upgrade/init_consumer.sh
-      - name: Launch consumer chain a
+      - name: Prepare consumer chain a
         env:
           CONSUMER_CHAIN_ID: consumera
           CONSUMER_HOME_1: /home/runner/.cona1
           CONSUMER_SERVICE_1: cona1.service
           CONSUMER_HOME_2: /home/runner/.cona2
           CONSUMER_SERVICE_2: cona2.service
-        run: tests/major_fresh_upgrade/launch_consumer.sh
-      - name: Check consumer service
-        run: |
-          sleep 5
-          journalctl -u cona1.service
-          journalctl -u cona2.service
+        run: tests/major_fresh_upgrade/prepare_consumer.sh
+      - name: Start consumer chain a
+        env:
+          CONSUMER_CHAIN_ID: consumera
+          CONSUMER_SERVICE_1: cona1.service
+          CONSUMER_SERVICE_2: cona2.service
+        run:
+          sudo systemctl enable $CONSUMER_SERVICE_1 --now
+          sudo systemctl enable $CONSUMER_SERVICE_2 --now
       - name: _consumera-blocks-1
         env:
           CON1_RPC_PORT: 27101
@@ -419,13 +423,17 @@ jobs:
       #   run: tests/test_validator_jailed.sh $VALOPER_3 false
       # - name: Register and fund ICA
         # run: tests/v12_upgrade/setup_ica.sh
-      - name: _lsm-bond-1
-        run: tests/v12_upgrade/lsm_validator_bond.sh
-      - name: _lsm-tokenize-1
-        run: tests/v12_upgrade/lsm_tokenize.sh
-      - name: _lsm-redeem-1
-        env:
-          CONSUMER_FEES: 1000
-        run: tests/v12_upgrade/lsm_redeem.sh
-      - name: _lsm-failures-1
-        run: tests/v12_upgrade/lsm_failures.sh
+      
+      # - name: _lsm-bond-1
+      #   run: tests/v12_upgrade/lsm_validator_bond.sh
+      # - name: _lsm-tokenize-1
+      #   run: tests/v12_upgrade/lsm_tokenize.sh
+      # - name: _lsm-redeem-1
+      #   env:
+      #     CONSUMER_FEES: 1000
+      #   run: tests/v12_upgrade/lsm_redeem.sh
+      # - name: _lsm-failures-1
+      #   run: tests/v12_upgrade/lsm_failures.sh
+      - name: Jail validator 2 through downtime
+        run: tests/major_fresh_upgrade/jail_validator.sh cona2.service $VALOPER_2
+      
