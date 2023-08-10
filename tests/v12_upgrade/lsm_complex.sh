@@ -55,6 +55,10 @@ echo "Unjailing validator 2..."
 tests/major_fresh_upgrade/unjail_validator.sh $PROVIDER_SERVICE_2 $VAL2_RPC_PORT $WALLET_2 $VALOPER_2
 $CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq '.'
 
+if [[ $delegation_balance_post_redeem -ne ${expected_balance%.*} ]]; then
+    echo "Complex scenario 1 failed: Unexpected post-redeem balance ($delegation_balance_post_redeem)"
+    exit 1
+fi
 
 # delegator_shares_2=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.delegator_shares')
 # shares_diff=$((${delegator_shares_2%.*}-${delegator_shares_1%.*})) # remove decimal portion
