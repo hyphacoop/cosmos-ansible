@@ -50,7 +50,7 @@ submit_tx "tx staking tokenize-share $VALOPER_2 $tokenize$DENOM $liquid_address_
 echo "Slashing validator 2..."
 tests/major_fresh_upgrade/jail_validator.sh $PROVIDER_SERVICE_2 $VALOPER_2
 echo "Redeeming with tokenizing account..."
-$CHAIN_BINARY q bank accounts $liquid_address_1 --home $HOME_1 -o json | jq '.'
+$CHAIN_BINARY q bank balances $liquid_address_1 --home $HOME_1 -o json | jq '.'
 submit_tx "tx staking redeem-tokens $tokenize$tokenized_denom_1 --from $liquid_address_1 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
 delegation_balance_post_redeem=$($CHAIN_BINARY q staking delegations $liquid_address_1 --home $HOME_1 -o json | jq -r '.delegation_responses[0].balance.amount')
 echo "New balance: $delegation_balance_post_redeem"
