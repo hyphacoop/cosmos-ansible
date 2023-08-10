@@ -5,7 +5,7 @@
 
 source tests/process_tx.sh
 
-delegation=10000000
+delegation=20000000
 tokenize=10000000
 tokenized_denom=$VALOPER_2/1
 delegator_shares_1=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.delegator_shares')
