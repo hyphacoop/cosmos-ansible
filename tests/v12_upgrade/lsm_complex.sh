@@ -106,7 +106,7 @@ $CHAIN_BINARY q staking delegations-to $VALOPER_2 --home $HOME_1 -o json | jq '.
 $CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq '.'
 
 echo "Tokenizing with tokenizing account..."
-submit_tx "tx staking tokenize-share $VALOPER_2 $delegation_balance_pre_tokenize$DENOM $liquid_address_2 --from $liquiad_address_2 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+submit_tx "tx staking tokenize-share $VALOPER_2 $delegation_balance_pre_tokenize$DENOM $liquid_address_2 --from $liquid_address_2 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
 
 $CHAIN_BINARY q staking delegations $bonding_address --home $HOME_1 -o json | jq '.'
 $CHAIN_BINARY q staking delegations-to $VALOPER_2 --home $HOME_1 -o json | jq '.'
