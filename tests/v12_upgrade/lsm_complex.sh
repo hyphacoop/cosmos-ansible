@@ -6,7 +6,7 @@
 source tests/process_tx.sh
 
 delegation=10000000
-tokenize=50000000
+tokenize=10000000
 # tokenized_denom=$VALOPER_2/1
 delegator_shares_1=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.delegator_shares')
 
@@ -28,10 +28,12 @@ submit_tx "tx staking validator-bond $VALOPER_2 --from bonding_account -o json -
 
 validator_bond_shares=$($CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq -r '.total_validator_bond_shares')
 echo "Validator 2 bond shares: $validator_bond_shares"
-if [[ $validator_bond_shares -ne $delegation  ]]; then
+if [[ ${validator_bond_shares%.*} -ne $delegation  ]]; then
     echo "Validator bond unsuccessful."
     exit 1
 fi
+
+$CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq '.'
 
 echo "Delegating with tokenizing_account..."
 submit_tx "tx staking delegate $VALOPER_2 $delegation$DENOM --from liquid_account -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
