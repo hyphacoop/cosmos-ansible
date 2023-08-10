@@ -1,5 +1,6 @@
 #!/bin/bash
 # Set up a one-validator Stride v11 chain.
+source ~/env/bin/activate
 
 # Install Stride binary
 echo "Installing Stride..."
