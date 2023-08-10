@@ -439,8 +439,10 @@ jobs:
 
       # - name: Jail validator 2 through downtime
         # run: tests/major_fresh_upgrade/jail_validator.sh cona2.service $VALOPER_2
-      - name: _lsm-complex
-        run: tests/v12_upgrade/lsm_complex.sh
+      # - name: _lsm-complex
+      #   run: tests/v12_upgrade/lsm_complex.sh
+      - name: _lsm_accounting
+        run: tests/v12_upgrade/lsm_accounting.sh
       # - name: Unjail validator 2
         # run: tests/major_fresh_upgrade/unjail_validator.sh cona2.service 27102 $WALLET_2 $VALOPER_2 
       # - name: Check validators
