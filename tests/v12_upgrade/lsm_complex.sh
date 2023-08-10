@@ -77,14 +77,14 @@ $CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq '.'
 
 # ** SCENARIO 2 **
 echo "** SCENARIO 2: delegate - slash - tokenize - redeem **"
-echo "Delegating with bonding_account..."
-submit_tx "tx staking delegate $VALOPER_2 $delegation$DENOM --from $bonding_address -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
-echo "Validator bond with bonding_account..."
-submit_tx "tx staking validator-bond $VALOPER_2 --from $bonding_address -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT -y --fees $BASE_FEES$DENOM" $CHAIN_BINARY $HOME_1
+# echo "Delegating with bonding_account..."
+# submit_tx "tx staking delegate $VALOPER_2 $delegation$DENOM --from $bonding_address -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+# echo "Validator bond with bonding_account..."
+# submit_tx "tx staking validator-bond $VALOPER_2 --from $bonding_address -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT -y --fees $BASE_FEES$DENOM" $CHAIN_BINARY $HOME_1
 
-$CHAIN_BINARY q staking delegations $bonding_address --home $HOME_1 -o json | jq '.'
-$CHAIN_BINARY q staking delegations-to $VALOPER_2 --home $HOME_1 -o json | jq '.'
-$CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq '.'
+# $CHAIN_BINARY q staking delegations $bonding_address --home $HOME_1 -o json | jq '.'
+# $CHAIN_BINARY q staking delegations-to $VALOPER_2 --home $HOME_1 -o json | jq '.'
+# $CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq '.'
 
 echo "Delegating with tokenizing_account..."
 submit_tx "tx staking delegate $VALOPER_2 $tokenize$DENOM --from $liquid_address_2 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
