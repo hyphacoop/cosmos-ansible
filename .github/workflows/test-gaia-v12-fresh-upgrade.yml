@@ -425,22 +425,23 @@ jobs:
       #   run: tests/test_validator_jailed.sh $VALOPER_3 false
       # - name: Register and fund ICA
         # run: tests/v12_upgrade/setup_ica.sh
-      
-      # - name: _lsm-bond-1
-      #   run: tests/v12_upgrade/lsm_validator_bond.sh
-      # - name: _lsm-tokenize-1
-      #   run: tests/v12_upgrade/lsm_tokenize.sh
-      # - name: _lsm-redeem-1
-      #   env:
-      #     CONSUMER_FEES: 1000
-      #   run: tests/v12_upgrade/lsm_redeem.sh
-      # - name: _lsm-failures-1
-      #   run: tests/v12_upgrade/lsm_failures.sh
 
-      # - name: Jail validator 2 through downtime
-        # run: tests/major_fresh_upgrade/jail_validator.sh cona2.service $VALOPER_2
-      # - name: _lsm-complex
-      #   run: tests/v12_upgrade/lsm_complex.sh
+      - name: _lsm-bond-1
+        run: tests/v12_upgrade/lsm_validator_bond.sh
+      - name: _lsm-tokenize-1
+        run: tests/v12_upgrade/lsm_tokenize.sh
+      - name: _lsm-redeem-1
+        env:
+          CONSUMER_FEES: 1000
+        run: tests/v12_upgrade/lsm_redeem.sh
+      - name: _lsm-failures-1
+        run: tests/v12_upgrade/lsm_failures.sh
+
+      - name: Jail validator 2 through downtime
+        run: tests/major_fresh_upgrade/jail_validator.sh cona2.service $VALOPER_2
+      - name: _lsm-complex
+        run: tests/v12_upgrade/lsm_complex.sh
+
       - name: _lsm_accounting
         run: tests/v12_upgrade/lsm_accounting.sh
       # - name: Unjail validator 2
