@@ -42,6 +42,7 @@ total_liquid_1=$($CHAIN_BINARY q staking total-liquid-staked -o json --home $HOM
 echo "total liquid shares pre-tokenizing: $total_liquid_1"
 tokens=$($CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq -r '.tokens')
 shares=$($CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq -r '.delegator_shares')
+$CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq -r '.'
 exchange_rate=$(echo "$shares/$tokens" | bc)
 expected_liquid_increase=$(echo "$exchange_rate*$tokenize" | bc)
 expected_liquid_increase=${expected_liquid_increase%.*}
