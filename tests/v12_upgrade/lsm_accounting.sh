@@ -19,7 +19,7 @@ echo "Liquid address 1: $liquid_address"
 echo "Funding bonding and tokenizing accounts..."
 # submit_tx "tx bank send $WALLET_1 $bonding_address  100000000uatom --from $WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -o json -y" $CHAIN_BINARY $HOME_1
 submit_tx "tx bank send $WALLET_1 $liquid_address   100000000uatom --from $WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -o json -y" $CHAIN_BINARY $HOME_1
-$CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq '.'
+
 # echo "Delegating with bonding_account..."
 # submit_tx "tx staking delegate $VALOPER_2 $delegation$DENOM --from $bonding_address -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
 # echo "Validator bond with bonding_account..."
@@ -40,8 +40,11 @@ val_liquid_1=$($CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME
 echo "validator liquid shares pre-tokenizing: $val_liquid_1"
 total_liquid_1=$($CHAIN_BINARY q staking total-liquid-staked -o json --home $HOME_1 | jq -r '.tokens')
 echo "total liquid shares pre-tokenizing: $total_liquid_1"
-journalctl -u $PROVIDER_SERVICE_2 | tail -n 20
-$CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq '.'
+tokens=$($CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq -r '.tokens')
+shares=$($CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq -r '.delegator_shares')
+exchange_rate=$(echo "$shares/$tokens" | bc)
+expected_liquid_increase=$(echo "$exchange_rate*$tokenize" | bc)
+expected_liquid_increase=${expected_liquid_increase%.*}
 echo "Tokenizing with tokenizing account..."
 submit_tx "tx staking tokenize-share $VALOPER_2 $tokenize$DENOM $liquid_address --from $liquid_address -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
 $CHAIN_BINARY q bank balances $liquid_address --home $HOME_1 -o json | jq '.'
@@ -50,21 +53,20 @@ echo "validator liquid shares post-tokenizing: $val_liquid_2"
 # val_liquid_2=${val_liquid_2%.*}
 total_liquid_2=$($CHAIN_BINARY q staking total-liquid-staked -o json --home $HOME_1 | jq -r '.tokens')
 echo "total liquid shares post-tokenizing: $total_liquid_2"
-$CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq '.'
 val_delta=$(echo "$val_liquid_2-$val_liquid_1" | bc)
 val_delta=${val_delta%.*}
 total_delta=$(($total_liquid_2-$total_liquid_1))
-if [[ $val_delta -ne $tokenize ]]; then
-    echo "Accounting failure: unexpected validator liquid shares increase ($val_delta != $tokenize)"
+if [[ $val_delta -ne $expected_liquid_increase ]]; then
+    echo "Accounting failure: unexpected validator liquid shares increase ($val_delta != $expected_liquid_increase)"
     exit 1
 else
-    echo "Accounting success: expected validator liquid shares increase ($val_delta = $tokenize)"
+    echo "Accounting success: expected validator liquid shares increase ($val_delta = $expected_liquid_increase)"
 fi
 if [[ $total_delta -ne $tokenize ]]; then
-    echo "Accounting failure: unexpected global liquid tokens increase ($total_delta != $tokenize)"
+    echo "Accounting failure: unexpected global liquid tokens increase ($total_delta != $expected_liquid_increase)"
     exit 1
 else
-    echo "Accounting success: expected global liquid tokens increase ($total_delta = $tokenize)"
+    echo "Accounting success: expected global liquid tokens increase ($total_delta = $expected_liquid_increase)"
 fi
 
 echo "Redeeming with tokenizing account..."
