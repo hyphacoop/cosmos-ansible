@@ -59,17 +59,19 @@ echo "Expected new balance: ${expected_balance%.*}"
 if [[ $delegation_balance_post_redeem -ne ${expected_balance%.*} ]]; then
     echo "Complex scenario 1 failed: Unexpected post-redeem balance ($delegation_balance_post_redeem)"
     exit 1
+else
+    echo "Complex scenario 1 passed".
 fi
 
 echo "Unjailing validator 2..."
 tests/major_fresh_upgrade/unjail_validator.sh $PROVIDER_SERVICE_2 $VAL2_RPC_PORT $WALLET_2 $VALOPER_2
 echo "Unbonding from tokenizing account..."
-submit_tx "tx staking unbond $VALOPER_2 ${delegation_balance_post_redeem%.*}$DENOM --from liquid_account_1 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+submit_tx "tx staking unbond $VALOPER_2 ${delegation_balance_post_redeem%.*}$DENOM --from $liquid_address_1 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
 
 # ** SCENARIO 2 **
 echo "** SCENARIO 2: delegate - slash - tokenize - redeem **"
 echo "Delegating with tokenizing_account..."
-submit_tx "tx staking delegate $VALOPER_2 $tokenize$DENOM --from liquid_account_2 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+submit_tx "tx staking delegate $VALOPER_2 $tokenize$DENOM --from $liquid_address_2 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
 echo "Slashing validator 2..."
 tests/major_fresh_upgrade/jail_validator.sh $PROVIDER_SERVICE_2 $VALOPER_2
 downtime_period=$($CHAIN_BINARY q slashing params --home $HOME_1 -o json | jq -r '.downtime_jail_duration')
@@ -80,7 +82,7 @@ delegation_balance_pre_tokenize=$($CHAIN_BINARY q staking delegations $liquid_ad
 echo "Tokenizing with tokenizing account..."
 submit_tx "tx staking tokenize-share $VALOPER_2 $delegation_balance_pre_tokenize$DENOM $liquid_address_2 --from liquid_account_2 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
 echo "Redeeming with tokenizing account..."
-submit_tx "tx staking redeem-tokens $delegation_balance_pre_tokenize$tokenized_denom_2 --from liquid_account_2 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+submit_tx "tx staking redeem-tokens $delegation_balance_pre_tokenize$tokenized_denom_2 --from $liquid_address_2 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
 delegation_balance_post_redeem=$($CHAIN_BINARY q staking delegations $liquid_address_2 --home $HOME_1 -o json | jq -r '.delegation_responses[0].balance.amount')
 echo "Balance: $delegation_balance_post_redeem"
 echo "Expected balance: $delegation_balance_pre_tokenize"
@@ -94,7 +96,7 @@ else
 fi
 
 echo "Unbonding from tokenizing account..."
-submit_tx "tx staking unbond $VALOPER_2 ${delegation_balance_post_redeem%.*}$DENOM --from liquid_account_2 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+submit_tx "tx staking unbond $VALOPER_2 ${delegation_balance_post_redeem%.*}$DENOM --from $liquid_address_2 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
 echo "Unbonding from bonding account..."
 delegation_balance=$($CHAIN_BINARY q staking delegations $bonding_address --home $HOME_1 -o json | jq -r '.delegation_responses[0].balance.amount')
 submit_tx "tx staking unbond $VALOPER_2 ${delegation_balance%.*}$DENOM --from bonding_account -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1

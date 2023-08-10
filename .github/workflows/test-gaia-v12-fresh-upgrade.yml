@@ -440,8 +440,8 @@ jobs:
       - name: _lsm-complex
         run: tests/v12_upgrade/lsm_complex.sh
 
-      # - name: _lsm_accounting
-      #   run: tests/v12_upgrade/lsm_accounting.sh
+      - name: _lsm_accounting
+        run: tests/v12_upgrade/lsm_accounting.sh
       
       # - name: Check validators
         # run: $CHAIN_BINARY q staking validators --home $HOME_1 -o json | jq '.'
