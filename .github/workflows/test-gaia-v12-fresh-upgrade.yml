@@ -44,7 +44,7 @@ jobs:
     outputs:
       upgrade_versions: ${{ steps.generate-upgrade.outputs.upgrade_versions }}
   test-upgrade:
-    runs-on: self-hosted-ubuntu-22.04
+    runs-on: ubuntu-22.04
     needs: set-version-matrix
     strategy:
       matrix:
