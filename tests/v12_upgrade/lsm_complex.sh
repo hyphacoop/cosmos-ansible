@@ -40,12 +40,12 @@ $CHAIN_BINARY q staking delegations $liquid_address --home $HOME_1 -o json | jq 
 echo "Tokenizing with tokenizing account..."
 submit_tx "tx staking tokenize-share $VALOPER_2 $tokenize$DENOM $liquid_address --from liquid_account -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
 echo "Slashing validator 2..."
-tests/major_fresh_upgrade/jail_validator.sh cona2.service $VALOPER_2
+tests/major_fresh_upgrade/jail_validator.sh $PROVIDER_SERVICE_2 $VALOPER_2
 echo "Redeeming with tokenizing account..."
 submit_tx "tx staking redeem-tokens $tokenize$tokenized_denom --from liquid_account -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
 $CHAIN_BINARY q staking delegations $liquid_address --home $HOME_1 -o json | jq '.'
 echo "Unjailing validator 2..."
-tests/major_fresh_upgrade/unjail_validator.sh cona2.service 27102 $WALLET_2 $VALOPER_2 
+tests/major_fresh_upgrade/unjail_validator.sh $PROVIDER_SERVICE_2 $VAL2_RPC_PORT $WALLET_2 $VALOPER_2
 $CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq '.'
 
 
