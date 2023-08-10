@@ -196,8 +196,8 @@ jobs:
       # - name: _rpc-1
       #   run: tests/test_endpoints_rpc.sh localhost $VAL1_RPC_PORT
 
-      # - name: Set up relayer
-      #   run: tests/v12_upgrade/setup_relayer.sh
+      - name: Set up relayer
+        run: tests/v12_upgrade/setup_relayer.sh
       # - name: Download consumer chain binaries
       #   run: |
       #     wget $CONSUMER_CHAIN_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_BINARY -q
