@@ -86,7 +86,7 @@ toml set --toml-path $STRIDE_HOME_1/config/config.toml block_sync false
 
 echo "Setting up services..."
 echo "Creating script for $STRIDE_CHAIN_BINARY"
-echo "while true; do $HOME/go/bin/$STRIDE_CHAIN_BINARY start --home $HOME_1; sleep 1; done" > $HOME/$STRIDE_SERVICE_1.sh
+echo "while true; do $HOME/go/bin/$STRIDE_CHAIN_BINARY start --home $STRIDE_HOME_1; sleep 1; done" > $HOME/$STRIDE_SERVICE_1.sh
 chmod +x $HOME/$STRIDE_SERVICE_1.sh
 
 # Run service in screen session

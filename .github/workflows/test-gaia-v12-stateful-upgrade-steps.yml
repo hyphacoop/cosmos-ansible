@@ -267,11 +267,12 @@ jobs:
         if: always()
         run: |
           mkdir ~/artifact/configs
-          rm ${{ vars.HOME_1 }}/config/genesis.json
-          cp -rp ${{ vars.HOME_1 }}/config/ ~/artifact/configs/val1 ; true
-          cp -rp ~/.hermes/ ~/artifact/configs/hermes/ ; true
-          cp -rp ~/.cona1/config/ ~/artifact/configs/cona1 ; true
-          cp -rp ~/.conb1/config/ ~/artifact/configs/conb1 ; true
+          rm ${{ vars.HOME_1 }}/config/genesis.json ; return 0
+          cp -rp ${{ vars.HOME_1 }}/config/ ~/artifact/configs/val1 ; return 0
+          cp -rp ~/.hermes/ ~/artifact/configs/hermes/ ; return 0
+          cp -rp ~/.cona1/config/ ~/artifact/configs/cona1 ; return 0
+          cp -rp ~/.conb1/config/ ~/artifact/configs/conb1 ; return 0
+          cp -rp ~/.stride1/config/ ~/artifact/configs/stride1 ; return 0
       - name: Upload artifacts
         if: always()
         uses: actions/upload-artifact@v3
