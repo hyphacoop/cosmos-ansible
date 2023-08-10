@@ -7,7 +7,7 @@ source tests/process_tx.sh
 
 delegation=10000000
 tokenize=10000000
-# tokenized_denom=$VALOPER_2/1
+tokenized_denom=$VALOPER_2/1
 delegator_shares_1=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.delegator_shares')
 
 $CHAIN_BINARY keys add bonding_account --home $HOME_1
@@ -18,8 +18,6 @@ liquid_address=$($CHAIN_BINARY keys list --home $HOME_1 --output json | jq -r '.
 echo "Funding bonding and tokenizing accounts..."
 submit_tx "tx bank send $WALLET_1 $bonding_address 100000000uatom --from $WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -o json -y" $CHAIN_BINARY $HOME_1
 submit_tx "tx bank send $WALLET_1 $liquid_address 100000000uatom --from $WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -o json -y" $CHAIN_BINARY $HOME_1
-
-# ** SCENARIO 1 **
 
 echo "Delegating with bonding_account..."
 submit_tx "tx staking delegate $VALOPER_2 $delegation$DENOM --from bonding_account -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
@@ -33,17 +31,23 @@ if [[ ${validator_bond_shares%.*} -ne $delegation  ]]; then
     exit 1
 fi
 
+# ** SCENARIO 1 **
 $CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq '.'
 
 echo "Delegating with tokenizing_account..."
 submit_tx "tx staking delegate $VALOPER_2 $delegation$DENOM --from liquid_account -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+$CHAIN_BINARY q staking delegations $liquid_address --home $HOME_1 -o json | jq '.'
 echo "Tokenizing with tokenizing account..."
 submit_tx "tx staking tokenize-share $VALOPER_2 $tokenize$DENOM $liquid_address --from liquid_account -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+echo "Slashing validator 2..."
+tests/major_fresh_upgrade/jail_validator.sh cona2.service $VALOPER_2
+echo "Redeeming with tokenizing account..."
+submit_tx "tx staking redeem-tokens $tokenize$tokenized_denom --from liquid_account -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+$CHAIN_BINARY q staking delegations $liquid_address --home $HOME_1 -o json | jq '.'
+echo "Unjailing validator 2..."
+tests/major_fresh_upgrade/unjail_validator.sh cona2.service 27102 $WALLET_2 $VALOPER_2 
+$CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq '.'
 
-$CHAIN_BINARY q bank balances $liquid_address -o json --home $HOME_1 | jq '.'
-
-# echo "Redeeming with tokenizing account..."
-# submit_tx "tx staking redeem-tokens $tokenize$tokenized_denom --from $WALLET_4 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -b block -y" $CHAIN_BINARY $HOME_1
 
 # delegator_shares_2=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.delegator_shares')
 # shares_diff=$((${delegator_shares_2%.*}-${delegator_shares_1%.*})) # remove decimal portion
