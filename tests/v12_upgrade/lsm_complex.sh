@@ -39,6 +39,7 @@ submit_tx "tx staking delegate $VALOPER_2 $delegation$DENOM --from liquid_accoun
 $CHAIN_BINARY q staking delegations $liquid_address --home $HOME_1 -o json | jq '.'
 echo "Tokenizing with tokenizing account..."
 submit_tx "tx staking tokenize-share $VALOPER_2 $tokenize$DENOM $liquid_address --from liquid_account -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+$CHAIN_BINARY q staking delegations $liquid_address --home $HOME_1 -o json | jq '.'
 echo "Slashing validator 2..."
 tests/major_fresh_upgrade/jail_validator.sh $PROVIDER_SERVICE_2 $VALOPER_2
 echo "Redeeming with tokenizing account..."

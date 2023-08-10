@@ -258,10 +258,6 @@ jobs:
           CON1_RPC_PORT: 27201
         run: tests/major_fresh_upgrade/test_ccv.sh
 
-      - name: check val2
-        run: |
-          journalctl -u gaia2.service | tail -n 100
-          journalctl -u cona2.service | tail -n 100
       # - name: _consumera-ibc
       #   env:
       #     CONSUMER_CHAIN_ID: consumera
