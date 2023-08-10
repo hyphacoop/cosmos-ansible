@@ -73,6 +73,8 @@ submit_tx "tx staking delegate $VALOPER_2 $tokenize$DENOM --from liquid_account_
 $CHAIN_BINARY q staking delegations $liquid_address_2 --home $HOME_1 -o json | jq '.'
 echo "Slashing validator 2..."
 tests/major_fresh_upgrade/jail_validator.sh $PROVIDER_SERVICE_2 $VALOPER_2
+downtime_period=$($CHAIN_BINARY q slashing params --home $HOME_1 -o json | jq -r '.downtime_jail_duration')
+sleep ${downtime_period%?}
 echo "Unjailing validator 2..."
 tests/major_fresh_upgrade/unjail_validator.sh $PROVIDER_SERVICE_2 $VAL2_RPC_PORT $WALLET_2 $VALOPER_2
 $CHAIN_BINARY q staking delegations $liquid_address_2 --home $HOME_1 -o json | jq '.'
