@@ -8,7 +8,6 @@ source tests/process_tx.sh
 delegation=20000000
 tokenize=10000000
 tokenized_denom=$VALOPER_2/1
-delegator_shares_1=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.delegator_shares')
 
 $CHAIN_BINARY keys add bonding_account --home $HOME_1
 $CHAIN_BINARY keys add liquid_account --home $HOME_1
@@ -32,7 +31,6 @@ if [[ ${validator_bond_shares%.*} -ne $delegation  ]]; then
 fi
 
 # ** SCENARIO 1 **
-$CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq '.'
 
 echo "Delegating with tokenizing_account..."
 submit_tx "tx staking delegate $VALOPER_2 $tokenize$DENOM --from liquid_account -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
@@ -48,7 +46,7 @@ echo "Redeeming with tokenizing account..."
 submit_tx "tx staking redeem-tokens $tokenize$tokenized_denom --from liquid_account -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
 $CHAIN_BINARY q staking delegations $liquid_address --home $HOME_1 -o json | jq '.'
 delegation_balance_post_redeem=$($CHAIN_BINARY q staking delegations $liquid_address --home $HOME_1 -o json | jq -r '.delegation_responses[0].balance.amount')
-expected_balance=$(echo "$delegation_balance_pre_tokenize-($delegation_balance_pre_tokenize*0.1)" | bc)
+expected_balance=$(echo "$delegation_balance_pre_tokenize-($delegation_balance_pre_tokenize*0.01)" | bc)
 echo "New balance: $delegation_balance_post_redeem"
 echo "Expected new balance: $expected_balance"
 echo "Unjailing validator 2..."
