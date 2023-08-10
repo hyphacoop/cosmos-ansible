@@ -15,10 +15,10 @@ while true; do
         sleep 6
         counter=$(($counter+1))
     elif [[ "$jailed_status" == "true" ]]; then
-        echo "Validator $operator has been jailed..."
+        echo "Validator $operator has been jailed."
         break
     elif [[ $counter -gt 10 ]]; then
-        echo "Validator was not jailed!"
+        echo "Validator was not jailed."
         exit 1
     fi
 done
