@@ -89,3 +89,12 @@ submit_tx "tx staking redeem-tokens $delegation_balance_pre_tokenize$tokenized_d
 delegation_balance_post_redeem=$($CHAIN_BINARY q staking delegations $liquid_address_2 --home $HOME_1 -o json | jq -r '.delegation_responses[0].balance.amount')
 echo "New balance: $delegation_balance_post_redeem"
 echo "Expected new balance: $delegation_balance_pre_tokenize"
+
+if [[ $delegation_balance_pre_tokenize -ne $delegation_balance_post_redeem ]]; then
+    echo "Complex scenario 2 failed: Unexpected post-redeem balance ($delegation_balance_post_redeem)"
+    exit 1
+fi
+
+echo "Unbonding from tokenizing account..."
+submit_tx "tx staking unbond $VALOPER_2 ${delegation_balance_post_redeem%.*}$DENOM --from liquid_account_2 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+$CHAIN_BINARY q staking delegations $liquid_address_1 --home $HOME_1 -o json | jq '.'
