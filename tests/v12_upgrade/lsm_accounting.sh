@@ -45,6 +45,7 @@ shares=$($CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | j
 exchange_rate=$(echo "$shares/$tokens" | bc)
 expected_liquid_increase=$(echo "$exchange_rate*$tokenize" | bc)
 expected_liquid_increase=${expected_liquid_increase%.*}
+echo "Exchange rate: $exchange_rate, expected liquid increase: $expected_liquid_increase"
 echo "Tokenizing with tokenizing account..."
 submit_tx "tx staking tokenize-share $VALOPER_2 $tokenize$DENOM $liquid_address --from $liquid_address -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
 $CHAIN_BINARY q bank balances $liquid_address --home $HOME_1 -o json | jq '.'
