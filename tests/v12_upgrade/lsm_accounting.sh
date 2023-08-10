@@ -35,15 +35,39 @@ fi
 # ** Tokenization increases validator liquid shares and global liquid staked tokens **
 echo "Delegating with tokenizing_account..."
 submit_tx "tx staking delegate $VALOPER_2 $delegation$DENOM --from $liquid_address -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
-delegation_balance_pre_tokenize=$($CHAIN_BINARY q staking delegations $liquid_address_1 --home $HOME_1 -o json | jq -r '.delegation_responses[0].balance.amount')
-$CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq '.'
-$CHAIN_BINARY q staking total-liquid-staked -o json --home $HOME_1 | jq '.'
+delegation_balance_pre_tokenize=$($CHAIN_BINARY q staking delegations $liquid_address --home $HOME_1 -o json | jq -r '.delegation_responses[0].balance.amount')
+val_liquid_1=$($CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq -r '.total_liquid_shares')
+val_liquid_1=${val_liquid_1%.*}
+total_liquid_1=$($CHAIN_BINARY q staking total-liquid-staked -o json --home $HOME_1 | jq -r '.tokens')
+
 echo "Tokenizing with tokenizing account..."
 submit_tx "tx staking tokenize-share $VALOPER_2 $tokenize$DENOM $liquid_address --from $liquid_address -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
-$CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq '.'
-$CHAIN_BINARY q staking total-liquid-staked -o json --home $HOME_1 | jq '.'
+val_liquid_2=$($CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq -r '.total_liquid_shares')
+val_liquid_2=${val_liquid_2%.*}
+total_liquid_2=$($CHAIN_BINARY q staking total-liquid-staked -o json --home $HOME_1 | jq -r '.tokens')
+val_delta=$(($val_liquid_2-$val_liquid_1))
+total_delta=$(($total_liquid_2-$total_liquid_1))
+if [[ $val_delta -ne $tokenize ]]; then
+    echo "Accounting failure: unexpected validator liquid shares increase ($val_delta)"
+fi
+if [[ $total_delta -ne $tokenize ]]; then
+    echo "Accounting failure: unexpected global liquid tokens increase ($total_delta)"
+fi
+
 echo "Redeeming with tokenizing account..."
 submit_tx "tx staking redeem-tokens $tokenize$tokenized_denom --from $liquid_address -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+val_liquid_3=$($CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq -r '.total_liquid_shares')
+val_liquid_3=${val_liquid_3%.*}
+total_liquid_3=$($CHAIN_BINARY q staking total-liquid-staked -o json --home $HOME_1 | jq -r '.tokens')
+val_delta=$(($val_liquid_2-$val_liquid_3))
+total_delta=$(($total_liquid_2-$total_liquid_3))
+if [[ $val_delta -ne $tokenize ]]; then
+    echo "Accounting failure: unexpected validator liquid shares decrease ($val_delta)"
+fi
+if [[ $total_delta -ne $tokenize ]]; then
+    echo "Accounting failure: unexpected global liquid tokens decrease ($total_delta)"
+fi
+
 delegation_balance_post_redeem=$($CHAIN_BINARY q staking delegations $liquid_address --home $HOME_1 -o json | jq -r '.delegation_responses[0].balance.amount')
 $CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq '.'
 $CHAIN_BINARY q staking total-liquid-staked -o json --home $HOME_1 | jq '.'
