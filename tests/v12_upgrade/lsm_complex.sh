@@ -16,6 +16,9 @@ $CHAIN_BINARY keys add liquid_account_2 --home $HOME_1
 bonding_address=$($CHAIN_BINARY keys list --home $HOME_1 --output json | jq -r '.[] | select(.name=="bonding_account").address')
 liquid_address_1=$($CHAIN_BINARY keys list --home $HOME_1 --output json | jq -r '.[] | select(.name=="liquid_account_1").address')
 liquid_address_2=$($CHAIN_BINARY keys list --home $HOME_1 --output json | jq -r '.[] | select(.name=="liquid_account_2").address')
+echo "Bonding address: $bonding_address"
+echo "Liquid address 1: $liquid_address_1"
+echo "Liquid address 2: $liquid_address_2"
 
 echo "Funding bonding and tokenizing accounts..."
 submit_tx "tx bank send $WALLET_1 $bonding_address  100000000uatom --from $WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -o json -y" $CHAIN_BINARY $HOME_1
@@ -60,7 +63,7 @@ tests/major_fresh_upgrade/unjail_validator.sh $PROVIDER_SERVICE_2 $VAL2_RPC_PORT
 $CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq '.'
 
 echo "Unbonding from tokenizing account..."
-sumbit_tx "tx staking unbond $VALOPER_2 $tokenize$DENOM --from liquid_account_1 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+submit_tx "tx staking unbond $VALOPER_2 $tokenize$DENOM --from liquid_account_1 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
 $CHAIN_BINARY q staking delegations $liquid_address_1 --home $HOME_1 -o json | jq '.'
 
 # ** SCENARIO 2 **
