@@ -426,21 +426,21 @@ jobs:
       # - name: Register and fund ICA
         # run: tests/v12_upgrade/setup_ica.sh
 
-      - name: _lsm-bond-1
+      - name: _lsm-happy-bond-1
         run: tests/v12_upgrade/lsm_validator_bond.sh
-      - name: _lsm-tokenize-1
+      - name: _lsm-happy-tokenize-1
         run: tests/v12_upgrade/lsm_tokenize.sh
-      - name: _lsm-redeem-1
+      - name: _lsm-happy-redeem-1
         env:
           CONSUMER_FEES: 1000
         run: tests/v12_upgrade/lsm_redeem.sh
       - name: _lsm-failures-1
         run: tests/v12_upgrade/lsm_failures.sh
 
-      - name: _lsm-complex
+      - name: _lsm-complex-1
         run: tests/v12_upgrade/lsm_complex.sh
 
-      - name: _lsm_accounting
+      - name: _lsm_accounting-1
         run: tests/v12_upgrade/lsm_accounting.sh
       
       # - name: Check validators
