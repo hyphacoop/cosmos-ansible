@@ -27,7 +27,7 @@ while true; do
     fi
 done
 
-$CHAIN_BINARY tx slashing unjail --from $address --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y --home $HOME_1
+$CHAIN_BINARY tx slashing unjail --from $address --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y --home $HOME_1 -o json
 
 counter=1
 while true; do
@@ -36,7 +36,7 @@ while true; do
         echo "Validator $operator has not been unjailed..."
         sleep 2
         counter=$(($counter+1))
-    elif [[ "$jailed_status" == "true" ]]; then
+    elif [[ "$jailed_status" == "false" ]]; then
         echo "Validator $operator has been unjailed."
         break
     elif [[ $counter -gt 10 ]]; then
