@@ -391,8 +391,7 @@ jobs:
       #   run: tests/test_validator_jailed.sh $VALOPER_2 true
       # - name: _soft-opt-out-2
       #   run: tests/test_validator_jailed.sh $VALOPER_3 false
-      # - name: Register and fund ICA
-        # run: tests/v12_upgrade/setup_ica.sh
+
 
       - name: _lsm-happy-bond-1
         run: tests/v12_upgrade/lsm_validator_bond.sh
@@ -441,5 +440,7 @@ jobs:
           CONSUMER_FEES: 1000
           RECIPIENT: stride1r5v5srda7xfth3hn2s26txvrcrntldjucq88rn
         run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-1 2
+      - name: Register and fund ICA
+        run: tests/v12_upgrade/setup_ica.sh
       - name: ICA delegate
         run: tests/v12_upgrade/ica_delegate.sh
