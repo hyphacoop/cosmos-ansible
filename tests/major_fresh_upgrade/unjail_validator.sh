@@ -27,7 +27,7 @@ while true; do
     fi
 done
 
-$CHAIN_BINARY tx slashing unjail --from $address --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y --home $HOME_1 -o json
+submit_tx "tx slashing unjail --from $address --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y -o json" $CHAIN_BINARY $HOME_1
 
 counter=1
 while true; do
