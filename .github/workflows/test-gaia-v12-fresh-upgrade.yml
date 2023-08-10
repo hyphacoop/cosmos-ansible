@@ -8,7 +8,7 @@ on:
   push:
 jobs:
   set-version-matrix:
-    runs-on: ubuntu-22.04
+    runs-on: self-hosted-ubuntu-22.04
     steps:
       # Get system info
       - run: ifconfig
