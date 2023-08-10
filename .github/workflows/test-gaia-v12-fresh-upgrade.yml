@@ -437,8 +437,8 @@ jobs:
       - name: _lsm-failures-1
         run: tests/v12_upgrade/lsm_failures.sh
 
-      # - name: _lsm-complex
-      #   run: tests/v12_upgrade/lsm_complex.sh
+      - name: _lsm-complex
+        run: tests/v12_upgrade/lsm_complex.sh
 
       # - name: _lsm_accounting
       #   run: tests/v12_upgrade/lsm_accounting.sh
