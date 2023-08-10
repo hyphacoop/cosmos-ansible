@@ -19,7 +19,7 @@ echo "Liquid address 1: $liquid_address"
 echo "Funding bonding and tokenizing accounts..."
 # submit_tx "tx bank send $WALLET_1 $bonding_address  100000000uatom --from $WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -o json -y" $CHAIN_BINARY $HOME_1
 submit_tx "tx bank send $WALLET_1 $liquid_address   100000000uatom --from $WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -o json -y" $CHAIN_BINARY $HOME_1
-
+$CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq '.'
 # echo "Delegating with bonding_account..."
 # submit_tx "tx staking delegate $VALOPER_2 $delegation$DENOM --from $bonding_address -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
 # echo "Validator bond with bonding_account..."
@@ -40,6 +40,7 @@ val_liquid_1=$($CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME
 echo "validator liquid shares pre-tokenizing: $val_liquid_1"
 total_liquid_1=$($CHAIN_BINARY q staking total-liquid-staked -o json --home $HOME_1 | jq -r '.tokens')
 echo "total liquid shares pre-tokenizing: $total_liquid_1"
+journalctl -u $PROVIDER_SERVICE_2 | tail -n 20
 $CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq '.'
 echo "Tokenizing with tokenizing account..."
 submit_tx "tx staking tokenize-share $VALOPER_2 $tokenize$DENOM $liquid_address --from $liquid_address -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
