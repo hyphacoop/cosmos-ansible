@@ -63,7 +63,7 @@ tests/major_fresh_upgrade/unjail_validator.sh $PROVIDER_SERVICE_2 $VAL2_RPC_PORT
 $CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq '.'
 
 echo "Unbonding from tokenizing account..."
-submit_tx "tx staking unbond $VALOPER_2 $tokenize$DENOM --from liquid_account_1 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+submit_tx "tx staking unbond $VALOPER_2 ${delegation_balance_post_redeem%.*}$DENOM --from liquid_account_1 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
 $CHAIN_BINARY q staking delegations $liquid_address_1 --home $HOME_1 -o json | jq '.'
 
 # ** SCENARIO 2 **
