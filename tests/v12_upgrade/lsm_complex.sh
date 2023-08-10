@@ -118,4 +118,4 @@ fi
 # submit_tx "tx staking unbond $VALOPER_2 ${delegation_balance%.*}$DENOM --from bonding_account -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
 
 # $CHAIN_BINARY q staking delegations-to $VALOPER_2 --home $HOME_1 -o json | jq '.'
-# $CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq '.'
+$CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq '.'
