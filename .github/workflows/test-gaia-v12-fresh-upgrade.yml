@@ -434,10 +434,13 @@ jobs:
       #   run: tests/v12_upgrade/lsm_redeem.sh
       # - name: _lsm-failures-1
       #   run: tests/v12_upgrade/lsm_failures.sh
-      - name: Jail validator 2 through downtime
-        run: tests/major_fresh_upgrade/jail_validator.sh cona2.service $VALOPER_2
-      - name: Unjail validator 2
-        run: tests/major_fresh_upgrade/unjail_validator.sh cona2.service 27102 $WALLET_2 $VALOPER_2 
-      - name: Check validators
-        run: $CHAIN_BINARY q staking validators --home $HOME_1 -o json | jq '.'
+
+      # - name: Jail validator 2 through downtime
+        # run: tests/major_fresh_upgrade/jail_validator.sh cona2.service $VALOPER_2
+      - name: _lsm-complex
+        run: tests/v12_upgrade/lsm_complex.sh
+      # - name: Unjail validator 2
+        # run: tests/major_fresh_upgrade/unjail_validator.sh cona2.service 27102 $WALLET_2 $VALOPER_2 
+      # - name: Check validators
+        # run: $CHAIN_BINARY q staking validators --home $HOME_1 -o json | jq '.'
       
