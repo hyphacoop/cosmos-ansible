@@ -65,12 +65,19 @@ else
     echo "Accounting success: expected validator liquid shares increase ($val_delta = $expected_liquid_increase)"
 fi
 if [[ $total_delta -ne $tokenize ]]; then
-    echo "Accounting failure: unexpected global liquid tokens increase ($total_delta != $expected_liquid_increase)"
+    echo "Accounting failure: unexpected global liquid tokens increase ($total_delta != $tokenize)"
     exit 1
 else
-    echo "Accounting success: expected global liquid tokens increase ($total_delta = $expected_liquid_increase)"
+    echo "Accounting success: expected global liquid tokens increase ($total_delta = $tokenize)"
 fi
 
+tokens=$($CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq -r '.tokens')
+shares=$($CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq -r '.delegator_shares')
+$CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq -r '.'
+exchange_rate=$(echo "$shares/$tokens" | bc -l)
+expected_liquid_decrease=$(echo "$exchange_rate*$tokenize" | bc -l)
+expected_liquid_decrease=${expected_liquid_increase%.*}
+echo "Exchange rate: $exchange_rate, expected liquid increase: $expected_liquid_decrease"
 echo "Redeeming with tokenizing account..."
 submit_tx "tx staking redeem-tokens $tokenize$tokenized_denom --from $liquid_address -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
 val_liquid_3=$($CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq -r '.total_liquid_shares')
@@ -78,14 +85,14 @@ echo "validator liquid shares post-redeem: $val_liquid_3"
 # val_liquid_3=${val_liquid_3%.*}
 total_liquid_3=$($CHAIN_BINARY q staking total-liquid-staked -o json --home $HOME_1 | jq -r '.tokens')
 echo "total liquid shares post-redeem: $total_liquid_3"
-val_delta=$(echo "$val_liquid_2-$val_liquid_3" | bc)
+val_delta=$(echo "$val_liquid_2-$val_liquid_3" | bc -l)
 val_delta=${val_delta%.*}
 total_delta=$(($total_liquid_2-$total_liquid_3))
-if [[ $val_delta -ne $tokenize ]]; then
-    echo "Accounting failure: unexpected validator liquid shares decrease ($val_delta != $tokenize)"
+if [[ $val_delta -ne $expected_liquid_decrease ]]; then
+    echo "Accounting failure: unexpected validator liquid shares decrease ($val_delta != $expected_liquid_decrease)"
     exit 1
 else
-    echo "Accounting success: expected validator liquid shares decrease ($val_delta = $tokenize"
+    echo "Accounting success: expected validator liquid shares decrease ($val_delta = $expected_liquid_decrease"
 fi
 if [[ $total_delta -ne $tokenize ]]; then
     echo "Accounting failure: unexpected global liquid tokens decrease ($total_delta != $tokenize)"
