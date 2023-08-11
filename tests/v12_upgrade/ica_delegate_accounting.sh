@@ -35,8 +35,8 @@ sleep 10
 
 $CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq '.'
 $CHAIN_BINARY q bank balances $ICA_ADDRESS -o json --home $HOME_1 | jq '.'
-post_delegation_tokens=$CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq -r '.tokens'
-post_delegation_liquid_shares=$CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq -r '.total_liquid_shares'
+post_delegation_tokens=$($CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq -r '.tokens')
+post_delegation_liquid_shares=$($CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq -r '.total_liquid_shares')
 post_delegation_total_liquid=$($CHAIN_BINARY q staking total-liquid-staked -o json --home $HOME_1 | jq -r '.tokens')
 
 tokens_delta=$(($post_delegation_tokens-$pre_delegation_tokens))
@@ -69,13 +69,13 @@ else
 fi
 
 echo "** Test case 2: Undelegation decreases validator liquid shares and global liquid staked tokens **"
-$CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq '.'
-$CHAIN_BINARY q bank balances $ICA_ADDRESS -o json --home $HOME_1 | jq '.'
 pre_undelegation_tokens=$($CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq -r '.tokens')
 pre_undelegation_shares=$($CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq -r '.delegator_shares')
 pre_undelegation_liquid_shares=$($CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq -r '.total_liquid_shares')
+pre_delegation_total_liquid=$($CHAIN_BINARY q staking total-liquid-staked -o json --home $HOME_1 | jq -r '.tokens')
 exchange_rate=$(echo "$pre_undelegation_shares/$pre_undelegation_tokens" | bc -l)
 expected_liquid_decrease=$(echo "$exchange_rate*$undelegation" | bc -l)
+expected_liquid_decrease=${expected_liquid_decrease%.*}
 
 jq -r --arg ADDRESS "$ICA_ADDRESS" '.delegator_address = $ADDRESS' tests/v12_upgrade/msg-undelegate.json > acct-undel-1.json
 jq -r --arg ADDRESS "$VALOPER_2" '.validator_address = $ADDRESS' acct-undel-1.json > acct-undel-2.json
@@ -96,7 +96,7 @@ post_undelegation_liquid_shares=$($CHAIN_BINARY q staking validator $VALOPER_2 -
 
 tokens_delta=$(($post_undelegation_tokens-$pre_undelegation_tokens))
 liquid_shares_delta=$(echo "$post_undelegation_liquid_shares-$pre_undelegation_liquid_shares" | bc -l)
-echo "Expected increase in liquid shares: $expected_liquid_decrease"
+echo "Expected decrease in liquid shares: $expected_liquid_decrease"
 echo "Val tokens delta: $tokens_delta, liquid shares delta: $liquid_shares_delta"
 
 echo "** Test case 3: Redelegation decreases source validator liquid shares and increases destination validator liquid shares **"
