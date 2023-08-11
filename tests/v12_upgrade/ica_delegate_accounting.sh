@@ -117,7 +117,6 @@ else
     exit 1
 fi
 
-
 echo "** Test case 3: Redelegation decreases source validator liquid shares and increases destination validator liquid shares **"
 $CHAIN_BINARY q staking validator $VALOPER_1 -o json --home $HOME_1 | jq '.'
 $CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq '.'
@@ -128,6 +127,7 @@ pre_redelegation_liquid_shares_1=$($CHAIN_BINARY q staking validator $VALOPER_1 
 pre_redelegation_tokens_2=$($CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq -r '.tokens')
 pre_redelegation_shares_2=$($CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq -r '.delegator_shares')
 pre_redelegation_liquid_shares_2=$($CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq -r '.total_liquid_shares')
+# exchange_rate_1=$(echo "$pre_undelegation_shares/$pre_undelegation_tokens" | bc -l)
 
 jq -r --arg ADDRESS "$ICA_ADDRESS" '.delegator_address = $ADDRESS' tests/v12_upgrade/msg-redelegate.json > acct-redel-1.json
 jq -r --arg ADDRESS "$VALOPER_2" '.validator_src_address = $ADDRESS' acct-redel-1.json > acct-redel-2.json
@@ -151,3 +151,25 @@ post_undelegation_liquid_shares_1=$($CHAIN_BINARY q staking validator $VALOPER_1
 post_redelegation_tokens_2=$($CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq -r '.tokens')
 post_redelegation_shares_2=$($CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq -r '.delegator_shares')
 post_redelegation_liquid_shares_2=$($CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq -r '.total_liquid_shares')
+
+# if [[ $liquid_shares_delta -eq $expected_liquid_decrease ]]; then
+#     echo "Accounting test 2 success: expected liquid shares decrease ($liquid_shares_delta = $expected_liquid_decrease)"
+# elif [[ $(($liquid_shares_delta-$expected_liquid_decrease)) -eq 1 ]]; then
+#     echo "Accounting test 2 success: liquid shares increase off by 1"
+# elif [[ $(($expected_liquid_decrease-$liquid_shares_delta)) -eq 1 ]]; then
+#     echo "Accounting test 2 success: liquid shares increase off by 1"
+# else
+#     echo "Accounting test 2 failure: unexpected liquid shares decrease ($liquid_shares_delta != $expected_liquid_decrease)"
+#     exit 1
+# fi
+
+# if [[ $tokens_delta -eq $undelegation ]]; then
+#     echo "Accounting test 1 success: expected tokens increase ($tokens_delta = $undelegation)"
+# elif [[ $(($tokens_delta-$undelegation)) -eq 1 ]]; then
+#     echo "Accounting test 1 success: tokens increase off by 1"
+# elif [[ $(($undelegation-$tokens_delta)) -eq 1 ]]; then
+#     echo "Accounting test 1 success: tokens increase off by 1"
+# else
+#     echo "Accounting test 1 failure: unexpected liquid tokens decrease ($total_delta != $undelegation)"
+#     exit 1
+# fi
