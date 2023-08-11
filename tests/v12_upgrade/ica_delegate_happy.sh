@@ -43,18 +43,18 @@ elif [[ $(($tokens_delta-$delegate)) -eq 1 ]]; then
 elif [[ $(($delegate-$tokens_delta)) -eq 1 ]]; then
     echo "Delegation success: tokens increase off by 1"
 else
-    echo "Accounting failure: unexpected global liquid tokens decrease ($total_delta != $tokenize)"
+    echo "Accounting failure: unexpected tokens decrease ($total_delta != $tokenize)"
     exit 1
 fi
 
 if [[ $liquid_shares_delta -eq $expected_liquid_increase ]]; then
     echo "Delegation success: expected liquid shares increase ($liquid_shares_delta = $expected_liquid_increase)"
 elif [[ $(($liquid_shares_delta-$expected_liquid_increase)) -eq 1 ]]; then
-    echo "Delegation success: shares increase off by 1"
+    echo "Delegation success: liquid shares increase off by 1"
 elif [[ $(($expected_liquid_increase-$liquid_shares_delta)) -eq 1 ]]; then
-    echo "Delegation success: shares increase off by 1"
+    echo "Delegation success: liquid shares increase off by 1"
 else
-    echo "Accounting failure: unexpected shares increase ($liquid_shares_delta != $expected_liquid_increase)"
+    echo "Accounting failure: unexpected liquid shares increase ($liquid_shares_delta != $expected_liquid_increase)"
     exit 1
 fi
 

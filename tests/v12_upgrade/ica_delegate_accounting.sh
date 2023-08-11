@@ -13,9 +13,12 @@ $CHAIN_BINARY q bank balances $ICA_ADDRESS -o json --home $HOME_1 | jq '.'
 pre_delegation_tokens=$($CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq -r '.tokens')
 pre_delegation_shares=$($CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq -r '.delegator_shares')
 pre_delegation_liquid_shares=$($CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq -r '.total_liquid_shares')
+pre_delegation_total_liquid=$($CHAIN_BINARY q staking total-liquid-staked -o json --home $HOME_1 | jq -r '.tokens')
+
 exchange_rate=$(echo "$pre_delegation_shares/$pre_delegation_tokens" | bc -l)
 expected_liquid_increase=$(echo "$exchange_rate*$delegation" | bc -l)
 echo "Expected liquid shares increase: $expected_liquid_increase"
+
 
 jq -r --arg ADDRESS "$ICA_ADDRESS" '.delegator_address = $ADDRESS' tests/v12_upgrade/msg-delegate.json > acct-del-1.json
 jq -r --arg ADDRESS "$VALOPER_2" '.validator_address = $ADDRESS' acct-del-1.json > acct-del-2.json
@@ -33,11 +36,25 @@ $CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq '.'
 $CHAIN_BINARY q bank balances $ICA_ADDRESS -o json --home $HOME_1 | jq '.'
 post_delegation_tokens=$CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq -r '.tokens'
 post_delegation_liquid_shares=$CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq -r '.total_liquid_shares'
+post_delegation_total_liquid=$($CHAIN_BINARY q staking total-liquid-staked -o json --home $HOME_1 | jq -r '.tokens')
 
 tokens_delta=$(($post_delegation_tokens-$pre_delegation_tokens))
 liquid_shares_delta=$(echo "$post_delegation_liquid_shares-$pre_delegation_liquid_shares" | bc -l)
+liquid_shares_delta=${liquid_shares_delta%.*}
+total_liquid_delta=$(echo "$post_delegation_total_liquid-$pre_delegation_total_liquid" | bc -l)
 echo "Expected increase in liquid shares: $expected_liquid_increase"
-echo "Val tokens delta: $tokens_delta, liquid shares delta: $liquid_shares_delta"
+echo "Val tokens delta: $tokens_delta, liquid shares delta: $liquid_shares_delta, total liquid tokens delta: $total_liquid_delta"
+
+if [[ $tokens_delta -eq $delegation ]]; then
+    echo "Accounting test 1 success: expected tokens increase ($tokens_delta = $delegation)"
+elif [[ $(($tokens_delta-$delegation)) -eq 1 ]]; then
+    echo "Accounting test 1 success: tokens increase off by 1"
+elif [[ $(($delegation-$tokens_delta)) -eq 1 ]]; then
+    echo "Accounting test 1 success: tokens increase off by 1"
+else
+    echo "Accounting failure: unexpected liquid tokens decrease ($total_delta != $tokenize)"
+    exit 1
+fi
 
 echo "** Test case 2: Undelegation decreases validator liquid shares and global liquid staked tokens **"
 $CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq '.'
@@ -82,8 +99,8 @@ pre_redelegation_shares_2=$($CHAIN_BINARY q staking validator $VALOPER_2 --home 
 pre_redelegation_liquid_shares_2=$($CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq -r '.total_liquid_shares')
 
 jq -r --arg ADDRESS "$ICA_ADDRESS" '.delegator_address = $ADDRESS' tests/v12_upgrade/msg-redelegate.json > acct-redel-1.json
-jq -r --arg ADDRESS "$VALOPER_2" '.validator_src_address = $ADDRESS' acct-redel-1.json > acct-uredel-2.json
-jq -r --arg ADDRESS "$VALOPER_1" '.validator_dst_address = $ADDRESS' acct-redel-2.json > acct-uredel-3.json
+jq -r --arg ADDRESS "$VALOPER_2" '.validator_src_address = $ADDRESS' acct-redel-1.json > acct-redel-2.json
+jq -r --arg ADDRESS "$VALOPER_1" '.validator_dst_address = $ADDRESS' acct-redel-2.json > acct-redel-3.json
 jq -r --arg AMOUNT "$redelegation" '.amount.amount = $AMOUNT' acct-redel-3.json > acct-redel-4.json
 cp acct-redel-4.json redel.json
 cat redel.json
