@@ -7,6 +7,7 @@ validator_breach=100000000
 global_breach=140000000
 
 starting_balance=$($CHAIN_BINARY q bank balances $ICA_ADDRESS -o json --home $HOME_1 | jq -r '.balances[] | select(.denom=="uatom").amount')
+$CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
 
 echo "** Failure case 1: ICA attempts to delegate without validator bond **"
 # $CHAIN_BINARY q staking validator $VALOPER_3 -o json --home $HOME_1 | jq '.'
