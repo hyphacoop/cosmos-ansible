@@ -270,28 +270,28 @@ jobs:
         run: tests/major_stateful_upgrade/launch_stride_consumer.sh
       - name: _stride-blocks-2
         run: tests/test_block_production.sh 127.0.0.1 $STRIDE_RPC_1 5 # 5 blocks
-      # - name: Establish CCV channel for consumer d
-      #   run: |
-      #     client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r '.chains[] | select(.chain_id=="consumerd").client_id')
-      #     hermes create connection --a-chain consumerd --a-client 07-tendermint-0 --b-client $client_id
-      #     hermes create channel --a-chain consumerd --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
-      #     sudo systemctl restart hermes
-      #     sleep 10
-      # - name: _consumerd-vsc-1
-      #   env:
-      #     CON1_RPC_PORT: 37001
-      #   run: tests/major_fresh_upgrade/test_ccv.sh
-      # - name: _consumerd-ibc-1
-      #   env:
-      #     CONSUMER_CHAIN_ID: consumerd
-      #     CONSUMER_HOME_1: /home/runner/.stride1
-      #     CONSUMER_CHAIN_BINARY: strided
-      #     CONSUMER_DENOM: ustrd
-      #     CONSUMER_FEES: 1000
-      #     RECIPIENT: stride1r5v5srda7xfth3hn2s26txvrcrntldjucq88rn
-      #   run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-1 2
-      # - name: ICA delegate
-      #   run: tests/v12_upgrade/ica_delegate.sh
+      - name: Establish CCV channel for consumer d
+        run: |
+          client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r '.chains[] | select(.chain_id=="consumerd").client_id')
+          hermes create connection --a-chain consumerd --a-client 07-tendermint-0 --b-client $client_id
+          hermes create channel --a-chain consumerd --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
+          sudo systemctl restart hermes
+          sleep 10
+      - name: _consumerd-vsc-1
+        env:
+          CON1_RPC_PORT: 37001
+        run: tests/major_fresh_upgrade/test_ccv.sh
+      - name: _consumerd-ibc-1
+        env:
+          CONSUMER_CHAIN_ID: consumerd
+          CONSUMER_HOME_1: /home/runner/.stride1
+          CONSUMER_CHAIN_BINARY: strided
+          CONSUMER_DENOM: ustrd
+          CONSUMER_FEES: 1000
+          RECIPIENT: stride1r5v5srda7xfth3hn2s26txvrcrntldjucq88rn
+        run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-1 2
+      - name: ICA delegate
+        run: tests/v12_upgrade/ica_delegate.sh
       - name: sleep
         run: sleep 10h
       - name: Stop services
@@ -315,12 +315,13 @@ jobs:
       - name: Save config files
         if: always()
         run: |
-          mkdir ~/artifact/states
-          cp -rp ${{ vars.HOME_1 }} ~/artifact/states/val1 || true
-          cp -rp ~/.hermes/ ~/artifact/states/hermes/ || true
-          cp -rp ~/.cona1 ~/artifact/states/cona1 || true
-          cp -rp ~/.conb1 ~/artifact/states/conb1 || true
-          cp -rp ~/.stride1 ~/artifact/states/stride1 || true
+          mkdir ~/artifact/configs
+          rm ${{ vars.HOME_1 }}/config/genesis.json || true
+          cp -rp ${{ vars.HOME_1 }}/config/ ~/artifact/configs/val1 || true
+          cp -rp ~/.hermes/ ~/artifact/configs/hermes/ || true
+          cp -rp ~/.cona1/config/ ~/artifact/configs/cona1 || true
+          cp -rp ~/.conb1/config/ ~/artifact/configs/conb1 || true
+          cp -rp ~/.stride1/config/ ~/artifact/configs/stride1 || true
       - name: Upload artifacts
         if: always()
         uses: actions/upload-artifact@v3
