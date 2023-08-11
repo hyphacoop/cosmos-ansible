@@ -404,6 +404,8 @@ jobs:
         run: tests/v12_upgrade/lsm_validator_bond.sh
       - name: _lsm-happy-tokenize-1
         run: tests/v12_upgrade/lsm_tokenize.sh
+      - name: _lsm-happy-transfer-1
+        run: tests/v12_upgrade/lsm_transfer.sh
       - name: _lsm-happy-redeem-1
         env:
           CONSUMER_FEES: 1000
