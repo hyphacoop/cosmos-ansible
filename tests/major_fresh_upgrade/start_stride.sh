@@ -43,8 +43,8 @@ jq '(.app_state.epochs.epochs[] | select(.identifier=="stride_epoch") ).duration
 jq '.app_state.gov.voting_params.voting_period = "10s"' stride-genesis-6.json  > stride-genesis-7.json
 jq '.app_state.gov.params.voting_period = "10s"' stride-genesis-7.json  > stride-genesis-8.json
 
-echo "Setting slashing to 20 missed blocks..."
-jq -r '.app_state.slashing.params.signed_blocks_window = "20"' stride-genesis-8.json > consumer-slashing.json
+echo "Setting slashing to 100000 missed blocks..."
+jq -r '.app_state.slashing.params.signed_blocks_window = "100000"' stride-genesis-8.json > consumer-slashing.json
 cp consumer-slashing.json $STRIDE_HOME_1/config/genesis.json
 
 echo "Adding funds to accounts..."

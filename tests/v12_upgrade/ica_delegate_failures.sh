@@ -80,7 +80,7 @@ sleep 10
 
 balance=$($CHAIN_BINARY q bank balances $ICA_ADDRESS -o json --home $HOME_1 | jq -r '.balances[] | select(.denom=="uatom").amount')
 if [[ $balance -eq $starting_balance ]]; then
-    echo "Failure case 2 success: balance remains unchanged"
+    echo "Failure case 3 success: balance remains unchanged"
 else
     echo "Failure case 3 failure: balance has changed"
     exit 1
