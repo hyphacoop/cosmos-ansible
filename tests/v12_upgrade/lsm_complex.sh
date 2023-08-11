@@ -119,5 +119,7 @@ fi
 # delegation_balance=$($CHAIN_BINARY q staking delegations $bonding_address --home $HOME_1 -o json | jq -r '.delegation_responses[0].balance.amount')
 # submit_tx "tx staking unbond $VALOPER_2 ${delegation_balance%.*}$DENOM --from bonding_account -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
 
-# $CHAIN_BINARY q staking delegations-to $VALOPER_2 --home $HOME_1 -o json | jq '.'
-$CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq '.'
+val1=$($CHAIN_BINARY q staking validator $VALOPER_1 -o json --home $HOME_1 | jq '.jailed')
+val2=$($CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq '.jailed')
+val3=$($CHAIN_BINARY q staking validator $VALOPER_3 -o json --home $HOME_1 | jq '.jailed')
+echo "Validator jailed status: $val1 $val2 $val3"
