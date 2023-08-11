@@ -1,5 +1,6 @@
 #!/bin/bash
 # Prepare upgrade to v12
+set +x
 
 UPGRADE_NAME=v12
 PROPOSAL_ID=1
@@ -46,9 +47,14 @@ do
     printf "Stride height: $height\n"
 done
 
-sudo journalctl -u $STRIDE_SERVICE_1 | tail -n 10
+tail -n 10 $HOME/artifact/$STRIDE_SERVICE_1.log
+
 printf "Stride has reached the upgrade height, stopping the service...\n"
-sudo systemctl stop $STRIDE_SERVICE_1
+killall $STRIDE_SERVICE_1.sh
+killall $STRIDE_CHAIN_BINARY
+sleep 5
+tail -n 10 $HOME/artifact/$STRIDE_SERVICE_1.log
+
 
 printf "Installing the v12 binary...\n"
 wget $STRIDE_CON_CHAIN_BINARY_URL -O $HOME/go/bin/$STRIDE_CHAIN_BINARY -q
