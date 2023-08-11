@@ -38,7 +38,7 @@ echo "Found at least two denoms in the consumer wallet."
 echo "Current $CHAIN_ID bank blances: $PROVIDER_WALLET"
 $CHAIN_BINARY --home $HOME_1 q bank balances $PROVIDER_WALLET
 echo "Sending $CONSUMER_DENOM to $CHAIN_ID..."
-$CONSUMER_CHAIN_BINARY --home $CONSUMER_HOME_1 tx ibc-transfer transfer transfer channel-1 $PROVIDER_WALLET 1000$CONSUMER_DENOM --from $CONSUMER_WALLET --keyring-backend test -y -b sync --gas 500000 --fees 5000$DENOM
+$CONSUMER_CHAIN_BINARY --home $CONSUMER_HOME_1 tx ibc-transfer transfer transfer channel-1 $PROVIDER_WALLET 1000$CONSUMER_DENOM --from $CONSUMER_WALLET --keyring-backend test -y -b sync --gas 500000 --fees 5000$CONSUMER_DENOM
 echo "Waiting for the transfer to reach the provider chain..."
 sleep 60
 echo "$CHAIN_ID bank blances after sending: $PROVIDER_WALLET"
