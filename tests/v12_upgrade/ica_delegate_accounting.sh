@@ -19,13 +19,13 @@ echo "Expected liquid shares increase: $expected_liquid_increase"
 
 jq -r --arg ADDRESS "$ICA_ADDRESS" '.delegator_address = $ADDRESS' tests/v12_upgrade/msg-delegate.json > acct-del-1.json
 jq -r --arg ADDRESS "$VALOPER_2" '.validator_address = $ADDRESS' acct-del-1.json > acct-del-2.json
-jq -r --arg AMOUNT "$delegation" '.amount.amount = "AMOUNT"' acct-del-2.json > acct-del-3.json
+jq -r --arg AMOUNT "$delegation" '.amount.amount = $AMOUNT' acct-del-2.json > acct-del-3.json
 cp acct-del-3.json acct-del.json
+cat acct-del.json
 echo "Generating packet JSON..."
 $STRIDE_CHAIN_BINARY tx interchain-accounts host generate-packet-data "$(cat acct-del.json)" > delegate_packet.json
 echo "Sending tx staking delegate to host chain..."
 submit_ibc_tx "tx interchain-accounts controller send-tx connection-0 delegate_packet.json --from $STRIDE_WALLET_1 --chain-id $STRIDE_CHAIN_ID --gas auto --fees $BASE_FEES$STRIDE_DENOM --gas-adjustment $GAS_ADJUSTMENT -y -o json" $STRIDE_CHAIN_BINARY $STRIDE_HOME_1
-# $STRIDE_CHAIN_BINARY tx interchain-accounts controller send-tx connection-0 delegate_packet.json --from $MONIKER_1 --home $STRIDE_HOME_1 --chain-id $STRIDE_CHAIN_ID --gas auto --fees $BASE_FEES$STRIDE_DENOM --gas-adjustment 1.2 -y -o json | jq '.'
 echo "Waiting for delegation to go on-chain..."
 sleep 10
 
@@ -50,13 +50,13 @@ expected_liquid_decrease=$(echo "$exchange_rate*$undelegation" | bc -l)
 
 jq -r --arg ADDRESS "$ICA_ADDRESS" '.delegator_address = $ADDRESS' tests/v12_upgrade/msg-undelegate.json > acct-undel-1.json
 jq -r --arg ADDRESS "$VALOPER_2" '.validator_address = $ADDRESS' acct-undel-1.json > acct-undel-2.json
-jq -r --arg AMOUNT "$undelegation" '.amount.amount = "AMOUNT"' acct-undel-2.json > acct-undel-3.json
+jq -r --arg AMOUNT "$undelegation" '.amount.amount = $AMOUNT' acct-undel-2.json > acct-undel-3.json
 cp acct-undel-3.json acct-undel.json
+cat acct-undel.json
 echo "Generating packet JSON..."
 $STRIDE_CHAIN_BINARY tx interchain-accounts host generate-packet-data "$(cat acct-undel.json)" > undelegate_packet.json
 echo "Sending tx staking undelegate to host chain..."
 submit_ibc_tx "tx interchain-accounts controller send-tx connection-0 undelegate_packet.json --from $STRIDE_WALLET_1 --chain-id $STRIDE_CHAIN_ID --gas auto --fees $BASE_FEES$STRIDE_DENOM --gas-adjustment $GAS_ADJUSTMENT -y -o json" $STRIDE_CHAIN_BINARY $STRIDE_HOME_1
-# $STRIDE_CHAIN_BINARY tx interchain-accounts controller send-tx connection-0 delegate_packet.json --from $MONIKER_1 --home $STRIDE_HOME_1 --chain-id $STRIDE_CHAIN_ID --gas auto --fees $BASE_FEES$STRIDE_DENOM --gas-adjustment 1.2 -y -o json | jq '.'
 echo "Waiting for undelegation to go on-chain..."
 sleep 10
 
@@ -84,7 +84,7 @@ pre_redelegation_liquid_shares_2=$($CHAIN_BINARY q staking validator $VALOPER_2 
 jq -r --arg ADDRESS "$ICA_ADDRESS" '.delegator_address = $ADDRESS' tests/v12_upgrade/msg-redelegate.json > acct-redel-1.json
 jq -r --arg ADDRESS "$VALOPER_2" '.validator_src_address = $ADDRESS' acct-redel-1.json > acct-uredel-2.json
 jq -r --arg ADDRESS "$VALOPER_1" '.validator_dst_address = $ADDRESS' acct-redel-2.json > acct-uredel-3.json
-jq -r --arg AMOUNT "$redelegation" '.amount.amount = "AMOUNT"' acct-redel-3.json > acct-redel-4.json
+jq -r --arg AMOUNT "$redelegation" '.amount.amount = $AMOUNT' acct-redel-3.json > acct-redel-4.json
 cp acct-redel-4.json redel.json
 cat redel.json
 echo "Generating packet JSON..."
