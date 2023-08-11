@@ -292,8 +292,8 @@ jobs:
         run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-1 2
       - name: ICA delegate
         run: tests/v12_upgrade/ica_delegate.sh
-      - name: sleep
-        run: sleep 10h
+      # - name: sleep
+      #   run: sleep 10h
       - name: Stop services
         if: always()
         run: |
