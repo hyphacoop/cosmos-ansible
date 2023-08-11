@@ -72,7 +72,7 @@ tests/major_fresh_upgrade/unjail_validator.sh $PROVIDER_SERVICE_2 $VAL2_RPC_PORT
 # submit_tx "tx staking unbond $VALOPER_2 ${delegation_balance%.*}$DENOM --from $bonding_address -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
 
 echo "Waiting for new slash block window..."
-sleep 15
+sleep 30
 # ** SCENARIO 2 **
 echo "** SCENARIO 2: delegate - slash - tokenize - redeem **"
 # echo "Delegating with bonding_account..."
