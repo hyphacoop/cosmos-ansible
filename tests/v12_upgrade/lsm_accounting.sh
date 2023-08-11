@@ -5,7 +5,7 @@ source tests/process_tx.sh
 
 delegation=20000000
 tokenize=10000000
-tokenized_denom=$VALOPER_2/4
+tokenized_denom=$VALOPER_2/5
 
 # $CHAIN_BINARY keys add acct_bonding --home $HOME_1
 $CHAIN_BINARY keys add acct_liquid --home $HOME_1
