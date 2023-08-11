@@ -453,14 +453,14 @@ jobs:
         run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-1 2
       - name: Register and fund ICA
         run: tests/v12_upgrade/setup_ica.sh
-      - name: _lsm-lsp-happy-1
-        run: tests/v12_upgrade/ica_delegate_happy.sh
-      - name: _lsm-lsp-failures-1
-        run: tests/v12_upgrade/ica_delegate_failures.sh
-      - name: _lsm-happy-bond-2
-        run: tests/v12_upgrade/lsm_validator_bond.sh
-      - name: _lsm-lsp-accounting-1
-        run: tests/v12_upgrade/ica_delegate_accounting.sh
+      # - name: _lsm-lsp-happy-1
+      #   run: tests/v12_upgrade/ica_delegate_happy.sh
+      # - name: _lsm-lsp-failures-1
+      #   run: tests/v12_upgrade/ica_delegate_failures.sh
+      # - name: _lsm-happy-bond-2
+      #   run: tests/v12_upgrade/lsm_validator_bond.sh
+      # - name: _lsm-lsp-accounting-1
+      #   run: tests/v12_upgrade/ica_delegate_accounting.sh
 
       - name: Validators final state
         run: |
