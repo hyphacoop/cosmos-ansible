@@ -21,7 +21,7 @@ submit_tx()
     full_tx="$2 $1 --home $3"
     echo $full_tx
     hash=$($full_tx | jq -r '.txhash')
-    sleep 2
+    sleep 4
     check_hash $hash $2 $3
     if [[ $? -eq 1 ]]; then
       printf "Transaction failed:\n$1\n"
