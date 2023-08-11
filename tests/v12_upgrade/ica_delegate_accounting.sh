@@ -8,7 +8,6 @@ undelegation=5000000
 redelegation=2000000
 
 echo "** Test case 1: Delegation increases validator liquid shares and global liquid staked tokens **"
-$CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq '.'
 $CHAIN_BINARY q bank balances $ICA_ADDRESS -o json --home $HOME_1 | jq '.'
 pre_delegation_tokens=$($CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq -r '.tokens')
 pre_delegation_shares=$($CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq -r '.delegator_shares')
@@ -25,7 +24,6 @@ jq -r --arg ADDRESS "$ICA_ADDRESS" '.delegator_address = $ADDRESS' tests/v12_upg
 jq -r --arg ADDRESS "$VALOPER_2" '.validator_address = $ADDRESS' acct-del-1.json > acct-del-2.json
 jq -r --arg AMOUNT "$delegation" '.amount.amount = $AMOUNT' acct-del-2.json > acct-del-3.json
 cp acct-del-3.json acct-del.json
-cat acct-del.json
 echo "Generating packet JSON..."
 $STRIDE_CHAIN_BINARY tx interchain-accounts host generate-packet-data "$(cat acct-del.json)" > delegate_packet.json
 echo "Sending tx staking delegate to host chain..."
@@ -33,7 +31,6 @@ submit_ibc_tx "tx interchain-accounts controller send-tx connection-0 delegate_p
 echo "Waiting for delegation to go on-chain..."
 sleep 10
 
-$CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq '.'
 $CHAIN_BINARY q bank balances $ICA_ADDRESS -o json --home $HOME_1 | jq '.'
 post_delegation_tokens=$($CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq -r '.tokens')
 post_delegation_liquid_shares=$($CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq -r '.total_liquid_shares')
@@ -64,7 +61,7 @@ elif [[ $(($tokens_delta-$delegation)) -eq 1 ]]; then
 elif [[ $(($delegation-$tokens_delta)) -eq 1 ]]; then
     echo "Accounting test 1 success: tokens increase off by 1"
 else
-    echo "Accounting test 1 failure: unexpected liquid tokens decrease ($total_delta != $tokenize)"
+    echo "Accounting test 1 failure: unexpected liquid tokens decrease ($total_delta != $delegation)"
     exit 1
 fi
 
@@ -81,7 +78,6 @@ jq -r --arg ADDRESS "$ICA_ADDRESS" '.delegator_address = $ADDRESS' tests/v12_upg
 jq -r --arg ADDRESS "$VALOPER_2" '.validator_address = $ADDRESS' acct-undel-1.json > acct-undel-2.json
 jq -r --arg AMOUNT "$undelegation" '.amount.amount = $AMOUNT' acct-undel-2.json > acct-undel-3.json
 cp acct-undel-3.json acct-undel.json
-cat acct-undel.json
 echo "Generating packet JSON..."
 $STRIDE_CHAIN_BINARY tx interchain-accounts host generate-packet-data "$(cat acct-undel.json)" > undelegate_packet.json
 echo "Sending tx staking undelegate to host chain..."
@@ -89,15 +85,38 @@ submit_ibc_tx "tx interchain-accounts controller send-tx connection-0 undelegate
 echo "Waiting for undelegation to go on-chain..."
 sleep 10
 
-$CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq '.'
 $CHAIN_BINARY q bank balances $ICA_ADDRESS -o json --home $HOME_1 | jq '.'
 post_undelegation_tokens=$($CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq -r '.tokens')
 post_undelegation_liquid_shares=$($CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq -r '.total_liquid_shares')
 
 tokens_delta=$(($post_undelegation_tokens-$pre_undelegation_tokens))
 liquid_shares_delta=$(echo "$post_undelegation_liquid_shares-$pre_undelegation_liquid_shares" | bc -l)
+liquid_shares_delta=${liquid_shares_delta%.*}
 echo "Expected decrease in liquid shares: $expected_liquid_decrease"
 echo "Val tokens delta: $tokens_delta, liquid shares delta: $liquid_shares_delta"
+
+if [[ $liquid_shares_delta -eq $expected_liquid_decrease ]]; then
+    echo "Accounting test 2 success: expected liquid shares decrease ($liquid_shares_delta = $expected_liquid_decrease)"
+elif [[ $(($liquid_shares_delta-$expected_liquid_decrease)) -eq 1 ]]; then
+    echo "Accounting test 2 success: liquid shares increase off by 1"
+elif [[ $(($expected_liquid_decrease-$liquid_shares_delta)) -eq 1 ]]; then
+    echo "Accounting test 2 success: liquid shares increase off by 1"
+else
+    echo "Accounting test 2 failure: unexpected liquid shares decrease ($liquid_shares_delta != $expected_liquid_decrease)"
+    exit 1
+fi
+
+if [[ $tokens_delta -eq $undelegation ]]; then
+    echo "Accounting test 1 success: expected tokens increase ($tokens_delta = $undelegation)"
+elif [[ $(($tokens_delta-$undelegation)) -eq 1 ]]; then
+    echo "Accounting test 1 success: tokens increase off by 1"
+elif [[ $(($undelegation-$tokens_delta)) -eq 1 ]]; then
+    echo "Accounting test 1 success: tokens increase off by 1"
+else
+    echo "Accounting test 1 failure: unexpected liquid tokens decrease ($total_delta != $undelegation)"
+    exit 1
+fi
+
 
 echo "** Test case 3: Redelegation decreases source validator liquid shares and increases destination validator liquid shares **"
 $CHAIN_BINARY q staking validator $VALOPER_1 -o json --home $HOME_1 | jq '.'
