@@ -17,7 +17,7 @@ submit_ibc_tx "tx interchain-accounts controller send-tx connection-0 delegate_p
 echo "Waiting for delegation to go on-chain..."
 sleep 10
 $CHAIN_BINARY q staking validator $VALOPER_3 -o json --home $HOME_1 | jq '.'
-$CHAIN_BINARY q bank balances $$ICA_ADDRESS -o json --home $HOME_1 | jq '.'
+$CHAIN_BINARY q bank balances $ICA_ADDRESS -o json --home $HOME_1 | jq '.'
 
 echo "** Failure case 2: ICA attempts to delegate, breaching the validator liquid staking cap **"
 $CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq '.'
@@ -56,3 +56,8 @@ sleep 10
 
 $CHAIN_BINARY q staking validator $VALOPER_1 -o json --home $HOME_1 | jq '.'
 $CHAIN_BINARY q bank balances $ICA_ADDRESS -o json --home $HOME_1 | jq '.'
+
+val1=$($CHAIN_BINARY q staking validator $VALOPER_1 -o json --home $HOME_1 | jq '.jailed')
+val2=$($CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq '.jailed')
+val3=$($CHAIN_BINARY q staking validator $VALOPER_3 -o json --home $HOME_1 | jq '.jailed')
+echo "Validator jailed status: $val1 $val2 $val3"
