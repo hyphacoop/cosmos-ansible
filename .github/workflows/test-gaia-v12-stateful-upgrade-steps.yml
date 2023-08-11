@@ -264,6 +264,8 @@ jobs:
         run: tests/major_stateful_upgrade/start_stride.sh
       - name: _stride-blocks-1
         run: tests/test_block_production.sh 127.0.0.1 $STRIDE_RPC_1 5 # 5 blocks
+      - name: sleep
+        run: sleep 10h
       - name: Prepare Stride chain upgrade # saves $STRIDE_REV_HEIGHT environment variable
         run: tests/major_stateful_upgrade/upgrade_stride.sh
       - name: Stop services
