@@ -81,10 +81,10 @@ submit_tx "tx staking enable-tokenize-shares --from $WALLET_5 -o json --gas auto
 # Cleanup
 echo "Unbonding delegations from WALLET_4 and WALLET_5..."
 submit_tx "tx staking unbond $VALOPER_1 $wallet_4_delegations$DENOM --from $WALLET_4 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+$CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
 submit_tx "tx staking unbond $VALOPER_2 $wallet_4_delegations$DENOM --from $WALLET_4 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+$CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
 submit_tx "tx staking unbond $VALOPER_1 $wallet_5_delegations$DENOM --from $WALLET_5 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+$CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
 submit_tx "tx staking unbond $VALOPER_2 $wallet_5_delegations$DENOM --from $WALLET_5 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
-$CHAIN_BINARY q staking delegations-to $VALOPER_1 --home $HOME_1 -o json | jq '.'
-$CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq '.'
-$CHAIN_BINARY q staking delegations-to $VALOPER_2 --home $HOME_1 -o json | jq '.'
-$CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq '.'
+$CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
