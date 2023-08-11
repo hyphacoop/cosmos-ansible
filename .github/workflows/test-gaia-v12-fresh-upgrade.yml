@@ -63,16 +63,23 @@ jobs:
       STRIDE_CON_CHAIN_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/stride-v12.1.0/stride-v12.1.0-linux-amd64
       STRIDE_CHAIN_BINARY: strided
       STRIDE_HOME_1: /home/runner/.stride1
+      STRIDE_HOME_2: /home/runner/.stride2
       STRIDE_SERVICE_1: stride1.service
+      STRIDE_SERVICE_2: stride2.service
       STRIDE_CHAIN_ID: consumerd
       STRIDE_DENOM: ustrd
       STRIDE_WALLET_1: stride1r5v5srda7xfth3hn2s26txvrcrntldjucq88rn
       STRIDE_WALLET_5: stride17n3vkvg6lwf98p3kanlhlyjk6zkrfla9zrhma6
       STRIDE_API_1: 35001
+      STRIDE_API_2: 35002
       STRIDE_GRPC_1: 36001
+      STRIDE_GRPC_2: 36002
       STRIDE_RPC_1: 37001
+      STRIDE_RPC_2: 37002
       STRIDE_P2P_1: 38001
+      STRIDE_P2P_2: 38002
       STRIDE_PPROF_1: 39001
+      STRIDE_PPROF_2: 39002
       CHAIN_ID: ${{ vars.CHAIN_ID }}
       DENOM: ${{ vars.DENOM }}
       VAL_FUNDS: ${{ vars.VAL_FUNDS }}

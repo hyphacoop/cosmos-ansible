@@ -49,6 +49,7 @@ done
 sudo journalctl -u $STRIDE_SERVICE_1 | tail -n 10
 printf "Stride has reached the upgrade height, stopping the service...\n"
 sudo systemctl stop $STRIDE_SERVICE_1
+sudo systemctl stop $STRIDE_SERVICE_2
 
 printf "Installing the v12 binary...\n"
 wget $STRIDE_CON_CHAIN_BINARY_URL -O $HOME/go/bin/$STRIDE_CHAIN_BINARY -q
