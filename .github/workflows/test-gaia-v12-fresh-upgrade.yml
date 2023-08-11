@@ -427,6 +427,8 @@ jobs:
         run: tests/major_fresh_upgrade/launch_stride_consumer.sh
       - name: _stride-blocks-2
         run: tests/test_block_production.sh 127.0.0.1 $STRIDE_RPC_1 5 # 5 blocks
+      - name: _stride-blocks-3
+        run: tests/test_block_production.sh 127.0.0.1 $STRIDE_RPC_2 5 # 5 blocks
       - name: Establish CCV channel for consumer d
         run: |
           client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r '.chains[] | select(.chain_id=="consumerd").client_id')
