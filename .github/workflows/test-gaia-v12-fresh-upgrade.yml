@@ -204,7 +204,7 @@ jobs:
       #   run: tests/test_endpoints_rpc.sh localhost $VAL1_RPC_PORT
       - name: Validators initial state
         run: |
-          $CHAIN_BINARY q staking validators -o json
+          $CHAIN_BINARY q staking validators -o json --home $HOME_1
       - name: Set up relayer
         run: tests/v12_upgrade/setup_relayer.sh
       # - name: Download consumer chain binaries
@@ -466,4 +466,4 @@ jobs:
 
       - name: Validators final state
         run: |
-          $CHAIN_BINARY q staking validators -o json
+          $CHAIN_BINARY q staking validators -o json --home $HOME_1
