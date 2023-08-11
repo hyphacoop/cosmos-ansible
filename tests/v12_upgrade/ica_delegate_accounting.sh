@@ -17,6 +17,7 @@ pre_delegation_total_liquid=$($CHAIN_BINARY q staking total-liquid-staked -o jso
 
 exchange_rate=$(echo "$pre_delegation_shares/$pre_delegation_tokens" | bc -l)
 expected_liquid_increase=$(echo "$exchange_rate*$delegation" | bc -l)
+expected_liquid_increase=${expected_liquid_increase%.*}
 echo "Expected liquid shares increase: $expected_liquid_increase"
 
 
@@ -45,6 +46,17 @@ total_liquid_delta=$(echo "$post_delegation_total_liquid-$pre_delegation_total_l
 echo "Expected increase in liquid shares: $expected_liquid_increase"
 echo "Val tokens delta: $tokens_delta, liquid shares delta: $liquid_shares_delta, total liquid tokens delta: $total_liquid_delta"
 
+if [[ $liquid_shares_delta -eq $expected_liquid_increase ]]; then
+    echo "Accounting test 1 success: expected liquid shares increase ($liquid_shares_delta = $expected_liquid_increase)"
+elif [[ $(($liquid_shares_delta-$expected_liquid_increase)) -eq 1 ]]; then
+    echo "Accounting test 1 success: liquid shares increase off by 1"
+elif [[ $(($expected_liquid_increase-$liquid_shares_delta)) -eq 1 ]]; then
+    echo "Accounting test 1 success: liquid shares increase off by 1"
+else
+    echo "Accounting test 1 failure: unexpected liquid shares decrease ($liquid_shares_delta != $expected_liquid_increase)"
+    exit 1
+fi
+
 if [[ $tokens_delta -eq $delegation ]]; then
     echo "Accounting test 1 success: expected tokens increase ($tokens_delta = $delegation)"
 elif [[ $(($tokens_delta-$delegation)) -eq 1 ]]; then
@@ -52,7 +64,7 @@ elif [[ $(($tokens_delta-$delegation)) -eq 1 ]]; then
 elif [[ $(($delegation-$tokens_delta)) -eq 1 ]]; then
     echo "Accounting test 1 success: tokens increase off by 1"
 else
-    echo "Accounting failure: unexpected liquid tokens decrease ($total_delta != $tokenize)"
+    echo "Accounting test 1 failure: unexpected liquid tokens decrease ($total_delta != $tokenize)"
     exit 1
 fi
 
