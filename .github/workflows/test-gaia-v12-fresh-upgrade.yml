@@ -202,7 +202,9 @@ jobs:
       #   run: tests/test_endpoints_api.sh localhost $VAL1_API_PORT
       # - name: _rpc-1
       #   run: tests/test_endpoints_rpc.sh localhost $VAL1_RPC_PORT
-
+      - name: Validators initial state
+        run: |
+          $CHAIN_BINARY q staking validators -o json
       - name: Set up relayer
         run: tests/v12_upgrade/setup_relayer.sh
       # - name: Download consumer chain binaries
@@ -461,3 +463,7 @@ jobs:
         run: tests/v12_upgrade/lsm_validator_bond.sh
       - name: _lsm-lsp-accounting-1
         run: tests/v12_upgrade/ica_delegate_accounting.sh
+
+      - name: Validators final state
+        run: |
+          $CHAIN_BINARY q staking validators -o json
