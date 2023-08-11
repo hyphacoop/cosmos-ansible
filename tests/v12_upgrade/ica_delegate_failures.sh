@@ -3,7 +3,7 @@
 
 echo "** Failure case 1: ICA attempts to delegate without validator bond **"
 $CHAIN_BINARY q staking validator $VALOPER_3 -o json --home $HOME_1 | jq '.'
-$CHAIN_BINARY q bank balances $$ICA_ADDRESS -o json --home $HOME_1 | jq '.'
+$CHAIN_BINARY q bank balances $ICA_ADDRESS -o json --home $HOME_1 | jq '.'
 
 jq -r --arg ADDRESS "$ICA_ADDRESS" '.delegator_address = $ADDRESS' tests/v12_upgrade/msg-delegate.json > delegate-fail-1.json
 message=$(jq -r --arg ADDRESS "$VALOPER_3" '.validator_address = $ADDRESS' delegate-fail-1.json)
