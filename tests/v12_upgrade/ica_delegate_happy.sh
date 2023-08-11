@@ -11,7 +11,7 @@ pre_delegation_shares=$($CHAIN_BINARY q staking validator $VALOPER_2 --home $HOM
 echo "Pre-delegation val shares: $pre_delegation_shares"
 pre_delegation_liquid_shares=$($CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq -r '.total_liquid_shares')
 echo "Pre-delegation val liquid shares: $pre_delegation_liquid_shares"
-exchange_rate=$(echo "$shares/$tokens" | bc -l)
+exchange_rate=$(echo "$pre_delegation_shares/$pre_delegation_tokens" | bc -l)
 echo "Exchange rate: $exchange_rate"
 expected_liquid_increase=$(echo "$exchange_rate*20000000" | bc -l)
 echo "Expected increase in liquid shares: $expected_liquid_increase"

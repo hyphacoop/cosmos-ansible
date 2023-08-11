@@ -3,6 +3,7 @@
 
 delegation=10000000
 undelegation=5000000
+redelegation=2000000
 
 echo "** Test case 1: Delegation increases validator liquid shares and global liquid staked tokens **"
 $CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq '.'
@@ -10,7 +11,7 @@ $CHAIN_BINARY q bank balances $ICA_ADDRESS -o json --home $HOME_1 | jq '.'
 pre_delegation_tokens=$($CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq -r '.tokens')
 pre_delegation_shares=$($CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq -r '.delegator_shares')
 pre_delegation_liquid_shares=$($CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq -r '.total_liquid_shares')
-exchange_rate=$(echo "$shares/$tokens" | bc -l)
+exchange_rate=$(echo "$pre_delegation_shares/$pre_delegation_tokens" | bc -l)
 expected_liquid_increase=$(echo "$exchange_rate*$delegation" | bc -l)
 
 jq -r --arg ADDRESS "$ICA_ADDRESS" '.delegator_address = $ADDRESS' tests/v12_upgrade/msg-delegate.json > acct-del-1.json
@@ -41,7 +42,7 @@ $CHAIN_BINARY q bank balances $ICA_ADDRESS -o json --home $HOME_1 | jq '.'
 pre_undelegation_tokens=$($CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq -r '.tokens')
 pre_undelegation_shares=$($CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq -r '.delegator_shares')
 pre_undelegation_liquid_shares=$($CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq -r '.total_liquid_shares')
-exchange_rate=$(echo "$shares/$tokens" | bc -l)
+exchange_rate=$(echo "$pre_undelegation_shares/$pre_undelegation_tokens" | bc -l)
 expected_liquid_decrease=$(echo "$exchange_rate*$undelegation" | bc -l)
 
 jq -r --arg ADDRESS "$ICA_ADDRESS" '.delegator_address = $ADDRESS' tests/v12_upgrade/msg-undelegate.json > acct-undel-1.json
@@ -68,3 +69,27 @@ echo "Expected increase in liquid shares: $expected_liquid_decrease"
 echo "Val tokens delta: $tokens_delta, liquid shares delta: $liquid_shares_delta"
 
 echo "** Test case 3: Redelegation decreases source validator liquid shares and increases destination validator liquid shares **"
+$CHAIN_BINARY q staking validator $VALOPER_1 -o json --home $HOME_1 | jq '.'
+$CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq '.'
+$CHAIN_BINARY q bank balances $ICA_ADDRESS -o json --home $HOME_1 | jq '.'
+pre_redelegation_tokens_1=$($CHAIN_BINARY q staking validator $VALOPER_1 -o json --home $HOME_1 | jq -r '.tokens')
+pre_redelegation_shares_1=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.delegator_shares')
+pre_redelegation_liquid_shares_1=$($CHAIN_BINARY q staking validator $VALOPER_1 -o json --home $HOME_1 | jq -r '.total_liquid_shares')
+pre_redelegation_tokens_2=$($CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq -r '.tokens')
+pre_redelegation_shares_2=$($CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq -r '.delegator_shares')
+pre_redelegation_liquid_shares_2=$($CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq -r '.total_liquid_shares')
+
+jq -r --arg ADDRESS "$ICA_ADDRESS" '.delegator_address = $ADDRESS' tests/v12_upgrade/msg-redelegate.json > acct-redel-1.json
+jq -r --arg ADDRESS "$VALOPER_2" '.validator_address = $ADDRESS' acct-redel-1.json > acct-undel-2.json
+jq -r --arg AMOUNT "$undelegation"'.amount.amount = "AMOUNT"' acct-redel-2.json > acct-undel-3.json
+
+
+$CHAIN_BINARY q staking validator $VALOPER_1 -o json --home $HOME_1 | jq '.'
+$CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq '.'
+$CHAIN_BINARY q bank balances $ICA_ADDRESS -o json --home $HOME_1 | jq '.'
+post_undelegation_tokens_1=$($CHAIN_BINARY q staking validator $VALOPER_1 -o json --home $HOME_1 | jq -r '.tokens')
+post_undelegation_shares_1=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.delegator_shares')
+post_undelegation_liquid_shares_1=$($CHAIN_BINARY q staking validator $VALOPER_1 -o json --home $HOME_1 | jq -r '.total_liquid_shares')
+post_redelegation_tokens_2=$($CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq -r '.tokens')
+post_redelegation_shares_2=$($CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq -r '.delegator_shares')
+post_redelegation_liquid_shares_2=$($CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq -r '.total_liquid_shares')
