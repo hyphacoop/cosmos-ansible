@@ -12,5 +12,5 @@ submit_tx "tx bank send $WALLET_1 $ica_address 1000000000$DENOM --gas auto --gas
 # $CHAIN_BINARY tx bank send $WALLET_1 $ica_address 1000000000$DENOM --gas auto --gas-adjustment 1.2 --fees $BASE_FEES$DENOM -b block -y --home $HOME_1 -o json | jq '.'
 $CHAIN_BINARY q bank balances $ica_address --home $HOME_1 -o json | jq '.'
 
-echo "Saving the ICA address...\n"
+echo "Saving the ICA address..."
 echo "ICA_ADDRESS=$ica_address" >> $GITHUB_ENV

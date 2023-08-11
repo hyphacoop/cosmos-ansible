@@ -4,7 +4,12 @@
 source tests/process_tx.sh
 
 $CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq '.'
-$CHAIN_BINARY q bank balances $$ICA_ADDRESS -o json --home $HOME_1 | jq '.'
+$CHAIN_BINARY q bank balances $ICA_ADDRESS -o json --home $HOME_1 | jq '.'
+pre_delegation_tokens=$CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq -r '.tokens'
+pre_delegation_shares=$($CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq -r '.delegator_shares')
+pre_delegation_liquid_shares=$CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq -r '.total_liquid_shares'
+exchange_rate=$(echo "$shares/$tokens" | bc -l)
+expected_liquid_increase=$(echo "$exchange_rate*20000000" | bc -l)
 
 jq -r --arg ADDRESS "$ICA_ADDRESS" '.delegator_address = $ADDRESS' tests/v12_upgrade/msg-delegate.json > delegate-happy.json
 message=$(jq -r --arg ADDRESS "$VALOPER_2" '.validator_address = $ADDRESS' delegate-happy.json)
@@ -17,7 +22,15 @@ echo "Waiting for delegation to go on-chain..."
 sleep 10
 
 $CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq '.'
-$CHAIN_BINARY q bank balances $$ICA_ADDRESS -o json --home $HOME_1 | jq '.'
+$CHAIN_BINARY q bank balances $ICA_ADDRESS -o json --home $HOME_1 | jq '.'
+post_delegation_tokens=$CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq -r '.tokens'
+post_delegation_liquid_shares=$CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq -r '.total_liquid_shares'
+
+
+tokens_delta=$(($post_delegation_tokens-$pre_delegation_tokens))
+liquid_shares_delta=$(echo "$post_delegation_liquid_shares-$pre_delegation_liquid_shares" | bc -l)
+echo "Expected increase in liquid shares: $expected_liquid_increase"
+echo "Val tokens delta: $tokens_delta, liquid shares delta: $liquid_shares_delta"
 
 # $CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq '.'
 # jq -r --arg ADDRESS "$ICA_ADDRESS" '.delegator_address = $ADDRESS' tests/v12_upgrade/msg-delegate.json > delegate-2.json
