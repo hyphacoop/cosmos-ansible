@@ -442,5 +442,5 @@ jobs:
         run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-1 2
       - name: Register and fund ICA
         run: tests/v12_upgrade/setup_ica.sh
-      - name: ICA delegate
-        run: tests/v12_upgrade/ica_delegate.sh
+      - name: _lsm_lsp_1
+        run: tests/v12_upgrade/ica_delegate_happy.sh
