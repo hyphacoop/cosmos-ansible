@@ -1,6 +1,8 @@
 #!/bin/bash
 # ICA delegation failure cases
 
+source tests/process_tx.sh
+
 echo "** Failure case 1: ICA attempts to delegate without validator bond **"
 $CHAIN_BINARY q staking validator $VALOPER_3 -o json --home $HOME_1 | jq '.'
 $CHAIN_BINARY q bank balances $ICA_ADDRESS -o json --home $HOME_1 | jq '.'

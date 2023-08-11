@@ -1,6 +1,8 @@
 #!/bin/bash
 # ICA delegation accounting tests
 
+source tests/process_tx.sh
+
 delegation=10000000
 undelegation=5000000
 redelegation=2000000
