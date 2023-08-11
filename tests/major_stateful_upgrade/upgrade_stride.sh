@@ -48,11 +48,10 @@ do
 done
 
 printf "Stride has reached the upgrade height, stopping the service...\n"
-killall $STRIDE_SERVICE_1.sh
 killall $STRIDE_CHAIN_BINARY
+screen -XS $STRIDE_SERVICE_1 quit
 sleep 5
 tail -n 50 $HOME/artifact/$STRIDE_SERVICE_1.log
-
 
 printf "Installing the v12 binary...\n"
 wget $STRIDE_CON_CHAIN_BINARY_URL -O $HOME/go/bin/$STRIDE_CHAIN_BINARY -q
