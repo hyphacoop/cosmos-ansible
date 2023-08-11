@@ -3,7 +3,7 @@ source tests/process_tx.sh
 
 echo "Registering ICA account..."
 submit_ibc_tx "tx interchain-accounts controller register connection-0 --from $STRIDE_WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$STRIDE_DENOM -y --chain-id $STRIDE_CHAIN_ID -o json" $STRIDE_CHAIN_BINARY $STRIDE_HOME_1
-
+sleep 20
 ica_address=$($STRIDE_CHAIN_BINARY q interchain-accounts controller interchain-account $STRIDE_WALLET_1 connection-0 --home $STRIDE_HOME_1 -o json | jq -r '.address')
 echo "ICA address: $ica_address"
 echo "Funding ICA address in chain $CHAIN_ID..."
