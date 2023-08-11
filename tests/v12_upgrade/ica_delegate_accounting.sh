@@ -90,7 +90,7 @@ post_undelegation_tokens=$($CHAIN_BINARY q staking validator $VALOPER_2 -o json 
 post_undelegation_liquid_shares=$($CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq -r '.total_liquid_shares')
 
 tokens_delta=$(($post_undelegation_tokens-$pre_undelegation_tokens))
-liquid_shares_delta=$(echo "$post_undelegation_liquid_shares-$pre_undelegation_liquid_shares" | bc -l)
+liquid_shares_delta=$(echo "$pre_undelegation_liquid_shares-$post_undelegation_liquid_shares" | bc -l)
 liquid_shares_delta=${liquid_shares_delta%.*}
 echo "Expected decrease in liquid shares: $expected_liquid_decrease"
 echo "Val tokens delta: $tokens_delta, liquid shares delta: $liquid_shares_delta"
@@ -127,7 +127,14 @@ pre_redelegation_liquid_shares_1=$($CHAIN_BINARY q staking validator $VALOPER_1 
 pre_redelegation_tokens_2=$($CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq -r '.tokens')
 pre_redelegation_shares_2=$($CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq -r '.delegator_shares')
 pre_redelegation_liquid_shares_2=$($CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq -r '.total_liquid_shares')
-# exchange_rate_1=$(echo "$pre_undelegation_shares/$pre_undelegation_tokens" | bc -l)
+exchange_rate_1=$(echo "$pre_redelegation_shares_1/$pre_redelegation_tokens_1" | bc -l)
+exchange_rate_1=${exchange_rate_1%.*}
+exchange_rate_2=$(echo "$pre_redelegation_shares_2/$pre_redelegation_tokens_2" | bc -l)
+exchange_rate_2=${exchange_rate_2%.*}
+expected_liquid_decrease=$(echo "$exchange_rate_2*$redelegation" | bc -l)
+expected_liquid_decrease=${expected_liquid_decrease%.*}
+expected_liquid_increase=$(echo "$exchange_rate_1*$redelegation" | bc -l)
+expected_liquid_increase=${expected_liquid_decrease%.*}
 
 jq -r --arg ADDRESS "$ICA_ADDRESS" '.delegator_address = $ADDRESS' tests/v12_upgrade/msg-redelegate.json > acct-redel-1.json
 jq -r --arg ADDRESS "$VALOPER_2" '.validator_src_address = $ADDRESS' acct-redel-1.json > acct-redel-2.json
@@ -145,12 +152,21 @@ sleep 10
 $CHAIN_BINARY q staking validator $VALOPER_1 -o json --home $HOME_1 | jq '.'
 $CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq '.'
 $CHAIN_BINARY q bank balances $ICA_ADDRESS -o json --home $HOME_1 | jq '.'
-post_undelegation_tokens_1=$($CHAIN_BINARY q staking validator $VALOPER_1 -o json --home $HOME_1 | jq -r '.tokens')
-post_undelegation_shares_1=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.delegator_shares')
-post_undelegation_liquid_shares_1=$($CHAIN_BINARY q staking validator $VALOPER_1 -o json --home $HOME_1 | jq -r '.total_liquid_shares')
+post_redelegation_tokens_1=$($CHAIN_BINARY q staking validator $VALOPER_1 -o json --home $HOME_1 | jq -r '.tokens')
+post_redelegation_shares_1=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.delegator_shares')
+post_redelegation_liquid_shares_1=$($CHAIN_BINARY q staking validator $VALOPER_1 -o json --home $HOME_1 | jq -r '.total_liquid_shares')
 post_redelegation_tokens_2=$($CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq -r '.tokens')
 post_redelegation_shares_2=$($CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq -r '.delegator_shares')
 post_redelegation_liquid_shares_2=$($CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq -r '.total_liquid_shares')
+
+liquid_shares_delta_1=$(echo "$post_redelegation_liquid_shares_1-$pre_redelegation_liquid_shares_1" | bc -l)
+liquid_shares_delta_1=${liquid_shares_delta_1%.*}
+liquid_shares_delta_2=$(echo "$pre_redelegation_liquid_shares_2-$post_redelegation_liquid_shares_2" | bc -l)
+liquid_shares_delta_2=${liquid_shares_delta_2%.*}
+echo "Expected increase in val 2 liquid shares: $expected_liquid_increase"
+echo "Val 1 liquid shares delta: $liquid_shares_delta_1"
+echo "Expected decrease in val 2 liquid shares: $expected_liquid_decrease"
+echo "Val 2 liquid shares delta: $liquid_shares_delta_2"
 
 # if [[ $liquid_shares_delta -eq $expected_liquid_decrease ]]; then
 #     echo "Accounting test 2 success: expected liquid shares decrease ($liquid_shares_delta = $expected_liquid_decrease)"
