@@ -82,9 +82,17 @@ pre_redelegation_shares_2=$($CHAIN_BINARY q staking validator $VALOPER_2 --home 
 pre_redelegation_liquid_shares_2=$($CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq -r '.total_liquid_shares')
 
 jq -r --arg ADDRESS "$ICA_ADDRESS" '.delegator_address = $ADDRESS' tests/v12_upgrade/msg-redelegate.json > acct-redel-1.json
-jq -r --arg ADDRESS "$VALOPER_2" '.validator_address = $ADDRESS' acct-redel-1.json > acct-undel-2.json
-jq -r --arg AMOUNT "$undelegation"'.amount.amount = "AMOUNT"' acct-redel-2.json > acct-undel-3.json
-
+jq -r --arg ADDRESS "$VALOPER_2" '.validator_src_address = $ADDRESS' acct-redel-1.json > acct-uredel-2.json
+jq -r --arg ADDRESS "$VALOPER_1" '.validator_dst_address = $ADDRESS' acct-redel-2.json > acct-uredel-3.json
+jq -r --arg AMOUNT "$redelegation"'.amount.amount = "AMOUNT"' acct-redel-3.json > acct-redel-4.json
+cp acct-redel-4.json redel.json
+at redel.json
+echo "Generating packet JSON..."
+$STRIDE_CHAIN_BINARY tx interchain-accounts host generate-packet-data "$(cat redel.json)" > redelegate_packet.json
+echo "Sending tx staking undelegate to host chain..."
+submit_ibc_tx "tx interchain-accounts controller send-tx connection-0 redelegate_packet.json --from $STRIDE_WALLET_1 --chain-id $STRIDE_CHAIN_ID --gas auto --fees $BASE_FEES$STRIDE_DENOM --gas-adjustment $GAS_ADJUSTMENT -y -o json" $STRIDE_CHAIN_BINARY $STRIDE_HOME_1
+echo "Waiting for redelegation to go on-chain..."
+sleep 10
 
 $CHAIN_BINARY q staking validator $VALOPER_1 -o json --home $HOME_1 | jq '.'
 $CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq '.'
