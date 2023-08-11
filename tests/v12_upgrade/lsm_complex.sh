@@ -28,8 +28,13 @@ submit_tx "tx bank send $WALLET_1 $liquid_address_2 100000000uatom --from $WALLE
 
 echo "Delegating with bonding_account..."
 submit_tx "tx staking delegate $VALOPER_2 $delegation$DENOM --from bonding_account -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+
+$CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
+
 echo "Validator bond with bonding_account..."
 submit_tx "tx staking validator-bond $VALOPER_2 --from bonding_account -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT -y --fees $BASE_FEES$DENOM" $CHAIN_BINARY $HOME_1
+
+$CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
 
 validator_bond_shares=$($CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq -r '.total_validator_bond_shares')
 echo "Validator 2 bond shares: $validator_bond_shares"

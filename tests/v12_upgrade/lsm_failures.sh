@@ -12,17 +12,23 @@ global_cap_param=$($CHAIN_BINARY q staking params --home $HOME_1 -o json | jq -r
 
 echo "Delegating with WALLET_4..."
 submit_tx "tx staking delegate $VALOPER_1 $wallet_4_delegations$DENOM --from $WALLET_4 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+$CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
 submit_tx "tx staking delegate $VALOPER_2 $wallet_4_delegations$DENOM --from $WALLET_4 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
-
+$CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
 echo "Delegating with WALLET_5..."
 submit_tx "tx staking delegate $VALOPER_1 $wallet_5_delegations$DENOM --from $WALLET_5 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+$CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
 submit_tx "tx staking delegate $VALOPER_2 $wallet_5_delegations$DENOM --from $WALLET_5 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+$CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
 
 echo "Failure case 1: Attempt to tokenize with WALLET_4 (no validator bond)..."
 submit_bad_tx "tx staking tokenize-share $VALOPER_1 20000000$DENOM $WALLET_4 --from $WALLET_4 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
 
 submit_tx "tx staking validator-bond $VALOPER_1 --from $WALLET_4 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT -y --fees $BASE_FEES$DENOM" $CHAIN_BINARY $HOME_1
+$CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
 submit_tx "tx staking validator-bond $VALOPER_2 --from $WALLET_4 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT -y --fees $BASE_FEES$DENOM" $CHAIN_BINARY $HOME_1
+$CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
+
 validator_bond_shares=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.total_validator_bond_shares')
 echo "Validator 1 bond shares: ${validator_bond_shares%.*}"
 if [[ ${validator_bond_shares%.*} -ne $wallet_4_delegations  ]]; then
@@ -59,11 +65,13 @@ submit_bad_tx "tx staking tokenize-share $VALOPER_1 140000000$DENOM $WALLET_5 --
 echo "Failure case 5: Attempt to unbond validator bond, fails because it breaches the validator bond factor"
 echo "Tokenizing WALLET_5 delegations..."
 submit_tx "tx staking tokenize-share $VALOPER_1 $wallet_5_tokenize$DENOM $WALLET_5 --from $WALLET_5 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+$CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
 echo "Attempting to unbond from WALLET_4..."
 submit_bad_tx "tx staking unbond $VALOPER_1 $wallet_4_delegations$DENOM --from $WALLET_4 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
 echo "Redeeming tokens from WALLET_5..."
 $CHAIN_BINARY q bank balances $WALLET_5 --home $HOME_1 -o json | jq '.balances'
 submit_tx "tx staking redeem-tokens $wallet_5_tokenize$tokenized_denom --from $WALLET_5 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+$CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
 
 echo "Failure case 6: Attempt to tokenize with WALLET_5 after disabling tokenizing..."
 submit_tx "tx staking disable-tokenize-shares --from $WALLET_5 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
