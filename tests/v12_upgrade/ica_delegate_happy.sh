@@ -3,6 +3,8 @@
 
 source tests/process_tx.sh
 
+delegate=20000000
+
 $CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq '.'
 $CHAIN_BINARY q bank balances $ICA_ADDRESS -o json --home $HOME_1 | jq '.'
 pre_delegation_tokens=$($CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq -r '.tokens')
@@ -13,11 +15,13 @@ pre_delegation_liquid_shares=$($CHAIN_BINARY q staking validator $VALOPER_2 -o j
 echo "Pre-delegation val liquid shares: $pre_delegation_liquid_shares"
 exchange_rate=$(echo "$pre_delegation_shares/$pre_delegation_tokens" | bc -l)
 echo "Exchange rate: $exchange_rate"
-expected_liquid_increase=$(echo "$exchange_rate*20000000" | bc -l)
+expected_liquid_increase=$(echo "$exchange_rate*$delegate" | bc -l)
+expected_liquid_increase=${expected_liquid_increase%.*}
 echo "Expected increase in liquid shares: $expected_liquid_increase"
 
 jq -r --arg ADDRESS "$ICA_ADDRESS" '.delegator_address = $ADDRESS' tests/v12_upgrade/msg-delegate.json > delegate-happy.json
-message=$(jq -r --arg ADDRESS "$VALOPER_2" '.validator_address = $ADDRESS' delegate-happy.json)
+jq -r --arg AMOUNT "$delegate" '.amount.amount = $AMOUNT' delegate-happy.json > delegate-happy-2.json
+message=$(jq -r --arg ADDRESS "$VALOPER_2" '.validator_address = $ADDRESS' delegate-happy-2.json)
 echo "Generating packet JSON..."
 $STRIDE_CHAIN_BINARY tx interchain-accounts host generate-packet-data "$message" > delegate_packet.json
 echo "Sending tx staking delegate to host chain..."
@@ -33,8 +37,31 @@ post_delegation_liquid_shares=$($CHAIN_BINARY q staking validator $VALOPER_2 -o 
 
 tokens_delta=$(($post_delegation_tokens-$pre_delegation_tokens))
 liquid_shares_delta=$(echo "$post_delegation_liquid_shares-$pre_delegation_liquid_shares" | bc -l)
+liquid_shares_delta=${liquid_shares_delta%.*}
 echo "Expected increase in liquid shares: $expected_liquid_increase"
 echo "Val tokens delta: $tokens_delta, liquid shares delta: $liquid_shares_delta"
+
+if [[ $tokens_delta -eq $delegate ]]; then
+    echo "Delegation success: expected tokens increase ($tokens_delta = $delegate)"
+elif [[ $(($tokens_delta-$delegate)) -eq 1 ]]; then
+    echo "Delegation success: tokens increase off by 1"
+elif [[ $(($delegate-$tokens_delta)) -eq 1 ]]; then
+    echo "Delegation success: tokens increase off by 1"
+else
+    echo "Accounting failure: unexpected global liquid tokens decrease ($total_delta != $tokenize)"
+    exit 1
+fi
+
+if [[ $liquid_shares_delta -eq $expected_liquid_increase ]]; then
+    echo "Delegation success: expected liquid shares increase ($liquid_shares_delta = $expected_liquid_increase)"
+elif [[ $(($liquid_shares_delta-$expected_liquid_increase)) -eq 1 ]]; then
+    echo "Delegation success: shares increase off by 1"
+elif [[ $(($expected_liquid_increase-$liquid_shares_delta)) -eq 1 ]]; then
+    echo "Delegation success: shares increase off by 1"
+else
+    echo "Accounting failure: unexpected shares increase ($liquid_shares_delta != $expected_liquid_increase)"
+    exit 1
+fi
 
 # $CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq '.'
 # jq -r --arg ADDRESS "$ICA_ADDRESS" '.delegator_address = $ADDRESS' tests/v12_upgrade/msg-delegate.json > delegate-2.json

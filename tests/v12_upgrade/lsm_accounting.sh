@@ -109,7 +109,7 @@ fi
 if [[ $total_delta -eq $tokenize ]]; then
     echo "Accounting success: expected global liquid tokens decrease ($total_delta = $tokenize)"
 elif [[ $(($total_delta-$tokenize)) -eq 1 ]]; then
-    echo "Accounting success: global liquid tokens dencrease off by 1"
+    echo "Accounting success: global liquid tokens decrease off by 1"
 elif [[ $(($tokenize-$total_delta)) -eq 1 ]]; then
     echo "Accounting success: global liquid tokens decrease off by 1"
 else
