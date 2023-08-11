@@ -18,6 +18,8 @@ if [[ $shares_diff -ne $delegation ]]; then
     exit 1
 fi
 
+$CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
+
 echo "Tokenizing shares with $WALLET_3..."
 submit_tx "tx staking tokenize-share $VALOPER_1 $tokenize$DENOM $WALLET_3 --from $WALLET_3 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
 
@@ -34,3 +36,5 @@ if [[ ${liquid_balance%.*} -ne $tokenize ]]; then
     echo "Tokenize unsuccessful: unexpected liquid token balance"
     exit 1
 fi
+
+$CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'

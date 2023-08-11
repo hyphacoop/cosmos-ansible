@@ -24,14 +24,15 @@ submit_tx "tx bank send $WALLET_3 $WALLET_4 $bank_send_amount$tokenized_denom --
 #     exit 1
 # fi
 
-$CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.'
+$CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
 echo "Redeeming tokens from $WALLET_3..."
 submit_tx "tx staking redeem-tokens 30000000$tokenized_denom --from $WALLET_3 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -b block -y" $CHAIN_BINARY $HOME_1
-$CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.'
+$CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
 echo "Redeeming tokens from $WALLET_4..."
 submit_tx "tx staking redeem-tokens $bank_send_amount$tokenized_denom --from $WALLET_4 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -b block -y" $CHAIN_BINARY $HOME_1
-$CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.'
-echo "Transferring $WALLET_5 IBC tokens to LSM chain with..."
+$CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
+
+# echo "Transferring $WALLET_5 IBC tokens to LSM chain with..."
 # echo "IBC denom: $ibc_denom"
 # echo "Sending tokens from $WALLET_5 to $CHAIN_ID for redeem operation..."
 # submit_tx "tx ibc-transfer transfer transfer channel-1 $WALLET_5 $ibc_transfer_amount$ibc_denom --from $STRIDE_WALLET_5 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $CONSUMER_FEES$STRIDE_DENOM -y" $STRIDE_CHAIN_BINARY $STRIDE_HOME_1
@@ -108,6 +109,8 @@ if [[ ${validator_bond_shares%.*} -ne 0  ]]; then
     exit 1
 fi
 
+$CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
+
 echo "Validator unbond from WALLET_3..."
 submit_tx "tx staking unbond $VALOPER_1 80000000$DENOM --from $WALLET_3 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT -y --fees $BASE_FEES$DENOM" $CHAIN_BINARY $HOME_1
 validator_bond_shares=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.total_validator_bond_shares')
@@ -117,6 +120,8 @@ if [[ ${validator_bond_shares%.*} -ne 0  ]]; then
     exit 1
 fi
 
+$CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
+
 echo "Validator unbond from WALLET_4..."
 submit_tx "tx staking unbond $VALOPER_1 $bank_send_amount$DENOM --from $WALLET_4 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT -y --fees $BASE_FEES$DENOM" $CHAIN_BINARY $HOME_1
 validator_bond_shares=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.total_validator_bond_shares')
@@ -125,3 +130,5 @@ if [[ ${validator_bond_shares%.*} -ne 0  ]]; then
     echo "Unbond unsuccessful: unexpected validator bond shares amount"
     exit 1
 fi
+
+$CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
