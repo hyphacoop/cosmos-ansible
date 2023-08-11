@@ -144,4 +144,4 @@ echo "WantedBy=multi-user.target"           | sudo tee /etc/systemd/system/$STRI
 
 sudo systemctl daemon-reload
 sudo systemctl enable $STRIDE_SERVICE_1 --now
-sudo systemctl enable $STRIDE_SERVICE_2 --now
+# sudo systemctl enable $STRIDE_SERVICE_2 --now
