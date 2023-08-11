@@ -402,18 +402,18 @@ jobs:
       #   run: tests/test_validator_jailed.sh $VALOPER_3 false
 
 
-      # - name: _lsm-happy-bond-1
-      #   run: tests/v12_upgrade/lsm_validator_bond.sh
-      # - name: _lsm-happy-tokenize-1
-      #   run: tests/v12_upgrade/lsm_tokenize.sh
-      # - name: _lsm-happy-transfer-1
-      #   run: tests/v12_upgrade/lsm_transfer.sh
-      # - name: _lsm-happy-redeem-1
-      #   env:
-      #     CONSUMER_FEES: 1000
-      #   run: tests/v12_upgrade/lsm_redeem.sh
-      # - name: _lsm-failures-1
-      #   run: tests/v12_upgrade/lsm_failures.sh
+      - name: _lsm-happy-bond-1
+        run: tests/v12_upgrade/lsm_validator_bond.sh
+      - name: _lsm-happy-tokenize-1
+        run: tests/v12_upgrade/lsm_tokenize.sh
+      - name: _lsm-happy-transfer-1
+        run: tests/v12_upgrade/lsm_transfer.sh
+      - name: _lsm-happy-redeem-1
+        env:
+          CONSUMER_FEES: 1000
+        run: tests/v12_upgrade/lsm_redeem.sh
+      - name: _lsm-failures-1
+        run: tests/v12_upgrade/lsm_failures.sh
 
       # - name: _lsm-complex-1
       #   run: tests/v12_upgrade/lsm_complex.sh
