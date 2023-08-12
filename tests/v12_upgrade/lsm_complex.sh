@@ -96,6 +96,7 @@ echo "** SCENARIO 2: delegate - slash - tokenize - redeem **"
 
 echo "Delegating with tokenizing_account..."
 submit_tx "tx staking delegate $VALOPER_2 $tokenize$DENOM --from $liquid_address_2 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+$CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
 echo "Slashing validator 2..."
 tests/major_fresh_upgrade/jail_validator.sh $PROVIDER_SERVICE_2 $VALOPER_2
 downtime_period=$($CHAIN_BINARY q slashing params --home $HOME_1 -o json | jq -r '.downtime_jail_duration')
