@@ -158,7 +158,7 @@ jobs:
       RECIPIENT: cosmos1r5v5srda7xfth3hn2s26txvrcrntldjumt8mhl
       DOWNTIME_BLOCKS: 10000
       HERMES_VERSION: v1.5.1
-      COMMIT_TIMEOUT: 1
+      COMMIT_TIMEOUT: 3
     steps:
       - name: start-version
         run: echo ${{matrix.gaia_version}}
