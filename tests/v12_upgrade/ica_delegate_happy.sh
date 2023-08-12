@@ -27,6 +27,7 @@ submit_ibc_tx "tx interchain-accounts controller send-tx connection-0 delegate_p
 echo "Waiting for delegation to go on-chain..."
 sleep 10
 
+$CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
 post_delegation_tokens=$($CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq -r '.tokens')
 post_delegation_liquid_shares=$($CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq -r '.total_liquid_shares')
 
@@ -57,8 +58,3 @@ else
     echo "Accounting failure: unexpected liquid shares increase ($liquid_shares_delta != $expected_liquid_increase)"
     exit 1
 fi
-
-val1=$($CHAIN_BINARY q staking validator $VALOPER_1 -o json --home $HOME_1 | jq '.jailed')
-val2=$($CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq '.jailed')
-val3=$($CHAIN_BINARY q staking validator $VALOPER_3 -o json --home $HOME_1 | jq '.jailed')
-echo "Validator jailed status: $val1 $val2 $val3"
