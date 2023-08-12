@@ -31,6 +31,7 @@ submit_ibc_tx "tx interchain-accounts controller send-tx connection-0 delegate_p
 echo "Waiting for delegation to go on-chain..."
 sleep 10
 
+$CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
 $CHAIN_BINARY q bank balances $ICA_ADDRESS -o json --home $HOME_1 | jq '.'
 post_delegation_tokens=$($CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq -r '.tokens')
 post_delegation_liquid_shares=$($CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq -r '.total_liquid_shares')
@@ -86,6 +87,7 @@ submit_ibc_tx "tx interchain-accounts controller send-tx connection-0 undelegate
 echo "Waiting for undelegation to go on-chain..."
 sleep 10
 
+$CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
 $CHAIN_BINARY q bank balances $ICA_ADDRESS -o json --home $HOME_1 | jq '.'
 post_undelegation_tokens=$($CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq -r '.tokens')
 post_undelegation_liquid_shares=$($CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq -r '.total_liquid_shares')
@@ -120,9 +122,8 @@ fi
 
 
 echo "** Test case 3: Redelegation decreases source validator liquid shares and increases destination validator liquid shares **"
-$CHAIN_BINARY q staking validator $VALOPER_1 -o json --home $HOME_1 | jq '.'
-$CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq '.'
-# $CHAIN_BINARY q bank balances $ICA_ADDRESS -o json --home $HOME_1 | jq '.'
+$CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
+$CHAIN_BINARY q bank balances $ICA_ADDRESS -o json --home $HOME_1 | jq '.'
 pre_redelegation_tokens_1=$($CHAIN_BINARY q staking validator $VALOPER_1 -o json --home $HOME_1 | jq -r '.tokens')
 pre_redelegation_shares_1=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.delegator_shares')
 pre_redelegation_liquid_shares_1=$($CHAIN_BINARY q staking validator $VALOPER_1 -o json --home $HOME_1 | jq -r '.total_liquid_shares')
@@ -153,9 +154,8 @@ submit_ibc_tx "tx interchain-accounts controller send-tx connection-0 redelegate
 echo "Waiting for redelegation to go on-chain..."
 sleep 10
 
-$CHAIN_BINARY q staking validator $VALOPER_1 -o json --home $HOME_1 | jq '.'
-$CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq '.'
-# $CHAIN_BINARY q bank balances $ICA_ADDRESS -o json --home $HOME_1 | jq '.'
+$CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
+$CHAIN_BINARY q bank balances $ICA_ADDRESS -o json --home $HOME_1 | jq '.'
 post_redelegation_tokens_1=$($CHAIN_BINARY q staking validator $VALOPER_1 -o json --home $HOME_1 | jq -r '.tokens')
 post_redelegation_shares_1=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.delegator_shares')
 post_redelegation_liquid_shares_1=$($CHAIN_BINARY q staking validator $VALOPER_1 -o json --home $HOME_1 | jq -r '.total_liquid_shares')
