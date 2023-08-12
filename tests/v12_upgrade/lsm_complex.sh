@@ -56,6 +56,7 @@ submit_tx "tx staking tokenize-share $VALOPER_2 $tokenize$DENOM $liquid_address_
 $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
 echo "Slashing validator 2..."
 tests/major_fresh_upgrade/jail_validator.sh $PROVIDER_SERVICE_2 $VALOPER_2
+$CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
 echo "Redeeming with tokenizing account..."
 submit_tx "tx staking redeem-tokens $tokenize$tokenized_denom_1 --from $liquid_address_1 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
 $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
@@ -72,6 +73,7 @@ fi
 
 echo "Unjailing validator 2..."
 tests/major_fresh_upgrade/unjail_validator.sh $PROVIDER_SERVICE_2 $VAL2_RPC_PORT $WALLET_2 $VALOPER_2
+$CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
 # $CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq '.'
 # echo "Unbonding from tokenizing account..."
 # submit_tx "tx staking unbond $VALOPER_2 ${delegation_balance_post_redeem%.*}$DENOM --from $liquid_address_1 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1

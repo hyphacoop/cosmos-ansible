@@ -14,7 +14,7 @@ echo "** Failure case 1: ICA attempts to delegate without validator bond **"
 # $CHAIN_BINARY q bank balances $ICA_ADDRESS -o json --home $HOME_1 | jq '.'
 
 jq -r --arg ADDRESS "$ICA_ADDRESS" '.delegator_address = $ADDRESS' tests/v12_upgrade/msg-delegate.json > delegate-fail-1.json
-message=$(jq -r --arg ADDRESS "$VALOPER_3" '.validator_address = $ADDRESS' delegate-fail-1.json)
+message=$(jq -r --arg ADDRESS "$VALOPER_1" '.validator_address = $ADDRESS' delegate-fail-1.json)
 echo "Generating packet JSON..."
 $STRIDE_CHAIN_BINARY tx interchain-accounts host generate-packet-data "$message" > delegate_packet.json
 echo "Sending tx staking delegate to host chain..."
