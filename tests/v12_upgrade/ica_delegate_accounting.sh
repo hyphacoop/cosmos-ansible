@@ -122,19 +122,17 @@ fi
 
 
 echo "** Test case 3: Redelegation decreases source validator liquid shares and increases destination validator liquid shares **"
-$CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
-$CHAIN_BINARY q bank balances $ICA_ADDRESS -o json --home $HOME_1 | jq '.'
 pre_redelegation_tokens_1=$($CHAIN_BINARY q staking validator $VALOPER_1 -o json --home $HOME_1 | jq -r '.tokens')
 pre_redelegation_shares_1=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.delegator_shares')
 pre_redelegation_liquid_shares_1=$($CHAIN_BINARY q staking validator $VALOPER_1 -o json --home $HOME_1 | jq -r '.total_liquid_shares')
 exchange_rate_1=$(echo "$pre_redelegation_shares_1/$pre_redelegation_tokens_1" | bc -l)
-exchange_rate_1=${exchange_rate_1%.*}
+echo "Exchange rate for val1: $exchange_rate_1"
 
 pre_redelegation_tokens_2=$($CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq -r '.tokens')
 pre_redelegation_shares_2=$($CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq -r '.delegator_shares')
 pre_redelegation_liquid_shares_2=$($CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq -r '.total_liquid_shares')
 exchange_rate_2=$(echo "$pre_redelegation_shares_2/$pre_redelegation_tokens_2" | bc -l)
-exchange_rate_2=${exchange_rate_2%.*}
+echo "Exchange rate for val2: $exchange_rate_2"
 
 expected_liquid_decrease=$(echo "$exchange_rate_2*$redelegation" | bc -l)
 expected_liquid_decrease=${expected_liquid_decrease%.*}
