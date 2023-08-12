@@ -59,7 +59,7 @@ VAL2_NODE_ID=$($CHAIN_BINARY tendermint show-node-id --home $HOME_2)
 VAL3_NODE_ID=$($CHAIN_BINARY tendermint show-node-id --home $HOME_3)
 $CHAIN_BINARY gentx $MONIKER_1 $VAL1_STAKE$DENOM --pubkey "$($CHAIN_BINARY tendermint show-validator --home $HOME_1)" --node-id $VAL1_NODE_ID --moniker $MONIKER_1 --chain-id $CHAIN_ID --home $HOME_1 --output-document $HOME_1/config/gentx/$MONIKER_1-gentx.json
 $CHAIN_BINARY gentx $MONIKER_2 $VAL2_STAKE$DENOM --pubkey "$($CHAIN_BINARY tendermint show-validator --home $HOME_2)" --node-id $VAL2_NODE_ID --moniker $MONIKER_2 --chain-id $CHAIN_ID --home $HOME_1 --output-document $HOME_1/config/gentx/$MONIKER_2-gentx.json
-# $CHAIN_BINARY gentx $MONIKER_3 $VAL3_STAKE$DENOM --pubkey "$($CHAIN_BINARY tendermint show-validator --home $HOME_3)" --node-id $VAL3_NODE_ID --moniker $MONIKER_3 --chain-id $CHAIN_ID --home $HOME_1 --output-document $HOME_1/config/gentx/$MONIKER_3-gentx.json
+$CHAIN_BINARY gentx $MONIKER_3 $VAL3_STAKE$DENOM --pubkey "$($CHAIN_BINARY tendermint show-validator --home $HOME_3)" --node-id $VAL3_NODE_ID --moniker $MONIKER_3 --chain-id $CHAIN_ID --home $HOME_1 --output-document $HOME_1/config/gentx/$MONIKER_3-gentx.json
 $CHAIN_BINARY collect-gentxs --home $HOME_1
 
 echo "Patching genesis file for fast governance..."
@@ -198,4 +198,4 @@ echo "WantedBy=multi-user.target"           | sudo tee /etc/systemd/system/$PROV
 sudo systemctl daemon-reload
 sudo systemctl enable $PROVIDER_SERVICE_1 --now
 sudo systemctl enable $PROVIDER_SERVICE_2 --now
-# sudo systemctl enable $PROVIDER_SERVICE_3 --now
+sudo systemctl enable $PROVIDER_SERVICE_3 --now
