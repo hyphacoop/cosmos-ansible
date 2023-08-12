@@ -171,7 +171,7 @@ echo "Expected decrease in val 2 liquid shares: $expected_liquid_decrease"
 echo "Val 2 liquid shares delta: $liquid_shares_delta_2"
 
 if [[ $liquid_shares_delta_2 -eq $expected_liquid_decrease ]]; then
-    echo "Accounting test 3 success: expected liquid shares decrease ($liquid_shares_delta = $expected_liquid_decrease)"
+    echo "Accounting test 3 success: expected liquid shares decrease ($liquid_shares_delta_2 = $expected_liquid_decrease)"
 elif [[ $(($liquid_shares_delta_2-$expected_liquid_decrease)) -eq 1 ]]; then
     echo "Accounting test 3 success: liquid shares increase off by 1"
 elif [[ $(($expected_liquid_decrease-$liquid_shares_delta_2)) -eq 1 ]]; then

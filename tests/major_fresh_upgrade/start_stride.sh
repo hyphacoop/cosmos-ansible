@@ -96,8 +96,9 @@ toml set --toml-path $STRIDE_HOME_1/config/config.toml p2p.laddr "tcp://0.0.0.0:
 toml set --toml-path $STRIDE_HOME_2/config/config.toml p2p.laddr "tcp://0.0.0.0:$STRIDE_P2P_2"
 
 echo "Setting a short commit timeout..."
-toml set --toml-path $STRIDE_HOME_1/config/config.toml consensus.timeout_commit "1s"
-toml set --toml-path $STRIDE_HOME_2/config/config.toml consensus.timeout_commit "1s"
+seconds=s
+toml set --toml-path $STRIDE_HOME_1/config/config.toml consensus.timeout_commit "$COMMIT_TIMEOUT$seconds"
+toml set --toml-path $STRIDE_HOME_2/config/config.toml consensus.timeout_commit "$COMMIT_TIMEOUT$seconds"
 
 # Allow duplicate IPs in p2p
 toml set --toml-path $STRIDE_HOME_1/config/config.toml p2p.allow_duplicate_ip true
