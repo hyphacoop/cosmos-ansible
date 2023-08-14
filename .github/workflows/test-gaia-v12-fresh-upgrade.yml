@@ -314,6 +314,7 @@ jobs:
         env:
           CON1_RPC_PORT: 27201
         run: tests/major_fresh_upgrade/test_ccv.sh
+
       # - name: Test software upgrade for published releases
       #   if: ${{ matrix.upgrade_version != 'main' }}
       #   env:
@@ -327,6 +328,7 @@ jobs:
       #     DOWNLOAD_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/gaiad-linux-main/gaiad-linux
       #   run: |
       #     tests/major_fresh_upgrade/software_upgrade.sh 127.0.0.1 $VAL1_RPC_PORT v12
+
       - name: _blocks-2
         run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 5
       - name: _txs-2
