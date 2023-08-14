@@ -51,7 +51,7 @@ jobs:
       - name: Run playbook
         run: |
           source ~/env/bin/activate
-          chain_version=$(curl -s https://rpc.state-sync-01.theta-testnet.polypore.xyz/abci_info? | jq -r '.result.response.version'
+          chain_version=$(curl -s https://rpc.state-sync-01.theta-testnet.polypore.xyz/abci_info? | jq -r '.result.response.version')
           ansible-playbook node.yml -i examples/inventory-public-testnet.yml --extra-vars "target=local reboot=false chain_version=$chain_version chain_home={{ node_user_home }}/.gaia node_user=runner enable_swap=false cosmovisor_invariants_flag='' chain_start=false use_cosmovisor=false"
       - name: Create service script
         run: |
