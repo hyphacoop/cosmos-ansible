@@ -13,6 +13,9 @@ $CHAIN_BINARY keys add acct_liquid --home $HOME_1
 liquid_address=$($CHAIN_BINARY keys list --home $HOME_1 --output json | jq -r '.[] | select(.name=="acct_liquid").address')
 echo "Liquid address 1: $liquid_address"
 
+echo "Funding liquid account..."
+submit_tx "tx bank send $WALLET_1 $liquid_address 100000000uatom --from $WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -o json -y" $CHAIN_BINARY $HOME_1
+
 echo "Sending tokens from WALLET_3 to liquid_address via bank send..."
 submit_tx "tx bank send $WALLET_3 $liquid_address $bank_send_amount$tokenized_denom --from $WALLET_3 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -b block -y" $CHAIN_BINARY $HOME_1
 # sleep 2
