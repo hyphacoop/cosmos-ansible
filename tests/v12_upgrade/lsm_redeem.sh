@@ -6,11 +6,15 @@ bank_send_amount=20000000
 ibc_transfer_amount=10000000
 tokenized_denom="$VALOPER_1/1"
 
-wallet_3_delegations_1=$($CHAIN_BINARY q staking delegations $WALLET_3 --home $HOME_1 -o json | jq -r --arg ADDRESS "$VALOPER_1" '.delegation_responses[] | select(.delegation.validator_address==$ADDRESS).delegation.shares')
-echo "Wallet_3 delegations: $wallet_3_delegations_1"
+# wallet_3_delegations_1=$($CHAIN_BINARY q staking delegations $WALLET_3 --home $HOME_1 -o json | jq -r --arg ADDRESS "$VALOPER_1" '.delegation_responses[] | select(.delegation.validator_address==$ADDRESS).delegation.shares')
+# echo "Wallet_3 delegations: $wallet_3_delegations_1"
 
-echo "Sending tokens from $WALLET_3 to $WALLET_4 via bank send..."
-submit_tx "tx bank send $WALLET_3 $WALLET_4 $bank_send_amount$tokenized_denom --from $WALLET_3 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -b block -y" $CHAIN_BINARY $HOME_1
+$CHAIN_BINARY keys add acct_liquid --home $HOME_1
+liquid_address=$($CHAIN_BINARY keys list --home $HOME_1 --output json | jq -r '.[] | select(.name=="acct_liquid").address')
+echo "Liquid address 1: $liquid_address"
+
+echo "Sending tokens from WALLET_3 to liquid_address via bank send..."
+submit_tx "tx bank send $WALLET_3 $liquid_address $bank_send_amount$tokenized_denom --from $WALLET_3 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -b block -y" $CHAIN_BINARY $HOME_1
 # sleep 2
 # echo "Sending tokens from $WALLET_3 to $WALLET_5 via ibc transfer..."
 # submit_tx "tx ibc-transfer transfer transfer channel-1 $STRIDE_WALLET_5 $ibc_transfer_amount$tokenized_denom --from $WALLET_3 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -b block -y" $CHAIN_BINARY $HOME_1
@@ -25,11 +29,11 @@ submit_tx "tx bank send $WALLET_3 $WALLET_4 $bank_send_amount$tokenized_denom --
 # fi
 
 $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
-echo "Redeeming tokens from $WALLET_3..."
+echo "Redeeming tokens from WALLET_3..."
 submit_tx "tx staking redeem-tokens 30000000$tokenized_denom --from $WALLET_3 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -b block -y" $CHAIN_BINARY $HOME_1
 $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
-echo "Redeeming tokens from $WALLET_4..."
-submit_tx "tx staking redeem-tokens $bank_send_amount$tokenized_denom --from $WALLET_4 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -b block -y" $CHAIN_BINARY $HOME_1
+echo "Redeeming tokens from liquid_address..."
+submit_tx "tx staking redeem-tokens $bank_send_amount$tokenized_denom --from $liquid_address -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -b block -y" $CHAIN_BINARY $HOME_1
 $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
 
 # echo "Transferring $WALLET_5 IBC tokens to LSM chain with..."
@@ -43,10 +47,10 @@ $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
 
 wallet_3_delegations_2=$($CHAIN_BINARY q staking delegations $WALLET_3 --home $HOME_1 -o json | jq -r --arg ADDRESS "$VALOPER_1" '.delegation_responses[] | select(.delegation.validator_address==$ADDRESS).delegation.shares')
 wallet_3_delegations_diff=$((${wallet_3_delegations_2%.*}-${wallet_3_delegations_1%.*}))
-wallet_4_delegations=$($CHAIN_BINARY q staking delegations $WALLET_4 --home $HOME_1 -o json | jq -r --arg ADDRESS "$VALOPER_1" '.delegation_responses[] | select(.delegation.validator_address==$ADDRESS).delegation.shares')
+liquid_acct_delegations=$($CHAIN_BINARY q staking delegations $liquid_address --home $HOME_1 -o json | jq -r --arg ADDRESS "$VALOPER_1" '.delegation_responses[] | select(.delegation.validator_address==$ADDRESS).delegation.shares')
 # wallet_5_delegations=$($CHAIN_BINARY q staking delegations $WALLET_5 --home $HOME_1 -o json | jq -r --arg ADDRESS "$VALOPER_1" '.delegation_responses[] | select(.delegation.validator_address==$ADDRESS).delegation.shares')
 wallet_3_delegation_balance=$($CHAIN_BINARY q staking delegations $WALLET_3 --home $HOME_1 -o json | jq -r --arg ADDRESS "$VALOPER_1" '.delegation_responses[] | select(.delegation.validator_address==$ADDRESS).balance.amount')
-wallet_4_delegation_balance=$($CHAIN_BINARY q staking delegations $WALLET_4 --home $HOME_1 -o json | jq -r --arg ADDRESS "$VALOPER_1" '.delegation_responses[] | select(.delegation.validator_address==$ADDRESS).balance.amount')
+liquid_acct_delegation_balance=$($CHAIN_BINARY q staking delegations $liquid_address --home $HOME_1 -o json | jq -r --arg ADDRESS "$VALOPER_1" '.delegation_responses[] | select(.delegation.validator_address==$ADDRESS).balance.amount')
 # wallet_5_delegation_balance=$($CHAIN_BINARY q staking delegations $WALLET_5 --home $HOME_1 -o json | jq -r --arg ADDRESS "$VALOPER_1" '.delegation_responses[] | select(.delegation.validator_address==$ADDRESS).balance.amount')
 # validator_bond_shares=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.total_validator_bond_shares')
 # validator_liquid_shares=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.total_liquid_shares')
@@ -64,14 +68,14 @@ if [[ $wallet_3_delegation_balance -ne 80000000 ]]; then
     exit 1
 fi
 
-echo "Wallet 4 delegation shares: ${wallet_4_delegations%.*}"
-if [[ ${wallet_4_delegations%.*} -ne $bank_send_amount ]]; then
+echo "Wallet 4 delegation shares: ${liquid_acct_delegations%.*}"
+if [[ ${liquid_acct_delegations%.*} -ne $bank_send_amount ]]; then
     echo "Redeem unsuccessful: unexpected delegation shares for wallet 4"
     exit 1
 fi
 
-echo "Wallet 4 delegation balance: $wallet_4_delegation_balance"
-if [[ $wallet_4_delegation_balance -ne $bank_send_amount ]]; then
+echo "Wallet 4 delegation balance: $liquid_acct_delegation_balance"
+if [[ $liquid_acct_delegation_balance -ne $bank_send_amount ]]; then
     echo "Redeem unsuccessful: unexpected delegation balance for wallet 4"
     exit 1
 fi
@@ -122,8 +126,8 @@ fi
 
 $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
 
-echo "Validator unbond from WALLET_4..."
-submit_tx "tx staking unbond $VALOPER_1 $bank_send_amount$DENOM --from $WALLET_4 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT -y --fees $BASE_FEES$DENOM" $CHAIN_BINARY $HOME_1
+echo "Validator unbond from liquid_address..."
+submit_tx "tx staking unbond $VALOPER_1 $bank_send_amount$DENOM --from $liquid_address -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT -y --fees $BASE_FEES$DENOM" $CHAIN_BINARY $HOME_1
 validator_bond_shares=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.total_validator_bond_shares')
 echo "Validator bond shares: ${validator_bond_shares%.*}"
 if [[ ${validator_bond_shares%.*} -ne 0  ]]; then
