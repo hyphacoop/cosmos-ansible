@@ -18,8 +18,8 @@ echo "Liquid address 1: $liquid_address_1"
 echo "Liquid address 2: $liquid_address_2"
 
 echo "Funding liquid accounts..."
-submit_tx "tx bank send $WALLET_1 $liquid_address_1 100000000uatom --from $WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -o json -y" $CHAIN_BINARY $HOME_1
-submit_tx "tx bank send $WALLET_1 $liquid_address_2 100000000uatom --from $WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -o json -y" $CHAIN_BINARY $HOME_1
+submit_tx "tx bank send $WALLET_1 $liquid_address_1 1000000000uatom --from $WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -o json -y" $CHAIN_BINARY $HOME_1
+submit_tx "tx bank send $WALLET_1 $liquid_address_2 1000000000uatom --from $WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -o json -y" $CHAIN_BINARY $HOME_1
 
 echo "Delegating with liquid acct 1..."
 submit_tx "tx staking delegate $VALOPER_1 $liquid_1_delegations$DENOM --from $liquid_address_1 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
