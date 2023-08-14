@@ -5,7 +5,7 @@ source tests/process_tx.sh
 liquid_1_delegations=20000000
 liquid_2_delegations=150000000
 liquid_2_tokenize=120000000
-tokenized_denom="$VALOPER_1/1"
+tokenized_denom="$VALOPER_1/2"
 
 validator_cap_param=$($CHAIN_BINARY q staking params --home $HOME_1 -o json | jq -r '.validator_liquid_staking_cap')
 global_cap_param=$($CHAIN_BINARY q staking params --home $HOME_1 -o json | jq -r '.global_liquid_staking_cap')
