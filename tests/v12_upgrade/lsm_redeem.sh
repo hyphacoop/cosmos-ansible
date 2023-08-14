@@ -131,4 +131,5 @@ if [[ ${validator_bond_shares%.*} -ne 0  ]]; then
     exit 1
 fi
 
+sleep $(($COMMIT_TIMEOUT+2))
 $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
