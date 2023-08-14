@@ -462,4 +462,4 @@ jobs:
           CONSUMER_CHAIN_ID: consumerc
           CONSUMER_HOME_1: /home/runner/.conc1
           CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY_2 }}
-        run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-7 5
+        run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-8 5
