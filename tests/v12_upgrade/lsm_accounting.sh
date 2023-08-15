@@ -81,7 +81,7 @@ fi
 
 tokens=$($CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq -r '.tokens')
 shares=$($CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq -r '.delegator_shares')
-$CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq -r '.'
+$CHAIN_BINARY q staking validators --home $HOME_1 -o json | jq -r '.'
 exchange_rate=$(echo "$shares/$tokens" | bc -l)
 expected_liquid_decrease=$(echo "$exchange_rate*$tokenize" | bc -l)
 expected_liquid_decrease=${expected_liquid_decrease%.*}
@@ -117,6 +117,11 @@ else
     echo "Accounting failure: unexpected global liquid tokens decrease ($total_delta != $tokenize)"
     exit 1
 fi
+
+echo "Increasing delegation from validator bond delegator..."
+bonding_address=$($CHAIN_BINARY keys list --home $HOME_1 --output json | jq -r '.[] | select(.name=="bonding_account").address')
+submit_tx "tx staking delegate $VALOPER_2 $tokenize$DENOM --from bonding_account -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+$CHAIN_BINARY q staking validators --home $HOME_1 -o json | jq -r '.'
 
 # echo "Unbonding from tokenizing account..."
 # delegation_balance=$($CHAIN_BINARY q staking delegations $liquid_address --home $HOME_1 -o json | jq -r '.delegation_responses[0].balance.amount')
