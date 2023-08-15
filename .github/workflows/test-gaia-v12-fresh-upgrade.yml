@@ -348,23 +348,6 @@ jobs:
           CON1_RPC_PORT: 27301
         run: tests/major_fresh_upgrade/test_ccv.sh
 
-      - name: _lsm-happy-bond-1
-        run: tests/v12_upgrade/lsm_validator_bond.sh
-      - name: _lsm-happy-tokenize-1
-        run: tests/v12_upgrade/lsm_tokenize.sh
-      - name: _lsm-happy-transfer-1
-        run: tests/v12_upgrade/lsm_transfer.sh
-      - name: _lsm-happy-redeem-1
-        env:
-          CONSUMER_FEES: 1000
-        run: tests/v12_upgrade/lsm_redeem.sh
-      - name: _lsm-failures-1
-        run: tests/v12_upgrade/lsm_failures.sh
-      - name: _lsm-complex-1
-        run: tests/v12_upgrade/lsm_complex.sh
-      - name: _lsm_accounting-1
-        run: tests/v12_upgrade/lsm_accounting.sh
-
       - name: Start Stride chain
         run: tests/major_fresh_upgrade/start_stride.sh
       - name: _stride-blocks-1
@@ -397,6 +380,23 @@ jobs:
         run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-5 4
       - name: Register and fund ICA
         run: tests/v12_upgrade/setup_ica.sh
+
+      - name: _lsm-happy-bond-1
+        run: tests/v12_upgrade/lsm_validator_bond.sh
+      - name: _lsm-happy-tokenize-1
+        run: tests/v12_upgrade/lsm_tokenize.sh
+      - name: _lsm-happy-transfer-1
+        run: tests/v12_upgrade/lsm_transfer.sh
+      - name: _lsm-happy-redeem-1
+        env:
+          CONSUMER_FEES: 1000
+        run: tests/v12_upgrade/lsm_redeem.sh
+      - name: _lsm-failures-1
+        run: tests/v12_upgrade/lsm_failures.sh
+      - name: _lsm-complex-1
+        run: tests/v12_upgrade/lsm_complex.sh
+      - name: _lsm_accounting-1
+        run: tests/v12_upgrade/lsm_accounting.sh
 
       - name: _lsm-lsp-happy-1
         run: tests/v12_upgrade/ica_delegate_happy.sh
