@@ -5,7 +5,7 @@ source tests/process_tx.sh
 
 tokenized_denom="$VALOPER_1/1"
 $CHAIN_BINARY keys add new_owner --home $HOME_1
-owner_address=$($CHAIN_BINARY keys list --home $HOME_1 --output json | jq -r '.[] | select(.name=="acct_liquid").address')
+owner_address=$($CHAIN_BINARY keys list --home $HOME_1 --output json | jq -r '.[] | select(.name=="new_owner").address')
 echo "New owner address: $owner_address"
 
 record_id=$($CHAIN_BINARY q staking tokenize-share-record-by-denom $tokenized_denom --home $HOME_1 -o json | jq -r '.record.id')
