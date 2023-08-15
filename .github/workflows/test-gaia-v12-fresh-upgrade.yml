@@ -390,6 +390,7 @@ jobs:
       - name: _lsm-happy-redeem-1
         env:
           CONSUMER_FEES: 1000
+          IBC_CHANNEL: channel-5
         run: tests/v12_upgrade/lsm_redeem.sh
       - name: _lsm-failures-1
         run: tests/v12_upgrade/lsm_failures.sh
@@ -449,7 +450,6 @@ jobs:
           CONSUMER_HOME_1: /home/runner/.conc1
           CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY_2 }}
         run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-8 5
-
 
       - name: _consumera-vsc-4
         env:
