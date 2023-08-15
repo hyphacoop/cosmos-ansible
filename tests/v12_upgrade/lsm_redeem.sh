@@ -34,7 +34,7 @@ fi
 $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
 $CHAIN_BINARY q bank balances $WALLET_3 -o json --home $HOME_1 | jq '.'
 echo "Redeeming tokens from WALLET_3..."
-submit_tx "tx staking redeem-tokens 30000000$tokenized_denom --from $WALLET_3 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -b block -y" $CHAIN_BINARY $HOME_1
+submit_tx "tx staking redeem-tokens 20000000$tokenized_denom --from $WALLET_3 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -b block -y" $CHAIN_BINARY $HOME_1
 $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
 echo "Redeeming tokens from liquid_address..."
 submit_tx "tx staking redeem-tokens $bank_send_amount$tokenized_denom --from $liquid_address -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -b block -y" $CHAIN_BINARY $HOME_1
@@ -61,13 +61,13 @@ liquid_acct_delegation_balance=$($CHAIN_BINARY q staking delegations $liquid_add
 # $CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json
 
 echo "Wallet 3 delegation shares increase: $wallet_3_delegations_diff"
-if [[ $wallet_3_delegations_diff -ne 30000000 ]]; then
+if [[ $wallet_3_delegations_diff -ne 20000000 ]]; then
     echo "Redeem unsuccessful: unexpected delegation shares for wallet 3"
     exit 1
 fi
 
 echo "Wallet 3 delegation balance: $wallet_3_delegation_balance"
-if [[ $wallet_3_delegation_balance -ne 80000000 ]]; then
+if [[ $wallet_3_delegation_balance -ne 70000000 ]]; then
     echo "Redeem unsuccessful: unexpected delegation balance for wallet 3"
     exit 1
 fi
