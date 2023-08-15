@@ -8,6 +8,9 @@ $CHAIN_BINARY keys add new_owner --home $HOME_1
 owner_address=$($CHAIN_BINARY keys list --home $HOME_1 --output json | jq -r '.[] | select(.name=="new_owner").address')
 echo "New owner address: $owner_address"
 
+echo "Funding new owner address..."
+submit_tx "tx bank send $WALLET_1 $owner_address 10000000uatom --from $WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -o json -y" $CHAIN_BINARY $HOME_1
+
 record_id=$($CHAIN_BINARY q staking tokenize-share-record-by-denom $tokenized_denom --home $HOME_1 -o json | jq -r '.record.id')
 owner=$($CHAIN_BINARY q staking tokenize-share-record-by-denom $tokenized_denom --home $HOME_1 -o json | jq -r '.record.owner')
 echo "$owner owns record $record_id."
