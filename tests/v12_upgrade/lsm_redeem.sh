@@ -32,6 +32,7 @@ if [[ $ibc_balance -ne $ibc_transfer_amount ]]; then
 fi
 
 $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
+$CHAIN_BINARY q bank balances $WALLET_3 -o json --home $HOME_1 | jq '.'
 echo "Redeeming tokens from WALLET_3..."
 submit_tx "tx staking redeem-tokens 30000000$tokenized_denom --from $WALLET_3 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -b block -y" $CHAIN_BINARY $HOME_1
 $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
