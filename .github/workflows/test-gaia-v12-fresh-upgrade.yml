@@ -396,6 +396,8 @@ jobs:
       - name: Register and fund ICA
         run: tests/v12_upgrade/setup_ica.sh
 
+      - name: Create LSM log file
+        run: touch lsm.csv
       - name: _lsm-happy-bond-1
         run: tests/v12_upgrade/lsm_validator_bond.sh
       - name: _lsm-happy-tokenize-1
@@ -412,6 +414,8 @@ jobs:
       - name: _lsm-complex-1
         run: tests/v12_upgrade/lsm_complex.sh
       - name: _lsm_accounting-1
+        env:
+          BASE_FEES: 2000
         run: tests/v12_upgrade/lsm_accounting.sh
 
       - name: _lsm-lsp-happy-1
