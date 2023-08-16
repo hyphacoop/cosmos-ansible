@@ -11,7 +11,7 @@ PROVIDER_BADDRESS=$(jq -r '.address' $HOME_1/config/priv_validator_key.json)
 PROVIDER_POWER=$(curl -s http://localhost:$VAL1_RPC_PORT/validators | jq -r '.result.validators[] | select(.address=="'$PROVIDER_BADDRESS'") | '.voting_power'')
 
 # Verify new voting power in consumer chain
-curl -s http://localhost:$CON1_RPC_PORT/validators
+curl http://localhost:$CON1_RPC_PORT/validators
 CONSUMER_POWER=$(curl -s http://localhost:$CON1_RPC_PORT/validators | jq -r '.result.validators[] | select(.address=="'$PROVIDER_BADDRESS'") | '.voting_power'')
 
 echo "Top validator VP: $PROVIDER_POWER (provider), $CONSUMER_POWER (consumer)"
