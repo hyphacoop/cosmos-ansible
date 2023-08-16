@@ -405,7 +405,7 @@ jobs:
       - name: _lsm-happy-redeem-1
         env:
           CONSUMER_FEES: 1000
-          IBC_CHANNEL: channel-5
+          IBC_CHANNEL: channel-1
         run: tests/v12_upgrade/lsm_redeem.sh
       - name: _lsm-failures-1
         run: tests/v12_upgrade/lsm_failures.sh
