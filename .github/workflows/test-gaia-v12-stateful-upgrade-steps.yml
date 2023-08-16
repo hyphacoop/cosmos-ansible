@@ -155,7 +155,7 @@ jobs:
       - name: Start chain
         env:
           START_VERSION: ${{inputs.gaia_version}}
-          ARCHIVE_URL: "https://files.polypore.xyz/archived-state/rs-testnet-provider/latest_v11.json.gz"
+          ARCHIVE_URL: "https://files.polypore.xyz/archived-state/latest_v11.tar.gz"
         run: tests/major_stateful_upgrade/start_chain.sh
       - name: _blocks-1
         run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 50 # 5 blocks
@@ -214,7 +214,7 @@ jobs:
       # - name: _soft-opt-out-1
       #   run: tests/v11_upgrade/test_validator_jailed.sh $DELEGATE_2 true
       # - name: _soft-opt-out-2
-      #   run: tests/v11_upgrade/test_validator_jailed.sh cosmosvaloper16nkm45xzkh600mscxdmwzql054y4xe0nuawrsq false
+      #   run: tests/v11_upgrade/test_validator_jailed.sh cosmosvaloper10nzaaeh2kq28t3nqsh5m8kmyv90vx7ym5mpakx false
       # - name: Initialize consumer chain b with ICS v2.0.0
       #   env:
       #     CONSUMER_CHAIN_ID: consumerb
