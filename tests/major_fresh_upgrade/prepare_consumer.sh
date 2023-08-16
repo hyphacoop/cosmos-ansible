@@ -1,5 +1,5 @@
 #!/bin/bash
-# Launch a consumer chain
+# Prepare a consumer chain to be started
 
 echo "Patching add template with spawn time..."
 spawn_time=$(date -u --iso-8601=ns | sed s/+00:00/Z/ | sed s/,/./)
@@ -12,7 +12,7 @@ proposal="$CHAIN_BINARY tx gov submit-proposal consumer-addition proposal-add-$C
 echo $proposal
 txhash=$($proposal | jq -r .txhash)
 # Wait for the proposal to go on chain
-sleep 4
+sleep $(($COMMIT_TIMEOUT+2))
 
 # Get proposal ID from txhash
 echo "Getting proposal ID from txhash..."
@@ -21,10 +21,10 @@ proposal_id=$($CHAIN_BINARY q tx $txhash --home $HOME_1 --output json | jq -r '.
 
 echo "Voting on proposal $proposal_id..."
 $CHAIN_BINARY tx gov vote $proposal_id yes --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM --from $WALLET_1 --keyring-backend test --home $HOME_1 --chain-id $CHAIN_ID -b block -y
+sleep $(($COMMIT_TIMEOUT+2))
 $CHAIN_BINARY q gov tally $proposal_id --home $HOME_1
 
 echo "Waiting for proposal to pass..."
-sleep 5
 sleep $VOTING_PERIOD
 
 #$CHAIN_BINARY q gov proposals --home $HOME_1
@@ -38,7 +38,3 @@ echo "Patching the consumer genesis file..."
 jq -s '.[0].app_state.ccvconsumer = .[1] | .[0]' $CONSUMER_HOME_1/config/genesis.json ccv.json > consumer-genesis.json
 cp consumer-genesis.json $CONSUMER_HOME_1/config/genesis.json
 cp consumer-genesis.json $CONSUMER_HOME_2/config/genesis.json
-
-echo "Starting the consumer chain..."
-sudo systemctl enable $CONSUMER_SERVICE_1 --now
-sudo systemctl enable $CONSUMER_SERVICE_2 --now

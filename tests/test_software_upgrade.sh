@@ -71,7 +71,7 @@ if [ -n "$upgrade_name" ]; then
     txhash=$($proposal | jq -r .txhash)
 
     # Wait for the proposal to go on chain
-    sleep 8
+    sleep 3
 
     # Get proposal ID from txhash
     echo "Get proposal ID from txhash"
@@ -85,7 +85,7 @@ if [ -n "$upgrade_name" ]; then
 
     # Wait for the voting period to be over
     echo "Waiting for the voting period to end..."
-    sleep 8
+    sleep $voting_period_seconds
 
     echo "Upgrade proposal $proposal_id status:"
     gaiad q gov proposal $proposal_id --output json | jq '.status'

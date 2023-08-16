@@ -1,0 +1,9 @@
+{
+    "@type": "/cosmos.staking.v1beta1.MsgDelegate",
+    "delegator_address": "cosmos1r5v5srda7xfth3hn2s26txvrcrntldjumt8mhl",
+    "validator_address": "cosmosvaloper1r5v5srda7xfth3hn2s26txvrcrntldju7lnwmv",
+    "amount": {
+      "denom": "uatom",
+      "amount": "20000000"
+    }
+}

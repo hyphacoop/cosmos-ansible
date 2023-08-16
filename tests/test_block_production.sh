@@ -26,7 +26,7 @@ done
 
 # Check if gaia is producing blocks
 test_counter=0
-max_tests=2100
+max_tests=20
 echo "Current gaiad version: $chain_version"
 echo "Block height: $cur_height"
 height=0
