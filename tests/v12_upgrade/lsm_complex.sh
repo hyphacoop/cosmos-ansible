@@ -144,6 +144,8 @@ else
     exit 1
 fi
 
+#TODO: add delegation shares check
+
 # echo "Unbonding from tokenizing account..."
 # submit_tx "tx staking unbond $VALOPER_2 ${delegation_balance_post_redeem%.*}$DENOM --from $liquid_address_2 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
 # echo "Unbonding from bonding account..."

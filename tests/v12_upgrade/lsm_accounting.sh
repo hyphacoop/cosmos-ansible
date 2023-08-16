@@ -83,11 +83,15 @@ tokens=$($CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | j
 shares=$($CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq -r '.delegator_shares')
 $CHAIN_BINARY q staking validators --home $HOME_1 -o json | jq -r '.'
 exchange_rate=$(echo "$shares/$tokens" | bc -l)
+
+tokenized_balance=$($CHAIN_BINARY q bank balances $liquid_address --home $HOME_1 -o json | jq -r --arg DENOM "$tokenized_denom" '.balances[] | select(.denom==$DENOM).amount')
+echo "Tokenized balance: $tokenized_balance$tokenized_denom"
+
 expected_liquid_decrease=$(echo "$exchange_rate*$tokenize" | bc -l)
 expected_liquid_decrease=${expected_liquid_decrease%.*}
-echo "Exchange rate: $exchange_rate, expected liquid increase: $expected_liquid_decrease"
+echo "Exchange rate: $exchange_rate, expected liquid decrease: $expected_liquid_decrease"
 echo "Redeeming with tokenizing account..."
-submit_tx "tx staking redeem-tokens $tokenize$tokenized_denom --from $liquid_address -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+submit_tx "tx staking redeem-tokens $tokenized_balance$tokenized_denom --from $liquid_address -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
 $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
 val_liquid_3=$($CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq -r '.liquid_shares')
 echo "validator liquid shares post-redeem: $val_liquid_3"
@@ -98,13 +102,13 @@ val_delta=$(echo "$val_liquid_2-$val_liquid_3" | bc -l)
 val_delta=${val_delta%.*}
 total_delta=$(($total_liquid_2-$total_liquid_3))
 if [[ $val_delta -eq $expected_liquid_decrease ]]; then
-    echo "Accounting success: expected validator liquid shares increase ($val_delta = $expected_liquid_decrease)"
+    echo "Accounting success: expected validator liquid shares decrease ($val_delta = $expected_liquid_decrease)"
 elif [[ $(($val_delta-$expected_liquid_decrease)) -eq 1 ]]; then
-    echo "Accounting success:  validator liquid shares increase off by 1"
+    echo "Accounting success:  validator liquid shares decrease off by 1"
 elif [[ $(($expected_liquid_increase-$val_delta)) -eq 1 ]]; then
-    echo "Accounting success:  validator liquid shares increase off by 1"
+    echo "Accounting success:  validator liquid shares decrease off by 1"
 else
-    echo "Accounting failure: unexpected validator liquid shares increase ($val_delta != $expected_liquid_decrease)"
+    echo "Accounting failure: unexpected validator liquid shares decrease ($val_delta != $expected_liquid_decrease)"
     exit 1
 fi
 if [[ $total_delta -eq $tokenize ]]; then
