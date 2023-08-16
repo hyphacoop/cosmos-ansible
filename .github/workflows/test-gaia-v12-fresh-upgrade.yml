@@ -90,7 +90,7 @@ jobs:
       BASE_FEES: 1500
       HIGH_FEES: 10000
       GAS: auto
-      GAS_ADJUSTMENT: 1.2
+      GAS_ADJUSTMENT: 1.4
       HOME_1: /home/runner/.val1
       CONSUMER_HOME_1: /home/runner/.cona1
       VAL1_API_PORT: 25001
@@ -159,6 +159,7 @@ jobs:
       DOWNTIME_BLOCKS: 10000
       HERMES_VERSION: v1.5.1
       COMMIT_TIMEOUT: 3
+      LSM_LOG: lsm.csv
     steps:
       - name: start-version
         run: echo ${{matrix.gaia_version}}
@@ -397,7 +398,7 @@ jobs:
         run: tests/v12_upgrade/setup_ica.sh
 
       - name: Create LSM log file
-        run: touch lsm.csv
+        run: touch $LSM_LOG
       - name: _lsm-happy-bond-1
         run: tests/v12_upgrade/lsm_validator_bond.sh
       - name: _lsm-happy-tokenize-1
@@ -427,6 +428,8 @@ jobs:
       - name: _lsm-lsp-accounting-1
         run: tests/v12_upgrade/ica_delegate_accounting.sh
 
+      - name: Print LSM log
+        run: cat $LSM_LOG
       # - name: Initialize consumer chain c with ICS v2.0.0
       #   env:
       #     CONSUMER_CHAIN_ID: consumerc
