@@ -76,7 +76,7 @@ jq -r '.app_state.slashing.params.downtime_jail_duration |= "5s"' slashing.json 
 # jq -r '.app_state.staking.params.validator_liquid_staking_cap = "0.200000000000000000"' lsm-2.json > lsm-3.json
 
 echo "Patching genesis for ICA messages..."
-jq -r '.app_state.interchainaccounts.host_genesis_state.params.allow_messages[0] = "*"' lsm-3.json > ./ica_host.json
+jq -r '.app_state.interchainaccounts.host_genesis_state.params.allow_messages[0] = "*"' slashing-2.json > ./ica_host.json
 mv ica_host.json $HOME_1/config/genesis.json
 
 echo "Copying genesis file to other nodes..."
