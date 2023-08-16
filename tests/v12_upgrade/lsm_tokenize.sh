@@ -23,7 +23,7 @@ $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
 echo "Tokenizing shares with $WALLET_3..."
 submit_tx "tx staking tokenize-share $VALOPER_1 $tokenize$DENOM $WALLET_3 --from $WALLET_3 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
 
-liquid_shares=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.total_liquid_shares')
+liquid_shares=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.liquid_shares')
 echo "Liquid shares: ${liquid_shares%.*}"
 if [[ ${liquid_shares%.*} -ne $tokenize ]]; then
     echo "Tokenize unsuccessful: unexpected liquid shares amount"

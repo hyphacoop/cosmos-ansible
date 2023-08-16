@@ -36,7 +36,7 @@ submit_tx "tx staking validator-bond $VALOPER_2 --from bonding_account -o json -
 
 $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
 
-validator_bond_shares=$($CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq -r '.total_validator_bond_shares')
+validator_bond_shares=$($CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq -r '.validator_bond_shares')
 echo "Validator 2 bond shares: $validator_bond_shares"
 if [[ ${validator_bond_shares%.*} -ne $delegation  ]]; then
     echo "Validator bond unsuccessful."

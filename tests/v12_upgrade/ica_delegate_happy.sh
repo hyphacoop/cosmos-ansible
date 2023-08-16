@@ -9,7 +9,7 @@ pre_delegation_tokens=$($CHAIN_BINARY q staking validator $VALOPER_2 -o json --h
 echo "Pre-delegation val tokens: $pre_delegation_tokens"
 pre_delegation_shares=$($CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq -r '.delegator_shares')
 echo "Pre-delegation val shares: $pre_delegation_shares"
-pre_delegation_liquid_shares=$($CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq -r '.total_liquid_shares')
+pre_delegation_liquid_shares=$($CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq -r '.liquid_shares')
 echo "Pre-delegation val liquid shares: $pre_delegation_liquid_shares"
 exchange_rate=$(echo "$pre_delegation_shares/$pre_delegation_tokens" | bc -l)
 echo "Exchange rate: $exchange_rate"
@@ -29,7 +29,7 @@ sleep 10
 
 $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
 post_delegation_tokens=$($CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq -r '.tokens')
-post_delegation_liquid_shares=$($CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq -r '.total_liquid_shares')
+post_delegation_liquid_shares=$($CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq -r '.liquid_shares')
 
 tokens_delta=$(($post_delegation_tokens-$pre_delegation_tokens))
 liquid_shares_delta=$(echo "$post_delegation_liquid_shares-$pre_delegation_liquid_shares" | bc -l)

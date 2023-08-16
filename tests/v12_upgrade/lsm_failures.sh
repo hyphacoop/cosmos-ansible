@@ -40,13 +40,13 @@ $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
 submit_tx "tx staking validator-bond $VALOPER_2 --from $liquid_address_1 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT -y --fees $BASE_FEES$DENOM" $CHAIN_BINARY $HOME_1
 $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
 
-validator_bond_shares=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.total_validator_bond_shares')
+validator_bond_shares=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.validator_bond_shares')
 echo "Validator 1 bond shares: ${validator_bond_shares%.*}"
 if [[ ${validator_bond_shares%.*} -ne $liquid_1_delegations  ]]; then
     echo "Validator bond unsuccessful."
     exit 1
 fi
-validator_bond_shares=$($CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq -r '.total_validator_bond_shares')
+validator_bond_shares=$($CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq -r '.validator_bond_shares')
 echo "Validator 2 bond shares: ${validator_bond_shares%.*}"
 if [[ ${validator_bond_shares%.*} -ne $liquid_1_delegations  ]]; then
     echo "Validator bond unsuccessful."

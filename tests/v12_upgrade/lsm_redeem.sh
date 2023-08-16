@@ -56,8 +56,8 @@ liquid_acct_delegations=$($CHAIN_BINARY q staking delegations $liquid_address --
 wallet_3_delegation_balance=$($CHAIN_BINARY q staking delegations $WALLET_3 --home $HOME_1 -o json | jq -r --arg ADDRESS "$VALOPER_1" '.delegation_responses[] | select(.delegation.validator_address==$ADDRESS).balance.amount')
 liquid_acct_delegation_balance=$($CHAIN_BINARY q staking delegations $liquid_address --home $HOME_1 -o json | jq -r --arg ADDRESS "$VALOPER_1" '.delegation_responses[] | select(.delegation.validator_address==$ADDRESS).balance.amount')
 # wallet_5_delegation_balance=$($CHAIN_BINARY q staking delegations $WALLET_5 --home $HOME_1 -o json | jq -r --arg ADDRESS "$VALOPER_1" '.delegation_responses[] | select(.delegation.validator_address==$ADDRESS).balance.amount')
-# validator_bond_shares=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.total_validator_bond_shares')
-# validator_liquid_shares=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.total_liquid_shares')
+# validator_bond_shares=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.validator_bond_shares')
+# validator_liquid_shares=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.liquid_shares')
 # $CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json
 
 echo "Wallet 3 delegation shares increase: $wallet_3_delegations_diff"
@@ -110,7 +110,7 @@ fi
 
 echo "Validator unbond from WALLET_2..."
 submit_tx "tx staking unbond $VALOPER_1 100000000$DENOM --from $WALLET_2 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT -y --fees $BASE_FEES$DENOM" $CHAIN_BINARY $HOME_1
-validator_bond_shares=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.total_validator_bond_shares')
+validator_bond_shares=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.validator_bond_shares')
 echo "Validator bond shares: ${validator_bond_shares%.*}"
 if [[ ${validator_bond_shares%.*} -ne 0  ]]; then
     echo "Unbond unsuccessful: unexpected validator bond shares amount"
@@ -121,7 +121,7 @@ $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
 
 echo "Validator unbond from WALLET_3..."
 submit_tx "tx staking unbond $VALOPER_1 70000000$DENOM --from $WALLET_3 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT -y --fees $BASE_FEES$DENOM" $CHAIN_BINARY $HOME_1
-validator_bond_shares=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.total_validator_bond_shares')
+validator_bond_shares=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.validator_bond_shares')
 echo "Validator bond shares: ${validator_bond_shares%.*}"
 if [[ ${validator_bond_shares%.*} -ne 0  ]]; then
     echo "Unbond unsuccessful: unexpected validator bond shares amount"
@@ -132,7 +132,7 @@ $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
 
 echo "Validator unbond from liquid_address..."
 submit_tx "tx staking unbond $VALOPER_1 $bank_send_amount$DENOM --from $liquid_address -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT -y --fees $BASE_FEES$DENOM" $CHAIN_BINARY $HOME_1
-validator_bond_shares=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.total_validator_bond_shares')
+validator_bond_shares=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.validator_bond_shares')
 echo "Validator bond shares: ${validator_bond_shares%.*}"
 if [[ ${validator_bond_shares%.*} -ne 0  ]]; then
     echo "Unbond unsuccessful: unexpected validator bond shares amount"
