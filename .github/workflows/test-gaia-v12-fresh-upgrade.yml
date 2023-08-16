@@ -195,6 +195,8 @@ jobs:
         env:
           START_VERSION: ${{matrix.gaia_version}}
         run: tests/major_fresh_upgrade/start_chain.sh
+      - name: Check Gaia log
+        run: sudo journalctl -u $PROVIDER_SERVICE_1
       - name: Print Gaia version
         run: $CHAIN_BINARY version --long
       - name: _blocks-1
