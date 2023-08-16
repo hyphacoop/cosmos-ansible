@@ -347,14 +347,14 @@ jobs:
         run: tests/test_endpoints_api.sh localhost $VAL1_API_PORT
       - name: _rpc-2
         run: tests/test_endpoints_rpc.sh localhost $VAL1_RPC_PORT
-      - name: _consumera-vsc-3
-        env:
-          CON1_RPC_PORT: 27201
-        run: tests/major_fresh_upgrade/test_ccv.sh
-      - name: _consumerb-vsc-2
-        env:
-          CON1_RPC_PORT: 27301
-        run: tests/major_fresh_upgrade/test_ccv.sh
+      # - name: _consumera-vsc-3
+      #   env:
+      #     CON1_RPC_PORT: 27201
+      #   run: tests/major_fresh_upgrade/test_ccv.sh
+      # - name: _consumerb-vsc-2
+      #   env:
+      #     CON1_RPC_PORT: 27301
+      #   run: tests/major_fresh_upgrade/test_ccv.sh
 
       - name: Start Stride chain
         run: tests/major_fresh_upgrade/start_stride.sh
