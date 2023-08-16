@@ -1,0 +1,12 @@
+{
+    "title": "GlobalLiquidStakingCap -> 0.1",
+    "description": "This will set the global liquid staking cap to 0.1",
+    "deposit": "10000000uatom",
+    "changes": [
+        {
+            "subspace": "staking",
+            "key": "GlobalLiquidStakingCap",
+            "value": "0.1"
+        }
+    ]
+}

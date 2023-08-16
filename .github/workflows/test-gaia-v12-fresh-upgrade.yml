@@ -336,6 +336,12 @@ jobs:
       - name: _blocks-2
         run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 5
 
+      - name: Set test LSM params
+        run: |
+          tests/param_change.sh proposal-global-liquid-cap.json
+          tests/param_change.sh proposal-validator-liquid-cap.json
+          tests/param_change.sh proposal-validator-bond-factor.json
+
       - name: Print staking params
         run: |
           $CHAIN_BINARY q staking params --home $HOME_1 -o json | jq '.'
