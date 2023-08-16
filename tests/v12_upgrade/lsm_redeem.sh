@@ -9,8 +9,8 @@ tokenized_denom="$VALOPER_1/1"
 wallet_3_delegations_1=$($CHAIN_BINARY q staking delegations $WALLET_3 --home $HOME_1 -o json | jq -r --arg ADDRESS "$VALOPER_1" '.delegation_responses[] | select(.delegation.validator_address==$ADDRESS).delegation.shares')
 echo "Wallet_3 delegations: $wallet_3_delegations_1"
 
-$CHAIN_BINARY keys add acct_liquid --home $HOME_1
-liquid_address=$($CHAIN_BINARY keys list --home $HOME_1 --output json | jq -r '.[] | select(.name=="acct_liquid").address')
+$CHAIN_BINARY keys add liquid_account --home $HOME_1
+liquid_address=$($CHAIN_BINARY keys list --home $HOME_1 --output json | jq -r '.[] | select(.name=="liquid_account").address')
 echo "Liquid address 1: $liquid_address"
 
 echo "Funding liquid account..."
