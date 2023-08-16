@@ -5,6 +5,7 @@ all:
     ansible_user: root
     # chain_registry: "https://registry.ping.pub/cosmoshub/chain.json"
     chain_version: v11.0.0
+    chain_id: cosmoshub-4
     chain_home_clear: false
     node_unsafe_reset: true
     chain_use_ssl_proxy: false
