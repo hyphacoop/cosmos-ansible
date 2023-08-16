@@ -264,7 +264,7 @@ jobs:
           sleep 10
       - name: _consumera-vsc-1
         env:
-          CON1_RPC_PORT: 27201
+          CON1_RPC_PORT: 27101
         run: tests/major_fresh_upgrade/test_ccv.sh
 
       - name: _consumera-ibc
