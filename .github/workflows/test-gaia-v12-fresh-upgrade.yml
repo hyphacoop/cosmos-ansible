@@ -338,9 +338,9 @@ jobs:
 
       - name: Set test LSM params
         run: |
-          tests/param_change.sh proposal-global-liquid-cap.json
-          tests/param_change.sh proposal-validator-liquid-cap.json
-          tests/param_change.sh proposal-validator-bond-factor.json
+          tests/param_change.sh tests/v12_upgrade/proposal-global-liquid-cap.json
+          tests/param_change.sh tests/v12_upgrade/proposal-validator-liquid-cap.json
+          tests/param_change.sh tests/v12_upgrade/proposal-validator-bond-factor.json
 
       - name: Print staking params
         run: |
