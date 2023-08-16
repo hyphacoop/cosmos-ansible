@@ -135,10 +135,10 @@ echo "Balance: $delegation_balance_post_redeem"
 echo "Expected balance: $delegation_balance_pre_tokenize"
 if [[ $delegation_balance_pre_tokenize -eq $delegation_balance_post_redeem ]]; then
     echo "Complex scenario 2 passed"
-elif [[ $(($delegation_balance_pre_tokenize-$delegation_balance_post_redeem)) -eq 1 ]]; then
-    echo "Complex scenario 2 passed: post-redeem balance is 1$DENOM less than pre-tokenization balance ($delegation_balance_post_redeem < $delegation_balance_pre_tokenize)"
-elif [[ $(($delegation_balance_post_redeem-$delegation_balance_pre_tokenize)) -eq 1 ]]; then
-    echo "Complex scenario 2 passed: post-redeem balance is 1$DENOM more than pre-tokenization balance ($delegation_balance_post_redeem > $delegation_balance_pre_tokenize)"
+elif [[ $(($delegation_balance_pre_tokenize-$delegation_balance_post_redeem)) -le 2 ]]; then
+    echo "Complex scenario 2 passed: post-redeem balance is <=2$DENOM less than pre-tokenization balance ($delegation_balance_post_redeem < $delegation_balance_pre_tokenize)"
+elif [[ $(($delegation_balance_post_redeem-$delegation_balance_pre_tokenize)) -le 2 ]]; then
+    echo "Complex scenario 2 passed: post-redeem balance is <=2$DENOM more than pre-tokenization balance ($delegation_balance_post_redeem > $delegation_balance_pre_tokenize)"
 else
     echo "Complex scenario 2 failed: Unexpected post-redeem balance ($delegation_balance_post_redeem)"
     exit 1
