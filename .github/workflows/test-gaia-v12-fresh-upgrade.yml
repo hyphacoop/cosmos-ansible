@@ -333,6 +333,10 @@ jobs:
         run: |
           tests/major_fresh_upgrade/software_upgrade.sh 127.0.0.1 $VAL1_RPC_PORT v12
 
+      - name: Print staking params
+        run: |
+          $CHAIN_BINARY q staking params --home $HOME_1 -o json | jq '.''
+
       - name: _blocks-2
         run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 5
       - name: _txs-2
