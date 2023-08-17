@@ -210,7 +210,7 @@ echo "** HAPPY PATH> STEP 5: CLEANUP **"
 
     echo "Validator unbond from happy_bonding"
     tests/v12_upgrade/log_lsm_data.sh happy pre-unbond-1 $happy_bonding $delegation
-    submit_tx "tx staking unbond $VALOPER_1 100000000$DENOM --from $WALLET_2 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT -y --fees $BASE_FEES$DENOM" $CHAIN_BINARY $HOME_1
+    submit_tx "tx staking unbond $VALOPER_1 100000000$DENOM --from $happy_bonding -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT -y --fees $BASE_FEES$DENOM" $CHAIN_BINARY $HOME_1
     tests/v12_upgrade/log_lsm_data.sh happy post-unbond-1 $happy_bonding $delegation
 
     validator_bond_shares=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.validator_bond_shares')
