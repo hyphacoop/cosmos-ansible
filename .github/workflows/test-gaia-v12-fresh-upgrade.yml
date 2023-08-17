@@ -69,6 +69,7 @@ jobs:
       STRIDE_CHAIN_ID: consumerd
       STRIDE_DENOM: ustrd
       STRIDE_WALLET_1: stride1r5v5srda7xfth3hn2s26txvrcrntldjucq88rn
+      STRIDE_WALLET_LIQUID: stride17n3vkvg6lwf98p3kanlhlyjk6zkrfla9zrhma6
       STRIDE_WALLET_5: stride17n3vkvg6lwf98p3kanlhlyjk6zkrfla9zrhma6
       STRIDE_API_1: 35001
       STRIDE_API_2: 35002
@@ -401,17 +402,22 @@ jobs:
         run: |
           touch $LSM_LOG
           echo "user flow,action,account,amount,balance,del_shares,del_balance,val1_tokens,val1_shares,val1_bond_shares,val1_liquid_shares,val2_tokens,val2_shares,val2_bond_shares,val2_liquid_shares" >> $LSM_LOG
-      - name: _lsm-happy-bond-1
-        run: tests/v12_upgrade/lsm_validator_bond.sh
-      - name: _lsm-happy-tokenize-1
-        run: tests/v12_upgrade/lsm_tokenize.sh
-      - name: _lsm-happy-transfer-1
-        run: tests/v12_upgrade/lsm_transfer.sh
-      - name: _lsm-happy-redeem-1
+      - name: _lsm-happy-1
         env:
           CONSUMER_FEES: 1000
           IBC_CHANNEL: channel-1
-        run: tests/v12_upgrade/lsm_redeem.sh
+        run: tests/v12_upgrade/lsm_happy_path.sh
+      # - name: _lsm-happy-bond-1
+      #   run: tests/v12_upgrade/lsm_validator_bond.sh
+      # - name: _lsm-happy-tokenize-1
+      #   run: tests/v12_upgrade/lsm_tokenize.sh
+      # - name: _lsm-happy-transfer-1
+      #   run: tests/v12_upgrade/lsm_transfer.sh
+      # - name: _lsm-happy-redeem-1
+      #   env:
+      #     CONSUMER_FEES: 1000
+      #     IBC_CHANNEL: channel-1
+      #   run: tests/v12_upgrade/lsm_redeem.sh
       - name: _lsm-failures-1
         run: tests/v12_upgrade/lsm_failures.sh
       - name: _lsm-complex-1

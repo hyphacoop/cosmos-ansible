@@ -18,8 +18,6 @@ if [[ $shares_diff -ne $delegation ]]; then
     exit 1
 fi
 
-$CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
-
 echo "Validator bond with $WALLET_2..."
 tests/v12_upgrade/log_lsm_data.sh happy-bond pre-bond $WALLET_2 -
 submit_tx "tx staking validator-bond $VALOPER_1 --from $WALLET_2 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT -y --fees $BASE_FEES$DENOM" $CHAIN_BINARY $HOME_1
@@ -32,8 +30,6 @@ if [[ $shares_diff -ne $delegation  ]]; then
     echo "Validator bond unsuccessful."
     exit 1
 fi
-
-$CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
 
 # tests/v12_upgrade/log_lsm_data.sh happy pre-delegate $WALLET_2 $delegation
 # echo "Delegating more with $WALLET_2..."
@@ -48,5 +44,3 @@ $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
 # tests/v12_upgrade/log_lsm_data.sh happy post-unbond $WALLET_2 $delegation
 
 # $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
-
-cat $LSM_LOG
