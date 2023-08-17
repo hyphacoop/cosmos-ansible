@@ -429,8 +429,11 @@ jobs:
       - name: _lsm-lsp-accounting-1
         run: tests/v12_upgrade/ica_delegate_accounting.sh
 
-      - name: Print LSM log
-        run: cat $LSM_LOG
+      - name: Save LSM log
+        uses: actions/upload-artifact@v3
+        with:
+          name: $LSM_LOG
+          path: $LSM_LOG
       # - name: Initialize consumer chain c with ICS v2.0.0
       #   env:
       #     CONSUMER_CHAIN_ID: consumerc
