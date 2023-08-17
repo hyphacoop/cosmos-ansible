@@ -34,15 +34,15 @@ fi
 $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
 $CHAIN_BINARY q bank balances $WALLET_3 -o json --home $HOME_1 | jq '.'
 echo "Redeeming tokens from WALLET_3..."
-tests/v12_upgrade/log_lsm_data.sh happy pre-redeem-1 $WALLET_3 20000000
+tests/v12_upgrade/log_lsm_data.sh happy-redeem pre-redeem-1 $WALLET_3 20000000
 submit_tx "tx staking redeem-tokens 20000000$tokenized_denom --from $WALLET_3 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -b block -y" $CHAIN_BINARY $HOME_1
-tests/v12_upgrade/log_lsm_data.sh happy post-redeem-1 $WALLET_3 20000000
+tests/v12_upgrade/log_lsm_data.sh happy-redeem post-redeem-1 $WALLET_3 20000000
 
 $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
 echo "Redeeming tokens from liquid_address..."
-tests/v12_upgrade/log_lsm_data.sh happy pre-redeem-2 $liquid_address $bank_send_amount
+tests/v12_upgrade/log_lsm_data.sh happy-redeem pre-redeem-2 $liquid_address $bank_send_amount
 submit_tx "tx staking redeem-tokens $bank_send_amount$tokenized_denom --from $liquid_address -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -b block -y" $CHAIN_BINARY $HOME_1
-tests/v12_upgrade/log_lsm_data.sh happy post-redeem-2 $liquid_address $bank_send_amount
+tests/v12_upgrade/log_lsm_data.sh happy-redeem post-redeem-2 $liquid_address $bank_send_amount
 $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
 
 echo "Transferring $WALLET_5 IBC tokens to LSM chain with..."
@@ -52,9 +52,9 @@ submit_ibc_tx "tx ibc-transfer transfer transfer channel-1 $WALLET_5 $ibc_transf
 # echo "Waiting for IBC tokens to reach $CHAIN_ID..."
 # sleep 10
 echo "Redeeming tokens from $WALLET_5..."
-tests/v12_upgrade/log_lsm_data.sh happy pre-redeem-3 $WALLET_5 $ibc_transfer_amount
+tests/v12_upgrade/log_lsm_data.sh happy-redeem pre-redeem-3 $WALLET_5 $ibc_transfer_amount
 submit_tx "tx staking redeem-tokens $ibc_transfer_amount$tokenized_denom --from $WALLET_5 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -b block -y" $CHAIN_BINARY $HOME_1
-tests/v12_upgrade/log_lsm_data.sh happy post-redeem-3 $WALLET_5 $ibc_transfer_amount
+tests/v12_upgrade/log_lsm_data.sh happy-redeem post-redeem-3 $WALLET_5 $ibc_transfer_amount
 
 wallet_3_delegations_2=$($CHAIN_BINARY q staking delegations $WALLET_3 --home $HOME_1 -o json | jq -r --arg ADDRESS "$VALOPER_1" '.delegation_responses[] | select(.delegation.validator_address==$ADDRESS).delegation.shares')
 wallet_3_delegations_diff=$((${wallet_3_delegations_2%.*}-${wallet_3_delegations_1%.*}))
@@ -116,9 +116,9 @@ fi
 # fi
 
 echo "Validator unbond from WALLET_2..."
-tests/v12_upgrade/log_lsm_data.sh happy pre-unbond-1 $WALLET_2 100000000
+tests/v12_upgrade/log_lsm_data.sh happy-redeem pre-unbond-1 $WALLET_2 100000000
 submit_tx "tx staking unbond $VALOPER_1 100000000$DENOM --from $WALLET_2 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT -y --fees $BASE_FEES$DENOM" $CHAIN_BINARY $HOME_1
-tests/v12_upgrade/log_lsm_data.sh happy post-unbond-1 $WALLET_2 100000000
+tests/v12_upgrade/log_lsm_data.sh happy-redeem post-unbond-1 $WALLET_2 100000000
 
 validator_bond_shares=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.validator_bond_shares')
 echo "Validator bond shares: ${validator_bond_shares%.*}"
@@ -130,9 +130,9 @@ fi
 $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
 
 echo "Validator unbond from WALLET_3..."
-tests/v12_upgrade/log_lsm_data.sh happy pre-unbond-2 $WALLET_3 70000000
+tests/v12_upgrade/log_lsm_data.sh happy-redeem pre-unbond-2 $WALLET_3 70000000
 submit_tx "tx staking unbond $VALOPER_1 70000000$DENOM --from $WALLET_3 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT -y --fees $BASE_FEES$DENOM" $CHAIN_BINARY $HOME_1
-tests/v12_upgrade/log_lsm_data.sh happy post-unbond-2 $WALLET_3 70000000
+tests/v12_upgrade/log_lsm_data.sh happy-redeem post-unbond-2 $WALLET_3 70000000
 
 validator_bond_shares=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.validator_bond_shares')
 echo "Validator bond shares: ${validator_bond_shares%.*}"
@@ -144,9 +144,9 @@ fi
 $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
 
 echo "Validator unbond from liquid_address..."
-tests/v12_upgrade/log_lsm_data.sh happy pre-unbond-3 $liquid_address $bank_send_amount
+tests/v12_upgrade/log_lsm_data.sh happy-redeem pre-unbond-3 $liquid_address $bank_send_amount
 submit_tx "tx staking unbond $VALOPER_1 $bank_send_amount$DENOM --from $liquid_address -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT -y --fees $BASE_FEES$DENOM" $CHAIN_BINARY $HOME_1
-tests/v12_upgrade/log_lsm_data.sh happy post-unbond-3 $liquid_address $bank_send_amount
+tests/v12_upgrade/log_lsm_data.sh happy-redeem post-unbond-3 $liquid_address $bank_send_amount
 
 validator_bond_shares=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.validator_bond_shares')
 echo "Validator bond shares: ${validator_bond_shares%.*}"

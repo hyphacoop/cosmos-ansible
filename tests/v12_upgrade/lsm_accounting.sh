@@ -18,7 +18,7 @@ echo "Liquid address 1: $liquid_address"
 
 echo "Funding bonding and tokenizing accounts..."
 # submit_tx "tx bank send $WALLET_1 $bonding_address  100000000uatom --from $WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -o json -y" $CHAIN_BINARY $HOME_1
-submit_tx "tx bank send $WALLET_1 $liquid_address   100000000uatom --from $WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -o json -y" $CHAIN_BINARY $HOME_1
+submit_tx "tx bank send $WALLET_1 $liquid_address 100000000uatom --from $WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -o json -y" $CHAIN_BINARY $HOME_1
 
 # echo "Delegating with bonding_account..."
 # submit_tx "tx staking delegate $VALOPER_2 $delegation$DENOM --from $bonding_address -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
@@ -34,7 +34,10 @@ submit_tx "tx bank send $WALLET_1 $liquid_address   100000000uatom --from $WALLE
 
 # ** Tokenization increases validator liquid shares and global liquid staked tokens **
 echo "Delegating with tokenizing_account..."
+tests/v12_upgrade/log_lsm_data.sh accounting pre-delegate-1 $liquid_address $delegation
 submit_tx "tx staking delegate $VALOPER_2 $delegation$DENOM --from $liquid_address -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+tests/v12_upgrade/log_lsm_data.sh accounting post-delegate-1 $liquid_address $delegation
+
 $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
 delegation_balance_pre_tokenize=$($CHAIN_BINARY q staking delegations $liquid_address --home $HOME_1 -o json | jq -r '.delegation_responses[0].balance.amount')
 val_liquid_1=$($CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq -r '.liquid_shares')
@@ -47,8 +50,11 @@ exchange_rate=$(echo "$shares/$tokens" | bc -l)
 expected_liquid_increase=$(echo "$exchange_rate*$tokenize" | bc -l)
 expected_liquid_increase=${expected_liquid_increase%.*}
 echo "Exchange rate: $exchange_rate, expected liquid increase: $expected_liquid_increase"
+
 echo "Tokenizing with tokenizing account..."
+tests/v12_upgrade/log_lsm_data.sh accounting pre-tokenize-1 $liquid_address $tokenize
 submit_tx "tx staking tokenize-share $VALOPER_2 $tokenize$DENOM $liquid_address --from $liquid_address -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+tests/v12_upgrade/log_lsm_data.sh accounting post-tokenize-1 $liquid_address $tokenize
 $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
 $CHAIN_BINARY q bank balances $liquid_address --home $HOME_1 -o json | jq '.'
 val_liquid_2=$($CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq -r '.liquid_shares')
@@ -79,6 +85,11 @@ else
     exit 1
 fi
 
+
+# TODO: Delegate additional 10ATOM from bonding account
+
+# ** Redemption decreases validator liquid shares and global liquid staked tokens **
+
 tokens=$($CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq -r '.tokens')
 shares=$($CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq -r '.delegator_shares')
 $CHAIN_BINARY q staking validators --home $HOME_1 -o json | jq -r '.'
@@ -90,8 +101,12 @@ echo "Tokenized balance: $tokenized_balance$tokenized_denom"
 expected_liquid_decrease=$(echo "$exchange_rate*$tokenize" | bc -l)
 expected_liquid_decrease=${expected_liquid_decrease%.*}
 echo "Exchange rate: $exchange_rate, expected liquid decrease: $expected_liquid_decrease"
+
 echo "Redeeming with tokenizing account..."
+tests/v12_upgrade/log_lsm_data.sh accounting pre-redeem-1 $liquid_address $tokenized_balance
 submit_tx "tx staking redeem-tokens $tokenized_balance$tokenized_denom --from $liquid_address -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+tests/v12_upgrade/log_lsm_data.sh accounting post-redeem-1 $liquid_address $tokenized_balance
+
 $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
 val_liquid_3=$($CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq -r '.liquid_shares')
 echo "validator liquid shares post-redeem: $val_liquid_3"
@@ -121,6 +136,10 @@ else
     echo "Accounting failure: unexpected global liquid tokens decrease ($total_delta != $tokenize)"
     exit 1
 fi
+
+# TODO: Unbond 10ATOM from bonding account
+
+# TODO: Redelegate from bonding account
 
 # $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
 # $CHAIN_BINARY q staking pool -o json --home $HOME_1 | jq '.'
