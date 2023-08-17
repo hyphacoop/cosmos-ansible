@@ -16,8 +16,8 @@ failure_bonding_account=$($CHAIN_BINARY keys list --home $HOME_1 --output json |
 failure_liquid_account=$($CHAIN_BINARY keys list --home $HOME_1 --output json | jq -r '.[] | select(.name=="fail_liquid_acct2").address')
 
 echo "Funding and delegating with test accounts..."
-submit_tx "tx bank send $WALLET_1 $failure_bonding_account 200000000uatom --from $WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -o json -y" $CHAIN_BINARY $HOME_1
-submit_tx "tx bank send $WALLET_1 $failure_liquid_account 200000000uatom --from $WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -o json -y" $CHAIN_BINARY $HOME_1
+submit_tx "tx bank send $WALLET_1 $failure_bonding_account 500000000uatom --from $WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -o json -y" $CHAIN_BINARY $HOME_1
+submit_tx "tx bank send $WALLET_1 $failure_liquid_account 500000000uatom --from $WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -o json -y" $CHAIN_BINARY $HOME_1
 
 tests/v12_upgrade/log_lsm_data.sh failures pre-delegate-1 $failure_bonding_account $bonding_delegations
 submit_tx "tx staking delegate $VALOPER_1 $bonding_delegations$DENOM --from $failure_bonding_account -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
@@ -31,8 +31,6 @@ tests/v12_upgrade/log_lsm_data.sh failures post-delegate-3 $failure_liquid_accou
 tests/v12_upgrade/log_lsm_data.sh failures pre-delegate-4 $failure_liquid_account $liquid_delegations
 submit_tx "tx staking delegate $VALOPER_2 $liquid_delegations$DENOM --from $failure_liquid_account -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
 tests/v12_upgrade/log_lsm_data.sh failures post-delegate-4 $failure_liquid_account $liquid_delegations
-
-# $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
 
 echo "** FAILURE CASES> 1: TOKENIZE WITH NO VALIDATOR BOND **"
     submit_bad_tx "tx staking tokenize-share $VALOPER_1 20000000$DENOM $failure_bonding_account --from $failure_bonding_account -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
@@ -120,4 +118,3 @@ echo "** FAILURE CASES> CLEANUP **"
     tests/v12_upgrade/log_lsm_data.sh failures pre-unbond-4 $failure_liquid_account $liquid_delegations
     submit_tx "tx staking unbond $VALOPER_2 $liquid_delegations$DENOM --from $failure_liquid_account -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
     tests/v12_upgrade/log_lsm_data.sh failures post-unbond-4 $failure_liquid_account $liquid_delegations
-    # $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
