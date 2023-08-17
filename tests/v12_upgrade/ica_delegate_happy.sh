@@ -23,9 +23,11 @@ message=$(jq -r --arg ADDRESS "$VALOPER_2" '.validator_address = $ADDRESS' deleg
 echo "Generating packet JSON..."
 $STRIDE_CHAIN_BINARY tx interchain-accounts host generate-packet-data "$message" > delegate_packet.json
 echo "Sending tx staking delegate to host chain..."
+tests/v12_upgrade/log_lsm_data.sh lsp-happy pre-ica-delegate-1 $ICA_ADDRESS $delegate
 submit_ibc_tx "tx interchain-accounts controller send-tx connection-0 delegate_packet.json --from $STRIDE_WALLET_1 --chain-id $STRIDE_CHAIN_ID --gas auto --fees $BASE_FEES$STRIDE_DENOM --gas-adjustment $GAS_ADJUSTMENT -y -o json" $STRIDE_CHAIN_BINARY $STRIDE_HOME_1
 echo "Waiting for delegation to go on-chain..."
-sleep 10
+sleep $(($COMMIT_TIMEOUT*4))
+tests/v12_upgrade/log_lsm_data.sh lsp-happy post-ica-delegate-1 $ICA_ADDRESS $delegate
 
 $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
 post_delegation_tokens=$($CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq -r '.tokens')

@@ -398,7 +398,9 @@ jobs:
         run: tests/v12_upgrade/setup_ica.sh
 
       - name: Create LSM log file
-        run: touch $LSM_LOG
+        run: |
+          touch $LSM_LOG
+          echo "user flow,action,account,amount,balance,del_shares,del_balance,val1_tokens,val1_shares,val1_bond_shares,val1_liquid_shares,val2_tokens,val2_shares,val2_bond_shares,val2_liquid_shares" >> $LSM_LOG
       - name: _lsm-happy-bond-1
         run: tests/v12_upgrade/lsm_validator_bond.sh
       - name: _lsm-happy-tokenize-1

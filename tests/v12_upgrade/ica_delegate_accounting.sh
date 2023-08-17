@@ -27,9 +27,11 @@ cp acct-del-3.json acct-del.json
 echo "Generating packet JSON..."
 $STRIDE_CHAIN_BINARY tx interchain-accounts host generate-packet-data "$(cat acct-del.json)" > delegate_packet.json
 echo "Sending tx staking delegate to host chain..."
+tests/v12_upgrade/log_lsm_data.sh lsp-accounting pre-delegate-1 $ICA_ADDRESS $delegation
 submit_ibc_tx "tx interchain-accounts controller send-tx connection-0 delegate_packet.json --from $STRIDE_WALLET_1 --chain-id $STRIDE_CHAIN_ID --gas auto --fees $BASE_FEES$STRIDE_DENOM --gas-adjustment $GAS_ADJUSTMENT -y -o json" $STRIDE_CHAIN_BINARY $STRIDE_HOME_1
 echo "Waiting for delegation to go on-chain..."
-sleep 10
+sleep $(($COMMIT_TIMEOUT*4))
+tests/v12_upgrade/log_lsm_data.sh lsp-accounting post-delegate-1 $ICA_ADDRESS $delegation
 
 $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
 $CHAIN_BINARY q bank balances $ICA_ADDRESS -o json --home $HOME_1 | jq '.'
@@ -83,9 +85,11 @@ cp acct-undel-3.json acct-undel.json
 echo "Generating packet JSON..."
 $STRIDE_CHAIN_BINARY tx interchain-accounts host generate-packet-data "$(cat acct-undel.json)" > undelegate_packet.json
 echo "Sending tx staking undelegate to host chain..."
+tests/v12_upgrade/log_lsm_data.sh lsp-accounting pre-undelegate-1 $ICA_ADDRESS $undelegation
 submit_ibc_tx "tx interchain-accounts controller send-tx connection-0 undelegate_packet.json --from $STRIDE_WALLET_1 --chain-id $STRIDE_CHAIN_ID --gas auto --fees $BASE_FEES$STRIDE_DENOM --gas-adjustment $GAS_ADJUSTMENT -y -o json" $STRIDE_CHAIN_BINARY $STRIDE_HOME_1
 echo "Waiting for undelegation to go on-chain..."
-sleep 10
+sleep $(($COMMIT_TIMEOUT*4))
+tests/v12_upgrade/log_lsm_data.sh lsp-accounting post-undelegate-1 $ICA_ADDRESS $undelegation
 
 $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
 $CHAIN_BINARY q bank balances $ICA_ADDRESS -o json --home $HOME_1 | jq '.'
@@ -148,9 +152,11 @@ cat redel.json
 echo "Generating packet JSON..."
 $STRIDE_CHAIN_BINARY tx interchain-accounts host generate-packet-data "$(cat redel.json)" > redelegate_packet.json
 echo "Sending tx staking redelegate to host chain..."
+tests/v12_upgrade/log_lsm_data.sh lsp-accounting pre-redelegate-1 $ICA_ADDRESS $redelegation
 submit_ibc_tx "tx interchain-accounts controller send-tx connection-0 redelegate_packet.json --from $STRIDE_WALLET_1 --chain-id $STRIDE_CHAIN_ID --gas auto --fees $BASE_FEES$STRIDE_DENOM --gas-adjustment $GAS_ADJUSTMENT -y -o json" $STRIDE_CHAIN_BINARY $STRIDE_HOME_1
 echo "Waiting for redelegation to go on-chain..."
-sleep 10
+sleep $(($COMMIT_TIMEOUT*4))
+tests/v12_upgrade/log_lsm_data.sh lsp-accounting post-redelegate-1 $ICA_ADDRESS $redelegation
 
 $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
 $CHAIN_BINARY q bank balances $ICA_ADDRESS -o json --home $HOME_1 | jq '.'
