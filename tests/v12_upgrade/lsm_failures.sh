@@ -22,22 +22,39 @@ submit_tx "tx bank send $WALLET_1 $liquid_address_1 1000000000uatom --from $WALL
 submit_tx "tx bank send $WALLET_1 $liquid_address_2 1000000000uatom --from $WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -o json -y" $CHAIN_BINARY $HOME_1
 
 echo "Delegating with liquid acct 1..."
+
+tests/v12_upgrade/log_lsm_data.sh failures pre-delegate-1 $liquid_address_1 $liquid_1_delegations
 submit_tx "tx staking delegate $VALOPER_1 $liquid_1_delegations$DENOM --from $liquid_address_1 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+tests/v12_upgrade/log_lsm_data.sh failures post-delegate-1 $liquid_address_1 $liquid_1_delegations
+
 $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
+tests/v12_upgrade/log_lsm_data.sh failures pre-delegate-2 $liquid_address_1 $liquid_1_delegations
 submit_tx "tx staking delegate $VALOPER_2 $liquid_1_delegations$DENOM --from $liquid_address_1 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+tests/v12_upgrade/log_lsm_data.sh failures post-delegate-2 $liquid_address_1 $liquid_1_delegations
+
 $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
 echo "Delegating with liquid acct 2..."
+
+tests/v12_upgrade/log_lsm_data.sh failures pre-delegate-3 $liquid_address_2 $liquid_2_delegations
 submit_tx "tx staking delegate $VALOPER_1 $liquid_2_delegations$DENOM --from $liquid_address_2 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+tests/v12_upgrade/log_lsm_data.sh failures post-delegate-3 $liquid_address_2 $liquid_2_delegations
+
 $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
+tests/v12_upgrade/log_lsm_data.sh failures pre-delegate-4 $liquid_address_2 $liquid_2_delegations
 submit_tx "tx staking delegate $VALOPER_2 $liquid_2_delegations$DENOM --from $liquid_address_2 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+tests/v12_upgrade/log_lsm_data.sh failures post-delegate-4 $liquid_address_2 $liquid_2_delegations
 $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
 
 echo "Failure case 1: Attempt to tokenize with liquid_1 (no validator bond)..."
 submit_bad_tx "tx staking tokenize-share $VALOPER_1 20000000$DENOM $liquid_address_1 --from $liquid_address_1 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
 
+tests/v12_upgrade/log_lsm_data.sh failures pre-bond-1 $liquid_address_1 -
 submit_tx "tx staking validator-bond $VALOPER_1 --from $liquid_address_1 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT -y --fees $BASE_FEES$DENOM" $CHAIN_BINARY $HOME_1
+tests/v12_upgrade/log_lsm_data.sh failures post-bond-1 $liquid_address_1 -
 $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
+tests/v12_upgrade/log_lsm_data.sh failures pre-bond-2 $liquid_address_1 -
 submit_tx "tx staking validator-bond $VALOPER_2 --from $liquid_address_1 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT -y --fees $BASE_FEES$DENOM" $CHAIN_BINARY $HOME_1
+tests/v12_upgrade/log_lsm_data.sh failures post-bond-2 $liquid_address_1 -
 $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
 
 validator_bond_shares=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.validator_bond_shares')
@@ -75,13 +92,18 @@ submit_bad_tx "tx staking tokenize-share $VALOPER_1 140000000$DENOM $liquid_addr
 
 echo "Failure case 5: Attempt to unbond validator bond, fails because it breaches the validator bond factor"
 echo "Tokenizing liquid_2 delegations..."
+tests/v12_upgrade/log_lsm_data.sh failures pre-tokenize-1 $liquid_address_2 $liquid_2_tokenize
 submit_tx "tx staking tokenize-share $VALOPER_1 $liquid_2_tokenize$DENOM $liquid_address_2 --from $liquid_address_2 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+tests/v12_upgrade/log_lsm_data.sh failures post-tokenize-1 $liquid_address_2 $liquid_2_tokenize
+
 $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
 echo "Attempting to unbond from liquid_1..."
 submit_bad_tx "tx staking unbond $VALOPER_1 $liquid_1_delegations$DENOM --from $liquid_address_1 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
 echo "Redeeming tokens from liquid_2..."
 $CHAIN_BINARY q bank balances $liquid_address_2 --home $HOME_1 -o json | jq '.balances'
+tests/v12_upgrade/log_lsm_data.sh failures pre-redeem-1 $liquid_address_2 $liquid_2_tokenize
 submit_tx "tx staking redeem-tokens $liquid_2_tokenize$tokenized_denom --from $liquid_address_2 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+tests/v12_upgrade/log_lsm_data.sh failures post-redeem-1 $liquid_address_2 $liquid_2_tokenize
 $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
 
 echo "Failure case 6: Attempt to tokenize with liquid_2 after disabling tokenizing..."
@@ -91,11 +113,19 @@ submit_tx "tx staking enable-tokenize-shares --from $liquid_address_2 -o json --
 
 # Cleanup
 echo "Unbonding delegations from liquid_1 and liquid_2..."
+tests/v12_upgrade/log_lsm_data.sh failures pre-unbond-1 $liquid_address_1 $liquid_1_delegations
 submit_tx "tx staking unbond $VALOPER_1 $liquid_1_delegations$DENOM --from $liquid_address_1 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+tests/v12_upgrade/log_lsm_data.sh failures post-unbond-1 $liquid_address_1 $liquid_1_delegations
 $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
+tests/v12_upgrade/log_lsm_data.sh failures pre-unbond-2 $liquid_address_1 $liquid_1_delegations
 submit_tx "tx staking unbond $VALOPER_2 $liquid_1_delegations$DENOM --from $liquid_address_1 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+tests/v12_upgrade/log_lsm_data.sh failures post-unbond-2 $liquid_address_1 $liquid_1_delegations
 $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
+tests/v12_upgrade/log_lsm_data.sh failures pre-unbond-3 $liquid_address_2 $liquid_2_delegations
 submit_tx "tx staking unbond $VALOPER_1 $liquid_2_delegations$DENOM --from $liquid_address_2 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+tests/v12_upgrade/log_lsm_data.sh failures post-unbond-3 $liquid_address_2 $liquid_2_delegations
 $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
+tests/v12_upgrade/log_lsm_data.sh failures pre-unbond-4 $liquid_address_2 $liquid_2_delegations
 submit_tx "tx staking unbond $VALOPER_2 $liquid_2_delegations$DENOM --from $liquid_address_2 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+tests/v12_upgrade/log_lsm_data.sh failures post-unbond-4 $liquid_address_2 $liquid_2_delegations
 $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
