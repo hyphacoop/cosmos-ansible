@@ -159,7 +159,7 @@ jobs:
       DOWNTIME_BLOCKS: 10000
       HERMES_VERSION: v1.5.1
       COMMIT_TIMEOUT: 3
-      LSM_LOG: lsm.csv
+      LSM_LOG: lsm_log.csv
     steps:
       - name: start-version
         run: echo ${{matrix.gaia_version}}
@@ -432,8 +432,8 @@ jobs:
       - name: Save LSM log
         uses: actions/upload-artifact@v3
         with:
-          name: $LSM_LOG
-          path: $LSM_LOG
+          name: lsm_log.csv
+          path: lsm_log.csv
       # - name: Initialize consumer chain c with ICS v2.0.0
       #   env:
       #     CONSUMER_CHAIN_ID: consumerc
