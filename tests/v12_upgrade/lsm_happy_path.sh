@@ -79,7 +79,7 @@ echo "** HAPPY PATH> STEP 2: TOKENIZE **"
 
     echo "Tokenizing shares with $happy_liquid_1..."
     tests/v12_upgrade/log_lsm_data.sh happy pre-tokenize-1 $happy_liquid_1 $tokenize
-    submit_tx "tx staking tokenize-share $VALOPER_1 $tokenize$DENOM $happy_liquid_1 --from $WALLET_3 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+    submit_tx "tx staking tokenize-share $VALOPER_1 $tokenize$DENOM $happy_liquid_1 --from $happy_liquid_1 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
     tests/v12_upgrade/log_lsm_data.sh happy post-tokenize-1 $happy_liquid_1 $tokenize
 
     liquid_shares=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.liquid_shares')
