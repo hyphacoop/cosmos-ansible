@@ -122,6 +122,8 @@ else
     exit 1
 fi
 
+$CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
+$CHAIN_BINARY q staking pool -o json --home $HOME_1 | jq '.'
 sleep 20
 bonding_address=$($CHAIN_BINARY keys list --home $HOME_1 --output json | jq -r '.[] | select(.name=="bonding_account").address')
 $CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq '.'
