@@ -417,6 +417,7 @@ jobs:
       - name: _lsm_accounting-1
         env:
           BASE_FEES: 2000
+          GAS_ADJUSTMENT: 2
         run: tests/v12_upgrade/lsm_accounting.sh
 
       - name: _lsm-lsp-happy-1
