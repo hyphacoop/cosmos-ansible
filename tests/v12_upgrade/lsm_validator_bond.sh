@@ -34,3 +34,17 @@ if [[ $shares_diff -ne $delegation  ]]; then
 fi
 
 $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
+
+tests/v12_upgrade/log_lsm_data.sh happy pre-delegate $WALLET_2 $delegation
+echo "Delegating more with $WALLET_2..."
+submit_tx "tx staking delegate $VALOPER_1 $delegation$DENOM --from $WALLET_2 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+tests/v12_upgrade/log_lsm_data.sh happy post-delegate $WALLET_2 $delegation
+
+$CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
+
+tests/v12_upgrade/log_lsm_data.sh happy pre-unbond $WALLET_2 $delegation
+echo "Unbonding with $WALLET_2..."
+submit_tx "tx staking unbond $VALOPER_1 $delegation$DENOM --from $WALLET_2 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+tests/v12_upgrade/log_lsm_data.sh happy post-unbond $WALLET_2 $delegation
+
+$CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'

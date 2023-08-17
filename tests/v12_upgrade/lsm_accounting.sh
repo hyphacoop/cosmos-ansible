@@ -122,31 +122,31 @@ else
     exit 1
 fi
 
-$CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
-$CHAIN_BINARY q staking pool -o json --home $HOME_1 | jq '.'
-sleep 20
-bonding_address=$($CHAIN_BINARY keys list --home $HOME_1 --output json | jq -r '.[] | select(.name=="bonding_account").address')
-$CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq '.'
-$CHAIN_BINARY q staking delegations $bonding_address -o json --home $HOME_1 | jq '.'
-echo "Increasing delegation from validator bond delegator..."
-submit_tx "tx staking delegate $VALOPER_2 2000000$DENOM --from $bonding_address -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
-sleep 20
-$CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq '.'
-$CHAIN_BINARY q staking delegations $bonding_address -o json --home $HOME_1 | jq '.'
+# $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
+# $CHAIN_BINARY q staking pool -o json --home $HOME_1 | jq '.'
+# sleep 20
+# bonding_address=$($CHAIN_BINARY keys list --home $HOME_1 --output json | jq -r '.[] | select(.name=="bonding_account").address')
+# $CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq '.'
+# $CHAIN_BINARY q staking delegations $bonding_address -o json --home $HOME_1 | jq '.'
+# echo "Increasing delegation from validator bond delegator..."
+# submit_tx "tx staking delegate $VALOPER_2 2000000$DENOM --from $bonding_address -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+# sleep 20
+# $CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq '.'
+# $CHAIN_BINARY q staking delegations $bonding_address -o json --home $HOME_1 | jq '.'
 
-echo "Decreasing delegation from validator bond delegator..."
-submit_tx "tx staking unbond $VALOPER_2 1000000$DENOM --from $bonding_address -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
-sleep 20
-$CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq '.'
-$CHAIN_BINARY q staking validator $VALOPER_3 -o json --home $HOME_1 | jq '.'
-$CHAIN_BINARY q staking delegations $bonding_address -o json --home $HOME_1 | jq '.'
+# echo "Decreasing delegation from validator bond delegator..."
+# submit_tx "tx staking unbond $VALOPER_2 1000000$DENOM --from $bonding_address -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+# sleep 20
+# $CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq '.'
+# $CHAIN_BINARY q staking validator $VALOPER_3 -o json --home $HOME_1 | jq '.'
+# $CHAIN_BINARY q staking delegations $bonding_address -o json --home $HOME_1 | jq '.'
 
-echo "Redelegating from val2 to val3 with validator bond delegator..."
-submit_tx "tx staking redelegate $VALOPER_2 $VALOPER_3 1000000$DENOM --from $bonding_address -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
-sleep 20
-$CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq '.'
-$CHAIN_BINARY q staking validator $VALOPER_3 -o json --home $HOME_1 | jq '.'
-$CHAIN_BINARY q staking delegations $bonding_address -o json --home $HOME_1 | jq '.'
+# echo "Redelegating from val2 to val3 with validator bond delegator..."
+# submit_tx "tx staking redelegate $VALOPER_2 $VALOPER_3 1000000$DENOM --from $bonding_address -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+# sleep 20
+# $CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq '.'
+# $CHAIN_BINARY q staking validator $VALOPER_3 -o json --home $HOME_1 | jq '.'
+# $CHAIN_BINARY q staking delegations $bonding_address -o json --home $HOME_1 | jq '.'
 
 # echo "Unbonding from tokenizing account..."
 # delegation_balance=$($CHAIN_BINARY q staking delegations $liquid_address --home $HOME_1 -o json | jq -r '.delegation_responses[0].balance.amount')
