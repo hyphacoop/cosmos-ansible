@@ -45,7 +45,6 @@ echo "** FAILURE CASES> 2: TOKENIZE BOND DELEGATIONS **"
     tests/v12_upgrade/log_lsm_data.sh failures pre-bond-2 $failure_bonding_account -
     submit_tx "tx staking validator-bond $VALOPER_2 --from $failure_bonding_account -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT -y --fees $BASE_FEES$DENOM" $CHAIN_BINARY $HOME_1
     tests/v12_upgrade/log_lsm_data.sh failures post-bond-2 $failure_bonding_account -
-    $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
 
     validator_bond_shares=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.validator_bond_shares')
     echo "Validator 1 bond shares: ${validator_bond_shares%.*}"

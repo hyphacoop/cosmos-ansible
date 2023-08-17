@@ -15,26 +15,26 @@ tokenized_denom_2=$VALOPER_2/4
     $CHAIN_BINARY keys add complex_bond_account --home $HOME_1
     $CHAIN_BINARY keys add complex_liquid_1 --home $HOME_1
     $CHAIN_BINARY keys add complex_liquid_2 --home $HOME_1
-    
+
     complex_bond_account=$($CHAIN_BINARY keys list --home $HOME_1 --output json | jq -r '.[] | select(.name=="complex_bond_account").address')
     complex_liquid_1=$($CHAIN_BINARY keys list --home $HOME_1 --output json | jq -r '.[] | select(.name=="complex_liquid_1").address')
     complex_liquid_2=$($CHAIN_BINARY keys list --home $HOME_1 --output json | jq -r '.[] | select(.name=="complex_liquid_2").address')
-    
+
     echo "Funding bonding and tokenizing accounts..."
     submit_tx "tx bank send $WALLET_1 $complex_bond_account  100000000uatom --from $WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -o json -y" $CHAIN_BINARY $HOME_1
     submit_tx "tx bank send $WALLET_1 $complex_liquid_1 100000000uatom --from $WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -o json -y" $CHAIN_BINARY $HOME_1
     submit_tx "tx bank send $WALLET_1 $complex_liquid_2 100000000uatom --from $WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -o json -y" $CHAIN_BINARY $HOME_1
-    
+
     echo "Delegating with complex_bond_account..."
     tests/v12_upgrade/log_lsm_data.sh complex pre-delegate-1 $complex_bond_account $delegations
     submit_tx "tx staking delegate $VALOPER_2 $delegation$DENOM --from $complex_bond_account -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
     tests/v12_upgrade/log_lsm_data.sh complex post-delegate-1 $complex_bond_account $delegations
-    
+
     echo "Validator bond with complex_bond_account..."
     tests/v12_upgrade/log_lsm_data.sh complex pre-bond-1 $complex_bond_account -
     submit_tx "tx staking validator-bond $VALOPER_2 --from $complex_bond_account -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT -y --fees $BASE_FEES$DENOM" $CHAIN_BINARY $HOME_1
     tests/v12_upgrade/log_lsm_data.sh complex post-bond-1 $complex_bond_account -
-    
+
     validator_bond_shares=$($CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq -r '.validator_bond_shares')
     echo "Validator 2 bond shares: $validator_bond_shares"
     if [[ ${validator_bond_shares%.*} -ne $delegation  ]]; then
@@ -132,10 +132,20 @@ echo "** COMPLEX CASES> 2: DELEGATE -> SLASH -> TOKENIZE -> REDEEM **"
 
 #TODO: add delegation shares check
 
-# echo "Unbonding from tokenizing account..."
-# submit_tx "tx staking unbond $VALOPER_2 ${delegation_balance_post_redeem%.*}$DENOM --from $complex_liquid_2 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
-# echo "Unbonding from bonding account..."
-# delegation_balance=$($CHAIN_BINARY q staking delegations $complex_bond_account --home $HOME_1 -o json | jq -r '.delegation_responses[0].balance.amount')
-# submit_tx "tx staking unbond $VALOPER_2 ${delegation_balance%.*}$DENOM --from complex_bond_account -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+echo "** COMPLEX CASES> CLEANUP **"
 
-# $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
+    echo "Unbonding from bonding account..."
+    delegation_balance=$($CHAIN_BINARY q staking delegations $complex_bond_account --home $HOME_1 -o json | jq -r '.delegation_responses[0].balance.amount')
+    tests/v12_upgrade/log_lsm_data.sh complex pre-unbond-1 $complex_bond_account $delegation_balance
+    submit_tx "tx staking unbond $VALOPER_2 ${delegation_balance%.*}$DENOM --from complex_bond_account -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+    tests/v12_upgrade/log_lsm_data.sh complex post-unbond-1 $complex_bond_account $delegation_balance
+    echo "Unbonding from complex_liquid_1..."
+    delegation_balance=$($CHAIN_BINARY q staking delegations $complex_liquid_1 --home $HOME_1 -o json | jq -r '.delegation_responses[0].balance.amount')
+    tests/v12_upgrade/log_lsm_data.sh complex pre-unbond-2 $complex_liquid_1 $delegation_balance
+    submit_tx "tx staking unbond $VALOPER_2 ${delegation_balance%.*}$DENOM --from $complex_liquid_1 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+    tests/v12_upgrade/log_lsm_data.sh complex post-unbond-2 $complex_liquid_1 $delegation_balance
+    echo "Unbonding from complex_liquid_1..."
+    delegation_balance=$($CHAIN_BINARY q staking delegations $complex_liquid_2 --home $HOME_1 -o json | jq -r '.delegation_responses[0].balance.amount')
+    tests/v12_upgrade/log_lsm_data.sh complex pre-unbond-3 $complex_liquid_2 $delegation_balance
+    submit_tx "tx staking unbond $VALOPER_2 ${delegation_balance%.*}$DENOM --from $complex_liquid_2 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+    tests/v12_upgrade/log_lsm_data.sh complex post-unbond-3 $complex_liquid_2 $delegation_balance
