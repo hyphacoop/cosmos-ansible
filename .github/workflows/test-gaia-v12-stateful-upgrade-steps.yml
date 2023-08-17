@@ -76,8 +76,8 @@ jobs:
       HIGH_FEES: 10000
       GAS: auto
       GAS_ADJUSTMENT: 1.2
-      DELEGATE_2: ${{ vars.DELEGATE_2 }}
-      DELEGATE_2_AMOUNT: ${{ vars.DELEGATE_2_AMOUNT }}
+      DELEGATE_1: ${{ vars.DELEGATE_1 }}
+      DELEGATE_1_AMOUNT: ${{ vars.DELEGATE_1_AMOUNT }}
     steps:
       # Get system info
       - run: ifconfig
