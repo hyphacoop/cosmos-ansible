@@ -132,7 +132,7 @@ $CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq '.'
 $CHAIN_BINARY q staking delegations $bonding_address -o json --home $HOME_1 | jq '.'
 
 echo "Decreasing delegation from validator bond delegator..."
-submit_tx "tx staking unbond $VALOPER_2 $tokenize$DENOM --from $bonding_address -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+submit_tx "tx staking unbond $VALOPER_2 $tokenize$DENOM --from $bonding_address -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees 5000$DENOM -y" $CHAIN_BINARY $HOME_1
 sleep 5
 $CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq '.'
 $CHAIN_BINARY q staking validator $VALOPER_3 -o json --home $HOME_1 | jq '.'
