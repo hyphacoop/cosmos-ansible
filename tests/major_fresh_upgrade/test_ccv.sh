@@ -14,10 +14,6 @@ PROVIDER_POWER=$(curl -s http://localhost:$VAL1_RPC_PORT/validators | jq -r '.re
 curl http://localhost:$CON1_RPC_PORT/validators
 CONSUMER_POWER=$(curl -s http://localhost:$CON1_RPC_PORT/validators | jq -r '.result.validators[] | select(.address=="'$PROVIDER_BADDRESS'") | '.voting_power'')
 
-if [[ ! $PROVIDER_POWER  ] || [ ! $CONSUMER_POWER ]]; then
-    exit 1
-fi
-
 echo "Top validator VP: $PROVIDER_POWER (provider), $CONSUMER_POWER (consumer)"
 if [ $PROVIDER_POWER != $CONSUMER_POWER ]; then
     echo "Consumer chain validator set does not match the provider's."

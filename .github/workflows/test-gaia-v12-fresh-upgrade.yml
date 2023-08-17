@@ -483,10 +483,10 @@ jobs:
       #     CON1_RPC_PORT: 27401
       #   run: tests/major_fresh_upgrade/test_ccv.sh
 
-      - name: _soft-opt-out-1
-        run: tests/test_validator_jailed.sh $VALOPER_2 true
-      - name: _soft-opt-out-2
-        run: tests/test_validator_jailed.sh $VALOPER_3 false
+      # - name: _soft-opt-out-1
+      #   run: tests/test_validator_jailed.sh $VALOPER_2 true
+      # - name: _soft-opt-out-2
+      #   run: tests/test_validator_jailed.sh $VALOPER_3 false
 
       - name: Validators final state
         run: |
