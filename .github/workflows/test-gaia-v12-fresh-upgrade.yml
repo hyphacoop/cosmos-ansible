@@ -391,7 +391,7 @@ jobs:
           tests/param_change.sh tests/v12_upgrade/proposal-global-liquid-cap.json
           tests/param_change.sh tests/v12_upgrade/proposal-validator-liquid-cap.json
           tests/param_change.sh tests/v12_upgrade/proposal-validator-bond-factor.json
-          $CHAIN_BINARY q staking params --home $HOME_1 -o json | jq '.'   
+          $CHAIN_BINARY q staking params --home $HOME_1 -o json | jq '.'
       - name: Create LSM log file
         run: |
           touch $LSM_LOG
