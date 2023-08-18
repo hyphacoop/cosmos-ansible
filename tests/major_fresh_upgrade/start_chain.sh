@@ -3,7 +3,6 @@
 
 # Install Gaia binary
 CHAIN_BINARY_URL=https://github.com/cosmos/gaia/releases/download/$START_VERSION/gaiad-$START_VERSION-linux-amd64
-# CHAIN_BINARY_URL=https://github.com/hyphacoop/cosmos-builds/releases/download/gaiad-test/gaiad-lsm-bugfix
 echo "Installing Gaia..."
 wget $CHAIN_BINARY_URL -O $HOME/go/bin/$CHAIN_BINARY -q
 chmod +x $HOME/go/bin/$CHAIN_BINARY
