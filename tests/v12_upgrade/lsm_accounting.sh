@@ -18,12 +18,15 @@ submit_tx "tx bank send $WALLET_1 $accounting_bonding 100000000uatom --from $WAL
 submit_tx "tx bank send $WALLET_1 $accounting_liquid  100000000uatom --from $WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -o json -y" $CHAIN_BINARY $HOME_1
 
 echo "Delegating and bonding with bonding_account..."
+$CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq '.'
 tests/v12_upgrade/log_lsm_data.sh accounting pre-delegate-1 $accounting_bonding $delegation
 submit_tx "tx staking delegate $VALOPER_2 $delegation$DENOM --from $accounting_bonding -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
 tests/v12_upgrade/log_lsm_data.sh accounting post-delegate-1 $accounting_bonding $delegation
+$CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq '.'
 tests/v12_upgrade/log_lsm_data.sh accounting pre-bond-1 $accounting_bonding -
 submit_tx "tx staking validator-bond $VALOPER_2 --from $accounting_bonding -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT -y --fees $BASE_FEES$DENOM" $CHAIN_BINARY $HOME_1
 tests/v12_upgrade/log_lsm_data.sh accounting post-bond-1 $accounting_bonding -
+$CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq '.'
 
 validator_bond_shares=$($CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq -r '.validator_bond_shares')
 echo "Validator 2 bond shares: $validator_bond_shares"

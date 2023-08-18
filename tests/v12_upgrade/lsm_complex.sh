@@ -134,18 +134,24 @@ echo "** COMPLEX CASES> 2: DELEGATE -> SLASH -> TOKENIZE -> REDEEM **"
 
 echo "** COMPLEX CASES> CLEANUP **"
 
+    $CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq '.'
     echo "Unbonding from bonding account..."
     delegation_balance=$($CHAIN_BINARY q staking delegations $complex_bond_account --home $HOME_1 -o json | jq -r '.delegation_responses[0].balance.amount')
     tests/v12_upgrade/log_lsm_data.sh complex pre-unbond-1 $complex_bond_account $delegation_balance
     submit_tx "tx staking unbond $VALOPER_2 ${delegation_balance%.*}$DENOM --from complex_bond_account -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
     tests/v12_upgrade/log_lsm_data.sh complex post-unbond-1 $complex_bond_account $delegation_balance
+    $CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq '.'
+
     echo "Unbonding from complex_liquid_1..."
     delegation_balance=$($CHAIN_BINARY q staking delegations $complex_liquid_1 --home $HOME_1 -o json | jq -r '.delegation_responses[0].balance.amount')
     tests/v12_upgrade/log_lsm_data.sh complex pre-unbond-2 $complex_liquid_1 $delegation_balance
     submit_tx "tx staking unbond $VALOPER_2 ${delegation_balance%.*}$DENOM --from $complex_liquid_1 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
     tests/v12_upgrade/log_lsm_data.sh complex post-unbond-2 $complex_liquid_1 $delegation_balance
+    $CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq '.'
+
     echo "Unbonding from complex_liquid_1..."
     delegation_balance=$($CHAIN_BINARY q staking delegations $complex_liquid_2 --home $HOME_1 -o json | jq -r '.delegation_responses[0].balance.amount')
     tests/v12_upgrade/log_lsm_data.sh complex pre-unbond-3 $complex_liquid_2 $delegation_balance
     submit_tx "tx staking unbond $VALOPER_2 ${delegation_balance%.*}$DENOM --from $complex_liquid_2 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
     tests/v12_upgrade/log_lsm_data.sh complex post-unbond-3 $complex_liquid_2 $delegation_balance
+    $CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq '.'
