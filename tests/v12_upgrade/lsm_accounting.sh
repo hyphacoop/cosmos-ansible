@@ -121,7 +121,6 @@ echo "** ACCOUNTING TESTS> 2: REDEEMING TOKENS DECREASES VALIDATOR LIQUID SHARES
     submit_tx "tx staking redeem-tokens $tokenized_balance$tokenized_denom --from $accounting_liquid -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
     tests/v12_upgrade/log_lsm_data.sh accounting post-redeem-1 $accounting_liquid $tokenized_balance
 
-    $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
     val_liquid_3=$($CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq -r '.liquid_shares')
     echo "validator liquid shares post-redeem: $val_liquid_3"
     total_liquid_3=$($CHAIN_BINARY q staking total-liquid-staked -o json --home $HOME_1 | jq -r '.tokens')
