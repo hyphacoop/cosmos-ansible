@@ -126,7 +126,7 @@ echo "** HAPPY PATH> STEP 3: TRANSFER OWNERSHIP **"
         echo "Token ownership transfer failed."
     fi
 
-echo "** HAPPY PATH> STEP 4: TRANSFER TOKENS **"
+echo "** HAPPY PATH> STEP 4: TRANSFER TOKENS  **"
 
     happy_liquid_1_delegations_1=$($CHAIN_BINARY q staking delegations $happy_liquid_1 --home $HOME_1 -o json | jq -r --arg ADDRESS "$VALOPER_1" '.delegation_responses[] | select(.delegation.validator_address==$ADDRESS).delegation.shares')
     echo "happy_liquid_1 delegations: $happy_liquid_1_delegations_1"
@@ -144,6 +144,7 @@ echo "** HAPPY PATH> STEP 4: TRANSFER TOKENS **"
         exit 1
     fi
 
+echo "** HAPPY PATH> STEP 5: REDEEM TOKENS **"
     echo "Redeeming tokens from happy_liquid_1..."
     tests/v12_upgrade/log_lsm_data.sh happy pre-redeem-1 $happy_liquid_1 $liquid_1_redeem
     submit_tx "tx staking redeem-tokens $liquid_1_redeem$tokenized_denom --from $happy_liquid_1 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -b block -y" $CHAIN_BINARY $HOME_1
@@ -206,7 +207,7 @@ echo "** HAPPY PATH> STEP 4: TRANSFER TOKENS **"
         exit 1
     fi
 
-echo "** HAPPY PATH> STEP 5: CLEANUP **"
+echo "** HAPPY PATH> CLEANUP **"
 
     echo "Validator unbond from happy_bonding"
     tests/v12_upgrade/log_lsm_data.sh happy pre-unbond-1 $happy_bonding $delegation

@@ -3,9 +3,45 @@
 
 source tests/process_tx.sh
 
+bond_delegation=100000000
 delegation=10000000
 undelegation=5000000
 redelegation=2000000
+
+$CHAIN_BINARY keys add lsp_accounting_bonding --home $HOME_1
+lsp_accounting_bonding=$($CHAIN_BINARY keys list --home $HOME_1 --output json | jq -r '.[] | select(.name=="lsp_accounting_bonding").address')
+
+echo "Funding bonding account..."
+submit_tx "tx bank send $WALLET_1 $lsp_accounting_bonding 150000000$DENOM --from $WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -o json -y" $CHAIN_BINARY $HOME_1
+
+delegator_shares_1=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.delegator_shares')
+validator_bond_shares_1=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.validator_bond_shares')
+
+echo "Delegating with lsp_accounting_bonding..."
+tests/v12_upgrade/log_lsm_data.sh lsp-accounting pre-delegate-1 $lsp_accounting_bonding $bond_delegation
+submit_tx "tx staking delegate $VALOPER_1 $bond_delegation$DENOM --from $lsp_accounting_bonding -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+tests/v12_upgrade/log_lsm_data.sh lsp-accounting post-delegate-1 $lsp_accounting_bonding $bond_delegation
+
+delegator_shares_2=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.delegator_shares')
+shares_diff=$((${delegator_shares_2%.*}-${delegator_shares_1%.*})) # remove decimal portion
+echo "Delegator shares difference: $shares_diff"
+if [[ $shares_diff -ne $bond_delegation ]]; then
+    echo "Delegation unsuccessful."
+    exit 1
+fi
+
+echo "Validator bond with lsp_accounting_bonding..."
+tests/v12_upgrade/log_lsm_data.sh lsp-accounting pre-bond-1 $lsp_accounting_bonding -
+submit_tx "tx staking validator-bond $VALOPER_1 --from $lsp_accounting_bonding -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT -y --fees $BASE_FEES$DENOM" $CHAIN_BINARY $HOME_1
+tests/v12_upgrade/log_lsm_data.sh lsp-accounting post-bond-1 $lsp_accounting_bonding -
+
+validator_bond_shares_2=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.validator_bond_shares')
+bond_shares_diff=$((${validator_bond_shares_2%.*}-${validator_bond_shares_1%.*})) # remove decimal portion
+echo "Bond shares difference: $bond_shares_diff"
+if [[ $shares_diff -ne $bond_delegation  ]]; then
+    echo "Validator bond unsuccessful."
+    exit 1
+fi
 
 echo "** LIQUID STAKING PROVIDER ACCOUNTING TESTS> 1: DELEGATION INCREASES VALIDATOR LIQUID SHARES AND LIQUID STAKED TOKENS **"
     
@@ -19,7 +55,6 @@ echo "** LIQUID STAKING PROVIDER ACCOUNTING TESTS> 1: DELEGATION INCREASES VALID
     expected_liquid_increase=${expected_liquid_increase%.*}
     echo "Expected liquid shares increase: $expected_liquid_increase"
 
-
     jq -r --arg ADDRESS "$ICA_ADDRESS" '.delegator_address = $ADDRESS' tests/v12_upgrade/msg-delegate.json > acct-del-1.json
     jq -r --arg ADDRESS "$VALOPER_2" '.validator_address = $ADDRESS' acct-del-1.json > acct-del-2.json
     jq -r --arg AMOUNT "$delegation" '.amount.amount = $AMOUNT' acct-del-2.json > acct-del-3.json
@@ -28,11 +63,11 @@ echo "** LIQUID STAKING PROVIDER ACCOUNTING TESTS> 1: DELEGATION INCREASES VALID
     echo "Generating packet JSON..."
     $STRIDE_CHAIN_BINARY tx interchain-accounts host generate-packet-data "$(cat acct-del.json)" > delegate_packet.json
     echo "Sending tx staking delegate to host chain..."
-    tests/v12_upgrade/log_lsm_data.sh lsp-accounting pre-delegate-1 $ICA_ADDRESS $delegation
+    tests/v12_upgrade/log_lsm_data.sh lsp-accounting pre-delegate-2 $ICA_ADDRESS $delegation
     submit_ibc_tx "tx interchain-accounts controller send-tx connection-0 delegate_packet.json --from $STRIDE_WALLET_1 --chain-id $STRIDE_CHAIN_ID --gas auto --fees $BASE_FEES$STRIDE_DENOM --gas-adjustment $GAS_ADJUSTMENT -y -o json" $STRIDE_CHAIN_BINARY $STRIDE_HOME_1
     echo "Waiting for delegation to go on-chain..."
     sleep $(($COMMIT_TIMEOUT*4))
-    tests/v12_upgrade/log_lsm_data.sh lsp-accounting post-delegate-1 $ICA_ADDRESS $delegation
+    tests/v12_upgrade/log_lsm_data.sh lsp-accounting post-delegate-2 $ICA_ADDRESS $delegation
 
     post_delegation_tokens=$($CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq -r '.tokens')
     post_delegation_liquid_shares=$($CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq -r '.liquid_shares')
