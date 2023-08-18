@@ -148,6 +148,32 @@ echo "** ACCOUNTING TESTS> 2: REDEEMING TOKENS DECREASES VALIDATOR LIQUID SHARES
 
 echo "** ACCOUNTING TESTS> 3: ADDITIONAL DELEGATION INCREASES VALIDATOR BOND SHARES **"
     # TODO: Delegate additional 20ATOM from bonding account
+    shares_1=$($CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq -r '.delegator_shares')
+    tokens_1=$($CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq -r '.tokens')
+    bond_shares_1=$($CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq -r '.validator_bond_shares')
+    exchange_rate_1=$(echo "$shares/$tokens" | bc -l)
+    expected_shares_increase=$(echo "$delegation*$exchange_rate_1" | bc -l)
+    expected_shares=$(echo "$expected_shares_increase+$bond_shares_1" | bc -l)
+    expected_shares=${expected_shares%.*}
+
+    tests/v12_upgrade/log_lsm_data.sh accounting pre-delegate-3 $accounting_bonding $delegation
+    submit_tx "tx staking delegate $VALOPER_2 $delegation$DENOM --from $accounting_bonding -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+    tests/v12_upgrade/log_lsm_data.sh accounting post-delegate-3 $accounting_bonding $delegation
+
+    bond_shares_2=$($CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq -r '.validator_bond_shares')
+    bond_shares_2=${bond_shares_2%.*}
+    echo "Validator 2 bond shares: $bond_shares_2, expected: $expected_shares"
+    if [[ $bond_shares_2 -eq $expected_shares  ]]; then
+        echo "Validator bond successful."
+    elif [[ $(($bond_shares_2-$expected_shares)) -eq 1 ]]; then
+        echo "Validator bond successful: bond shares increase off by 1"
+    elif [[ $(($expected_shares-$bond_shares_2)) -eq 1 ]]; then
+        echo "Validator bond successful: bond shares increase off by 1"
+    else
+        echo "Accounting failure: unexpected validator bond shares increase ($bond_shares_2 != $expected_shares)"
+        exit 1 
+    fi
+
 echo "** ACCOUNTING TESTS> 4: UNBONDING DECREASES VALIDATOR BOND SHARES **"
     # TODO: Unbond 10ATOM from bonding account
 echo "** ACCOUNTING TESTS> 5: REDELEGATION INCREASES AND DECREASES VALIDATOR BOND SHARES **"
@@ -163,6 +189,8 @@ echo "** ACCOUNTING TESTS> CLEANUP **"
     tests/v12_upgrade/log_lsm_data.sh accounting pre-unbond-3 $accounting_liquid $delegation_balance
     submit_tx "tx staking unbond $VALOPER_2 $delegation_balance$DENOM --from $accounting_liquid -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
     tests/v12_upgrade/log_lsm_data.sh accounting post-unbond-3 $accounting_liquid $delegation_balance
+
+
 # $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
 # $CHAIN_BINARY q staking pool -o json --home $HOME_1 | jq '.'
 # sleep 20
