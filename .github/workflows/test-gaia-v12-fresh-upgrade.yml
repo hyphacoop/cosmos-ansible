@@ -279,47 +279,47 @@ jobs:
           CONSUMER_HOME_1: /home/runner/.cona1
           CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY_2 }}
         run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-1 2
-      # - name: Initialize consumer chain b with ICS v3.1.0
-      #   env:
-      #     CONSUMER_CHAIN_ID: consumerb
-      #     CONSUMER_HOME_1: /home/runner/.conb1
-      #     CON1_API_PORT: 25301
-      #     CON1_GRPC_PORT: 26301
-      #     CON1_RPC_PORT: 27301
-      #     CON1_P2P_PORT: 28301
-      #     CON1_PPROF_PORT: 6167
-      #     CONSUMER_SERVICE_1: conb1.service
-      #     CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY_3 }}
-      #   run: tests/major_fresh_upgrade/init_consumer.sh
-      # - name: Launch consumer chain b
-      #   env:
-      #     CONSUMER_CHAIN_ID: consumerb
-      #     CONSUMER_HOME_1: /home/runner/.conb1
-      #     CONSUMER_SERVICE_1: conb1.service
-      #   run: tests/major_fresh_upgrade/launch_consumer.sh
-      # - name: _consumerb-blocks-1
-      #   run: tests/test_block_production.sh 127.0.0.1 27301 5
-      # - name: Establish CCV channel for consumer b
-      #   run: |
-      #     client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r '.chains[] | select(.chain_id=="consumerb").client_id')
-      #     hermes create connection --a-chain consumerb --a-client 07-tendermint-0 --b-client 07-tendermint-1
-      #     hermes create channel --a-chain consumerb --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
-      #     sudo systemctl restart hermes
-      #     sleep 10
-      # - name: _consumerb-vsc-1
-      #   env:
-      #     CON1_RPC_PORT: 27301
-      #   run: tests/major_fresh_upgrade/test_ccv.sh
-      # - name: _consumerb-ibc
-      #   env:
-      #     CONSUMER_CHAIN_ID: consumerb
-      #     CONSUMER_HOME_1: /home/runner/.conb1
-      #     CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY_3 }}
-      #   run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-3 3
-      # - name: _consumera-vsc-2
-      #   env:
-      #     CON1_RPC_PORT: 27201
-      #   run: tests/major_fresh_upgrade/test_ccv.sh
+      - name: Initialize consumer chain b with ICS v3.1.0
+        env:
+          CONSUMER_CHAIN_ID: consumerb
+          CONSUMER_HOME_1: /home/runner/.conb1
+          CON1_API_PORT: 25301
+          CON1_GRPC_PORT: 26301
+          CON1_RPC_PORT: 27301
+          CON1_P2P_PORT: 28301
+          CON1_PPROF_PORT: 6167
+          CONSUMER_SERVICE_1: conb1.service
+          CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY_3 }}
+        run: tests/major_fresh_upgrade/init_consumer.sh
+      - name: Launch consumer chain b
+        env:
+          CONSUMER_CHAIN_ID: consumerb
+          CONSUMER_HOME_1: /home/runner/.conb1
+          CONSUMER_SERVICE_1: conb1.service
+        run: tests/major_fresh_upgrade/launch_consumer.sh
+      - name: _consumerb-blocks-1
+        run: tests/test_block_production.sh 127.0.0.1 27301 5
+      - name: Establish CCV channel for consumer b
+        run: |
+          client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r '.chains[] | select(.chain_id=="consumerb").client_id')
+          hermes create connection --a-chain consumerb --a-client 07-tendermint-0 --b-client 07-tendermint-1
+          hermes create channel --a-chain consumerb --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
+          sudo systemctl restart hermes
+          sleep 10
+      - name: _consumerb-vsc-1
+        env:
+          CON1_RPC_PORT: 27301
+        run: tests/major_fresh_upgrade/test_ccv.sh
+      - name: _consumerb-ibc
+        env:
+          CONSUMER_CHAIN_ID: consumerb
+          CONSUMER_HOME_1: /home/runner/.conb1
+          CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY_3 }}
+        run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-3 3
+      - name: _consumera-vsc-2
+        env:
+          CON1_RPC_PORT: 27101
+        run: tests/major_fresh_upgrade/test_ccv.sh
 
       - name: Test software upgrade for published releases
         if: ${{ matrix.upgrade_version != 'main' }}
@@ -348,22 +348,22 @@ jobs:
         run: |
           $CHAIN_BINARY q staking params --home $HOME_1 -o json | jq '.'
 
-      # - name: _txs-2
-      #   env:
-      #     BASE_FEES: 2000
-      #   run: tests/patch_upgrade/patch_test_tx.sh
-      # - name: _api-2
-      #   run: tests/test_endpoints_api.sh localhost $VAL1_API_PORT
-      # - name: _rpc-2
-      #   run: tests/test_endpoints_rpc.sh localhost $VAL1_RPC_PORT
-      # - name: _consumera-vsc-3
-      #   env:
-      #     CON1_RPC_PORT: 27201
-      #   run: tests/major_fresh_upgrade/test_ccv.sh
-      # - name: _consumerb-vsc-2
-      #   env:
-      #     CON1_RPC_PORT: 27301
-      #   run: tests/major_fresh_upgrade/test_ccv.sh
+      - name: _txs-2
+        env:
+          BASE_FEES: 2000
+        run: tests/patch_upgrade/patch_test_tx.sh
+      - name: _api-2
+        run: tests/test_endpoints_api.sh localhost $VAL1_API_PORT
+      - name: _rpc-2
+        run: tests/test_endpoints_rpc.sh localhost $VAL1_RPC_PORT
+      - name: _consumera-vsc-3
+        env:
+          CON1_RPC_PORT: 27101
+        run: tests/major_fresh_upgrade/test_ccv.sh
+      - name: _consumerb-vsc-2
+        env:
+          CON1_RPC_PORT: 27301
+        run: tests/major_fresh_upgrade/test_ccv.sh
 
       - name: Start Stride chain
         run: tests/major_fresh_upgrade/start_stride.sh
@@ -394,7 +394,7 @@ jobs:
           CONSUMER_DENOM: ustrd
           CONSUMER_FEES: 1000
           RECIPIENT: stride1r5v5srda7xfth3hn2s26txvrcrntldjucq88rn
-        run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-3 3
+        run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-5 4
       - name: Register and fund ICA
         run: tests/v12_upgrade/setup_ica.sh
 
@@ -405,7 +405,7 @@ jobs:
       - name: _lsm-happy-1
         env:
           CONSUMER_FEES: 1000
-          IBC_CHANNEL: channel-3
+          IBC_CHANNEL: channel-5
         run: tests/v12_upgrade/lsm_happy_path.sh
       - name: _lsm-failures-1
         run: tests/v12_upgrade/lsm_failures.sh
@@ -468,14 +468,14 @@ jobs:
       #     CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY_2 }}
       #   run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-8 5
 
-      # - name: _consumera-vsc-4
-      #   env:
-      #     CON1_RPC_PORT: 27201
-      #   run: tests/major_fresh_upgrade/test_ccv.sh
-      # - name: _consumerb-vsc-3
-      #   env:
-      #     CON1_RPC_PORT: 27301
-      #   run: tests/major_fresh_upgrade/test_ccv.sh
+      - name: _consumera-vsc-4
+        env:
+          CON1_RPC_PORT: 27101
+        run: tests/major_fresh_upgrade/test_ccv.sh
+      - name: _consumerb-vsc-3
+        env:
+          CON1_RPC_PORT: 27301
+        run: tests/major_fresh_upgrade/test_ccv.sh
       # - name: _consumerc-vsc-2
       #   env:
       #     CON1_RPC_PORT: 27401
