@@ -1,0 +1,12 @@
+{
+    "title": "ValidatorBondFactor -> 10",
+    "description": "This will set the validator bond factor to 10",
+    "deposit": "10000000uatom",
+    "changes": [
+        {
+            "subspace": "staking",
+            "key": "ValidatorBondFactor",
+            "value": "10.000000000000000000"
+        }
+    ]
+}

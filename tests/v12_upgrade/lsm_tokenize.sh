@@ -8,7 +8,9 @@ tokenized_denom=$VALOPER_1/1
 delegator_shares_1=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.delegator_shares')
 
 echo "Delegating with $WALLET_3..."
+tests/v12_upgrade/log_lsm_data.sh happy-tokenize pre-delegate $WALLET_3 $delegation
 submit_tx "tx staking delegate $VALOPER_1 $delegation$DENOM --from $WALLET_3 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+tests/v12_upgrade/log_lsm_data.sh happy-tokenize post-delegate $WALLET_3 $delegation
 
 delegator_shares_2=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.delegator_shares')
 shares_diff=$((${delegator_shares_2%.*}-${delegator_shares_1%.*})) # remove decimal portion
@@ -21,7 +23,9 @@ fi
 $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
 
 echo "Tokenizing shares with $WALLET_3..."
+tests/v12_upgrade/log_lsm_data.sh happy-tokenize pre-tokenize $WALLET_3 $tokenize
 submit_tx "tx staking tokenize-share $VALOPER_1 $tokenize$DENOM $WALLET_3 --from $WALLET_3 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+tests/v12_upgrade/log_lsm_data.sh happy-tokenize post-tokenize $WALLET_3 $tokenize
 
 liquid_shares=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.liquid_shares')
 echo "Liquid shares: ${liquid_shares%.*}"
