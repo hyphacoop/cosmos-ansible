@@ -23,7 +23,7 @@ shares_1=$($CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json |
 tokens_1=$($CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq -r '.tokens')
 bond_shares_1=$($CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq -r '.validator_bond_shares')
 echo "Bond shares: $bond_shares_1"
-exchange_rate_1=$(echo "$shares/$tokens" | bc -l)
+exchange_rate_1=$(echo "$shares_1/$tokens_1" | bc -l)
 echo "Exchange rate: $exchange_rate_1"
 expected_shares_increase=$(echo "$delegation*$exchange_rate_1" | bc -l)
 expected_shares=$(echo "$expected_shares_increase+$bond_shares_1" | bc -l)

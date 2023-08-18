@@ -4,6 +4,49 @@
 source tests/process_tx.sh
 
 delegate=20000000
+bond_delegation=20000000
+
+$CHAIN_BINARY keys add lsp_happy_bonding --home $HOME_1
+
+lsp_happy_bonding=$($CHAIN_BINARY keys list --home $HOME_1 --output json | jq -r '.[] | select(.name=="lsp_happy_bonding").address')
+
+echo "Funding bonding account..."
+submit_tx "tx bank send $WALLET_1 $lsp_happy_bonding 100000000uatom --from $WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -o json -y" $CHAIN_BINARY $HOME_1
+
+echo "Delegating and bonding with bonding_account..."
+shares_1=$($CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq -r '.delegator_shares')
+tokens_1=$($CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq -r '.tokens')
+bond_shares_1=$($CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq -r '.validator_bond_shares')
+echo "Bond shares: $bond_shares_1"
+exchange_rate_1=$(echo "$shares_1/$tokens_1" | bc -l)
+echo "Exchange rate: $exchange_rate_1"
+expected_shares_increase=$(echo "$bond_delegation*$exchange_rate_1" | bc -l)
+expected_shares=$(echo "$expected_shares_increase+$bond_shares_1" | bc -l)
+echo "Expected shares: $expected_shares"
+expected_shares=${expected_shares%.*}
+
+tests/v12_upgrade/log_lsm_data.sh accounting pre-delegate-1 $lsp_happy_bonding $bond_delegation
+submit_tx "tx staking delegate $VALOPER_2 $bond_delegation$DENOM --from $lsp_happy_bonding -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+tests/v12_upgrade/log_lsm_data.sh accounting post-delegate-1 $lsp_happy_bonding $bond_delegation
+$CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq '.'
+tests/v12_upgrade/log_lsm_data.sh accounting pre-bond-1 $lsp_happy_bonding -
+submit_tx "tx staking validator-bond $VALOPER_2 --from $lsp_happy_bonding -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT -y --fees $BASE_FEES$DENOM" $CHAIN_BINARY $HOME_1
+tests/v12_upgrade/log_lsm_data.sh accounting post-bond-1 $lsp_happy_bonding -
+$CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq '.'
+
+bond_shares_2=$($CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq -r '.validator_bond_shares')
+bond_shares_2=${bond_shares_2%.*}
+echo "Validator 2 bond shares: $bond_shares_2, expected: $expected_shares"
+if [[ $bond_shares_2 -eq $expected_shares  ]]; then
+    echo "Validator bond successful."
+elif [[ $(($bond_shares_2-$expected_shares)) -eq 1 ]]; then
+    echo "Validator bond successful: bond shares increase off by 1"
+elif [[ $(($expected_shares-$bond_shares_2)) -eq 1 ]]; then
+    echo "Validator bond successful: bond shares increase off by 1"
+else
+    echo "Accounting failure: unexpected validator bond shares increase ($bond_shares_2 != $expected_shares)"
+    exit 1 
+fi
 
 pre_delegation_tokens=$($CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq -r '.tokens')
 echo "Pre-delegation val tokens: $pre_delegation_tokens"
