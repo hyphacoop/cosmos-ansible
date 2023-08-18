@@ -161,7 +161,7 @@ echo "** ACCOUNTING TESTS> CLEANUP **"
     
     delegation_balance=$($CHAIN_BINARY q staking delegations $accounting_liquid --home $HOME_1 -o json | jq -r '.delegation_responses[0].balance.amount')
     tests/v12_upgrade/log_lsm_data.sh accounting pre-unbond-3 $accounting_liquid $delegation_balance
-    submit_tx "tx staking unbond $VALOPER_2 $delegation_balance$DENOM --from $accounting_bonding -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+    submit_tx "tx staking unbond $VALOPER_2 $delegation_balance$DENOM --from $accounting_liquid -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
     tests/v12_upgrade/log_lsm_data.sh accounting post-unbond-3 $accounting_liquid $delegation_balance
 # $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
 # $CHAIN_BINARY q staking pool -o json --home $HOME_1 | jq '.'
