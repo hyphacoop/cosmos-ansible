@@ -10,7 +10,7 @@ jq -r --arg CHAINID "$STRIDE_CHAIN_ID" '.chain_id |= $CHAINID' proposal-add-rev-
 jq '.' proposal-add-$STRIDE_CHAIN_ID.json
 
 echo "Submitting proposal..."
-$CHAIN_BINARY tx gov submit-proposal consumer-addition proposal-add-$STRIDE_CHAIN_ID.json --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM --from $WALLET_2 --keyring-backend test --home $HOME_1 --chain-id $CHAIN_ID -b block -y -o json"
+$CHAIN_BINARY tx gov submit-proposal consumer-addition proposal-add-$STRIDE_CHAIN_ID.json --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM --from $WALLET_2 --keyring-backend test --home $HOME_1 --chain-id $CHAIN_ID -b block -y -o json
 # proposal="$CHAIN_BINARY tx gov submit-proposal consumer-addition proposal-add-$STRIDE_CHAIN_ID.json --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM --from $WALLET_2 --keyring-backend test --home $HOME_1 --chain-id $CHAIN_ID -b block -y -o json"
 echo $proposal
 txhash=$($proposal | jq -r .txhash)
