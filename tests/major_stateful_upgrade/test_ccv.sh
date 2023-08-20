@@ -2,8 +2,8 @@
 # Test Validator Set Changes
 
 # Delegate additional stake to val 1
-echo "Delegating additional stake to $MONIKER_1..."
-$CHAIN_BINARY --home $HOME_1 tx staking delegate $VALOPER_1 $VAL_STAKE_STEP$DENOM --from $MONIKER_1 --keyring-backend test --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --fees 1000$DENOM -b block -y --chain-id $CHAIN_ID
+echo "Delegating additional stake to $MONIKER_2..."
+$CHAIN_BINARY --home $HOME_1 tx staking delegate $VALOPER_1 $VAL_STAKE_STEP$DENOM --from $MONIKER_2 --keyring-backend test --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --fees 1000$DENOM -b block -y --chain-id $CHAIN_ID
 # Wait for consumer chain to get validator set update
 echo "Waiting for the validator set update to reach the consumer chain..."
 sleep 20
