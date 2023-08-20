@@ -177,8 +177,8 @@ jobs:
       #     chmod +x $HOME/go/bin/$CONSUMER_CHAIN_BINARY
       #     wget -nv $CONSUMER_CHAIN_BINARY_URL_2 -O $HOME/go/bin/$CONSUMER_CHAIN_BINARY_2
       #     chmod +x $HOME/go/bin/$CONSUMER_CHAIN_BINARY_2
-      # - name: Set unbonding time via gov proposal
-      #   run: tests/major_stateful_upgrade/set_unbonding-time.sh
+      - name: Set unbonding time via gov proposal
+        run: tests/major_stateful_upgrade/set_unbonding-time.sh
       # - name: Initialize consumer chain a with ICS v3.1.0
       #   env:
       #     CONSUMER_CHAIN_ID: consumera
