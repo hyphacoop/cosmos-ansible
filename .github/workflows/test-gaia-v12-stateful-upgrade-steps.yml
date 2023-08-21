@@ -78,6 +78,7 @@ jobs:
       GAS_ADJUSTMENT: 1.2
       DELEGATE_1: ${{ vars.DELEGATE_1 }}
       DELEGATE_1_AMOUNT: ${{ vars.DELEGATE_1_AMOUNT }}
+      DELEGATE_2_AMOUNT: ${{ vars.DELEGATE_2_AMOUNT }}
     steps:
       # Get system info
       - run: ifconfig
