@@ -4,6 +4,12 @@
 gaia_host=$1
 gaia_port=$2
 height_offset=${3:-10}
+if [ $4 ]
+then
+    max_tests=$4
+else
+    max_tests=20
+fi
 
 # Test gaia response
 tests/test_gaia_response.sh $gaia_host $gaia_port

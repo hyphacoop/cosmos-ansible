@@ -159,7 +159,7 @@ jobs:
           ARCHIVE_URL: "https://files.polypore.xyz/archived-state/latest_v11.tar.gz"
         run: tests/major_stateful_upgrade/start_chain.sh
       - name: _blocks-1
-        run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 50 # 5 blocks
+        run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 50 2100
       - name: _txs-1
         run: tests/major_stateful_upgrade/test_tx.sh
       - name: Set unbonding time via gov proposal
