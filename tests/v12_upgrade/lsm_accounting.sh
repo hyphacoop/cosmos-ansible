@@ -150,7 +150,6 @@ echo "** ACCOUNTING TESTS> 2: REDEEMING TOKENS DECREASES VALIDATOR LIQUID SHARES
     fi
 
 echo "** ACCOUNTING TESTS> 3: ADDITIONAL DELEGATION INCREASES VALIDATOR BOND SHARES **"
-    # TODO: uncomment when bug is fixed
     shares_1=$($CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq -r '.delegator_shares')
     tokens_1=$($CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq -r '.tokens')
     bond_shares_1=$($CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq -r '.validator_bond_shares')
@@ -178,7 +177,6 @@ echo "** ACCOUNTING TESTS> 3: ADDITIONAL DELEGATION INCREASES VALIDATOR BOND SHA
     fi
 
 echo "** ACCOUNTING TESTS> 4: UNBONDING DECREASES VALIDATOR BOND SHARES **"
-    # TODO: Unbond 10ATOM from bonding account when bug is fixed
     shares_1=$($CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq -r '.delegator_shares')
     tokens_1=$($CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq -r '.tokens')
     bond_shares_1=$($CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq -r '.validator_bond_shares')
@@ -206,7 +204,6 @@ echo "** ACCOUNTING TESTS> 4: UNBONDING DECREASES VALIDATOR BOND SHARES **"
     fi
 
 echo "** ACCOUNTING TESTS> 5: REDELEGATION INCREASES AND DECREASES VALIDATOR BOND SHARES **"
-    # TODO: Delegate and bond 50ATOM to VAL1, redelegate 10ATOM from VAL2 to VAL1 when bug is fixed
     tests/v12_upgrade/log_lsm_data.sh accounting pre-delegate-4 $accounting_bonding 50000000
     submit_tx "tx staking delegate $VALOPER_1 50000000$DENOM --from $accounting_bonding -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
     tests/v12_upgrade/log_lsm_data.sh accounting post-delegate-4 $accounting_bonding 50000000
@@ -215,29 +212,51 @@ echo "** ACCOUNTING TESTS> 5: REDELEGATION INCREASES AND DECREASES VALIDATOR BON
     submit_tx "tx staking validator-bond $VALOPER_1 --from $accounting_bonding -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
     tests/v12_upgrade/log_lsm_data.sh accounting post-bond-2 $accounting_bonding -
 
-    shares_1=$($CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq -r '.delegator_shares')
-    tokens_1=$($CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq -r '.tokens')
-    bond_shares_1=$($CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq -r '.validator_bond_shares')
-    exchange_rate_1=$(echo "$shares/$tokens" | bc -l)
-    expected_shares_decrease=$(echo "10000000*$exchange_rate_1" | bc -l)
-    expected_shares=$(echo "$bond_shares_1-$expected_shares_decrease" | bc -l)
-    expected_shares=${expected_shares%.*}
+    shares_2_pre=$($CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq -r '.delegator_shares')
+    tokens_2_pre=$($CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq -r '.tokens')
+    bond_shares_2_pre=$($CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq -r '.validator_bond_shares')
+    exchange_rate_2=$(echo "$shares_2_pre/$tokens_2_pre" | bc -l)
+    expected_shares_decrease=$(echo "10000000*$exchange_rate_2" | bc -l)
+    expected_shares_2=$(echo "$bond_shares_2_pre-$expected_shares_decrease" | bc -l)
+    expected_shares_2=${expected_shares_2%.*}
+
+    shares_1_pre=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.delegator_shares')
+    tokens_1_pre=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.tokens')
+    bond_shares_1_pre=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.validator_bond_shares')
+    exchange_rate_1=$(echo "$shares_1_pre/$tokens_1_pre" | bc -l)
+    expected_shares_increase=$(echo "10000000*$exchange_rate_1" | bc -l)
+    expected_shares_1=$(echo "$bond_shares_1_pre+$expected_shares_increase" | bc -l)
+    expected_shares_1=${expected_shares_1%.*}
 
     tests/v12_upgrade/log_lsm_data.sh accounting pre-redelegate-1 $accounting_bonding 10000000
     submit_tx "tx staking redelegate $VALOPER_2 $VALOPER_1 10000000$DENOM --from $accounting_bonding -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
     tests/v12_upgrade/log_lsm_data.sh accounting post-redelegate-1 $accounting_bonding 10000000
 
-    bond_shares_2=$($CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq -r '.validator_bond_shares')
-    bond_shares_2=${bond_shares_2%.*}
-    echo "Validator 2 bond shares: $bond_shares_2, expected: $expected_shares"
-    if [[ $bond_shares_2 -eq $expected_shares  ]]; then
+    bond_shares_2_post=$($CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq -r '.validator_bond_shares')
+    bond_shares_2_post=${bond_shares_2_post%.*}
+    echo "Validator 2 bond shares: $bond_shares_2_post, expected: $expected_shares_2"
+    if [[ $bond_shares_2_post -eq $expected_shares_2  ]]; then
         echo "Validator bond successful."
-    elif [[ $(($bond_shares_2-$expected_shares)) -eq 1 ]]; then
+    elif [[ $(($bond_shares_2_post-$expected_shares_2)) -eq 1 ]]; then
         echo "Validator bond successful: bond shares decrease off by 1"
-    elif [[ $(($expected_shares-$bond_shares_2)) -eq 1 ]]; then
+    elif [[ $(($expected_shares_2-$bond_shares_2_post)) -eq 1 ]]; then
         echo "Validator bond successful: bond shares decrease off by 1"
     else
-        echo "Accounting failure: unexpected validator bond shares decrease ($bond_shares_2 != $expected_shares)"
+        echo "Accounting failure: unexpected validator bond shares decrease ($bond_shares_2_post != $expected_shares_2)"
+        exit 1 
+    fi
+
+    bond_shares_1_post=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.validator_bond_shares')
+    bond_shares_1_post=${bond_shares_1_post%.*}
+    echo "Validator 1 bond shares: $bond_shares_1_post, expected: $expected_shares_1"
+    if [[ $bond_shares_1_post -eq $expected_shares_1  ]]; then
+        echo "Validator bond successful."
+    elif [[ $(($bond_shares_1_post-$expected_shares_1)) -eq 1 ]]; then
+        echo "Validator bond successful: bond shares decrease off by 1"
+    elif [[ $(($expected_shares_1-$bond_shares_1_post)) -eq 1 ]]; then
+        echo "Validator bond successful: bond shares decrease off by 1"
+    else
+        echo "Accounting failure: unexpected validator bond shares decrease ($bond_shares_1_post != $expected_shares_1)"
         exit 1 
     fi
 
