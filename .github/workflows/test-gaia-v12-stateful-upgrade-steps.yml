@@ -162,6 +162,8 @@ jobs:
         run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 50 2100
       - name: _txs-1
         run: tests/major_stateful_upgrade/test_tx.sh
+      - name: Send funds to wallet 4
+        run: $CHAIN_BINARY tx bank send $WALLET_1 $WALLET_4 $VAL_STAKE_STEP$DENOM --home $HOME_1 --from $MONIKER_1 --keyring-backend test --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM --chain-id $CHAIN_ID -y
       - name: Set unbonding time via gov proposal
         run: tests/major_stateful_upgrade/set_unbonding-time.sh
       - name: Delegate to mainnet validator
@@ -302,6 +304,13 @@ jobs:
           tests/major_stateful_upgrade/test_consumer_ibc_transfer.sh $channel_id 2 $WALLET_2 $RECIPIENT
       - name: Register and fund ICA
         run: tests/v12_upgrade/setup_ica.sh
+
+      - name: Set test LSM params
+        run: |
+          tests/param_change.sh tests/v12_upgrade/proposal-global-liquid-cap.json
+          tests/param_change.sh tests/v12_upgrade/proposal-validator-liquid-cap.json
+          tests/param_change.sh tests/v12_upgrade/proposal-validator-bond-factor.json
+          $CHAIN_BINARY q staking params --home $HOME_1 -o json | jq '.'
 
       # - name: sleep
       #   run: sleep 10h
