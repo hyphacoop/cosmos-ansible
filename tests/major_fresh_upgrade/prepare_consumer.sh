@@ -1,16 +1,14 @@
 #!/bin/bash
-# Launch a consumer chain
+# Prepare a consumer chain to be started
 
 echo "Patching add template with spawn time..."
 spawn_time=$(date -u --iso-8601=ns | sed s/+00:00/Z/ | sed s/,/./)
 jq -r --arg SPAWNTIME "$spawn_time" '.spawn_time |= $SPAWNTIME' tests/patch_upgrade/proposal-add-template.json > proposal-add-spawn.json
-jq -r --argjson HEIGHT "$STRIDE_REV_HEIGHT" '.initial_height.revision_height |= $HEIGHT' proposal-add-spawn.json > proposal-add-rev-height.json
-jq -r --arg CHAINID "$STRIDE_CHAIN_ID" '.chain_id |= $CHAINID' proposal-add-rev-height.json > proposal-add-$STRIDE_CHAIN_ID.json
-
-jq '.' proposal-add-$STRIDE_CHAIN_ID.json
+sed "s%\"chain_id\": \"\"%\"chain_id\": \"$CONSUMER_CHAIN_ID\"%g" proposal-add-spawn.json > proposal-add-$CONSUMER_CHAIN_ID.json
+rm proposal-add-spawn.json
 
 echo "Submitting proposal..."
-proposal="$CHAIN_BINARY tx gov submit-proposal consumer-addition proposal-add-$STRIDE_CHAIN_ID.json --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM --from $WALLET_2 --keyring-backend test --home $HOME_1 --chain-id $CHAIN_ID -b block -y -o json"
+proposal="$CHAIN_BINARY tx gov submit-proposal consumer-addition proposal-add-$CONSUMER_CHAIN_ID.json --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM --from $WALLET_2 --keyring-backend test --home $HOME_1 --chain-id $CHAIN_ID -b block -y -o json"
 echo $proposal
 txhash=$($proposal | jq -r .txhash)
 # Wait for the proposal to go on chain
@@ -29,18 +27,14 @@ $CHAIN_BINARY q gov tally $proposal_id --home $HOME_1
 echo "Waiting for proposal to pass..."
 sleep $VOTING_PERIOD
 
-$CHAIN_BINARY q gov proposal $proposal_id --home $HOME_1
+#$CHAIN_BINARY q gov proposals --home $HOME_1
 
 echo "Collecting the CCV state..."
-$CHAIN_BINARY q provider consumer-genesis $STRIDE_CHAIN_ID -o json --home $HOME_1 > ccv-pre.json
+$CHAIN_BINARY q provider consumer-genesis $CONSUMER_CHAIN_ID -o json --home $HOME_1 > ccv-pre.json
 jq '.params |= . + {"soft_opt_out_threshold": "0.10"}' ccv-pre.json > ccv.json
 jq '.' ccv.json
 
 echo "Patching the consumer genesis file..."
-jq -s '.[0].app_state.ccvconsumer = .[1] | .[0]' $STRIDE_HOME_1/config/genesis.json ccv.json > consumer-genesis.json
-cp consumer-genesis.json $STRIDE_HOME_1/config/ccv.json
-cp consumer-genesis.json $STRIDE_HOME_2/config/ccv.json
-
-echo "Starting the consumer chain..."
-sudo systemctl enable $STRIDE_SERVICE_1 --now
-# sudo systemctl enable $STRIDE_SERVICE_2 --now
+jq -s '.[0].app_state.ccvconsumer = .[1] | .[0]' $CONSUMER_HOME_1/config/genesis.json ccv.json > consumer-genesis.json
+cp consumer-genesis.json $CONSUMER_HOME_1/config/genesis.json
+cp consumer-genesis.json $CONSUMER_HOME_2/config/genesis.json

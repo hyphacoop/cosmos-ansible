@@ -2,8 +2,7 @@
 # 1. Set up a two-validator provider chain.
 
 # Install Gaia binary
-# CHAIN_BINARY_URL=https://github.com/cosmos/gaia/releases/download/$START_VERSION/gaiad-$START_VERSION-linux-amd64
-CHAIN_BINARY_URL=https://github.com/hyphacoop/cosmos-builds/releases/download/gaiad-test/gaiad-test
+CHAIN_BINARY_URL=https://github.com/cosmos/gaia/releases/download/$START_VERSION/gaiad-$START_VERSION-linux-amd64
 echo "Installing Gaia..."
 wget $CHAIN_BINARY_URL -O $HOME/go/bin/$CHAIN_BINARY -q
 chmod +x $HOME/go/bin/$CHAIN_BINARY
@@ -66,16 +65,17 @@ echo "Patching genesis file for fast governance..."
 jq -r ".app_state.gov.voting_params.voting_period = \"$VOTING_PERIOD\"" $HOME_1/config/genesis.json  > ./voting.json
 jq -r ".app_state.gov.deposit_params.min_deposit[0].amount = \"1\"" ./voting.json > ./gov.json
 
-echo "Setting slashing window to 10000..."
-jq -r --arg SLASH "10000" '.app_state.slashing.params.signed_blocks_window |= $SLASH' ./gov.json > ./slashing.json
+echo "Setting slashing window to 10..."
+jq -r --arg SLASH "10" '.app_state.slashing.params.signed_blocks_window |= $SLASH' ./gov.json > ./slashing.json
+jq -r '.app_state.slashing.params.downtime_jail_duration |= "5s"' slashing.json > slashing-2.json
 
-echo "Patching genesis file for LSM params..."
-jq -r '.app_state.staking.params.validator_bond_factor = "10.000000000000000000"' slashing.json > lsm-1.json
-jq -r '.app_state.staking.params.global_liquid_staking_cap = "0.100000000000000000"' lsm-1.json > lsm-2.json
-jq -r '.app_state.staking.params.validator_liquid_staking_cap = "0.200000000000000000"' lsm-2.json > lsm-3.json
+# echo "Patching genesis file for LSM params..."
+# jq -r '.app_state.staking.params.validator_bond_factor = "10.000000000000000000"' slashing-2.json > lsm-1.json
+# jq -r '.app_state.staking.params.global_liquid_staking_cap = "0.100000000000000000"' lsm-1.json > lsm-2.json
+# jq -r '.app_state.staking.params.validator_liquid_staking_cap = "0.200000000000000000"' lsm-2.json > lsm-3.json
 
 echo "Patching genesis for ICA messages..."
-jq -r '.app_state.interchainaccounts.host_genesis_state.params.allow_messages[0] = "*"' lsm-3.json > ./ica_host.json
+jq -r '.app_state.interchainaccounts.host_genesis_state.params.allow_messages[0] = "*"' slashing-2.json > ./ica_host.json
 mv ica_host.json $HOME_1/config/genesis.json
 
 echo "Copying genesis file to other nodes..."
@@ -134,9 +134,10 @@ toml set --toml-path $HOME_2/config/config.toml p2p.allow_duplicate_ip true
 toml set --toml-path $HOME_3/config/config.toml p2p.allow_duplicate_ip true
 
 echo "Setting a short commit timeout..."
-toml set --toml-path $HOME_1/config/config.toml consensus.timeout_commit "1s"
-toml set --toml-path $HOME_2/config/config.toml consensus.timeout_commit "1s"
-toml set --toml-path $HOME_3/config/config.toml consensus.timeout_commit "1s"
+seconds=s
+toml set --toml-path $HOME_1/config/config.toml consensus.timeout_commit "$COMMIT_TIMEOUT$seconds"
+toml set --toml-path $HOME_2/config/config.toml consensus.timeout_commit "$COMMIT_TIMEOUT$seconds"
+toml set --toml-path $HOME_3/config/config.toml consensus.timeout_commit "$COMMIT_TIMEOUT$seconds"
 
 # Set persistent peers
 echo "Setting persistent peers..."
@@ -195,3 +196,5 @@ echo "WantedBy=multi-user.target"           | sudo tee /etc/systemd/system/$PROV
 
 sudo systemctl daemon-reload
 sudo systemctl enable $PROVIDER_SERVICE_1 --now
+sudo systemctl enable $PROVIDER_SERVICE_2 --now
+sudo systemctl enable $PROVIDER_SERVICE_3 --now

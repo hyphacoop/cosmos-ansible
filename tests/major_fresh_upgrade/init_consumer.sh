@@ -83,6 +83,13 @@ toml set --toml-path $CONSUMER_HOME_2/config/config.toml p2p.laddr "tcp://0.0.0.
 toml set --toml-path $CONSUMER_HOME_1/config/config.toml p2p.allow_duplicate_ip true
 toml set --toml-path $CONSUMER_HOME_2/config/config.toml p2p.allow_duplicate_ip true
 
+echo "Setting persistent peers..."
+VAL2_NODE_ID=$($CONSUMER_CHAIN_BINARY tendermint show-node-id --home $CONSUMER_HOME_2)
+# VAL3_NODE_ID=$($CONSUMER_CHAIN_BINARY tendermint show-node-id --home $CONSUMER_HOME_3)
+VAL2_PEER="$VAL2_NODE_ID@localhost:$CON2_P2P_PORT"
+# VAL3_PEER="$VAL3_NODE_ID@localhost:$CON3_P2P_PORT"
+toml set --toml-path $CONSUMER_HOME_1/config/config.toml p2p.persistent_peers "$VAL2_PEER"
+
 echo "Setting a short commit timeout..."
 toml set --toml-path $CONSUMER_HOME_1/config/config.toml consensus.timeout_commit "1s"
 toml set --toml-path $CONSUMER_HOME_2/config/config.toml consensus.timeout_commit "1s"

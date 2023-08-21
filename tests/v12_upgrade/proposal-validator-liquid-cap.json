@@ -1,0 +1,12 @@
+{
+    "title": "ValidatorLiquidStakingCap -> 0.2",
+    "description": "This will set the validator liquid staking cap to 0.2",
+    "deposit": "10000000uatom",
+    "changes": [
+        {
+            "subspace": "staking",
+            "key": "ValidatorLiquidStakingCap",
+            "value": "0.2"
+        }
+    ]
+}
