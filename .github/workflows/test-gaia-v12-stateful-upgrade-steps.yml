@@ -164,7 +164,7 @@ jobs:
       - name: _txs-1
         run: tests/major_stateful_upgrade/test_tx.sh
       - name: Send funds to wallet 4
-        run: $CHAIN_BINARY tx bank send $WALLET_1 $WALLET_4 10000000$DENOM --home $HOME_1 --from $MONIKER_1 --keyring-backend test --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM --chain-id $CHAIN_ID -y
+        run: $CHAIN_BINARY tx bank send $WALLET_1 $WALLET_4 10000000$DENOM --home $HOME_1 --from $MONIKER_1 --keyring-backend test --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM --chain-id $CHAIN_ID -y -b block
       - name: Set unbonding time via gov proposal
         run: tests/major_stateful_upgrade/set_unbonding-time.sh
       - name: Delegate to mainnet validator
