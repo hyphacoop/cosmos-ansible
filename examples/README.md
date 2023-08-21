@@ -123,7 +123,7 @@ The playbook will download the genesis file, and the validator keys are listed b
 
 * **Inventory file:** [`inventory-local-genesis.yml`](inventory-local-genesis.yml)
 * **Chain ID:** `local-testnet`
-* **Gaia version:** `v10.0.2`
+* **Gaia version:** `v11.0.0`
 * **Validator mnemonic:** [self-delegation-wallet-mnemonic.txt](validator-keys/validator-40/self-delegation-wallet-mnemonic.txt)
 * **Validator key:** [priv_validator_key.json](validator-keys/validator-40/priv_validator_key.json)
 * **Node key:** [node_key.json](validator-keys/validator-40/node_key.json)
