@@ -225,7 +225,7 @@ echo "** ACCOUNTING TESTS> 5: REDELEGATION INCREASES AND DECREASES VALIDATOR BON
     bond_shares_1_pre=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.validator_bond_shares')
     exchange_rate_1=$(echo "$shares_1_pre/$tokens_1_pre" | bc -l)
     expected_shares_increase=$(echo "10000000*$exchange_rate_1" | bc -l)
-    expected_shares_1=$(echo "$bond_shares_1_pre-$expected_shares_increase" | bc -l)
+    expected_shares_1=$(echo "$bond_shares_1_pre+$expected_shares_increase" | bc -l)
     expected_shares_1=${expected_shares_1%.*}
 
     tests/v12_upgrade/log_lsm_data.sh accounting pre-redelegate-1 $accounting_bonding 10000000
@@ -248,7 +248,7 @@ echo "** ACCOUNTING TESTS> 5: REDELEGATION INCREASES AND DECREASES VALIDATOR BON
 
     bond_shares_1_post=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.validator_bond_shares')
     bond_shares_1_post=${bond_shares_1_post%.*}
-    echo "Validator 2 bond shares: $bond_shares_1_post, expected: $expected_shares_1"
+    echo "Validator 1 bond shares: $bond_shares_1_post, expected: $expected_shares_1"
     if [[ $bond_shares_1_post -eq $expected_shares_1  ]]; then
         echo "Validator bond successful."
     elif [[ $(($bond_shares_1_post-$expected_shares_1)) -eq 1 ]]; then
