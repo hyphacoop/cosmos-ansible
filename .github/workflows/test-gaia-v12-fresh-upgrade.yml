@@ -408,19 +408,19 @@ jobs:
       #   run: tests/v12_upgrade/lsm_failures.sh
       # - name: _lsm-complex-1
       #   run: tests/v12_upgrade/lsm_complex.sh
-      # - name: _lsm_accounting-1
-      #   env:
-      #     BASE_FEES: 2000
-      #     GAS_ADJUSTMENT: 2
-      #   run: tests/v12_upgrade/lsm_accounting.sh
+      - name: _lsm_accounting-1
+        env:
+          BASE_FEES: 2000
+          GAS_ADJUSTMENT: 2
+        run: tests/v12_upgrade/lsm_accounting.sh
       # - name: _lsm-lsp-happy-1
       #   run: tests/v12_upgrade/ica_delegate_happy.sh
       # - name: _lsm-lsp-failures-1
       #   run: tests/v12_upgrade/ica_delegate_failures.sh
-      - name: _lsm-lsp-accounting-1
-        run: tests/v12_upgrade/ica_delegate_accounting.sh
-      - name: Save LSM log
-        uses: actions/upload-artifact@v3
+      # - name: _lsm-lsp-accounting-1
+      #   run: tests/v12_upgrade/ica_delegate_accounting.sh
+      # - name: Save LSM log
+      #   uses: actions/upload-artifact@v3
       #   with:
       #     name: lsm_log.csv
       #     path: lsm_log.csv
