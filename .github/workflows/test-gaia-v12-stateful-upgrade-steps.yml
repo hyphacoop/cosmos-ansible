@@ -79,6 +79,7 @@ jobs:
       DELEGATE_1: ${{ vars.DELEGATE_1 }}
       DELEGATE_1_AMOUNT: ${{ vars.DELEGATE_1_AMOUNT }}
       DELEGATE_2_AMOUNT: ${{ vars.DELEGATE_2_AMOUNT }}
+      LSM_LOG: /home/runner/artifact/lsm_log.csv
     steps:
       # Get system info
       - run: ifconfig
@@ -163,7 +164,7 @@ jobs:
       - name: _txs-1
         run: tests/major_stateful_upgrade/test_tx.sh
       - name: Send funds to wallet 4
-        run: $CHAIN_BINARY tx bank send $WALLET_1 $WALLET_4 $VAL_STAKE_STEP$DENOM --home $HOME_1 --from $MONIKER_1 --keyring-backend test --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM --chain-id $CHAIN_ID -y
+        run: $CHAIN_BINARY tx bank send $WALLET_1 $WALLET_4 10000000$DENOM --home $HOME_1 --from $MONIKER_1 --keyring-backend test --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM --chain-id $CHAIN_ID -y
       - name: Set unbonding time via gov proposal
         run: tests/major_stateful_upgrade/set_unbonding-time.sh
       - name: Delegate to mainnet validator
@@ -302,6 +303,7 @@ jobs:
           channel_id=$(hermes --json query connection channels --chain local-testnet --connection $connection_id | jq -r '. | select(.result).result[] | select(.port_id=="transfer").channel_id')
           echo "Channel ID: $channel_id"
           tests/major_stateful_upgrade/test_consumer_ibc_transfer.sh $channel_id 2 $WALLET_2 $RECIPIENT
+          echo "CONSUMERD_CHAN=$channel_id" >> $GITHUB_ENV
       - name: Register and fund ICA
         run: tests/v12_upgrade/setup_ica.sh
 
@@ -311,6 +313,30 @@ jobs:
           tests/param_change.sh tests/v12_upgrade/proposal-validator-liquid-cap.json
           tests/param_change.sh tests/v12_upgrade/proposal-validator-bond-factor.json
           $CHAIN_BINARY q staking params --home $HOME_1 -o json | jq '.'
+      - name: Create LSM log file
+        run: |
+          touch $LSM_LOG
+          echo "user flow,action,account,amount,balance,del_shares,del_balance,val1_tokens,val1_shares,val1_bond_shares,val1_liquid_shares,val2_tokens,val2_shares,val2_bond_shares,val2_liquid_shares" >> $LSM_LOG
+      - name: _lsm-happy-1
+        env:
+          CONSUMER_FEES: 1000
+          IBC_CHANNEL: ${{ env.CONSUMERD_CHAN }}
+        run: tests/v12_upgrade/lsm_happy_path.sh
+      - name: _lsm-failures-1
+        run: tests/v12_upgrade/lsm_failures.sh
+      - name: _lsm-complex-1
+        run: tests/v12_upgrade/lsm_complex.sh
+      - name: _lsm_accounting-1
+        env:
+          BASE_FEES: 2000
+          GAS_ADJUSTMENT: 2
+        run: tests/v12_upgrade/lsm_accounting.sh
+      - name: _lsm-lsp-happy-1
+        run: tests/v12_upgrade/ica_delegate_happy.sh
+      - name: _lsm-lsp-failures-1
+        run: tests/v12_upgrade/ica_delegate_failures.sh
+      - name: _lsm-lsp-accounting-1
+        run: tests/v12_upgrade/ica_delegate_accounting.sh
 
       # - name: sleep
       #   run: sleep 10h
