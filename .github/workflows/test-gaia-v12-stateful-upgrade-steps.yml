@@ -302,8 +302,7 @@ jobs:
           tests/major_stateful_upgrade/test_consumer_ibc_transfer.sh $channel_id 2 $WALLET_2 $RECIPIENT
       - name: Register and fund ICA
         run: tests/v12_upgrade/setup_ica.sh
-      - name: ICA delegate
-        run: tests/v12_upgrade/ica_delegate.sh
+
       # - name: sleep
       #   run: sleep 10h
       - name: Stop services
