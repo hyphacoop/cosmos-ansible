@@ -80,6 +80,7 @@ jobs:
       DELEGATE_1_AMOUNT: ${{ vars.DELEGATE_1_AMOUNT }}
       DELEGATE_2_AMOUNT: ${{ vars.DELEGATE_2_AMOUNT }}
       LSM_LOG: /home/runner/artifact/lsm_log.csv
+      COMMIT_TIMEOUT: 5
     steps:
       # Get system info
       - run: ifconfig
