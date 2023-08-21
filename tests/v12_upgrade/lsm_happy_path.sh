@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set -x
 source tests/process_tx.sh
 
 delegation=100000000
@@ -66,8 +66,10 @@ echo "** HAPPY PATH> STEP 2: TOKENIZE **"
 
     echo "Delegating with $happy_liquid_1..."
     tests/v12_upgrade/log_lsm_data.sh happy pre-delegate-2 $happy_liquid_1 $delegation
+    $CHAIN_BINARY q staking validators --home $HOME_1
     submit_tx "tx staking delegate $VALOPER_1 $delegation$DENOM --from $happy_liquid_1 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
     tests/v12_upgrade/log_lsm_data.sh happy post-delegate-2 $happy_liquid_1 $delegation
+    $CHAIN_BINARY q staking validators --home $HOME_1
 
     delegator_shares_2=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.delegator_shares')
     shares_diff=$((${delegator_shares_2%.*}-${delegator_shares_1%.*})) # remove decimal portion
