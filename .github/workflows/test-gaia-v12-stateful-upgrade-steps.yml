@@ -211,6 +211,7 @@ jobs:
         env:
           CONSUMER_CHAIN_ID: consumera
         run: |
+          set -x
           client_id=$(gaiad --home $HOME/.val1 q provider list-consumer-chains --output json | jq -r '.chains[] | select(.chain_id=="consumera").client_id')
           echo "Client ID: $client_id"
           connection_id=$(hermes --json query client connections --chain local-testnet --client $client_id | jq -r '. | select(.result).result[]')
