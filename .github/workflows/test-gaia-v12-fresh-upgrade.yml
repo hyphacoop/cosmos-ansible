@@ -215,8 +215,8 @@ jobs:
       # - name: Validators initial state
       #   run: |
       #     $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
-      # - name: Set up relayer
-      #   run: tests/v12_upgrade/setup_relayer.sh
+      - name: Set up relayer
+        run: tests/v12_upgrade/setup_relayer.sh
       # - name: Download consumer chain binaries
       #   run: |
       #     wget $CONSUMER_CHAIN_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_BINARY -q
