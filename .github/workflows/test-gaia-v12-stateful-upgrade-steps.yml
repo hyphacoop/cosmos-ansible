@@ -323,7 +323,7 @@ jobs:
         env:
           CONSUMER_FEES: 1000
           IBC_CHANNEL: ${{ env.CONSUMERD_CHAN }}
-        run: tests/v12_upgrade/lsm_happy_path.sh
+        run: tests/v12_upgrade/lsm_happy_path_stateful.sh
       - name: _lsm-failures-1
         run: tests/v12_upgrade/lsm_failures.sh
       - name: _lsm-complex-1
