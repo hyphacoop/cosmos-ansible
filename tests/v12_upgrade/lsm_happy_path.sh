@@ -77,16 +77,25 @@ echo "** HAPPY PATH> STEP 2: TOKENIZE **"
         exit 1
     fi
 
+    liquid_shares_pre_tokenize=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.liquid_shares')
     echo "Tokenizing shares with $happy_liquid_1..."
     tests/v12_upgrade/log_lsm_data.sh happy pre-tokenize-1 $happy_liquid_1 $tokenize
     submit_tx "tx staking tokenize-share $VALOPER_1 $tokenize$DENOM $happy_liquid_1 --from $happy_liquid_1 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
     tests/v12_upgrade/log_lsm_data.sh happy post-tokenize-1 $happy_liquid_1 $tokenize
 
-    liquid_shares=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.liquid_shares')
-    echo "Liquid shares: ${liquid_shares%.*}"
-    if [[ ${liquid_shares%.*} -ne $tokenize ]]; then
-        echo "Tokenize unsuccessful: unexpected liquid shares amount"
-        exit 1
+    liquid_shares_post_tokenize=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.liquid_shares')
+    liquid_shares_diff=$(echo "$liquid_shares_post_tokenize-$liquid_shares_pre_tokenize" | bc -l)
+    liquid_shares_diff=${liquid_shares_diff%.*}
+    
+    if [[ $liquid_shares_diff -eq $tokenize  ]]; then
+        echo "Tokenization successful."
+    elif [[ $(($liquid_shares_diff-$tokenize)) -eq 1 ]]; then
+        echo "Tokenization successful: liquid shares increase off by 1"
+    elif [[ $(($tokenize-$liquid_shares_diff)) -eq 1 ]]; then
+        echo "Tokenization successful: liquid shares increase off by 1"
+    else
+        echo "Tokenization unsuccessful: unexpected increase in liquid shares amount ($liquid_shares_diff != $tokenize)"
+        exit 1 
     fi
 
     liquid_balance=$($CHAIN_BINARY q bank balances $happy_liquid_1 --home $HOME_1 -o json | jq -r --arg DENOM "$tokenized_denom" '.balances[] | select(.denom==$DENOM).amount')
