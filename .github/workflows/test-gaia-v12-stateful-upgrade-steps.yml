@@ -219,6 +219,9 @@ jobs:
           channel_id=$(hermes --json query connection channels --chain local-testnet --connection $connection_id | jq -r '. | select(.result).result[] | select(.port_id=="transfer").channel_id')
           echo "Channel ID: $channel_id"
           tests/major_stateful_upgrade/test_consumer_ibc_transfer.sh $channel_id 2
+      - name: sleep
+        if: always()
+        run: sleep 10h
       - name: _soft-opt-out-1
         run: tests/v11_upgrade/test_validator_jailed.sh $DELEGATE_1 true
       - name: _soft-opt-out-2
