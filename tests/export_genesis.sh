@@ -44,25 +44,10 @@ URL=\$(curl -sL https://quicksync.io/cosmos.json|jq -r '.[] |select(.file==\"cos
 echo \"URL set to: \$URL\"
 echo \"Starting download\"
 aria2c -x5 \$URL
-echo \"Download checksum script\"
-wget https://raw.githubusercontent.com/chainlayer/quicksync-playbooks/master/roles/quicksync/files/checksum.sh
-chmod +x checksum.sh
-echo \"Download \$URL.checksum\"
-wget \$URL.checksum
-echo \"Get sha512sum\"
-curl -sL https://lcd-cosmos.cosmostation.io/txs/\$(curl -sL \$URL.hash)|jq -r '.tx.value.memo'|sha512sum -c
-echo \"Checking hash of download\"
-./checksum.sh \$(basename \$URL) check
-if [ \$? -ne 0 ]
-then
-	echo "Checksum FAILED falling back to statesync"
-	rm \$(basename \$URL)
-else
-	echo \"Execting \$(basename \$URL)\"
-	lz4 -d \$(basename \$URL) | tar xf -
-	echo \"Removing \$(basename \$URL)\"
-	rm \$(basename \$URL)
-fi
+echo \"Execting \$(basename \$URL)\"
+lz4 -d \$(basename \$URL) | tar xf -
+echo \"Removing \$(basename \$URL)\"
+rm \$(basename \$URL)
 if [ ! -d cosmovisor/upgrades ]
 then
     echo \"Creating cosmovisor/upgrades directory\"
