@@ -206,7 +206,7 @@ jobs:
           echo "Wait for hermes to start..."
           sleep 180
       - name: _consumera-vsc-1
-        run: tests/patch_upgrade/patch_test_ccv.sh
+        run: tests/major_stateful_upgrade/test_ccv.sh
       - name: _consumera-ibc-1
         env:
           CONSUMER_CHAIN_ID: consumera
