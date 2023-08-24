@@ -57,16 +57,8 @@ echo "Creating script for Hermes"
 echo "while true; do $HOME/.hermes/hermes --config $HOME/.hermes/config.toml start; sleep 1; done" > $HOME/hermes.service.sh
 chmod +x $HOME/hermes.service.sh
 
-# Run service in screen session
+# Create artifact if it doesn't exists
 if [ ! -d $HOME/artifact ]
 then
     mkdir $HOME/artifact
 fi
-
-echo "Starting Hermes"
-screen -L -Logfile $HOME/artifact/hermes.service.log -S hermes.service -d -m bash $HOME/hermes.service.sh
-# set screen to flush log to 0
-screen -r hermes.service -p0 -X logfile flush 0
-
-# echo "Waiting for channels to be opened..."
-# sleep 30

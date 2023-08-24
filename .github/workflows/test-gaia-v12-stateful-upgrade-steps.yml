@@ -199,10 +199,15 @@ jobs:
         run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT 10
       - name: Establish CCV channel for consumer a
         run: |
+          killall hermes || true
+          screen -XS hermes.service quit || true
           client_id=$(gaiad --home $HOME/.val1 q provider list-consumer-chains --output json | jq -r '.chains[] | select(.chain_id=="consumera").client_id')
           hermes create connection --a-chain consumera --a-client 07-tendermint-0 --b-client $client_id
           hermes create channel --a-chain consumera --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
-          killall hermes
+          echo "Starting Hermes"
+          screen -L -Logfile $HOME/artifact/hermes.service.log -S hermes.service -d -m bash $HOME/hermes.service.sh
+          # set screen to flush log to 0
+          screen -r hermes.service -p0 -X logfile flush 0
           echo "Wait for hermes to start..."
           sleep 180
       - name: _consumera-vsc-1
@@ -249,10 +254,16 @@ jobs:
       #   run: tests/test_block_production.sh 127.0.0.1 27201 10
       # - name: Establish CCV channel for consumer b
       #   run: |
+      #     echo "Stopping hermes"
+      #     killall hermes || true
+      #     screen -XS hermes.service quit || true
       #     client_id=$(gaiad --home $HOME/.val1 q provider list-consumer-chains --output json | jq -r '.chains[] | select(.chain_id=="consumerb").client_id')
       #     hermes create connection --a-chain consumerb --a-client 07-tendermint-0 --b-client $client_id
       #     hermes create channel --a-chain consumerb --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
-      #     killall hermes
+      #     echo "Starting Hermes"
+      #     screen -L -Logfile $HOME/artifact/hermes.service.log -S hermes.service -d -m bash $HOME/hermes.service.sh
+      #     # set screen to flush log to 0
+      #     screen -r hermes.service -p0 -X logfile flush 0
       #     echo "Wait for hermes to start..."
       #     sleep 180
       # - name: _consumerb-vsc-1
@@ -283,10 +294,16 @@ jobs:
         run: tests/test_block_production.sh 127.0.0.1 $STRIDE_RPC_1 5 # 5 blocks
       - name: Establish CCV channel for consumer d
         run: |
+          echo "Stopping hermes"
+          killall hermes || true
+          screen -XS hermes.service quit || true
           client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r '.chains[] | select(.chain_id=="consumerd").client_id')
           hermes create connection --a-chain consumerd --a-client 07-tendermint-0 --b-client $client_id
           hermes create channel --a-chain consumerd --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
-          killall hermes
+          echo "Starting Hermes"
+          screen -L -Logfile $HOME/artifact/hermes.service.log -S hermes.service -d -m bash $HOME/hermes.service.sh
+          # set screen to flush log to 0
+          screen -r hermes.service -p0 -X logfile flush 0
           echo "Wait for hermes to start..."
           sleep 100
       - name: _consumerd-vsc-1
@@ -351,16 +368,16 @@ jobs:
           killall hermes || true
           screen -XS hermes.service quit || true
           # provider
-          killall {{ env.CHAIN_BINARY }}  || true
+          killall ${{ env.CHAIN_BINARY }}  || true
           screen -XS {{ env.PROVIDER_SERVICE_1 }} quit || true
           # consumer chains
-          killall {{ env.CONSUMER_CHAIN_BINARY }} || true
-          killall {{ env.CONSUMER_CHAIN_BINARY_2 }} || true
-          screen -XS {{ env.CONSUMER_SERVICE_1 }} quit || true
+          killall ${{ env.CONSUMER_CHAIN_BINARY }} || true
+          killall ${{ env.CONSUMER_CHAIN_BINARY_2 }} || true
+          screen -XS ${{ env.CONSUMER_SERVICE_1 }} quit || true
           screen -XS conb1.service quit || true
           # stride
-          killall {{ env.STRIDE_CHAIN_BINARY }}  || true
-          screen -XS {{ env.STRIDE_SERVICE_1 }} quit || true
+          killall ${{ env.STRIDE_CHAIN_BINARY }}  || true
+          screen -XS ${{ env.STRIDE_SERVICE_1 }} quit || true
           sleep 20
       - name: Save config files
         if: always()
