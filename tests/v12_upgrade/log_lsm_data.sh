@@ -12,12 +12,13 @@ val1_shares=$(echo $val1_data | jq -r '.delegator_shares')
 val1_bond_shares=$(echo $val1_data | jq -r '.validator_bond_shares')
 val1_liquid_shares=$(echo $val1_data | jq -r '.liquid_shares')
 
-val2_data=$($CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json)
-val2_tokens=$(echo $val2_data | jq -r '.tokens')
-val2_shares=$(echo $val2_data | jq -r '.delegator_shares')
-val2_bond_shares=$(echo $val2_data | jq -r '.validator_bond_shares')
-val2_liquid_shares=$(echo $val2_data | jq -r '.liquid_shares')
-
+if [ $VALOPER_2 ]; then
+    val2_data=$($CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json)
+    val2_tokens=$(echo $val2_data | jq -r '.tokens')
+    val2_shares=$(echo $val2_data | jq -r '.delegator_shares')
+    val2_bond_shares=$(echo $val2_data | jq -r '.validator_bond_shares')
+    val2_liquid_shares=$(echo $val2_data | jq -r '.liquid_shares')
+fi
 acct_balances=$($CHAIN_BINARY q bank balances $account --home $HOME_1 -o json)
 acct_delegations=$($CHAIN_BINARY q staking delegations $account --home $HOME_1 -o json)
 

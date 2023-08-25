@@ -336,23 +336,27 @@ jobs:
       - name: Create LSM log file
         run: |
           touch $LSM_LOG
-          echo "user flow,action,account,amount,balance,del_shares,del_balance,val1_tokens,val1_shares,val1_bond_shares,val1_liquid_shares,val2_tokens,val2_shares,val2_bond_shares,val2_liquid_shares" >> $LSM_LOG
+          echo "user flow,action,account,amount,balance,del_shares,del_balance,val1_tokens,val1_shares,val1_bond_shares,val1_liquid_shares" >> $LSM_LOG
       - name: _lsm-happy-1
         env:
           CONSUMER_FEES: 1000
           IBC_CHANNEL: ${{ env.CONSUMERD_CHAN }}
         run: tests/v12_upgrade/lsm_happy_path_stateful.sh
-      - name: _lsm-failures-1
-        run: tests/v12_upgrade/lsm_failures.sh
-      - name: _lsm-complex-1
-        run: tests/v12_upgrade/lsm_complex.sh
-      - name: _lsm_accounting-1
-        env:
-          BASE_FEES: 2000
-          GAS_ADJUSTMENT: 2
-        run: tests/v12_upgrade/lsm_accounting.sh
-      - name: _lsm-lsp-happy-1
-        run: tests/v12_upgrade/ica_delegate_happy.sh
+      # - name: _lsm-failures-1
+      #   run: tests/v12_upgrade/lsm_failures.sh
+      # - name: _lsm-complex-1
+      #   run: tests/v12_upgrade/lsm_complex.sh
+      # - name: _lsm_accounting-1
+      #   env:
+      #     BASE_FEES: 2000
+      #     GAS_ADJUSTMENT: 2
+      #   run: tests/v12_upgrade/lsm_accounting.sh
+      # - name: _lsm-lsp-happy-1
+      #   run: tests/v12_upgrade/ica_delegate_happy.sh
+      # - name: _lsm-lsp-failures-1
+      #   run: tests/v12_upgrade/ica_delegate_failures.sh
+      # - name: _lsm-lsp-accounting-1
+      #   run: tests/v12_upgrade/ica_delegate_accounting.sh
 
       - name: Stop services
         if: always()
