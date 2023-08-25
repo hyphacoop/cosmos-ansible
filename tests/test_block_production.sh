@@ -4,6 +4,12 @@
 gaia_host=$1
 gaia_port=$2
 height_offset=${3:-10}
+if [ $4 ]
+then
+    max_tests=$4
+else
+    max_tests=20
+fi
 
 # Test gaia response
 tests/test_gaia_response.sh $gaia_host $gaia_port
@@ -26,7 +32,6 @@ done
 
 # Check if gaia is producing blocks
 test_counter=0
-max_tests=20
 echo "Current gaiad version: $chain_version"
 echo "Block height: $cur_height"
 height=0

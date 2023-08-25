@@ -1,5 +1,6 @@
 #!/bin/bash
 # 1. Set up a two-validator provider chain.
+set -x
 source ~/env/bin/activate
 
 # Download archived home directory

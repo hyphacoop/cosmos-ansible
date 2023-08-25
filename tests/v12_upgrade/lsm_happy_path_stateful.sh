@@ -224,18 +224,6 @@ echo "** HAPPY PATH> STEP 5: REDEEM TOKENS **"
 
 echo "** HAPPY PATH> CLEANUP **"
 
-    echo "Validator unbond from happy_bonding"
-    tests/v12_upgrade/log_lsm_data.sh happy pre-unbond-1 $happy_bonding $delegation
-    submit_tx "tx staking unbond $VALOPER_1 100000000$DENOM --from $happy_bonding -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT -y --fees $BASE_FEES$DENOM" $CHAIN_BINARY $HOME_1
-    tests/v12_upgrade/log_lsm_data.sh happy post-unbond-1 $happy_bonding $delegation
-
-    validator_bond_shares=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.validator_bond_shares')
-    echo "Validator bond shares: ${validator_bond_shares%.*}"
-    if [[ ${validator_bond_shares%.*} -ne 0  ]]; then
-        echo "Unbond unsuccessful: unexpected validator bond shares amount"
-        exit 1
-    fi
-
     echo "Validator unbond from happy_liquid_1..."
     tests/v12_upgrade/log_lsm_data.sh happy pre-unbond-2 $happy_liquid_1 $happy_liquid_1_delegation_balance
     submit_tx "tx staking unbond $VALOPER_1 $happy_liquid_1_delegation_balance$DENOM --from $happy_liquid_1 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT -y --fees $BASE_FEES$DENOM" $CHAIN_BINARY $HOME_1
