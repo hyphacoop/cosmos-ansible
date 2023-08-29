@@ -201,12 +201,12 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install toml-cli
       - name: Install Cosmovisor > v1.3.0
-        if: ${{ matrix.upgrade_mechanism == 'cv_manual' || matrix.upgrade_mechanism == 'cv_auto' && matrix.cv_version != 'v1.3.0' }}
+        if: ${{ (matrix.upgrade_mechanism == 'cv_manual' || matrix.upgrade_mechanism == 'cv_auto') && matrix.cv_version != 'v1.3.0' }}
         run: |
           go install cosmossdk.io/tools/cosmovisor/cmd/cosmovisor@$COSMOVISOR_VERSION
           echo "COSMOVISOR=true" >> $GITHUB_ENV
       - name: Install Cosmovisor v1.3.0
-        if: ${{ matrix.upgrade_mechanism == 'cv_manual' || matrix.upgrade_mechanism == 'cv_auto' && matrix.cv_version == 'v1.3.0' }}
+        if: ${{ (matrix.upgrade_mechanism == 'cv_manual' || matrix.upgrade_mechanism == 'cv_auto') && matrix.cv_version == 'v1.3.0' }}
         run: |
           go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@$COSMOVISOR_VERSION
           echo "COSMOVISOR=true" >> $GITHUB_ENV
