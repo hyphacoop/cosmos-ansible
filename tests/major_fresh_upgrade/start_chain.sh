@@ -158,6 +158,7 @@ if [ "$COSMOVISOR" = true ]; then
     cp $HOME/go/bin/$CHAIN_BINARY $HOME_1/cosmovisor/genesis/bin/
     cp $HOME/go/bin/$CHAIN_BINARY $HOME_2/cosmovisor/genesis/bin/
     cp $HOME/go/bin/$CHAIN_BINARY $HOME_3/cosmovisor/genesis/bin/
+fi
 
 echo "Setting up services..."
 
