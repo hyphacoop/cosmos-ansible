@@ -60,6 +60,7 @@ if [ "$COSMOVISOR" = true ]; then
         mkdir -p $HOME_2/cosmovisor/upgrades/$upgrade_name/bin
         mkdir -p $HOME_3/cosmovisor/upgrades/$upgrade_name/bin
         wget $DOWNLOAD_URL -O ./upgraded -q
+        chmod +x ./upgraded
         cp ./upgraded $HOME_1/cosmovisor/upgrades/$upgrade_name/bin/$CHAIN_BINARY
         cp ./upgraded $HOME_2/cosmovisor/upgrades/$upgrade_name/bin/$CHAIN_BINARY
         cp ./upgraded $HOME_3/cosmovisor/upgrades/$upgrade_name/bin/$CHAIN_BINARY
