@@ -164,6 +164,7 @@ jobs:
       COMMIT_TIMEOUT: 3
       LSM_LOG: lsm_log.csv
       UPGRADE_MECHANISM: ${{ matrix.upgrade_mechanism }}
+      COSMOVISOR: false
     steps:
       - name: start-version
         run: echo ${{matrix.gaia_version}}
@@ -198,7 +199,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install toml-cli
-      - name: Check Cosmovisor option
+      - name: Install Cosmovisor
         if: ${{ matrix.upgrade_mechanism == 'cv_manual' || matrix.upgrade_mechanism == 'cv_auto' }}
         run: |
           go install cosmossdk.io/tools/cosmovisor/cmd/cosmovisor@v1.5.0
