@@ -59,7 +59,7 @@ if [ "$COSMOVISOR" = true ]; then
         mkdir -p $HOME_1/cosmovisor/upgrades/$upgrade_name/bin
         mkdir -p $HOME_2/cosmovisor/upgrades/$upgrade_name/bin
         mkdir -p $HOME_3/cosmovisor/upgrades/$upgrade_name/bin
-        wget $DOWNLOAD_URL -O ./upgraded
+        wget $DOWNLOAD_URL -O ./upgraded -q
         cp ./upgraded $HOME_1/cosmovisor/upgrades/$upgrade_name/bin/$CHAIN_BINARY
         cp ./upgraded $HOME_2/cosmovisor/upgrades/$upgrade_name/bin/$CHAIN_BINARY
         cp ./upgraded $HOME_3/cosmovisor/upgrades/$upgrade_name/bin/$CHAIN_BINARY
@@ -67,7 +67,7 @@ if [ "$COSMOVISOR" = true ]; then
 
     tests/test_block_production.sh $gaia_host $gaia_port $blocks_delta
     echo "The upgrade height was reached."
-    sudo journalctl -u $PROVIDER_SERVICE_1 | tail -n 50
+    sudo journalctl -u $PROVIDER_SERVICE_1 | tail -n 100
 
 else
     echo "Waiting for the upgrade to take place at block height $upgrade_height..."
@@ -78,7 +78,7 @@ else
     sudo systemctl stop $PROVIDER_SERVICE_1
     sudo systemctl stop $PROVIDER_SERVICE_2
     sudo systemctl stop $PROVIDER_SERVICE_3
-    wget $DOWNLOAD_URL -O ./upgraded
+    wget $DOWNLOAD_URL -O ./upgraded -q
     chmod +x ./upgraded
     mv ./upgraded $HOME/go/bin/$CHAIN_BINARY
     sudo systemctl start $PROVIDER_SERVICE_1
