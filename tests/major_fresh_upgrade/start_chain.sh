@@ -171,15 +171,18 @@ echo "[Service]"                            | sudo tee /etc/systemd/system/$PROV
 echo "User=$USER"                           | sudo tee /etc/systemd/system/$PROVIDER_SERVICE_1 -a
 if [ "$COSMOVISOR" = true ]; then
     echo "ExecStart=$HOME/go/bin/cosmovisor run start --x-crisis-skip-assert-invariants --home $HOME_1" | sudo tee /etc/systemd/system/$PROVIDER_SERVICE_1 -a
+    echo "Environment=\"DAEMON_NAME=$CHAIN_BINARY\""               | sudo tee /etc/systemd/system/$PROVIDER_SERVICE_1 -a
+    echo "Environment=\"DAEMON_HOME=$HOME_1\""                     | sudo tee /etc/systemd/system/$PROVIDER_SERVICE_1 -a
+    echo "Environment=\"DAEMON_RESTART_AFTER_UPGRADE=true\""       | sudo tee /etc/systemd/system/$PROVIDER_SERVICE_1 -a
+    echo "Environment=\"DAEMON_LOG_BUFFER_SIZE=512\""              | sudo tee /etc/systemd/system/$PROVIDER_SERVICE_1 -a
+    if [ "$UPGRADE_MECHANISM" = 'cv_auto' ]; then
+        echo "Environment=\"DAEMON_ALLOW_DOWNLOAD_BINARIES=true\"" | sudo tee /etc/systemd/system/$PROVIDER_SERVICE_1 -a
+    fi
 else
     echo "ExecStart=$HOME/go/bin/$CHAIN_BINARY start --x-crisis-skip-assert-invariants --home $HOME_1" | sudo tee /etc/systemd/system/$PROVIDER_SERVICE_1 -a
 fi
 echo "Restart=no"                           | sudo tee /etc/systemd/system/$PROVIDER_SERVICE_1 -a
 echo "LimitNOFILE=4096"                     | sudo tee /etc/systemd/system/$PROVIDER_SERVICE_1 -a
-echo "Environment=\"DAEMON_NAME=$CHAIN_BINARY\""           | sudo tee /etc/systemd/system/$PROVIDER_SERVICE_1 -a
-echo "Environment=\"DAEMON_HOME=$HOME_1\""                 | sudo tee /etc/systemd/system/$PROVIDER_SERVICE_1 -a
-echo "Environment=\"DAEMON_RESTART_AFTER_UPGRADE=true\""   | sudo tee /etc/systemd/system/$PROVIDER_SERVICE_1 -a
-echo "Environment=\"DAEMON_LOG_BUFFER_SIZE=512\""          | sudo tee /etc/systemd/system/$PROVIDER_SERVICE_1 -a
 echo ""                                     | sudo tee /etc/systemd/system/$PROVIDER_SERVICE_1 -a
 echo "[Install]"                            | sudo tee /etc/systemd/system/$PROVIDER_SERVICE_1 -a
 echo "WantedBy=multi-user.target"           | sudo tee /etc/systemd/system/$PROVIDER_SERVICE_1 -a
@@ -193,15 +196,19 @@ echo "[Service]"                            | sudo tee /etc/systemd/system/$PROV
 echo "User=$USER"                           | sudo tee /etc/systemd/system/$PROVIDER_SERVICE_2 -a
 if [ "$COSMOVISOR" = true ]; then
     echo "ExecStart=$HOME/go/bin/cosmovisor run start --x-crisis-skip-assert-invariants --home $HOME_2" | sudo tee /etc/systemd/system/$PROVIDER_SERVICE_2 -a
+    echo "Environment=\"DAEMON_NAME=$CHAIN_BINARY\""               | sudo tee /etc/systemd/system/$PROVIDER_SERVICE_2 -a
+    echo "Environment=\"DAEMON_HOME=$HOME_2\""                     | sudo tee /etc/systemd/system/$PROVIDER_SERVICE_2 -a
+    echo "Environment=\"DAEMON_RESTART_AFTER_UPGRADE=true\""       | sudo tee /etc/systemd/system/$PROVIDER_SERVICE_2 -a
+    echo "Environment=\"DAEMON_LOG_BUFFER_SIZE=512\""              | sudo tee /etc/systemd/system/$PROVIDER_SERVICE_2 -a
+    if [ "$UPGRADE_MECHANISM" = 'cv_auto' ]; then
+        echo "Environment=\"DAEMON_ALLOW_DOWNLOAD_BINARIES=true\"" | sudo tee /etc/systemd/system/$PROVIDER_SERVICE_2 -a
+    fi
 else
     echo "ExecStart=$HOME/go/bin/$CHAIN_BINARY start --x-crisis-skip-assert-invariants --home $HOME_2" | sudo tee /etc/systemd/system/$PROVIDER_SERVICE_2 -a
 fi
 echo "Restart=no"                           | sudo tee /etc/systemd/system/$PROVIDER_SERVICE_2 -a
 echo "LimitNOFILE=4096"                     | sudo tee /etc/systemd/system/$PROVIDER_SERVICE_2 -a
-echo "Environment=\"DAEMON_NAME=$CHAIN_BINARY\""           | sudo tee /etc/systemd/system/$PROVIDER_SERVICE_2 -a
-echo "Environment=\"DAEMON_HOME=$HOME_2\""                 | sudo tee /etc/systemd/system/$PROVIDER_SERVICE_2 -a
-echo "Environment=\"DAEMON_RESTART_AFTER_UPGRADE=true\""   | sudo tee /etc/systemd/system/$PROVIDER_SERVICE_2 -a
-echo "Environment=\"DAEMON_LOG_BUFFER_SIZE=512\""          | sudo tee /etc/systemd/system/$PROVIDER_SERVICE_2 -a
+
 echo ""                                     | sudo tee /etc/systemd/system/$PROVIDER_SERVICE_2 -a
 echo "[Install]"                            | sudo tee /etc/systemd/system/$PROVIDER_SERVICE_2 -a
 echo "WantedBy=multi-user.target"           | sudo tee /etc/systemd/system/$PROVIDER_SERVICE_2 -a
@@ -215,15 +222,19 @@ echo "[Service]"                            | sudo tee /etc/systemd/system/$PROV
 echo "User=$USER"                           | sudo tee /etc/systemd/system/$PROVIDER_SERVICE_3 -a
 if [ "$COSMOVISOR" = true ]; then
     echo "ExecStart=$HOME/go/bin/cosmovisor run start --x-crisis-skip-assert-invariants --home $HOME_3" | sudo tee /etc/systemd/system/$PROVIDER_SERVICE_3 -a
+    echo "Environment=\"DAEMON_NAME=$CHAIN_BINARY\""               | sudo tee /etc/systemd/system/$PROVIDER_SERVICE_3 -a
+    echo "Environment=\"DAEMON_HOME=$HOME_3\""                     | sudo tee /etc/systemd/system/$PROVIDER_SERVICE_3 -a
+    echo "Environment=\"DAEMON_RESTART_AFTER_UPGRADE=true\""       | sudo tee /etc/systemd/system/$PROVIDER_SERVICE_3 -a
+    echo "Environment=\"DAEMON_LOG_BUFFER_SIZE=512\""              | sudo tee /etc/systemd/system/$PROVIDER_SERVICE_3 -a
+    if [ "$UPGRADE_MECHANISM" = 'cv_auto' ]; then
+        echo "Environment=\"DAEMON_ALLOW_DOWNLOAD_BINARIES=true\"" | sudo tee /etc/systemd/system/$PROVIDER_SERVICE_3 -a
+    fi
 else
     echo "ExecStart=$HOME/go/bin/$CHAIN_BINARY start --x-crisis-skip-assert-invariants --home $HOME_3" | sudo tee /etc/systemd/system/$PROVIDER_SERVICE_3 -a
 fi
 echo "Restart=no"                           | sudo tee /etc/systemd/system/$PROVIDER_SERVICE_3 -a
 echo "LimitNOFILE=4096"                     | sudo tee /etc/systemd/system/$PROVIDER_SERVICE_3 -a
-echo "Environment=\"DAEMON_NAME=$CHAIN_BINARY\""           | sudo tee /etc/systemd/system/$PROVIDER_SERVICE_3 -a
-echo "Environment=\"DAEMON_HOME=$HOME_3\""                 | sudo tee /etc/systemd/system/$PROVIDER_SERVICE_3 -a
-echo "Environment=\"DAEMON_RESTART_AFTER_UPGRADE=true\""   | sudo tee /etc/systemd/system/$PROVIDER_SERVICE_3 -a
-echo "Environment=\"DAEMON_LOG_BUFFER_SIZE=512\""          | sudo tee /etc/systemd/system/$PROVIDER_SERVICE_3 -a
+
 echo ""                                     | sudo tee /etc/systemd/system/$PROVIDER_SERVICE_3 -a
 echo "[Install]"                            | sudo tee /etc/systemd/system/$PROVIDER_SERVICE_3 -a
 echo "WantedBy=multi-user.target"           | sudo tee /etc/systemd/system/$PROVIDER_SERVICE_3 -a

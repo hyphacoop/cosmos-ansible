@@ -50,6 +50,9 @@ sleep 6
 echo "Upgrade proposal $proposal_id status:"
 $CHAIN_BINARY q gov proposal $proposal_id --output json --home $HOME_1 | jq '.status'
 
+current_height=$(curl -s http://$gaia_host:$gaia_port/block | jq -r '.result.block.header.height')
+blocks_delta=$(($upgrade_height-$current_height))
+
 # Wait until the right height is reached
 if [ "$COSMOVISOR" = true ]; then
     if [ "$UPGRADE_MECHANISM" = "cv_manual" ]; then
@@ -62,17 +65,11 @@ if [ "$COSMOVISOR" = true ]; then
         cp ./upgraded $HOME_3/cosmovisor/upgrades/$upgrade_name/bin/$CHAIN_BINARY
     fi
 
-    echo "Waiting for the upgrade to take place at block height $upgrade_height..."
-    current_height=$(curl -s http://$gaia_host:$gaia_port/block | jq -r '.result.block.header.height')
-    blocks_delta=$(($upgrade_height-$current_height))
-    blocks_delta=$(($blocks_delta-1))
     tests/test_block_production.sh $gaia_host $gaia_port $blocks_delta
     echo "The upgrade height was reached."
 
 else
     echo "Waiting for the upgrade to take place at block height $upgrade_height..."
-    current_height=$(curl -s http://$gaia_host:$gaia_port/block | jq -r '.result.block.header.height')
-    blocks_delta=$(($upgrade_height-$current_height))
     tests/test_block_production.sh $gaia_host $gaia_port $blocks_delta
     echo "The upgrade height was reached."
 
