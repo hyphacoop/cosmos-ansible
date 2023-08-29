@@ -67,6 +67,7 @@ if [ "$COSMOVISOR" = true ]; then
 
     tests/test_block_production.sh $gaia_host $gaia_port $blocks_delta
     echo "The upgrade height was reached."
+    sudo journalctl -u $PROVIDER_SERVICE_1 | tail -n 50
 
 else
     echo "Waiting for the upgrade to take place at block height $upgrade_height..."
