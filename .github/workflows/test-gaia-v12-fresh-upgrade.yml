@@ -165,6 +165,7 @@ jobs:
       LSM_LOG: lsm_log.csv
       UPGRADE_MECHANISM: ${{ matrix.upgrade_mechanism }}
       COSMOVISOR: false
+      COSMOVISOR_VERSION: ${{ matrix.cv_version }}
     steps:
       - name: start-version
         run: echo ${{matrix.gaia_version}}
@@ -202,7 +203,7 @@ jobs:
       - name: Install Cosmovisor
         if: ${{ matrix.upgrade_mechanism == 'cv_manual' || matrix.upgrade_mechanism == 'cv_auto' }}
         run: |
-          go install cosmossdk.io/tools/cosmovisor/cmd/cosmovisor@v1.5.0
+          go install cosmossdk.io/tools/cosmovisor/cmd/cosmovisor@$COSMOVISOR_VERSION
           echo "COSMOVISOR=true" >> $GITHUB_ENV
       - name: Start chain
         env:
