@@ -185,8 +185,8 @@ jobs:
       - name: Update PATH
         run: |
           mkdir -p $HOME/go/bin
-          echo "$HOME/go/bin" >> $GITHUB_PATH
           echo "$HOME_1/cosmovisor/current/bin" >> $GITHUB_PATH
+          echo "$HOME/go/bin" >> $GITHUB_PATH
           echo "$HOME/.hermes" >> $GITHUB_PATH
       - name: Bypass the grub-efi-amd64-signed package
         run: sudo apt-mark hold grub-efi-amd64-signed
