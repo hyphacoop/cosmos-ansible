@@ -4,7 +4,6 @@ import json
 import sys
 import re
 
-SKIP_STARTING_VERSIONS = ['v12.0.0-rc0','v12.0.0']
 SKIP_TARGET_VERSIONS = []
 
 # Must provide a cutoff version, e.g. 'v6.0.4'
@@ -13,7 +12,7 @@ version_major = int(starting_version[0][1:])
 version_minor = int(starting_version[1])
 version_patch = int(starting_version[2])
 
-# Read JSON output from generate_start_matrix.py
+# Read JSON output from generate_version_matrix.py
 with open('releases.json', 'r', encoding='utf-8') as releases_file:
     releases_list = json.load(releases_file)
 
@@ -41,7 +40,13 @@ for rc in rc_releases:
         releases.append(rc)
 
 # Set upgrade versions to target for each release
-matrix = {release: [] for release in releases}
+# matrix = {release: [] for release in releases}
+
+matrix = {}
+for release in releases:
+    rel_major_version = int(release.split('.')[0][1:])
+    if rel_major_version == version_major:
+        matrix[release] = []
 
 for start_version, _ in matrix.items():
     matrix[start_version] = [
@@ -52,13 +57,26 @@ for start_version, _ in matrix.items():
 # Assemble matrix include section:
 includes = []
 for version, upgrades in matrix.items():
-    if version not in SKIP_STARTING_VERSIONS:
-        if upgrades:
-            for upgrade in upgrades:
-                if upgrade not in SKIP_TARGET_VERSIONS:
-                    includes.append({'gaia_version': version, 'upgrade_version': upgrade})
-        else: # Add main branch build
-            includes.append({'gaia_version': version, 'upgrade_version': 'main'})
+    if upgrades:
+        for upgrade in upgrades:
+            if upgrade not in SKIP_TARGET_VERSIONS:
+                includes.append({'gaia_version': version, 'upgrade_version': upgrade, 'upgrade_mechanism': 'binary'})
+                includes.append({'gaia_version': version, 'upgrade_version': upgrade, 'upgrade_mechanism': 'cv_manual', 'cv_version': 'v1.5.0'})
+                includes.append({'gaia_version': version, 'upgrade_version': upgrade, 'upgrade_mechanism': 'cv_manual', 'cv_version': 'v1.4.0'})
+                includes.append({'gaia_version': version, 'upgrade_version': upgrade, 'upgrade_mechanism': 'cv_manual', 'cv_version': 'v1.3.0'})
+                includes.append({'gaia_version': version, 'upgrade_version': upgrade, 'upgrade_mechanism': 'cv_auto', 'cv_version': 'v1.5.0'})
+                includes.append({'gaia_version': version, 'upgrade_version': upgrade, 'upgrade_mechanism': 'cv_auto', 'cv_version': 'v1.4.0'})
+                includes.append({'gaia_version': version, 'upgrade_version': upgrade, 'upgrade_mechanism': 'cv_auto', 'cv_version': 'v1.3.0'})
+
+    else: # Add main branch build
+        includes.append({'gaia_version': version, 'upgrade_version': 'main', 'upgrade_mechanism': 'binary'})
+        includes.append({'gaia_version': version, 'upgrade_version': 'main', 'upgrade_mechanism': 'cv_manual', 'cv_version': 'v1.5.0'})
+        includes.append({'gaia_version': version, 'upgrade_version': 'main', 'upgrade_mechanism': 'cv_manual', 'cv_version': 'v1.4.0'})
+        includes.append({'gaia_version': version, 'upgrade_version': 'main', 'upgrade_mechanism': 'cv_manual', 'cv_version': 'v1.3.0'})
+        includes.append({'gaia_version': version, 'upgrade_version': 'main', 'upgrade_mechanism': 'auto', 'cv_version': 'v1.5.0'})
+        includes.append({'gaia_version': version, 'upgrade_version': 'main', 'upgrade_mechanism': 'auto', 'cv_version': 'v1.4.0'})
+        includes.append({'gaia_version': version, 'upgrade_version': 'main', 'upgrade_mechanism': 'auto', 'cv_version': 'v1.3.0'})
+
 
 upgrade_json = json.dumps({'include': includes})
 print(upgrade_json)

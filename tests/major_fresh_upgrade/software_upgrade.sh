@@ -50,20 +50,39 @@ sleep 6
 echo "Upgrade proposal $proposal_id status:"
 $CHAIN_BINARY q gov proposal $proposal_id --output json --home $HOME_1 | jq '.status'
 
-# Wait until the right height is reached
-echo "Waiting for the upgrade to take place at block height $upgrade_height..."
 current_height=$(curl -s http://$gaia_host:$gaia_port/block | jq -r '.result.block.header.height')
 blocks_delta=$(($upgrade_height-$current_height))
-tests/test_block_production.sh $gaia_host $gaia_port $blocks_delta
-echo "The upgrade height was reached."
 
-# Replace binary
-sudo systemctl stop $PROVIDER_SERVICE_1
-sudo systemctl stop $PROVIDER_SERVICE_2
-sudo systemctl stop $PROVIDER_SERVICE_3
-wget $DOWNLOAD_URL -O ./upgraded
-chmod +x ./upgraded
-mv ./upgraded $HOME/go/bin/$CHAIN_BINARY
-sudo systemctl start $PROVIDER_SERVICE_1
-sudo systemctl start $PROVIDER_SERVICE_2
-sudo systemctl start $PROVIDER_SERVICE_3
+# Wait until the right height is reached
+if [ "$COSMOVISOR" = true ]; then
+    if [ "$UPGRADE_MECHANISM" = "cv_manual" ]; then
+        mkdir -p $HOME_1/cosmovisor/upgrades/$upgrade_name/bin
+        mkdir -p $HOME_2/cosmovisor/upgrades/$upgrade_name/bin
+        mkdir -p $HOME_3/cosmovisor/upgrades/$upgrade_name/bin
+        wget $DOWNLOAD_URL -O ./upgraded -q
+        chmod +x ./upgraded
+        cp ./upgraded $HOME_1/cosmovisor/upgrades/$upgrade_name/bin/$CHAIN_BINARY
+        cp ./upgraded $HOME_2/cosmovisor/upgrades/$upgrade_name/bin/$CHAIN_BINARY
+        cp ./upgraded $HOME_3/cosmovisor/upgrades/$upgrade_name/bin/$CHAIN_BINARY
+    fi
+
+    tests/test_block_production.sh $gaia_host $gaia_port $blocks_delta
+    echo "The upgrade height was reached."
+    sudo journalctl -u $PROVIDER_SERVICE_1 | tail -n 100
+
+else
+    echo "Waiting for the upgrade to take place at block height $upgrade_height..."
+    tests/test_block_production.sh $gaia_host $gaia_port $blocks_delta
+    echo "The upgrade height was reached."
+
+    # Replace binary
+    sudo systemctl stop $PROVIDER_SERVICE_1
+    sudo systemctl stop $PROVIDER_SERVICE_2
+    sudo systemctl stop $PROVIDER_SERVICE_3
+    wget $DOWNLOAD_URL -O ./upgraded -q
+    chmod +x ./upgraded
+    mv ./upgraded $HOME/go/bin/$CHAIN_BINARY
+    sudo systemctl start $PROVIDER_SERVICE_1
+    sudo systemctl start $PROVIDER_SERVICE_2
+    sudo systemctl start $PROVIDER_SERVICE_3
+fi

@@ -162,6 +162,9 @@ jobs:
       HERMES_VERSION: v1.5.1
       COMMIT_TIMEOUT: 3
       LSM_LOG: lsm_log.csv
+      UPGRADE_MECHANISM: ${{ matrix.upgrade_mechanism }}
+      COSMOVISOR: false
+      COSMOVISOR_VERSION: ${{ matrix.cv_version }}
     steps:
       - name: start-version
         run: echo ${{matrix.gaia_version}}
@@ -195,6 +198,18 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install toml-cli
+      - name: Install Cosmovisor > v1.3.0
+        if: ${{ (matrix.upgrade_mechanism == 'cv_manual' || matrix.upgrade_mechanism == 'cv_auto') && matrix.cv_version != 'v1.3.0' }}
+        run: |
+          go install cosmossdk.io/tools/cosmovisor/cmd/cosmovisor@$COSMOVISOR_VERSION
+          echo "COSMOVISOR=true" >> $GITHUB_ENV
+          echo "$HOME_1/cosmovisor/current/bin" >> $GITHUB_PATH
+      - name: Install Cosmovisor v1.3.0
+        if: ${{ (matrix.upgrade_mechanism == 'cv_manual' || matrix.upgrade_mechanism == 'cv_auto') && matrix.cv_version == 'v1.3.0' }}
+        run: |
+          go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@$COSMOVISOR_VERSION
+          echo "COSMOVISOR=true" >> $GITHUB_ENV
+          echo "$HOME_1/cosmovisor/current/bin" >> $GITHUB_PATH
       - name: Start chain
         env:
           START_VERSION: ${{matrix.gaia_version}}
