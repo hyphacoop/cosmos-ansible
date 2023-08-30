@@ -185,7 +185,6 @@ jobs:
       - name: Update PATH
         run: |
           mkdir -p $HOME/go/bin
-          echo "$HOME_1/cosmovisor/current/bin" >> $GITHUB_PATH
           echo "$HOME/go/bin" >> $GITHUB_PATH
           echo "$HOME/.hermes" >> $GITHUB_PATH
       - name: Bypass the grub-efi-amd64-signed package
@@ -205,11 +204,13 @@ jobs:
         run: |
           go install cosmossdk.io/tools/cosmovisor/cmd/cosmovisor@$COSMOVISOR_VERSION
           echo "COSMOVISOR=true" >> $GITHUB_ENV
+          echo "$HOME_1/cosmovisor/current/bin" >> $GITHUB_PATH
       - name: Install Cosmovisor v1.3.0
         if: ${{ (matrix.upgrade_mechanism == 'cv_manual' || matrix.upgrade_mechanism == 'cv_auto') && matrix.cv_version == 'v1.3.0' }}
         run: |
           go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@$COSMOVISOR_VERSION
           echo "COSMOVISOR=true" >> $GITHUB_ENV
+          echo "$HOME_1/cosmovisor/current/bin" >> $GITHUB_PATH
       - name: Start chain
         env:
           START_VERSION: ${{matrix.gaia_version}}
