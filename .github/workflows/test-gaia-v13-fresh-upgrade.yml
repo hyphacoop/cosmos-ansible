@@ -1,10 +1,13 @@
 ---
 
-name: Test Gaia Fresh State Upgrade - v12
+name: Test Gaia Fresh State Upgrade - v13
 on:
+  repository_dispatch:
+    types: [new_main_build]
   schedule:
-    - cron: '0 7,15 * * 1-6'
+    - cron: '0 6,14 * * 1-6'
   workflow_dispatch:
+  push:
 jobs:
   set-version-matrix:
     runs-on: ubuntu-22.04
@@ -31,13 +34,13 @@ jobs:
       - name: Generate starting versions
         id: generate-start
         run: |
-          start=$(tests/generate_version_matrix.py v11.0.0)
+          start=$(tests/generate_version_matrix.py v12.0.0)
           echo $start
           echo "start_versions=$start" >> $GITHUB_OUTPUT
       - name: Generate upgrade versions
         id: generate-upgrade
         run: |
-          upgrade=$(tests/generate_upgrade_matrix_fresh.py v11.0.0)
+          upgrade=$(tests/generate_upgrade_matrix_fresh.py v12.0.0)
           echo $upgrade
           echo "upgrade_versions=$upgrade" >> $GITHUB_OUTPUT
     outputs:
@@ -341,13 +344,13 @@ jobs:
           DOWNLOAD_URL: https://github.com/cosmos/gaia/releases/download/${{ matrix.upgrade_version }}/gaiad-${{ matrix.upgrade_version }}-linux-amd64
         run: |
           echo $DOWNLOAD_URL
-          tests/major_fresh_upgrade/software_upgrade.sh 127.0.0.1 $VAL1_RPC_PORT v12
+          tests/major_fresh_upgrade/software_upgrade.sh 127.0.0.1 $VAL1_RPC_PORT v13
       - name: Test software upgrade for main branch
         if: ${{ matrix.upgrade_version == 'main' }}
         env:
           DOWNLOAD_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/gaiad-linux-main/gaiad-linux
         run: |
-          tests/major_fresh_upgrade/software_upgrade.sh 127.0.0.1 $VAL1_RPC_PORT v12
+          tests/major_fresh_upgrade/software_upgrade.sh 127.0.0.1 $VAL1_RPC_PORT v13
 
       - name: _blocks-2
         run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 5
