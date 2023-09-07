@@ -2,8 +2,6 @@
 
 name: Test Gaia Fresh State Upgrade - v12
 on:
-  schedule:
-    - cron: '0 7,15 * * 1-6'
   workflow_dispatch:
 jobs:
   set-version-matrix:
