@@ -160,12 +160,12 @@ submit_tx "tx bank send $WALLET_1 $malval_1 100000000uatom --from $WALLET_1 --ga
 total_before=$(curl http://localhost:$CON1_RPC_PORT/validators | jq -r '.result.total')
 
 echo "Create validator..."
-submit_tx "tx staking create-validator --amount 5000000$DENOM --pubkey $($CHAIN_BINARY tendermint show-validator --home $EQ1_HOME_PROVIDER) --moniker malval_1 --chain-id $CHAIN_ID --commission-rate 0.10 --commission-max-rate 0.20 --commission-max-change-rate 0.01 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees 1000$DENOM --from $malval_1 -y" $CHAIN_BINARY $EQ1_HOME_PROVIDER
-# $CHAIN_BINARY tx staking create-validator --amount 5000000$DENOM \
-# --pubkey $($CHAIN_BINARY tendermint show-validator --home $EQ1_HOME_PROVIDER) \
-# --moniker malval_1 --chain-id $CHAIN_ID \
-# --commission-rate 0.10 --commission-max-rate 0.20 --commission-max-change-rate 0.01 \
-# --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees 2000$DENOM --from $malval_1 --home $EQ1_HOME_PROVIDER -b block -y
+# submit_tx "tx staking create-validator --amount 5000000$DENOM --pubkey $($CHAIN_BINARY tendermint show-validator --home $EQ1_HOME_PROVIDER) --moniker malval_1 --chain-id $CHAIN_ID --commission-rate 0.10 --commission-max-rate 0.20 --commission-max-change-rate 0.01 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees 1000$DENOM --from $malval_1 -y" $CHAIN_BINARY $EQ1_HOME_PROVIDER
+$CHAIN_BINARY tx staking create-validator --amount 5000000$DENOM \
+--pubkey $($CHAIN_BINARY tendermint show-validator --home $EQ1_HOME_PROVIDER) \
+--moniker malval_1 --chain-id $CHAIN_ID \
+--commission-rate 0.10 --commission-max-rate 0.20 --commission-max-change-rate 0.01 \
+--gas auto --gas-adjustment $GAS_ADJUSTMENT --fees 2000$DENOM --from $malval_1 --home $EQ1_HOME_PROVIDER -b block -y
 
 sleep 10
 
