@@ -180,12 +180,48 @@ else
   exit 1
 fi
 
-# # Stop validator
+# Stop validator
+sudo systemctl stop $CON_EQ1_SERVICE_ORIGINAL
 
-# # Duplicate home folder
+# Duplicate home folder
+cp -r $EQ1_HOME_CONSUMER/ $EQ1_HOME_CONSUMER_DOUBLE/
 
-# # Start duplicate
+# Update peer info
+CON2_NODE_ID=$($CONSUMER_CHAIN_BINARY tendermint show-node-id --home $CONSUMER_HOME_2)
+CON2_PEER="$CON2_NODE_ID@localhost:$CON2_P2P_PORT"
+toml set --toml-path $EQ1_HOME_CONSUMER_DOUBLE/config/config.toml p2p.persistent_peers "$CON2_PEER"
+
+# Update ports
+toml set --toml-path $EQ1_HOME_CONSUMER_DOUBLE/config/app.toml api.address "tcp://0.0.0.0:$CON_EQ1D_API_PORT"
+# Set different ports for grpc
+toml set --toml-path $EQ1_HOME_CONSUMER_DOUBLE/config/app.toml grpc.address "0.0.0.0:$CON_EQ1D_GRPC_PORT"
+# config.toml
+# Set different ports for rpc
+toml set --toml-path $EQ1_HOME_CONSUMER_DOUBLE/config/config.toml rpc.laddr "tcp://0.0.0.0:$CON_EQ1D_RPC_PORT"
+# Set different ports for rpc pprof
+toml set --toml-path $EQ1_HOME_CONSUMER_DOUBLE/config/config.toml rpc.pprof_laddr "localhost:$CON_EQ1D_PPROF_PORT"
+# Set different ports for p2p
+toml set --toml-path $EQ1_HOME_CONSUMER_DOUBLE/config/config.toml p2p.laddr "tcp://0.0.0.0:$CON_EQ1D_P2P_PORT"
+
+# Wipe the state and address books
+echo '{"height": "0","round": 0,"step": 0,"signature":"","signbytes":""}' > $EQ1_HOME_CONSUMER_DOUBLE/data/priv_validator_state.json
+echo "{}" > $EQ1_HOME_CONSUMER_DOUBLE/config/addrbook.json
+echo "{}" > $EQ1_HOME_CONSUMER/config/addrbook.json
+
+# Start duplicate
+sudo systemctl enable $CON_EQ1_SERVICE_DOUBLE --now
 
 # # Start original
+sudo systemctl start $CON_EQ1_SERVICE_ORIGINAL
 
-# # Wait for original
+sleep 10
+
+evidence=$($CONSUMER_CHAIN_BINARY q evidence --home $CONSUMER_HOME_1 -o json | jq -r '.evidence | length')
+echo "$evidence"
+if [ $evidence == 1 ]; then
+  echo "Equivocation evidence found!"
+else
+  echo "No equivocation evidence found."
+  exit 1
+fi
+
