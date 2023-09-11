@@ -7,7 +7,7 @@ echo "Running with $CONSUMER_CHAIN_BINARY."
 echo "Initializing consumer homes..."
 $CONSUMER_CHAIN_BINARY config chain-id $CONSUMER_CHAIN_ID --home $CONSUMER_HOME_1
 $CONSUMER_CHAIN_BINARY config keyring-backend test --home $CONSUMER_HOME_1
-$CONSUEMR_CHAIN_BINARY config node tcp://localhost:$CON1_RPC_PORT --home $CONSUMER_HOME_1
+$CONSUMER_CHAIN_BINARY config node tcp://localhost:$CON1_RPC_PORT --home $CONSUMER_HOME_1
 $CONSUMER_CHAIN_BINARY init $MONIKER_1 --chain-id $CONSUMER_CHAIN_ID --home $CONSUMER_HOME_1
 
 $CONSUMER_CHAIN_BINARY config chain-id $CONSUMER_CHAIN_ID --home $CONSUMER_HOME_2
