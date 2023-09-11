@@ -1,6 +1,8 @@
 #!/bin/bash
 # Test equivocation proposal for double-signing
 
+source tests/process.tx.sh
+
 echo "Setting up provider node..."
 $CHAIN_BINARY config chain-id $CHAIN_ID --home $EQ1_HOME_PROVIDER
 $CHAIN_BINARY config keyring-backend test --home $EQ1_HOME_PROVIDER
@@ -9,7 +11,7 @@ $CHAIN_BINARY config node tcp://localhost:$VAL_EQ1_RPC_PORT --home $EQ1_HOME_PRO
 $CHAIN_BINARY init malval_1 --chain-id $CHAIN_ID --home $EQ1_HOME_PROVIDER
 
 echo "Getting genesis file..."
-cp $HOME_1/config/genesis.json $EQ_1_HOME_PROVIDER/config/genesis.json
+cp $HOME_1/config/genesis.json $EQ1_HOME_PROVIDER/config/genesis.json
 
 echo "Patching config files..."
 # app.toml
@@ -79,7 +81,7 @@ cp $EQ1_HOME_PROVIDER/config/priv_validator_key.json $EQ1_HOME_CONSUMER/config/p
 cp $EQ1_HOME_PROVIDER/config/node_key.json $EQ1_HOME_CONSUMER/config/node_key.json
 
 echo "Getting patched genesis file..."
-cp $CONSUMER_HOME_1/config/genesis.json $EQ_1_HOME_CONSUMER/config/genesis.json
+cp $CONSUMER_HOME_1/config/genesis.json $EQ1_HOME_CONSUMER/config/genesis.json
 
 echo "Patching config files..."
 # app.toml
@@ -148,21 +150,19 @@ echo "Starting consumer service..."
 sudo systemctl enable $CON_EQ1_SERVICE_ORIGINAL --now
 
 sleep 20
-$CONSUMER_CHAIN_BINARY q block --home $EQ_1_HOME_CONSUMER | jq '.'
-
-# source tests/process.tx.sh
-# echo "Creating new validator..."
-# $CHAIN_BINARY keys add malval_1 --home $HOME_1
-# malval_1=$($CHAIN_BINARY keys list --home $HOME_1 --output json | jq -r '.[] | select(.name=="malval_1").address')
-
-# echo "Funding new validator..."
-# submit_tx "tx bank send $WALLET_1 $malval_1 10000000uatom --from $WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -o json -y" $CHAIN_BINARY $HOME_1
+$CONSUMER_CHAIN_BINARY q block --home $EQ1_HOME_CONSUMER | jq '.'
 
 
+echo "Create new validator key..."
+$CHAIN_BINARY keys add malval_1 --home $HOME_1
+malval_1=$($CHAIN_BINARY keys list --home $HOME_1 --output json | jq -r '.[] | select(.name=="malval_1").address')
+
+echo "Fund new validator..."
+submit_tx "tx bank send $WALLET_1 $malval_1 10000000uatom --from $WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -o json -y" $CHAIN_BINARY $HOME_1
+
+echo "Create validator..."
 
 
-
-# # Create new validator
 
 # # Sync up
 
