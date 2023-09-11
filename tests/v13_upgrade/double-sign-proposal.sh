@@ -157,7 +157,7 @@ echo "Fund new validator..."
 submit_tx "tx bank send $WALLET_1 $malval_1 10000000uatom --from $WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -o json -y" $CHAIN_BINARY $HOME_1
 
 echo "Create validator..."
-submit_tx "tx staking create-validator --amount 1000000uatom --pubkey $($CHAIN_BINARY tendermint show-validator --home $EQ1_HOME_PROVIDER) --moniker malval_1 --chain-id $CHAIN_ID --commission-rate 0.10 --commission-max-rate 0.20 --commission-max-change-rate 0.01 --min-self-delegation 1000000 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees 1000$DENOM --from $malval_1" $CHAIN_BINARY $EQ1_HOME_PROVIDER
+submit_tx "tx staking create-validator --amount 1000000uatom --pubkey $($CHAIN_BINARY tendermint show-validator --home $EQ1_HOME_PROVIDER) --moniker malval_1 --chain-id $CHAIN_ID --commission-rate 0.10 --commission-max-rate 0.20 --commission-max-change-rate 0.01 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees 1000$DENOM --from $malval_1" $CHAIN_BINARY $EQ1_HOME_PROVIDER
 
 sleep 10
 
