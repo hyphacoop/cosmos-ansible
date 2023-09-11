@@ -1,7 +1,7 @@
 #!/bin/bash
 # Test equivocation proposal for double-signing
 
-source tests/process.tx.sh
+source tests/process_tx.sh
 
 echo "Setting up provider node..."
 $CHAIN_BINARY config chain-id $CHAIN_ID --home $EQ1_HOME_PROVIDER
