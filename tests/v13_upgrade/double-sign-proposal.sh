@@ -68,7 +68,7 @@ sudo systemctl enable $VAL_EQ1_SERVICE --now
 
 sleep 20
 $CHAIN_BINARY q block --home $EQ1_HOME_PROVIDER | jq '.'
-curl -s http://localhost:VAL_EQ1_RPC_PORT/status | jq '.result.sync_info.catching_up'
+curl http://localhost:VAL_EQ1_RPC_PORT/status | jq -r '.result.sync_info'
 
 echo "Setting up consumer node..."
 $CONSUMER_CHAIN_BINARY config chain-id $CONSUMER_CHAIN_ID --home $EQ1_HOME_CONSUMER
