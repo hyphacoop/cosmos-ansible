@@ -150,8 +150,8 @@ sleep 20
 $CONSUMER_CHAIN_BINARY q block --home $EQ1_HOME_CONSUMER | jq '.'
 
 echo "Create new validator key..."
-$CHAIN_BINARY keys add malval_1 --home $HOME_1
-malval_1=$($CHAIN_BINARY keys list --home $HOME_1 --output json | jq -r '.[] | select(.name=="malval_1").address')
+$CHAIN_BINARY keys add malval_1 --home $EQ1_HOME_PROVIDER
+malval_1=$($CHAIN_BINARY keys list --home $EQ1_HOME_PROVIDER --output json | jq -r '.[] | select(.name=="malval_1").address')
 
 echo "Fund new validator..."
 submit_tx "tx bank send $WALLET_1 $malval_1 10000000uatom --from $WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -o json -y" $CHAIN_BINARY $HOME_1
