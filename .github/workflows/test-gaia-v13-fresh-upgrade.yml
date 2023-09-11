@@ -166,9 +166,9 @@ jobs:
       UPGRADE_MECHANISM: ${{ matrix.upgrade_mechanism }}
       COSMOVISOR: false
       COSMOVISOR_VERSION: ${{ matrix.cv_version }}
-      EQ1_HOME_PROVIDER: /home/runner/.eq_1
-      EQ1_HOME_CONSUMER: /home/runner/.con_eq_1
-      EQ1_HOME_CONSUMER_DOUBLE: /home/runner/.con_eq_1
+      EQ1_HOME_PROVIDER: /home/runner/.eq1
+      EQ1_HOME_CONSUMER: /home/runner/.coneq1
+      EQ1_HOME_CONSUMER_DOUBLE: /home/runner/.coneqd1
       VAL_EQ1_SERVICE: eq1_provider.service
       VAL_EQ1_API_PORT: 25004
       VAL_EQ1_GRPC_PORT: 26004
