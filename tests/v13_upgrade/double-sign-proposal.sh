@@ -65,7 +65,7 @@ echo "Starting provider service..."
 sudo systemctl enable $VAL_EQ1_SERVICE --now
 
 sleep 20
-$CHAIN_BINARY status | jq '.'
+$CHAIN_BINARY q block --home $EQ1_HOME_PROVIDER | jq '.'
 
 # echo "Setting up consumer node..."
 # $CONSUMER_CHAIN_BINARY config chain-id $CONSUMER_CHAIN_ID --home $EQ1_HOME_CONSUMER
