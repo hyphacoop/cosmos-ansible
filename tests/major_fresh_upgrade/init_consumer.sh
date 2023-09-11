@@ -7,12 +7,12 @@ echo "Running with $CONSUMER_CHAIN_BINARY."
 echo "Initializing consumer homes..."
 $CONSUMER_CHAIN_BINARY config chain-id $CONSUMER_CHAIN_ID --home $CONSUMER_HOME_1
 $CONSUMER_CHAIN_BINARY config keyring-backend test --home $CONSUMER_HOME_1
-$CHAIN_BINARY config node tcp://localhost:$CON1_RPC_PORT --home $CONSUMER_HOME_1
+$CONSUEMR_CHAIN_BINARY config node tcp://localhost:$CON1_RPC_PORT --home $CONSUMER_HOME_1
 $CONSUMER_CHAIN_BINARY init $MONIKER_1 --chain-id $CONSUMER_CHAIN_ID --home $CONSUMER_HOME_1
 
 $CONSUMER_CHAIN_BINARY config chain-id $CONSUMER_CHAIN_ID --home $CONSUMER_HOME_2
 $CONSUMER_CHAIN_BINARY config keyring-backend test --home $CONSUMER_HOME_2
-$CHAIN_BINARY config node tcp://localhost:$CON2_RPC_PORT --home $CONSUMER_HOME_2
+$CONSUMER CHAIN_BINARY config node tcp://localhost:$CON2_RPC_PORT --home $CONSUMER_HOME_2
 $CONSUMER_CHAIN_BINARY init $MONIKER_2 --chain-id $CONSUMER_CHAIN_ID --home $CONSUMER_HOME_2
 
 echo "Copying keys from provider nodes to consumer ones..."
