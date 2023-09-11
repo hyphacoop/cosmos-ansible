@@ -68,6 +68,7 @@ sudo systemctl enable $VAL_EQ1_SERVICE --now
 
 sleep 20
 $CHAIN_BINARY q block --home $EQ1_HOME_PROVIDER | jq '.'
+curl -s http://localhost:VAL_EQ1_RPC_PORT/status | jq '.result.sync_info.catching_up'
 
 echo "Setting up consumer node..."
 $CONSUMER_CHAIN_BINARY config chain-id $CONSUMER_CHAIN_ID --home $EQ1_HOME_CONSUMER
@@ -157,7 +158,12 @@ echo "Fund new validator..."
 submit_tx "tx bank send $WALLET_1 $malval_1 10000000uatom --from $WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -o json -y" $CHAIN_BINARY $HOME_1
 
 echo "Create validator..."
-submit_tx "tx staking create-validator --amount 1000000uatom --pubkey $($CHAIN_BINARY tendermint show-validator --home $EQ1_HOME_PROVIDER) --moniker malval_1 --chain-id $CHAIN_ID --commission-rate 0.10 --commission-max-rate 0.20 --commission-max-change-rate 0.01 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees 1000$DENOM --from $malval_1" $CHAIN_BINARY $EQ1_HOME_PROVIDER
+# submit_tx "tx staking create-validator --amount 1000000uatom --pubkey $($CHAIN_BINARY tendermint show-validator --home $EQ1_HOME_PROVIDER) --moniker malval_1 --chain-id $CHAIN_ID --commission-rate 0.10 --commission-max-rate 0.20 --commission-max-change-rate 0.01 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees 1000$DENOM --from $malval_1" $CHAIN_BINARY $EQ1_HOME_PROVIDER
+$CHAIN_BINARY tx staking create-validator --amount 1000000uatom \
+--pubkey $($CHAIN_BINARY tendermint show-validator --home $EQ1_HOME_PROVIDER) \
+--moniker malval_1 --chain-id $CHAIN_ID \
+--commission-rate 0.10 --commission-max-rate 0.20 --commission-max-change-rate 0.01 \
+--gas auto --gas-adjustment $GAS_ADJUSTMENT --fees 1000$DENOM --from $malval_1 --home $EQ1_HOME_PROVIDER
 
 sleep 10
 
