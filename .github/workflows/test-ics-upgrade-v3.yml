@@ -200,6 +200,7 @@ jobs:
           CONSUMER_SERVICE_2: cona2.service
         run: |
           sudo systemctl enable $CONSUMER_SERVICE_1 --now
+          sudo systemctl enable $CONSUMER_SERVICE_2 --now
       - name: _consumera-blocks-1
         env:
           CON1_RPC_PORT: 27101
@@ -215,12 +216,30 @@ jobs:
         env:
           CON1_RPC_PORT: 27101
         run: tests/major_fresh_upgrade/test_ccv.sh
-      - name: _consumera-ibc
+      - name: _consumera-ibc-1
         env:
           CONSUMER_CHAIN_ID: consumera
           CONSUMER_HOME_1: /home/runner/.cona1
           CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY_2 }}
         run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-1 2
+      - name: Upgrade consumer a chain to ICS v3.1.0
+        env:
+          CONSUMER_CHAIN_ID: consumera
+          CONSUMER_HOME_1: /home/runner/.cona1
+          CONSUMER_HOME_2: /home/runner/.cona2
+          CONSUMER_SERVICE_1: cona1.service
+          CONSUMER_SERVICE_2: cona2.service
+          CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY_3 }}
+        run: tests/ics_upgrade/upgrade_consumer.sh
+      - name: _consumera-blocks-2
+        env:
+          CON1_RPC_PORT: 27101
+        run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT 5
+      - name: _consumera-vsc-2
+        env:
+          CON1_RPC_PORT: 27101
+        run: tests/major_fresh_upgrade/test_ccv.sh
+      
       # - name: Initialize consumer chain b with ICS v3.1.0
       #   env:
       #     CONSUMER_CHAIN_ID: consumerb
