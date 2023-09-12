@@ -273,7 +273,8 @@ $CHAIN_BINARY q gov tally $proposal_id --home $HOME_1
 echo "Waiting for proposal to pass..."
 sleep $VOTING_PERIOD
 
-$CHAIN_BINARY q slashing signing-infos --home $HOME_1 -o json | jq -r --arg ADDRESS $addr '.info[] | select(.address=="$ADDRESS")'
+$CHAIN_BINARY q slashing signing-infos --home $HOME_1 -o json
+# $CHAIN_BINARY q slashing signing-infos --home $HOME_1 -o json | jq -r --arg ADDRESS $addr '.info[] | select(.address=="$ADDRESS")'
 
 status=$($CHAIN_BINARY q slashing signing-infos --home $HOME_1 -o json | jq -r --arg ADDRESS $addr '.info[] | select(.address=="$ADDRESS") | .tombstoned')
 
