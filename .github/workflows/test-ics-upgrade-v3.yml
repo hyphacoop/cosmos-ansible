@@ -230,7 +230,7 @@ jobs:
           CONSUMER_SERVICE_1: cona1.service
           CONSUMER_SERVICE_2: cona2.service
           CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY_3 }}
-        run: tests/ics_upgrade/upgrade_consumer.sh
+        run: tests/ics_upgrade/upgrade_consumer_v3.sh
       - name: _consumera-blocks-2
         env:
           CON1_RPC_PORT: 27101
