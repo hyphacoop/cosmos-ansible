@@ -45,5 +45,5 @@ sudo systemctl enable $CONSUMER_SERVICE_2 --now
 
 sleep 10
 
-journalctl -u $CONSUMER_SERVICE_1 | tail -n 20
-journalctl -u $CONSUMER_SERVICE_2 | tail -n 20
+journalctl -u $CONSUMER_SERVICE_1 | tail -n 50
+journalctl -u $CONSUMER_SERVICE_2 | tail -n 50
