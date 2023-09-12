@@ -230,7 +230,7 @@ jobs:
           CONSUMER_HOME_2: /home/runner/.cona2
           CONSUMER_SERVICE_1: cona1.service
           CONSUMER_SERVICE_2: cona2.service
-          CONSUMER_CHAIN_BINARY: $CONSUMER_CHAIN_BINARY_320
+          CONSUMER_CHAIN_BINARY: ics-v320
         run: tests/ics_upgrade/upgrade_consumer_v3.sh
       - name: _consumera-blocks-2
         env:
