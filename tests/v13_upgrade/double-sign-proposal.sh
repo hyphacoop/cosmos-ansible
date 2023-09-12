@@ -219,13 +219,13 @@ sudo systemctl start $CON_EQ1_SERVICE_ORIGINAL
 sleep 70
 
 echo "con1 log:"
-journalctl -u $CONSUMER_SERVICE_1 | tail -n 20
+journalctl -u $CONSUMER_SERVICE_1 | tail -n 50
 echo con2 log:
-journalctl -u $CONSUMER_SERVICE_2 | tail -n 20
+journalctl -u $CONSUMER_SERVICE_2 | tail -n 50
 echo "Original log:"
-journalctl -u $CON_EQ1_SERVICE_ORIGINAL | tail -n 20
+journalctl -u $CON_EQ1_SERVICE_ORIGINAL | tail -n 50
 echo "Double log:"
-journalctl -u $CON_EQ1_SERVICE_DOUBLE | tail -n 20
+journalctl -u $CON_EQ1_SERVICE_DOUBLE | tail -n 50
 
 evidence=$($CONSUMER_CHAIN_BINARY q evidence --home $CONSUMER_HOME_1 -o json | jq -r '.evidence | length')
 echo "$evidence"
