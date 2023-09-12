@@ -169,7 +169,7 @@ $CHAIN_BINARY tx staking create-validator --amount 5000000$DENOM \
 --commission-rate 0.10 --commission-max-rate 0.20 --commission-max-change-rate 0.01 \
 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees 2000$DENOM --from $malval_1 --home $EQ1_HOME_PROVIDER -b block -y
 
-sleep 10
+sleep 20
 
 echo "Check validator is in the consumer chain..."
 total_after=$(curl http://localhost:$CON1_RPC_PORT/validators | jq -r '.result.total')
@@ -216,7 +216,7 @@ sudo systemctl enable $CON_EQ1_SERVICE_DOUBLE --now
 # # Start original
 sudo systemctl start $CON_EQ1_SERVICE_ORIGINAL
 
-sleep 70
+sleep 90
 
 echo "con1 log:"
 journalctl -u $CONSUMER_SERVICE_1 | tail -n 50
