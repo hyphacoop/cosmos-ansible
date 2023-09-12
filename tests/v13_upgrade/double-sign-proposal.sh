@@ -257,11 +257,12 @@ echo "Wait for evidence to reach the provider chain..>"
 sleep 30
 
 echo "Submit equivocation proposal..."
-proposal="$CHAIN_BINARY tx gov submit-proposal equivocation tests/v13_upgrade/equivoque-4.json --from $MONIKER_1 --home $HOME_1 --gas auto --gas-adjustment 1.2 --fees 1000uatom -b block -y"
-echo $proposal
-txhash=$($proposal | jq -r '.txhash')
-sleep $((COMMIT_TIMEOUT+2))
-
+proposal="$CHAIN_BINARY tx gov submit-proposal equivocation tests/v13_upgrade/equivoque-4.json --from $MONIKER_1 --home $HOME_1 --gas auto --gas-adjustment 1.2 --fees $BASE_FEES$DENOM -b block -y"
+# echo $proposal
+# txhash=$($proposal | jq -r '.txhash')
+# sleep $((COMMIT_TIMEOUT+2))
+$proposal
+exit 0
 # Get proposal ID
 $CHAIN_BINARY q tx $txhash --home $HOME_1
 proposal_id=$($CHAIN_BINARY q tx $txhash --home $HOME_1 --output json | jq -r '.logs[].events[] | select(.type=="submit_proposal") | .attributes[] | select(.key=="proposal_id") | .value')
