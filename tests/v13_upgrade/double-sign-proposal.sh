@@ -102,6 +102,8 @@ toml set --toml-path $EQ1_HOME_CONSUMER/config/config.toml rpc.laddr "tcp://0.0.
 toml set --toml-path $EQ1_HOME_CONSUMER/config/config.toml rpc.pprof_laddr "localhost:$CON_EQ1_PPROF_PORT"
 # Set different ports for p2p
 toml set --toml-path $EQ1_HOME_CONSUMER/config/config.toml p2p.laddr "tcp://0.0.0.0:$CON_EQ1_P2P_PORT"
+echo "Set no strict address book rules..."
+toml set --toml-path $EQ1_HOME_CONSUMER/config/config.toml p2p.addr_book_strict false
 # Allow duplicate IPs in p2p
 toml set --toml-path $EQ1_HOME_CONSUMER/config/config.toml p2p.allow_duplicate_ip true
 echo "Setting persistent peer..."
@@ -216,10 +218,14 @@ sudo systemctl start $CON_EQ1_SERVICE_ORIGINAL
 
 sleep 30
 
+echo "con1 log:"
+journalctl -u $CONSUMER_SERVICE_1 | tail -n 20
+echo con2 log:
+journalctl -u $CONSUMER_SERVICE_2 | tail -n 20
 echo "Original log:"
-journalctl -u $CON_EQ1_SERVICE_ORIGINAL | tail -n 100
+journalctl -u $CON_EQ1_SERVICE_ORIGINAL | tail -n 20
 echo "Double log:"
-journalctl -u $CON_EQ1_SERVICE_DOUBLE | tail -n 100
+journalctl -u $CON_EQ1_SERVICE_DOUBLE | tail -n 20
 
 evidence=$($CONSUMER_CHAIN_BINARY q evidence --home $CONSUMER_HOME_1 -o json | jq -r '.evidence | length')
 echo "$evidence"
@@ -229,4 +235,3 @@ else
   echo "No equivocation evidence found."
   exit 1
 fi
-

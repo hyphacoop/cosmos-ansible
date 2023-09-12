@@ -15,6 +15,11 @@ $CONSUMER_CHAIN_BINARY config keyring-backend test --home $CONSUMER_HOME_2
 $CONSUMER_CHAIN_BINARY config node tcp://localhost:$CON2_RPC_PORT --home $CONSUMER_HOME_2
 $CONSUMER_CHAIN_BINARY init $MONIKER_2 --chain-id $CONSUMER_CHAIN_ID --home $CONSUMER_HOME_2
 
+# $CONSUMER_CHAIN_BINARY config chain-id $CONSUMER_CHAIN_ID --home $CONSUMER_HOME_2
+# $CONSUMER_CHAIN_BINARY config keyring-backend test --home $CONSUMER_HOME_2
+# $CONSUMER_CHAIN_BINARY config node tcp://localhost:$CON2_RPC_PORT --home $CONSUMER_HOME_2
+# $CONSUMER_CHAIN_BINARY init $MONIKER_2 --chain-id $CONSUMER_CHAIN_ID --home $CONSUMER_HOME_2
+
 echo "Copying keys from provider nodes to consumer ones..."
 cp $HOME_1/config/priv_validator_key.json $CONSUMER_HOME_1/config/priv_validator_key.json
 cp $HOME_1/config/node_key.json $CONSUMER_HOME_1/config/node_key.json
@@ -83,13 +88,20 @@ toml set --toml-path $CONSUMER_HOME_2/config/config.toml p2p.laddr "tcp://0.0.0.
 toml set --toml-path $CONSUMER_HOME_1/config/config.toml p2p.allow_duplicate_ip true
 toml set --toml-path $CONSUMER_HOME_2/config/config.toml p2p.allow_duplicate_ip true
 
+echo "Set no strict address book rules..."
+toml set --toml-path $CONSUMER_HOME_1/config/config.toml p2p.addr_book_strict false
+toml set --toml-path $CONSUMER_HOME_2/config/config.toml p2p.addr_book_strict false
+toml set --toml-path $CONSUMER_HOME_3/config/config.toml p2p.addr_book_strict false
+
 echo "Setting persistent peers..."
 VAL1_NODE_ID=$($CONSUMER_CHAIN_BINARY tendermint show-node-id --home $CONSUMER_HOME_1)
 VAL2_NODE_ID=$($CONSUMER_CHAIN_BINARY tendermint show-node-id --home $CONSUMER_HOME_2)
 VAL3_NODE_ID=$($CONSUMER_CHAIN_BINARY tendermint show-node-id --home $CONSUMER_HOME_3)
+VAL1_PEER="$VAL1_NODE_ID@localhost:$CON1_P2P_PORT"
 VAL2_PEER="$VAL2_NODE_ID@localhost:$CON2_P2P_PORT"
-# VAL3_PEER="$VAL3_NODE_ID@localhost:$CON3_P2P_PORT"
-toml set --toml-path $CONSUMER_HOME_1/config/config.toml p2p.persistent_peers "$VAL2_PEER"
+VAL3_PEER="$VAL3_NODE_ID@localhost:$CON3_P2P_PORT"
+toml set --toml-path $CONSUMER_HOME_2/config/config.toml p2p.persistent_peers "$VAL1_PEER"
+toml set --toml-path $CONSUMER_HOME_3/config/config.toml p2p.persistent_peers "$VAL1_PEER"
 
 echo "Setting a short commit timeout..."
 toml set --toml-path $CONSUMER_HOME_1/config/config.toml consensus.timeout_commit "1s"
