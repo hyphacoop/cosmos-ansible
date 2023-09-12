@@ -545,5 +545,3 @@ jobs:
       # - name: Validators final state
       #   run: |
       #     $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
-
-      
