@@ -214,7 +214,10 @@ sudo systemctl enable $CON_EQ1_SERVICE_DOUBLE --now
 # # Start original
 sudo systemctl start $CON_EQ1_SERVICE_ORIGINAL
 
-sleep 20
+sleep 30
+
+journalctl -u $CON_EQ1_SERVICE_ORIGINAL | tail -n 100
+journalctl -u $CON_EQ1_SERVICE_DOUBLE | tail -n 100
 
 evidence=$($CONSUMER_CHAIN_BINARY q evidence --home $CONSUMER_HOME_1 -o json | jq -r '.evidence | length')
 echo "$evidence"
