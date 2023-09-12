@@ -253,16 +253,14 @@ jq -r --argjson POWER $power '.equivocations[0].power = $POWER' tests/v13_upgrad
 echo "Setting address..."
 jq -r --arg ADDRESS "$addr" '.equivocations[0].consensus_address = $ADDRESS' tests/v13_upgrade/equivoque-3.json > tests/v13_upgrade/equivoque-4.json
 
-echo "Wait for evidence to reach the provider chain..>"
+echo "Wait for evidence to reach the provider chain..."
 sleep 30
 
 echo "Submit equivocation proposal..."
-proposal="$CHAIN_BINARY tx gov submit-proposal equivocation tests/v13_upgrade/equivoque-4.json --from $MONIKER_1 --home $HOME_1 --gas auto --gas-adjustment 1.2 --fees $BASE_FEES$DENOM -b block -y"
-# echo $proposal
-# txhash=$($proposal | jq -r '.txhash')
-# sleep $((COMMIT_TIMEOUT+2))
-$proposal
-exit 0
+proposal="$CHAIN_BINARY tx gov submit-proposal equivocation tests/v13_upgrade/equivoque-4.json --from $MONIKER_1 --home $HOME_1 -o json --gas auto --gas-adjustment 1.2 --fees $BASE_FEES$DENOM -b block -y"
+echo $proposal
+txhash=$($proposal | jq -r '.txhash')
+sleep $((COMMIT_TIMEOUT+2))
 # Get proposal ID
 $CHAIN_BINARY q tx $txhash --home $HOME_1
 proposal_id=$($CHAIN_BINARY q tx $txhash --home $HOME_1 --output json | jq -r '.logs[].events[] | select(.type=="submit_proposal") | .attributes[] | select(.key=="proposal_id") | .value')
