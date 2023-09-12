@@ -216,7 +216,7 @@ sudo systemctl enable $CON_EQ1_SERVICE_DOUBLE --now
 # # Start original
 sudo systemctl start $CON_EQ1_SERVICE_ORIGINAL
 
-sleep 60
+sleep 70
 
 # echo "con1 log:"
 # journalctl -u $CONSUMER_SERVICE_1 | tail -n 20
