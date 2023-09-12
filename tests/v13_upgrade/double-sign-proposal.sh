@@ -218,14 +218,14 @@ sudo systemctl start $CON_EQ1_SERVICE_ORIGINAL
 
 sleep 60
 
-echo "con1 log:"
-journalctl -u $CONSUMER_SERVICE_1 | tail -n 20
-echo con2 log:
-journalctl -u $CONSUMER_SERVICE_2 | tail -n 20
-echo "Original log:"
-journalctl -u $CON_EQ1_SERVICE_ORIGINAL | tail -n 20
-echo "Double log:"
-journalctl -u $CON_EQ1_SERVICE_DOUBLE | tail -n 20
+# echo "con1 log:"
+# journalctl -u $CONSUMER_SERVICE_1 | tail -n 20
+# echo con2 log:
+# journalctl -u $CONSUMER_SERVICE_2 | tail -n 20
+# echo "Original log:"
+# journalctl -u $CON_EQ1_SERVICE_ORIGINAL | tail -n 20
+# echo "Double log:"
+# journalctl -u $CON_EQ1_SERVICE_DOUBLE | tail -n 20
 
 evidence=$($CONSUMER_CHAIN_BINARY q evidence --home $CONSUMER_HOME_1 -o json | jq -r '.evidence | length')
 echo "$evidence"
@@ -234,4 +234,52 @@ if [ $evidence == 1 ]; then
 else
   echo "No equivocation evidence found."
   exit 1
+fi
+
+# Submit proposal to tombstone validator
+power=$($CONSUMER_CHAIN_BINARY q evidence --home $CONSUMER_HOME_1 -o json | jq -r '.evidence[0].power')
+addr=$($CONSUMER_CHAIN_BINARY q evidence --home $CONSUMER_HOME_1 -o json | jq -r '.evidence[0].consensus_address')
+eq_height=$($CHAIN_BINARY q block --home $HOME_1 | jq -r '.block.header.height')
+eq_time=$($CHAIN_BINARY q block --home $HOME_1 | jq -r '.block.header.time')
+
+echo $eq_time
+
+echo "Setting height..."
+jq -r --argjson HEIGHT $eq_height '.equivocations[0].height = $HEIGHT' tests/v13_upgrade/equivoque.json > tests/v13_upgrade/equivoque-1.json
+echo "Setting time..."
+jq -r --arg EQTIME "$eq_time" '.equivocations[0].time = $EQTIME' tests/v13_upgrade/equivoque-1.json > tests/v13_upgrade/equivoque-2.json
+echo "Setting power..."
+jq -r --argjson POWER $power '.equivocations[0].power = $POWER' tests/v13_upgrade/equivoque-2.json > tests/v13_upgrade/equivoque-3.json
+echo "Setting address..."
+jq -r --arg ADDRESS "$addr" '.equivocations[0].consensus_address = $ADDRESS' tests/v13_upgrade/equivoque-3.json > tests/v13_upgrade/equivoque-4.json
+
+echo "Wait for evidence to reach the provider chain..>"
+sleep 30
+
+echo "Submit equivocation proposal..."
+proposal=$CHAIN_BINARY tx gov submit-proposal equivocation tests/v13_upgrade/equivoque-4.json --from $MONIKER_1 --home $HOME_1 --gas auto --gas-adjustment 1.2 --fees 1000uatom -b block -y
+echo $proposal
+txhash=$($proposal | jq -r '.txhash')
+sleep $((COMMIT_TIMEOUT+2))
+
+# Get proposal ID
+$CHAIN_BINARY q tx $txhash --home $HOME_1
+proposal_id=$($CHAIN_BINARY q tx $txhash --home $HOME_1 --output json | jq -r '.logs[].events[] | select(.type=="submit_proposal") | .attributes[] | select(.key=="proposal_id") | .value')
+
+echo "Voting on proposal $proposal_id..."
+$CHAIN_BINARY tx gov vote $proposal_id yes --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM --from $WALLET_1 --keyring-backend test --home $HOME_1 --chain-id $CHAIN_ID -b block -y
+sleep $(($COMMIT_TIMEOUT+2))
+$CHAIN_BINARY q gov tally $proposal_id --home $HOME_1
+
+echo "Waiting for proposal to pass..."
+sleep $VOTING_PERIOD
+
+$CHAIN_BINARY q slashing signing-infos --home $HOME_1 -o json | jq -r --arg ADDRESS $addr '.info[] | select(.address=="$ADDRESS")'
+
+status=$($CHAIN_BINARY q slashing signing-infos --home $HOME_1 -o json | jq -r --arg ADDRESS $addr '.info[] | select(.address=="$ADDRESS") | .tombstoned')
+
+if [ $status == true ]; then
+  echo "Success: validator has been tombstoned!"
+else
+  echo "Failure: validator was not tombstoned."
 fi

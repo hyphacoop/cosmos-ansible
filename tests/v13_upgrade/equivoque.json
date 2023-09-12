@@ -1,0 +1,13 @@
+{
+    "title": "Equivoque validator",
+    "description": "Attempt to slash validator.",
+    "equivocations": [
+        {
+            "height": 1778,
+            "time": "2023-08-15T17:32:54.212783222Z",
+            "power": 100,
+            "consensus_address": "cosmosvalcons1mvkmynt5drcwgwdmvqt8s0hqs8zqc6dxuhlj3c"
+        }
+    ],
+    "deposit": "10000000uatom"
+}
