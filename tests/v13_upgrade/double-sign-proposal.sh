@@ -274,12 +274,12 @@ echo "Waiting for proposal to pass..."
 sleep $VOTING_PERIOD
 
 $CHAIN_BINARY q slashing signing-infos --home $HOME_1 -o json
-# $CHAIN_BINARY q slashing signing-infos --home $HOME_1 -o json | jq -r --arg ADDRESS $addr '.info[] | select(.address=="$ADDRESS")'
 
-status=$($CHAIN_BINARY q slashing signing-infos --home $HOME_1 -o json | jq -r --arg ADDRESS $addr '.info[] | select(.address=="$ADDRESS") | .tombstoned')
-
-if [ $status == true ]; then
+status=$($CHAIN_BINARY q slashing signing-infos --home $HOME_1 -o json | jq -r --arg ADDRESS "$addr" '.info[] | select(.address==$ADDRESS) | .tombstoned')
+echo "Status: $status"
+if [ $status == "true" ]; then
   echo "Success: validator has been tombstoned!"
 else
   echo "Failure: validator was not tombstoned."
+  exit 1
 fi
