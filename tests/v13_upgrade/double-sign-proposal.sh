@@ -182,6 +182,9 @@ else
   exit 1
 fi
 
+# Stop whale
+sudo systemctl stop $CONSUMER_SERVICE_1
+
 # Stop validator
 sudo systemctl stop $CON_EQ1_SERVICE_ORIGINAL
 
@@ -212,11 +215,15 @@ echo "{}" > $EQ1_HOME_CONSUMER/config/addrbook.json
 
 # Start duplicate
 sudo systemctl enable $CON_EQ1_SERVICE_DOUBLE --now
+sleep 30
 
-# # Start original
+# Start original
 sudo systemctl start $CON_EQ1_SERVICE_ORIGINAL
 
-sleep 90
+# Restart whale
+sudo systemctl start $CONSUMER_SERVICE_1
+
+sleep 60
 
 echo "con1 log:"
 journalctl -u $CONSUMER_SERVICE_1 | tail -n 50
