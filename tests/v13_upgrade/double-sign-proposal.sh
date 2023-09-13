@@ -222,7 +222,7 @@ sudo systemctl start $CON_EQ1_SERVICE_ORIGINAL
 
 # Restart whale
 sudo systemctl start $CONSUMER_SERVICE_1
-sleep 30
+sleep 60
 
 # echo "con1 log:"
 # journalctl -u $CONSUMER_SERVICE_1 | tail -n 50
