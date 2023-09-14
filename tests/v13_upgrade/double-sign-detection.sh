@@ -237,6 +237,21 @@ sleep 60
 
 journalctl -u hermes-evidence-b
 
+hex_address=$($CHAIN_BINARY keys parse $malval_2 --output json | jq -r '.bytes')
+echo "Validator hex address: $hex_address"
+val_address=$($CHAIN_BINARY keys parse $hex_address --output json | jq -r '.formats[2]')
+echo "Validator operator address: $val_address"
+
+$CHAIN_BINARY q staking validator $val_address --home $HOME_1
+jailed=$($CHAIN_BINARY q staking validator $valoper --home $HOME_1 -o json | jq -r '.jailed')
+echo "Expected jailed status: $jailed_expected, actual status: $jailed_actual"
+if [ $jailed_actual != true ]; then
+  echo "Equivocation detection failure: validator was not jailed."
+  exit 1
+else
+  echo "Equivocation detection success: validator was jailed.
+fi
+
 # # Submit proposal to tombstone validator
 # power=$($CONSUMER_CHAIN_BINARY q evidence --home $CONSUMER_HOME_1 -o json | jq -r '.evidence[0].power')
 # addr=$($CONSUMER_CHAIN_BINARY q evidence --home $CONSUMER_HOME_1 -o json | jq -r '.evidence[0].consensus_address')
