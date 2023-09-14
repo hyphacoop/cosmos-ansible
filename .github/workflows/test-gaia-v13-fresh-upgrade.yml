@@ -252,7 +252,7 @@ jobs:
       #   run: |
       #     $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
       - name: Set up relayer
-        run: tests/v12_upgrade/setup_relayer.sh
+        run: tests/v13_upgrade/setup_relayer.sh
       - name: Download consumer chain binaries
         run: |
           wget $CONSUMER_CHAIN_BINARY_URL_2 -O $HOME/go/bin/$CONSUMER_CHAIN_BINARY_2 -q
