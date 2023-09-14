@@ -8,7 +8,7 @@ $CHAIN_BINARY config chain-id $CHAIN_ID --home $EQ1_HOME_PROVIDER
 $CHAIN_BINARY config keyring-backend test --home $EQ1_HOME_PROVIDER
 $CHAIN_BINARY config broadcast-mode block --home $EQ1_HOME_PROVIDER
 $CHAIN_BINARY config node tcp://localhost:$VAL_EQ1_RPC_PORT --home $EQ1_HOME_PROVIDER
-$CHAIN_BINARY init malval_1 --chain-id $CHAIN_ID --home $EQ1_HOME_PROVIDER
+$CHAIN_BINARY init malval_2 --chain-id $CHAIN_ID --home $EQ1_HOME_PROVIDER
 
 echo "Getting genesis file..."
 cp $HOME_1/config/genesis.json $EQ1_HOME_PROVIDER/config/genesis.json
@@ -74,7 +74,7 @@ echo "Setting up consumer node..."
 $CONSUMER_CHAIN_BINARY config chain-id $CONSUMER_CHAIN_ID --home $EQ1_HOME_CONSUMER
 $CONSUMER_CHAIN_BINARY config keyring-backend test --home $EQ1_HOME_CONSUMER
 $CONSUMER_CHAIN_BINARY config node tcp://localhost:$CON_EQ1_RPC_PORT --home $EQ1_HOME_CONSUMER
-$CONSUMER_CHAIN_BINARY init malval_1 --chain-id $CONSUMER_CHAIN_ID --home $EQ1_HOME_CONSUMER
+$CONSUMER_CHAIN_BINARY init malval_2 --chain-id $CONSUMER_CHAIN_ID --home $EQ1_HOME_CONSUMER
 
 echo "Copying key from provider node to consumer one..."
 cp $EQ1_HOME_PROVIDER/config/priv_validator_key.json $EQ1_HOME_CONSUMER/config/priv_validator_key.json
@@ -153,21 +153,20 @@ sleep 20
 $CONSUMER_CHAIN_BINARY q block --home $EQ1_HOME_CONSUMER | jq '.'
 
 echo "Create new validator key..."
-$CHAIN_BINARY keys add malval_1 --home $EQ1_HOME_PROVIDER
-malval_1=$($CHAIN_BINARY keys list --home $EQ1_HOME_PROVIDER --output json | jq -r '.[] | select(.name=="malval_1").address')
+$CHAIN_BINARY keys add malval_2 --home $EQ1_HOME_PROVIDER
+malval_2=$($CHAIN_BINARY keys list --home $EQ1_HOME_PROVIDER --output json | jq -r '.[] | select(.name=="malval_2").address')
 
 echo "Fund new validator..."
-submit_tx "tx bank send $WALLET_1 $malval_1 100000000uatom --from $WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -o json -y" $CHAIN_BINARY $HOME_1
+submit_tx "tx bank send $WALLET_1 $malval_2 100000000uatom --from $WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -o json -y" $CHAIN_BINARY $HOME_1
 
 total_before=$(curl http://localhost:$CON1_RPC_PORT/validators | jq -r '.result.total')
 
 echo "Create validator..."
-# submit_tx "tx staking create-validator --amount 5000000$DENOM --pubkey $($CHAIN_BINARY tendermint show-validator --home $EQ1_HOME_PROVIDER) --moniker malval_1 --chain-id $CHAIN_ID --commission-rate 0.10 --commission-max-rate 0.20 --commission-max-change-rate 0.01 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees 1000$DENOM --from $malval_1 -y" $CHAIN_BINARY $EQ1_HOME_PROVIDER
 $CHAIN_BINARY tx staking create-validator --amount 5000000$DENOM \
 --pubkey $($CHAIN_BINARY tendermint show-validator --home $EQ1_HOME_PROVIDER) \
---moniker malval_1 --chain-id $CHAIN_ID \
+--moniker malval_2 --chain-id $CHAIN_ID \
 --commission-rate 0.10 --commission-max-rate 0.20 --commission-max-change-rate 0.01 \
---gas auto --gas-adjustment $GAS_ADJUSTMENT --fees 2000$DENOM --from $malval_1 --home $EQ1_HOME_PROVIDER -b block -y
+--gas auto --gas-adjustment $GAS_ADJUSTMENT --fees 2000$DENOM --from $malval_2 --home $EQ1_HOME_PROVIDER -b block -y
 
 sleep 20
 
@@ -224,15 +223,6 @@ sudo systemctl start $CON_EQ1_SERVICE_ORIGINAL
 sudo systemctl start $CONSUMER_SERVICE_1
 sleep 60
 
-# echo "con1 log:"
-# journalctl -u $CONSUMER_SERVICE_1 | tail -n 50
-# echo con2 log:
-# journalctl -u $CONSUMER_SERVICE_2 | tail -n 50
-# echo "Original log:"
-# journalctl -u $CON_EQ1_SERVICE_ORIGINAL | tail -n 50
-# echo "Double log:"
-# journalctl -u $CON_EQ1_SERVICE_DOUBLE | tail -n 50
-
 evidence=$($CONSUMER_CHAIN_BINARY q evidence --home $CONSUMER_HOME_1 -o json | jq -r '.evidence | length')
 echo "$evidence"
 if [ $evidence == 1 ]; then
@@ -243,53 +233,50 @@ else
 fi
 
 echo "Wait for evidence to reach the provider chain..."
-sleep 30
+sleep 60
 
-# Submit proposal to tombstone validator
-power=$($CONSUMER_CHAIN_BINARY q evidence --home $CONSUMER_HOME_1 -o json | jq -r '.evidence[0].power')
-addr=$($CONSUMER_CHAIN_BINARY q evidence --home $CONSUMER_HOME_1 -o json | jq -r '.evidence[0].consensus_address')
-eq_height=$($CHAIN_BINARY q block --home $HOME_1 | jq -r '.block.header.height')
-eq_time=$($CHAIN_BINARY q block --home $HOME_1 | jq -r '.block.header.time')
+journalctl -u hermes-evidence-b
 
-echo $eq_time
+# # Submit proposal to tombstone validator
+# power=$($CONSUMER_CHAIN_BINARY q evidence --home $CONSUMER_HOME_1 -o json | jq -r '.evidence[0].power')
+# addr=$($CONSUMER_CHAIN_BINARY q evidence --home $CONSUMER_HOME_1 -o json | jq -r '.evidence[0].consensus_address')
+# eq_height=$($CHAIN_BINARY q block --home $HOME_1 | jq -r '.block.header.height')
+# eq_time=$($CHAIN_BINARY q block --home $HOME_1 | jq -r '.block.header.time')
 
-echo "Setting height..."
-jq -r --argjson HEIGHT $eq_height '.equivocations[0].height = $HEIGHT' tests/v13_upgrade/equivoque.json > tests/v13_upgrade/equivoque-1.json
-echo "Setting time..."
-jq -r --arg EQTIME "$eq_time" '.equivocations[0].time = $EQTIME' tests/v13_upgrade/equivoque-1.json > tests/v13_upgrade/equivoque-2.json
-echo "Setting power..."
-jq -r --argjson POWER $power '.equivocations[0].power = $POWER' tests/v13_upgrade/equivoque-2.json > tests/v13_upgrade/equivoque-3.json
-echo "Setting address..."
-jq -r --arg ADDRESS "$addr" '.equivocations[0].consensus_address = $ADDRESS' tests/v13_upgrade/equivoque-3.json > tests/v13_upgrade/equivoque-4.json
+# echo $eq_time
 
-echo "Submit equivocation proposal..."
-proposal="$CHAIN_BINARY tx gov submit-proposal equivocation tests/v13_upgrade/equivoque-4.json --from $MONIKER_1 --home $HOME_1 -o json --gas auto --gas-adjustment 1.2 --fees $BASE_FEES$DENOM -b block -y"
-echo $proposal
-txhash=$($proposal | jq -r '.txhash')
-sleep $((COMMIT_TIMEOUT+2))
-# Get proposal ID
-$CHAIN_BINARY q tx $txhash --home $HOME_1
-proposal_id=$($CHAIN_BINARY q tx $txhash --home $HOME_1 --output json | jq -r '.logs[].events[] | select(.type=="submit_proposal") | .attributes[] | select(.key=="proposal_id") | .value')
+# echo "Setting height..."
+# jq -r --argjson HEIGHT $eq_height '.equivocations[0].height = $HEIGHT' tests/v13_upgrade/equivoque.json > tests/v13_upgrade/equivoque-1.json
+# echo "Setting time..."
+# jq -r --arg EQTIME "$eq_time" '.equivocations[0].time = $EQTIME' tests/v13_upgrade/equivoque-1.json > tests/v13_upgrade/equivoque-2.json
+# echo "Setting power..."
+# jq -r --argjson POWER $power '.equivocations[0].power = $POWER' tests/v13_upgrade/equivoque-2.json > tests/v13_upgrade/equivoque-3.json
+# echo "Setting address..."
+# jq -r --arg ADDRESS "$addr" '.equivocations[0].consensus_address = $ADDRESS' tests/v13_upgrade/equivoque-3.json > tests/v13_upgrade/equivoque-4.json
 
-echo "Voting on proposal $proposal_id..."
-$CHAIN_BINARY tx gov vote $proposal_id yes --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM --from $WALLET_1 --keyring-backend test --home $HOME_1 --chain-id $CHAIN_ID -b block -y
-sleep $(($COMMIT_TIMEOUT+2))
-# $CHAIN_BINARY q gov tally $proposal_id --home $HOME_1
 
-echo "Waiting for proposal to pass..."
-sleep $VOTING_PERIOD
+# echo "Submit equivocation proposal..."
+# proposal="$CHAIN_BINARY tx gov submit-proposal equivocation tests/v13_upgrade/equivoque-4.json --from $MONIKER_1 --home $HOME_1 -o json --gas auto --gas-adjustment 1.2 --fees $BASE_FEES$DENOM -b block -y"
+# echo $proposal
+# txhash=$($proposal | jq -r '.txhash')
+# sleep $((COMMIT_TIMEOUT+2))
+# # Get proposal ID
+# $CHAIN_BINARY q tx $txhash --home $HOME_1
+# proposal_id=$($CHAIN_BINARY q tx $txhash --home $HOME_1 --output json | jq -r '.logs[].events[] | select(.type=="submit_proposal") | .attributes[] | select(.key=="proposal_id") | .value')
 
-status=$($CHAIN_BINARY q slashing signing-infos --home $HOME_1 -o json | jq -r --arg ADDRESS "$addr" '.info[] | select(.address==$ADDRESS) | .tombstoned')
-echo "Status: $status"
-if [ $status == "true" ]; then
-  echo "Success: validator has been tombstoned!"
-  sudo systemctl disable $CON_EQ1_SERVICE_ORIGINAL --now
-  sudo systemctl disable $CON_EQ1_SERVICE_DOUBLE --now
-  rm -rf $EQ1_HOME_PROVIDER
-  sudo rm /etc/systemd/system/$CON_EQ1_SERVICE_ORIGINAL
-  sudo rm /etc/systemd/system/$CON_EQ1_SERVICE_DOUBLE
-else
-  echo "Failure: validator was not tombstoned."
-  exit 1
-fi
+# echo "Voting on proposal $proposal_id..."
+# $CHAIN_BINARY tx gov vote $proposal_id yes --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM --from $WALLET_1 --keyring-backend test --home $HOME_1 --chain-id $CHAIN_ID -b block -y
+# sleep $(($COMMIT_TIMEOUT+2))
+# # $CHAIN_BINARY q gov tally $proposal_id --home $HOME_1
 
+# echo "Waiting for proposal to pass..."
+# sleep $VOTING_PERIOD
+
+# status=$($CHAIN_BINARY q slashing signing-infos --home $HOME_1 -o json | jq -r --arg ADDRESS "$addr" '.info[] | select(.address==$ADDRESS) | .tombstoned')
+# echo "Status: $status"
+# if [ $status == "true" ]; then
+#   echo "Success: validator has been tombstoned!"
+# else
+#   echo "Failure: validator was not tombstoned."
+#   exit 1
+# fi
