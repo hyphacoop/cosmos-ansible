@@ -429,9 +429,6 @@ jobs:
       #     CON1_RPC_PORT: 27301
       #   run: tests/major_fresh_upgrade/test_ccv.sh
 
-      - name: Start secondary relayer monitoring
-        run: sudo systemctl start hermes-evidence-b
-
       - name: Test equivocation detection
         env:
           CONSUMER_CHAIN_ID: consumerb
@@ -450,8 +447,10 @@ jobs:
           CON2_P2P_PORT: 28302
           CON2_PPROF_PORT: 29302
           CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY_3 }}
-        run: tests/v13_upgrade/double-sign-detection.sh
-
+        run: |
+          sudo systemctl start hermes-evidence-b
+          tests/v13_upgrade/double-sign-detection.sh
+          sudo systemctl stop hermes-evidence-b
       # - name: Start Stride chain
       #   run: tests/major_fresh_upgrade/start_stride.sh
       # - name: _stride-blocks-1

@@ -158,6 +158,7 @@ malval_2=$($CHAIN_BINARY keys list --home $EQ1_HOME_PROVIDER --output json | jq 
 
 echo "Fund new validator..."
 submit_tx "tx bank send $WALLET_1 $malval_2 100000000uatom --from $WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -o json -y" $CHAIN_BINARY $HOME_1
+sleep 5
 
 total_before=$(curl http://localhost:$CON1_RPC_PORT/validators | jq -r '.result.total')
 

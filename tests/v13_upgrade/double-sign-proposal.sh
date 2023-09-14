@@ -283,9 +283,13 @@ status=$($CHAIN_BINARY q slashing signing-infos --home $HOME_1 -o json | jq -r -
 echo "Status: $status"
 if [ $status == "true" ]; then
   echo "Success: validator has been tombstoned!"
+  sudo systemctl disable $VAL_EQ1_SERVICE --now
   sudo systemctl disable $CON_EQ1_SERVICE_ORIGINAL --now
   sudo systemctl disable $CON_EQ1_SERVICE_DOUBLE --now
   rm -rf $EQ1_HOME_PROVIDER
+  rm -rf $EQ1_HOME_CONSUMER
+  rm -rf $EQ1_HOME_CONSUMER_DOUBLE
+  sudo rm /etc/systemd/system/$VAL_EQ1_SERVICE
   sudo rm /etc/systemd/system/$CON_EQ1_SERVICE_ORIGINAL
   sudo rm /etc/systemd/system/$CON_EQ1_SERVICE_DOUBLE
 else
