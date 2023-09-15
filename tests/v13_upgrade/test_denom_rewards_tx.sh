@@ -10,10 +10,6 @@ echo "hash: $hash"
 reward=$($CHAIN_BINARY q distribution rewards $WALLET_1 --home $HOME_1 -o json | jq -r --arg DENOM "$hash" '.total[] | select(.denom==$DENOM)')
 echo "Before: $reward"
 
-cat $HOME_1/config/client.toml
-cat $HOME_1/config/app.toml
-cat $HOME_1/config/genesis.json
-
 echo "Registering denom"
 tx="$CHAIN_BINARY tx provider register-consumer-reward-denom $hash --from $WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM --home $HOME_1 -b block -y"
 echo $tx
