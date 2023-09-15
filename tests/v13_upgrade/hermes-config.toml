@@ -44,8 +44,8 @@ ccv_consumer_chain = true
 
 [[chains]]
 id = 'two-v200'
-rpc_addr = 'http://localhost:27301'
-grpc_addr = 'http://localhost:26301'
+rpc_addr = 'http://localhost:27201'
+grpc_addr = 'http://localhost:26201'
 websocket_addr = 'ws://localhost:27301/websocket'
 rpc_timeout = '15s'
 account_prefix = 'cosmos'
