@@ -41,7 +41,7 @@ cp ccv-reward.json ccv.json
 if $ICS_120 ; then
     echo "Patching for ICS v1.2.0"
     jq 'del(.preCCV)' ccv.json > ccv-120.json
-    cp ccv-12.json ccv.json
+    cp ccv-120.json ccv.json
 fi
 
 echo "Patching the consumer genesis file..."
