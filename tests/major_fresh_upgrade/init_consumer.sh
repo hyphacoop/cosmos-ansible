@@ -47,8 +47,8 @@ $CONSUMER_CHAIN_BINARY genesis add-genesis-account $MONIKER_5 $VAL_FUNDS$CONSUME
 echo "Patching config files..."
 # app.toml
 # minimum_gas_prices
-sed -i -e "/minimum-gas-prices =/ s^= .*^= \"0$CONSUMER_DENOM\"^" $CONSUMER_HOME_1/config/app.toml
-sed -i -e "/minimum-gas-prices =/ s^= .*^= \"0$CONSUMER_DENOM\"^" $CONSUMER_HOME_2/config/app.toml
+sed -i -e "/minimum-gas-prices =/ s^= .*^= \"0.0025$CONSUMER_DENOM\"^" $CONSUMER_HOME_1/config/app.toml
+sed -i -e "/minimum-gas-prices =/ s^= .*^= \"0.0025$CONSUMER_DENOM\"^" $CONSUMER_HOME_2/config/app.toml
 
 # Enable API
 toml set --toml-path $CONSUMER_HOME_1/config/app.toml api.enable true
