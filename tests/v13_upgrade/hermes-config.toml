@@ -60,10 +60,10 @@ trust_threshold = { numerator = '1', denominator = '3' }
 ccv_consumer_chain = true
 
 [[chains]]
-id = 'consumerc'
-rpc_addr = 'http://localhost:27401'
-grpc_addr = 'http://localhost:26401'
-websocket_addr = 'ws://localhost:27401/websocket'
+id = 'three-v310'
+rpc_addr = 'http://localhost:27301'
+grpc_addr = 'http://localhost:26301'
+websocket_addr = 'ws://localhost:27301/websocket'
 rpc_timeout = '15s'
 account_prefix = 'cosmos'
 key_name = 'wallet'

@@ -375,6 +375,68 @@ jobs:
           CON1_RPC_PORT: 27101
         run: tests/major_fresh_upgrade/test_ccv.sh
 
+      - name: Initialize consumer chain with ICS v3.1.0
+        env:
+          CONSUMER_CHAIN_ID: three-v310
+          CONSUMER_HOME_1: /home/runner/.three_1
+          CON1_API_PORT: 25301
+          CON1_GRPC_PORT: 26301
+          CON1_RPC_PORT: 27301
+          CON1_P2P_PORT: 28301
+          CON1_PPROF_PORT: 29301
+          CONSUMER_SERVICE_1: three_1.service
+          CONSUMER_HOME_2: /home/runner/.three_2
+          CON2_API_PORT: 25302
+          CON2_GRPC_PORT: 26302
+          CON2_RPC_PORT: 27302
+          CON2_P2P_PORT: 28302
+          CON2_PPROF_PORT: 29302
+          CONSUMER_SERVICE_2: three_2.service
+          DOWNTIME_BLOCKS: 100000
+        run: |
+          export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V12_BINARY
+          tests/major_fresh_upgrade/init_consumer.sh
+      - name: Prepare consumer chain three-v310
+        env:
+          CONSUMER_CHAIN_ID: three-v310
+          CONSUMER_HOME_1: /home/runner/.three_1
+          CONSUMER_SERVICE_1: three_1.service
+          CONSUMER_HOME_2: /home/runner/.three_2
+          CONSUMER_SERVICE_2: three_2.service
+        run: |
+          tests/major_fresh_upgrade/prepare_consumer.sh
+      - name: Start consumer chain three-v310
+        env:
+          CONSUMER_CHAIN_ID: three-v310
+          CONSUMER_SERVICE_1: three_1.service
+          CONSUMER_SERVICE_2: three_2.service
+        run: |
+          sudo systemctl enable $CONSUMER_SERVICE_1 --now
+          sleep 5
+          journalctl -u $CONSUMER_SERVICE_1
+      - name: _three-v310-blocks-1
+        env:
+          CON1_RPC_PORT: 27301
+        run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT 5
+      - name: Establish CCV channel for three-v310
+        run: |
+          client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r '.chains[] | select(.chain_id=="three-v310").client_id')
+          hermes create connection --a-chain three-v310 --a-client 07-tendermint-0 --b-client $client_id
+          hermes create channel --a-chain three-v310 --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
+          sudo systemctl restart hermes
+          sleep 10
+      - name: three-v310-vsc-1
+        env:
+          CON1_RPC_PORT: 27301
+        run: tests/major_fresh_upgrade/test_ccv.sh
+      - name: three-v310-ibc
+        env:
+          CONSUMER_CHAIN_ID: three-v310
+          CONSUMER_HOME_1: /home/runner/.three_1
+        run: |
+          export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V12_BINARY
+          tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-5 2
+
       - name: Test software upgrade for published releases
         if: ${{ matrix.upgrade_version != 'main' }}
         env:
