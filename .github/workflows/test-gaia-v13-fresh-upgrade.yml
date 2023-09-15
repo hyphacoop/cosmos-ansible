@@ -463,6 +463,19 @@ jobs:
       - name: _rpc-2
         run: tests/test_endpoints_rpc.sh localhost $VAL1_RPC_PORT
 
+      - name: _one-vsc-3
+        env:
+          CON1_RPC_PORT: 27101
+        run: tests/major_fresh_upgrade/test_ccv.sh
+      - name: _two-vsc-2
+        env:
+          CON1_RPC_PORT: 27201
+        run: tests/major_fresh_upgrade/test_ccv.sh
+      - name: _three-vsc-2
+        env:
+          CON1_RPC_PORT: 27301
+        run: tests/major_fresh_upgrade/test_ccv.sh
+
       - name: Test liquidity module removal
         run: |
           present=$($CHAIN_BINARY tx liquidity 2>&1 | grep unknown)
@@ -481,14 +494,75 @@ jobs:
           else
             echo "Liquidity module removed"
           fi
-      # - name: _consumera-vsc-3
-      #   env:
-      #     CON1_RPC_PORT: 27101
-      #   run: tests/major_fresh_upgrade/test_ccv.sh
-      # - name: _consumerb-vsc-2
-      #   env:
-      #     CON1_RPC_PORT: 27301
-      #   run: tests/major_fresh_upgrade/test_ccv.sh
+
+      - name: Test consumer rewards - proposal
+        env:
+          CONSUMER_DENOM: ucon
+        run: |
+          tests/v13_upgrade/test_denom_rewards_proposal.sh channel-3
+
+
+      - name: Initialize consumer chain with ICS v2.0.0
+        env:
+          CONSUMER_CHAIN_ID: four-v200
+          CONSUMER_HOME_1: /home/runner/.four_1
+          CONSUMER_HOME_2: /home/runner/.four_2
+          CON1_API_PORT: 25401
+          CON1_GRPC_PORT: 26401
+          CON1_RPC_PORT: 27401
+          CON1_P2P_PORT: 28401
+          CON1_PPROF_PORT: 29401
+          CON2_API_PORT: 25402
+          CON2_GRPC_PORT: 26402
+          CON2_RPC_PORT: 27402
+          CON2_P2P_PORT: 28402
+          CON2_PPROF_PORT: 29402
+          CONSUMER_SERVICE_1: four_1.service
+          CONSUMER_SERVICE_2: four_2.service
+          DOWNTIME_BLOCKS: 100000
+        run: |
+          export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V2_BINARY
+          tests/major_fresh_upgrade/init_consumer.sh
+      - name: Prepare consumer chain four-v200
+        env:
+          CONSUMER_CHAIN_ID: four-v200
+          CONSUMER_HOME_1: /home/runner/.four_1
+          CONSUMER_HOME_2: /home/runner/.four_2
+          CONSUMER_SERVICE_1: four_1.service
+          CONSUMER_SERVICE_2: four_2.service
+        run: |
+          tests/major_fresh_upgrade/prepare_consumer.sh
+      - name: Start consumer chain four-v200
+        env:
+          CONSUMER_CHAIN_ID: four-v200
+          CONSUMER_SERVICE_1: four_1.service
+          CONSUMER_SERVICE_2: four_2.service
+        run: |
+          sudo systemctl enable $CONSUMER_SERVICE_1 --now
+          sleep 5
+          journalctl -u $CONSUMER_SERVICE_1
+      - name: _four-v200-blocks-1
+        env:
+          CON1_RPC_PORT: 27401
+        run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT 5
+      - name: Establish CCV channel for four-v200
+        run: |
+          client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r '.chains[] | select(.chain_id=="four-v200").client_id')
+          hermes create connection --a-chain four-v200 --a-client 07-tendermint-0 --b-client $client_id
+          hermes create channel --a-chain four-v200 --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
+          sudo systemctl restart hermes
+          sleep 10
+      - name: four-v200-vsc-1
+        env:
+          CON1_RPC_PORT: 27401
+        run: tests/major_fresh_upgrade/test_ccv.sh
+      - name: one-v120-ibc
+        env:
+          CONSUMER_CHAIN_ID: four-v200
+          CONSUMER_HOME_1: /home/runner/.four_1
+        run: |
+          export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V12_BINARY
+          tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-1 2
 
       # - name: Start Stride chain
       #   run: tests/major_fresh_upgrade/start_stride.sh
@@ -598,11 +672,7 @@ jobs:
       #     CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY_2 }}
       #   run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-3 3
 
-      - name: Test consumer rewards - proposal
-        env:
-          CONSUMER_DENOM: ucon
-        run: |
-          tests/v13_upgrade/test_denom_rewards_proposal.sh channel-3
+
 
       # - name: _consumera-vsc-4
       #   env:

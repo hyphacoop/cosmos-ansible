@@ -25,7 +25,8 @@ echo $MNEMONIC_4 > mnemonic.txt
 hermes keys add --chain $CHAIN_ID --mnemonic-file mnemonic.txt
 hermes keys add --chain one-v120 --mnemonic-file mnemonic.txt
 hermes keys add --chain two-v200 --mnemonic-file mnemonic.txt
-hermes keys add --chain consumerc --mnemonic-file mnemonic.txt
+hermes keys add --chain three-v310 --mnemonic-file mnemonic.txt
+hermes keys add --chain four-v200 --mnemonic-file mnemonic.txt
 hermes keys add --chain consumerd --mnemonic-file mnemonic.txt
 
 echo "Creating service..."
