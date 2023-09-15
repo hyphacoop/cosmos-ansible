@@ -54,13 +54,13 @@ jobs:
       fail-fast: false
     environment: major-upgrade-fresh-workflow
     env:
-      CHAIN_BINARY: ${{ vars.CHAIN_BINARY }}
-      CONSUMER_CHAIN_BINARY_URL: ${{ vars.CONSUMER_CHAIN_BINARY_URL }}
-      CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY }}
-      CONSUMER_CHAIN_BINARY_URL_2: ${{ vars.CONSUMER_CHAIN_BINARY_URL_2 }}
-      CONSUMER_CHAIN_BINARY_2: ${{ vars.CONSUMER_CHAIN_BINARY_2 }}
-      CONSUMER_CHAIN_BINARY_URL_3: ${{ vars.CONSUMER_CHAIN_BINARY_URL_3 }}
-      CONSUMER_CHAIN_BINARY_3: ${{ vars.CONSUMER_CHAIN_BINARY_3 }}
+      CHAIN_BINARY: gaiad
+      CONSUMER_CHAIN_V12_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-v1.2.0-multiden/interchain-security-cd-linux
+      CONSUMER_CHAIN_V12_BINARY: consumerd_v1.2.0
+      CONSUMER_CHAIN_V2_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-v2.0.0/interchain-security-cd-linux
+      CONSUMER_CHAIN_V2_BINARY: consumerd_v2.0.0
+      CONSUMER_CHAIN_V3_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-v3.1.0/interchain-security-cd-linux
+      CONSUMER_CHAIN_V3_BINARY: consumerd_v3.1.0
       STRIDE_SOV_CHAIN_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/stride-v11.0.0/stride-v11.0.0-linux-amd64
       STRIDE_CON_CHAIN_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/stride-v12.1.0/stride-v12.1.0-linux-amd64
       STRIDE_CHAIN_BINARY: strided
@@ -83,13 +83,13 @@ jobs:
       STRIDE_P2P_2: 38002
       STRIDE_PPROF_1: 39001
       STRIDE_PPROF_2: 39002
-      CHAIN_ID: ${{ vars.CHAIN_ID }}
-      DENOM: ${{ vars.DENOM }}
-      VAL_FUNDS: ${{ vars.VAL_FUNDS }}
-      VAL_STAKE: ${{ vars.VAL_STAKE }}
-      VAL_STAKE_STEP: ${{ vars.VAL_STAKE_STEP }}
-      VOTING_PERIOD: ${{ vars.VOTING_PERIOD }}
-      CONSUMER_DENOM: ${{ vars.CONSUMER_DENOM }}
+      CHAIN_ID: testnet
+      DENOM: uatom
+      VAL_FUNDS: 11000000000
+      VAL_STAKE: 1000000000
+      VAL_STAKE_STEP: 1000000
+      VOTING_PERIOD: 10s
+      CONSUMER_DENOM: ucon
       BASE_FEES: 1500
       HIGH_FEES: 10000
       GAS: auto
@@ -257,9 +257,10 @@ jobs:
           CON2_P2P_PORT: 28102
           CON2_PPROF_PORT: 29102
           CONSUMER_SERVICE_2: cona2.service
-          CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY_2 }}
           DOWNTIME_BLOCKS: 100000
-        run: tests/major_fresh_upgrade/init_consumer.sh
+        run: |
+          export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V2_BINARY
+          tests/major_fresh_upgrade/init_consumer.sh
       - name: Prepare consumer chain a
         env:
           CONSUMER_CHAIN_ID: consumera
@@ -294,12 +295,14 @@ jobs:
         env:
           CONSUMER_CHAIN_ID: consumera
           CONSUMER_HOME_1: /home/runner/.cona1
-          CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY_2 }}
-        run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-1 2
-      - name: Test consumer rewards
+        run: |
+          export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V2_BINARY
+          tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-1 2
+      - name: Test consumer rewards - tx
         env:
           CONSUMER_DENOM: ucon
         run: |
+          export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V2_BINARY
           tests/v13_upgrade/test_denom_rewards_tx.sh channel-1
 
       # - name: Initialize consumer chain b with ICS v3.1.0
@@ -464,6 +467,7 @@ jobs:
       #   with:
       #     name: lsm_log.csv
       #     path: lsm_log.csv
+
       # - name: Initialize consumer chain c with ICS v2.0.0
       #   env:
       #     CONSUMER_CHAIN_ID: consumerc
@@ -501,7 +505,13 @@ jobs:
       #     CONSUMER_CHAIN_ID: consumerc
       #     CONSUMER_HOME_1: /home/runner/.conc1
       #     CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY_2 }}
-      #   run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-8 5
+      #   run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-3 3
+
+      # - name: Test consumer rewards - proposal
+      #   env:
+      #     CONSUMER_DENOM: ucon
+      #   run: |
+      #     tests/v13_upgrade/test_denom_rewards_proposal.sh channel-3
 
       # - name: _consumera-vsc-4
       #   env:
