@@ -7,7 +7,7 @@ hash=$($CHAIN_BINARY q ibc-transfer denom-hash transfer/$channel/$CONSUMER_DENOM
 hash=ibc/$hash
 echo "hash: $hash"
 
-reward=$($CHAIN_BINARY q distribution rewards $WALLET_1 --home $HOME_1 -o json | jq -r -arg DENOM "$hash" '.total[] | select(.denom==$DENOM)')
+reward=$($CHAIN_BINARY q distribution rewards $WALLET_1 --home $HOME_1 -o json | jq -r --arg DENOM "$hash" '.total[] | select(.denom==$DENOM)')
 echo "Before: $reward"
 
 echo "Registering denom"

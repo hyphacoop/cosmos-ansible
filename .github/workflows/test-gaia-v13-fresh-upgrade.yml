@@ -299,6 +299,7 @@ jobs:
       - name: Test consumer rewards
         env:
           CONSUMER_DENOM: ucon
+          DENOM: uatom
         run: |
           tests/v13_upgrade/test_denom_rewards_tx.sh channel-1
 
