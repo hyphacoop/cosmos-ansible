@@ -262,7 +262,7 @@ jobs:
         run: |
           export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V12_BINARY
           tests/major_fresh_upgrade/init_consumer.sh
-      - name: Prepare consumer chain a
+      - name: Prepare consumer chain one-v120
         env:
           CONSUMER_CHAIN_ID: one-v120
           CONSUMER_HOME_1: /home/runner/.cona1
@@ -272,7 +272,7 @@ jobs:
         run: |
           ICS_120=true
           tests/major_fresh_upgrade/prepare_consumer.sh
-      - name: Start consumer chain a
+      - name: Start consumer chain one-v120
         env:
           CONSUMER_CHAIN_ID: one-v120
           CONSUMER_SERVICE_1: cona1.service
@@ -314,20 +314,39 @@ jobs:
         env:
           CONSUMER_CHAIN_ID: two-v200
           CONSUMER_HOME_1: /home/runner/.conb1
-          CON1_API_PORT: 25301
-          CON1_GRPC_PORT: 26301
-          CON1_RPC_PORT: 27301
-          CON1_P2P_PORT: 28301
-          CON1_PPROF_PORT: 6167
+          CONSUMER_HOME_2: /home/runner/.conb2
+          CON1_API_PORT: 25201
+          CON1_GRPC_PORT: 26201
+          CON1_RPC_PORT: 27201
+          CON1_P2P_PORT: 28201
+          CON1_PPROF_PORT: 29201
+          CON2_API_PORT: 25202
+          CON2_GRPC_PORT: 26202
+          CON2_RPC_PORT: 27202
+          CON2_P2P_PORT: 28202
+          CON2_PPROF_PORT: 29202
           CONSUMER_SERVICE_1: conb1.service
-          CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY_3 }}
+          CONSUMER_SERVICE_2: conb2.service
+          CONSUMER_CHAIN_BINARY: consumerd_v2.0.0
         run: tests/major_fresh_upgrade/init_consumer.sh
-      - name: Launch consumer chain two-v200
+      - name: Prepare consumer chain two-v200
         env:
           CONSUMER_CHAIN_ID: two-v200
           CONSUMER_HOME_1: /home/runner/.conb1
           CONSUMER_SERVICE_1: conb1.service
-        run: tests/major_fresh_upgrade/launch_consumer.sh
+          CONSUMER_HOME_2: /home/runner/.conb2
+          CONSUMER_SERVICE_2: conb2.service
+        run: |
+          tests/major_fresh_upgrade/prepare_consumer.sh
+      - name: Start consumer chain two-v200
+        env:
+          CONSUMER_CHAIN_ID: two-v200
+          CONSUMER_SERVICE_1: conb1.service
+          CONSUMER_SERVICE_2: conb2.service
+        run: |
+          sudo systemctl enable $CONSUMER_SERVICE_1 --now
+          sleep 5
+          journalctl -u $CONSUMER_SERVICE_1
       - name: _two-v200-blocks-1
         run: tests/test_block_production.sh 127.0.0.1 27301 5
       - name: Establish CCV channel for two-v200
@@ -345,7 +364,7 @@ jobs:
         env:
           CONSUMER_CHAIN_ID: two-v200
           CONSUMER_HOME_1: /home/runner/.conb1
-          CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY_3 }}
+          CONSUMER_CHAIN_BINARY: consumerd_v2.0.0
         run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-3 3
       - name: _one-v120-vsc-2
         env:
