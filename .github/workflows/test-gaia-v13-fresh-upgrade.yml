@@ -179,9 +179,9 @@ jobs:
           echo $TARGET_COMMIT
       - name: Consumer chain binary URLs
         run: |
-          echo "$CONSUMER_CHAIN_BINARY runs off $CONSUMER_CHAIN_BINARY_URL"
-          echo "$CONSUMER_CHAIN_BINARY_2 runs off $CONSUMER_CHAIN_BINARY_URL_2"
-          echo "$CONSUMER_CHAIN_BINARY_3 runs off $CONSUMER_CHAIN_BINARY_URL_3"
+          echo "$CONSUMER_CHAIN_V12_BINARY runs off $CONSUMER_CHAIN_V12_BINARY_URL"
+          echo "$CONSUMER_CHAIN_V2_BINARY runs off $CONSUMER_CHAIN_V2_BINARY_URL"
+          echo "$CONSUMER_CHAIN_V3_BINARY runs off $CONSUMER_CHAIN_V3_BINARY_URL"
       - name: Update PATH
         run: |
           mkdir -p $HOME/go/bin
@@ -234,12 +234,12 @@ jobs:
         run: tests/v12_upgrade/setup_relayer.sh
       - name: Download consumer chain binaries
         run: |
-          wget $CONSUMER_CHAIN_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_BINARY -q
-          chmod +x $HOME/go/bin/$CONSUMER_CHAIN_BINARY
-          wget $CONSUMER_CHAIN_BINARY_URL_2 -O $HOME/go/bin/$CONSUMER_CHAIN_BINARY_2 -q
-          chmod +x $HOME/go/bin/$CONSUMER_CHAIN_BINARY_2
-          wget $CONSUMER_CHAIN_BINARY_URL_3 -O $HOME/go/bin/$CONSUMER_CHAIN_BINARY_3 -q
-          chmod +x $HOME/go/bin/$CONSUMER_CHAIN_BINARY_3
+          wget $CONSUMER_CHAIN_V12_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_V12_BINARY -q
+          chmod +x $HOME/go/bin/$CONSUMER_CHAIN_V12_BINARY
+          wget $CONSUMER_CHAIN_V2_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_V2_BINARY -q
+          chmod +x $HOME/go/bin/$CONSUMER_CHAIN_V2_BINARY
+          wget $CONSUMER_CHAIN_V3_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_V3_BINARY -q
+          chmod +x $HOME/go/bin/$CONSUMER_CHAIN_V3_BINARY
       - name: Initialize consumer chain a with ICS v2.0.0
         env:
           CONSUMER_CHAIN_ID: consumera
