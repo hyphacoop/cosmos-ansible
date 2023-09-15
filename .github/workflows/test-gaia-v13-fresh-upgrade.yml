@@ -365,9 +365,14 @@ jobs:
 
       - name: Test liquidity module removal
         run: |
-          response=$($CHAIN_BINARY tx liquidity create-pool --help)
-          echo $response
-
+          present=$($CHAIN_BINARY tx liquidity create-pool --help | grep liquidity)
+          echo $present
+          if [ -z "$present" ]; then
+            echo "Liquidity module removed"
+          else
+            echo "Liquidity modue present"
+            exit 1
+          fi
       # - name: _consumera-vsc-3
       #   env:
       #     CON1_RPC_PORT: 27101
