@@ -269,8 +269,9 @@ jobs:
           CONSUMER_SERVICE_1: cona1.service
           CONSUMER_HOME_2: /home/runner/.cona2
           CONSUMER_SERVICE_2: cona2.service
-          ICS_120: true
-        run: tests/major_fresh_upgrade/prepare_consumer.sh
+        run: |
+          ICS_120=true
+          tests/major_fresh_upgrade/prepare_consumer.sh
       - name: Start consumer chain a
         env:
           CONSUMER_CHAIN_ID: one-v120
