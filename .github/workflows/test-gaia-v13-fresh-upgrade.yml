@@ -365,13 +365,21 @@ jobs:
 
       - name: Test liquidity module removal
         run: |
-          present=$($CHAIN_BINARY tx liquidity create-pool --help | grep liquidity)
+          present=$($CHAIN_BINARY tx liquidity 2>&1 | grep unknown)
           echo $present
           if [ -z "$present" ]; then
-            echo "Liquidity module removed"
-          else
-            echo "Liquidity modue present"
+            echo "Liquidity module present"
             exit 1
+          else
+            echo "Liquidity module removed"
+          fi
+          present=$($CHAIN_BINARY q liquidity 2>&1 | grep unknown)
+          echo $present
+          if [ -z "$present" ]; then
+            echo "Liquidity module present"
+            exit 1
+          else
+            echo "Liquidity module removed"
           fi
       # - name: _consumera-vsc-3
       #   env:
