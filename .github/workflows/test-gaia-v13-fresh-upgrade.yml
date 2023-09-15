@@ -348,7 +348,7 @@ jobs:
           sleep 5
           journalctl -u $CONSUMER_SERVICE_1
       - name: _two-v200-blocks-1
-        run: tests/test_block_production.sh 127.0.0.1 27301 5
+        run: tests/test_block_production.sh 127.0.0.1 27201 5
       - name: Establish CCV channel for two-v200
         run: |
           client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r '.chains[] | select(.chain_id=="two-v200").client_id')
@@ -358,7 +358,7 @@ jobs:
           sleep 10
       - name: _two-v200-vsc-1
         env:
-          CON1_RPC_PORT: 27301
+          CON1_RPC_PORT: 27201
         run: tests/major_fresh_upgrade/test_ccv.sh
       - name: _two-v200-ibc
         env:
