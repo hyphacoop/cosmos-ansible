@@ -16,7 +16,7 @@
 
 - name: Submit consumer chain proposal
   shell: |
-    {{ chain_binary_name }} tx gov submit-proposal consumer-addition {{ provider_user_home }}/consumer-proposal.json --keyring-backend test --chain-id {{ chain_id }} --from validator --home {{ provider_home }} --gas auto --fees {{ chain_tx_fees }} -b block -y --output json > {{ provider_user_home }}/proposal_result.json
+    {{ chain_binary_name }} tx gov submit-proposal consumer-addition {{ provider_user_home }}/consumer-proposal.json --keyring-backend test --chain-id {{ chain_id }} --from validator --home {{ provider_home }} --gas auto --fees {{ chain_tx_fees }} --gas-adjustment {{ gas_adjustment }} -b block -y --output json > {{ provider_user_home }}/proposal_result.json
   environment:
     PATH: "{{provider_home}}/cosmovisor/current/bin:{{ ansible_env.PATH }}"
   become_user: provider
@@ -33,7 +33,7 @@
 
 - name: Vote on proposal
   shell: |
-    {{ chain_binary_name }} tx gov vote {{proposal_id.stdout}} yes --from validator --keyring-backend test --chain-id {{ provider_chain_id }} --home {{ provider_home }} --gas auto --fees {{ chain_tx_fees }} -b block -y
+    {{ chain_binary_name }} tx gov vote {{proposal_id.stdout}} yes --from validator --keyring-backend test --chain-id {{ provider_chain_id }} --home {{ provider_home }} --gas auto --fees {{ chain_tx_fees }} --gas-adjustment {{ gas_adjustment }} -b block -y
   environment:
     PATH: "{{ provider_home }}/cosmovisor/current/bin:{{ ansible_env.PATH }}"
   become_user: provider

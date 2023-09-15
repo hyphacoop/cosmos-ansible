@@ -11,6 +11,7 @@ consumer_home: /home/consumer/.consumer
 # Provider chain
 chain_binary_name: "gaiad"
 chain_tx_fees: "1000uatom"
+gas_adjustment: "1.2"
 
 # Consumer chain proposal metadata
 consumer_chain_title: "Create consumer chain"
