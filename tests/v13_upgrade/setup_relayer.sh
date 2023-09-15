@@ -23,7 +23,7 @@ cp tests/v13_upgrade/hermes-config.toml ~/.hermes/config.toml
 echo "Adding relayer keys..."
 echo $MNEMONIC_4 > mnemonic.txt
 hermes keys add --chain $CHAIN_ID --mnemonic-file mnemonic.txt
-hermes keys add --chain consumera --mnemonic-file mnemonic.txt
+hermes keys add --chain one-v120 --mnemonic-file mnemonic.txt
 hermes keys add --chain consumerb --mnemonic-file mnemonic.txt
 hermes keys add --chain consumerc --mnemonic-file mnemonic.txt
 hermes keys add --chain consumerd --mnemonic-file mnemonic.txt
