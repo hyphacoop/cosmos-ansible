@@ -362,6 +362,12 @@ jobs:
         run: tests/test_endpoints_api.sh localhost $VAL1_API_PORT
       - name: _rpc-2
         run: tests/test_endpoints_rpc.sh localhost $VAL1_RPC_PORT
+
+      - name: Test liquidity module removal
+        run: |
+          response=$($CHAIN_BINARY tx liquidity create-pool --help)
+          echo $response
+
       # - name: _consumera-vsc-3
       #   env:
       #     CON1_RPC_PORT: 27101
