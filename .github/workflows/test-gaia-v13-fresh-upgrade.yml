@@ -241,6 +241,7 @@ jobs:
           chmod +x $HOME/go/bin/$CONSUMER_CHAIN_V2_BINARY
           wget $CONSUMER_CHAIN_V3_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_V3_BINARY -q
           chmod +x $HOME/go/bin/$CONSUMER_CHAIN_V3_BINARY
+
       - name: Initialize consumer chain with ICS v1.2.0-multiden
         env:
           CONSUMER_CHAIN_ID: one-v120
@@ -303,6 +304,7 @@ jobs:
         run: |
           export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V12_BINARY
           tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-1 2
+
       - name: Test consumer rewards - tx
         env:
           CONSUMER_DENOM: ucon
@@ -533,11 +535,11 @@ jobs:
       #     CONSUMER_CHAIN_BINARY: ${{ vars.CONSUMER_CHAIN_BINARY_2 }}
       #   run: tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-3 3
 
-      # - name: Test consumer rewards - proposal
-      #   env:
-      #     CONSUMER_DENOM: ucon
-      #   run: |
-      #     tests/v13_upgrade/test_denom_rewards_proposal.sh channel-3
+      - name: Test consumer rewards - proposal
+        env:
+          CONSUMER_DENOM: ucon
+        run: |
+          tests/v13_upgrade/test_denom_rewards_proposal.sh channel-3
 
       # - name: _consumera-vsc-4
       #   env:
