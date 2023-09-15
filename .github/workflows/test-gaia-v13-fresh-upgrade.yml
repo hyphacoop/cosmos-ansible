@@ -166,6 +166,7 @@ jobs:
       UPGRADE_MECHANISM: ${{ matrix.upgrade_mechanism }}
       COSMOVISOR: false
       COSMOVISOR_VERSION: ${{ matrix.cv_version }}
+      ICS_120: false
     steps:
       - name: start-version
         run: echo ${{matrix.gaia_version}}
@@ -268,6 +269,7 @@ jobs:
           CONSUMER_SERVICE_1: cona1.service
           CONSUMER_HOME_2: /home/runner/.cona2
           CONSUMER_SERVICE_2: cona2.service
+          ICS_120: true
         run: tests/major_fresh_upgrade/prepare_consumer.sh
       - name: Start consumer chain a
         env:
