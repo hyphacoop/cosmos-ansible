@@ -139,7 +139,7 @@ ansible-playbook node.yml -i examples/inventory-local-genesis.yml -e 'target=SER
 Set up a provider chain, a consumer chain, and Hermes on the same machine.
 
 * **Inventory file:** [`inventory-local-rs-testnet.yml`](inventory-local-rs-testnet.yml)
-* **Provider binary:** [`gaiad 12.0.0`](https://github.com/cosmos/gaia/releases/tag/v10.0.2)
+* **Provider binary:** [`gaiad 12.0.0`](https://github.com/cosmos/gaia/releases/tag/v12.0.0)
 * **Provider denom:** `uatom`
 * **Consumer binary:** [`interchain-security-cd v1.0.1`](https://github.com/cosmos/interchain-security/releases/tag/v1.0.1)
 * **Consumer denom:** `ucons`
