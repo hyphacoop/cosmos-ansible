@@ -26,8 +26,8 @@ echo "Waiting for the transfer to reach the provider chain..."
 sleep $(($COMMIT_TIMEOUT*10))
 $CHAIN_BINARY --home $HOME_1 q bank balances $WALLET_1 -o json
 DENOM_AFTER=$($CHAIN_BINARY --home $HOME_1 q bank balances $WALLET_1 -o json | jq -r '.balances | length')
-if [ $DENOM_BEFORE -lt $DENOM_AFTER ]; then
-    echo "Found less than expected denoms in provider wallet."
+if [ $DENOM_BEFORE -eq $DENOM_AFTER ]; then
+    echo "The number of unique denoms in the provider wallet did not change."
     exit 1
 fi
-echo "Found the right amount of denoms in the provider wallet."
+echo "The number of unique denoms in the provider wallet increase."
