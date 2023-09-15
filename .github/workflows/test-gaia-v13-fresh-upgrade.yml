@@ -616,14 +616,10 @@ jobs:
           tests/param_change.sh tests/v12_upgrade/proposal-validator-liquid-cap.json
           tests/param_change.sh tests/v12_upgrade/proposal-validator-bond-factor.json
           $CHAIN_BINARY q staking params --home $HOME_1 -o json | jq '.'
-      - name: Create LSM log file
-        run: |
-          touch $LSM_LOG
-          echo "user flow,action,account,amount,balance,del_shares,del_balance,val1_tokens,val1_shares,val1_bond_shares,val1_liquid_shares,val2_tokens,val2_shares,val2_bond_shares,val2_liquid_shares" >> $LSM_LOG
       - name: _lsm-happy-1
         env:
           CONSUMER_FEES: 1000
-          IBC_CHANNEL: channel-5
+          IBC_CHANNEL: channel-9
         run: tests/v12_upgrade/lsm_happy_path.sh
       - name: _lsm-failures-1
         run: tests/v12_upgrade/lsm_failures.sh
