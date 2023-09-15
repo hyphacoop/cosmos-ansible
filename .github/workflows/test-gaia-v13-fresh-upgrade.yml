@@ -245,20 +245,20 @@ jobs:
       - name: Initialize consumer chain with ICS v1.2.0-multiden
         env:
           CONSUMER_CHAIN_ID: one-v120
-          CONSUMER_HOME_1: /home/runner/.cona1
+          CONSUMER_HOME_1: /home/runner/.one_1
+          CONSUMER_HOME_2: /home/runner/.one_2
           CON1_API_PORT: 25101
           CON1_GRPC_PORT: 26101
           CON1_RPC_PORT: 27101
           CON1_P2P_PORT: 28101
           CON1_PPROF_PORT: 29101
-          CONSUMER_SERVICE_1: cona1.service
-          CONSUMER_HOME_2: /home/runner/.cona2
           CON2_API_PORT: 25102
           CON2_GRPC_PORT: 26102
           CON2_RPC_PORT: 27102
           CON2_P2P_PORT: 28102
           CON2_PPROF_PORT: 29102
-          CONSUMER_SERVICE_2: cona2.service
+          CONSUMER_SERVICE_1: one_1.service
+          CONSUMER_SERVICE_2: one_2.service
           DOWNTIME_BLOCKS: 100000
         run: |
           export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V12_BINARY
@@ -266,18 +266,18 @@ jobs:
       - name: Prepare consumer chain one-v120
         env:
           CONSUMER_CHAIN_ID: one-v120
-          CONSUMER_HOME_1: /home/runner/.cona1
-          CONSUMER_SERVICE_1: cona1.service
-          CONSUMER_HOME_2: /home/runner/.cona2
-          CONSUMER_SERVICE_2: cona2.service
+          CONSUMER_HOME_1: /home/runner/.one_1
+          CONSUMER_SERVICE_1: one_1.service
+          CONSUMER_HOME_2: /home/runner/.one_2
+          CONSUMER_SERVICE_2: one_2.service
         run: |
           ICS_120=true
           tests/major_fresh_upgrade/prepare_consumer.sh
       - name: Start consumer chain one-v120
         env:
           CONSUMER_CHAIN_ID: one-v120
-          CONSUMER_SERVICE_1: cona1.service
-          CONSUMER_SERVICE_2: cona2.service
+          CONSUMER_SERVICE_1: one_1.service
+          CONSUMER_SERVICE_2: one_2.service
         run: |
           sudo systemctl enable $CONSUMER_SERVICE_1 --now
           sleep 5
@@ -300,7 +300,7 @@ jobs:
       - name: one-v120-ibc
         env:
           CONSUMER_CHAIN_ID: one-v120
-          CONSUMER_HOME_1: /home/runner/.cona1
+          CONSUMER_HOME_1: /home/runner/.one_1
         run: |
           export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V12_BINARY
           tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-1 2
@@ -315,8 +315,8 @@ jobs:
       - name: Initialize consumer chain with ICS v2.0.0
         env:
           CONSUMER_CHAIN_ID: two-v200
-          CONSUMER_HOME_1: /home/runner/.conb1
-          CONSUMER_HOME_2: /home/runner/.conb2
+          CONSUMER_HOME_1: /home/runner/.two_1
+          CONSUMER_HOME_2: /home/runner/.two_2
           CON1_API_PORT: 25201
           CON1_GRPC_PORT: 26201
           CON1_RPC_PORT: 27201
@@ -327,24 +327,25 @@ jobs:
           CON2_RPC_PORT: 27202
           CON2_P2P_PORT: 28202
           CON2_PPROF_PORT: 29202
-          CONSUMER_SERVICE_1: conb1.service
-          CONSUMER_SERVICE_2: conb2.service
-          CONSUMER_CHAIN_BINARY: consumerd_v2.0.0
-        run: tests/major_fresh_upgrade/init_consumer.sh
+          CONSUMER_SERVICE_1: two_1.service
+          CONSUMER_SERVICE_2: two_2.service
+        run: |
+          export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V2_BINARY
+          tests/major_fresh_upgrade/init_consumer.sh
       - name: Prepare consumer chain two-v200
         env:
           CONSUMER_CHAIN_ID: two-v200
-          CONSUMER_HOME_1: /home/runner/.conb1
-          CONSUMER_SERVICE_1: conb1.service
-          CONSUMER_HOME_2: /home/runner/.conb2
-          CONSUMER_SERVICE_2: conb2.service
+          CONSUMER_HOME_1: /home/runner/.two_1
+          CONSUMER_SERVICE_1: two_1.service
+          CONSUMER_HOME_2: /home/runner/.two_2
+          CONSUMER_SERVICE_2: two_2.service
         run: |
           tests/major_fresh_upgrade/prepare_consumer.sh
       - name: Start consumer chain two-v200
         env:
           CONSUMER_CHAIN_ID: two-v200
-          CONSUMER_SERVICE_1: conb1.service
-          CONSUMER_SERVICE_2: conb2.service
+          CONSUMER_SERVICE_1: two_1.service
+          CONSUMER_SERVICE_2: two_2.service
         run: |
           sudo systemctl enable $CONSUMER_SERVICE_1 --now
           sleep 5
@@ -365,9 +366,9 @@ jobs:
       - name: _two-v200-ibc
         env:
           CONSUMER_CHAIN_ID: two-v200
-          CONSUMER_HOME_1: /home/runner/.conb1
-          CONSUMER_CHAIN_BINARY: consumerd_v2.0.0
+          CONSUMER_HOME_1: /home/runner/.two_1
         run: |
+          export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V2_BINARY
           $CHAIN_BINARY q ibc channel channels --home $HOME_1 -o json | jq '.'
           tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-3 3
       - name: _one-v120-vsc-2
@@ -394,7 +395,7 @@ jobs:
           CONSUMER_SERVICE_2: three_2.service
           DOWNTIME_BLOCKS: 100000
         run: |
-          export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V12_BINARY
+          export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V3_BINARY
           tests/major_fresh_upgrade/init_consumer.sh
       - name: Prepare consumer chain three-v310
         env:
@@ -434,7 +435,7 @@ jobs:
           CONSUMER_CHAIN_ID: three-v310
           CONSUMER_HOME_1: /home/runner/.three_1
         run: |
-          export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V12_BINARY
+          export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V3_BINARY
           tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-5 2
 
       - name: Test software upgrade for published releases
