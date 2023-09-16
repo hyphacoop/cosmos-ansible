@@ -229,7 +229,8 @@ echo "** ACCOUNTING TESTS> 5: REDELEGATION INCREASES AND DECREASES VALIDATOR BON
     expected_shares_1=${expected_shares_1%.*}
 
     tests/v12_upgrade/log_lsm_data.sh accounting pre-redelegate-1 $accounting_bonding 10000000
-    submit_tx "tx staking redelegate $VALOPER_2 $VALOPER_1 10000000$DENOM --from $accounting_bonding -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+    $CHAIN_BINARY tx staking redelegate $VALOPER_2 $VALOPER_1 10000000$DENOM --from $accounting_bonding -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y --home $HOME_1 -b block
+#   submit_tx "tx staking redelegate $VALOPER_2 $VALOPER_1 10000000$DENOM --from $accounting_bonding -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
     tests/v12_upgrade/log_lsm_data.sh accounting post-redelegate-1 $accounting_bonding 10000000
 
     bond_shares_2_post=$($CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq -r '.validator_bond_shares')
