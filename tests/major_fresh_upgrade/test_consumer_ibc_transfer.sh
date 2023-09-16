@@ -4,7 +4,6 @@
 echo "Running with $CONSUMER_CHAIN_BINARY."
 
 PROVIDER_CHANNEL=$1
-EXPECTED_DENOMS=$2
 
 # Transfer provider token to consumer chain
 echo "Sending $DENOM to $CONSUMER_CHAIN_ID..."
