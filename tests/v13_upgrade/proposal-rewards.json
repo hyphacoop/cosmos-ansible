@@ -1,0 +1,7 @@
+{
+    "title": "Add denom",
+    "summary": "Add denom",
+    "denoms_to_add": [],
+    "denoms_to_remove": [],
+    "deposit": "10000000uatom"
+}

@@ -162,6 +162,7 @@ echo "** HAPPY PATH> STEP 4: TRANSFER TOKENS  **"
 echo "** HAPPY PATH> STEP 5: REDEEM TOKENS **"
     echo "Redeeming tokens from happy_liquid_1..."
     tests/v12_upgrade/log_lsm_data.sh happy pre-redeem-1 $happy_liquid_1 $liquid_1_redeem
+    $CHAIN_BINARY q bank balances $happy_liquid_1 --home $HOME_1 -o json | jq '.'
     submit_tx "tx staking redeem-tokens $liquid_1_redeem$tokenized_denom --from $happy_liquid_1 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -b block -y" $CHAIN_BINARY $HOME_1
     tests/v12_upgrade/log_lsm_data.sh happy post-redeem-1 $happy_liquid_1 $liquid_1_redeem
 
