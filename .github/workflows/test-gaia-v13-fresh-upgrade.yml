@@ -627,8 +627,12 @@ jobs:
           IBC_CHANNEL: channel-9
         run: tests/v12_upgrade/lsm_happy_path.sh
       - name: _lsm-failures-1
+        env:
+          BASE_FEES: 3000
         run: tests/v12_upgrade/lsm_failures.sh
       - name: _lsm-complex-1
+        env:
+          BASE_FEES: 3000
         run: tests/v12_upgrade/lsm_complex.sh
       - name: _lsm_accounting-1
         env:
