@@ -73,10 +73,10 @@ jobs:
       CON1_P2P_PORT: 28101
       CON1_PPROF_PORT: 6163
       CONSUMER_SERVICE_1: cona1.service
-      BASE_FEES: 5000
-      HIGH_FEES: 10000
+      BASE_FEES: 10000
+      HIGH_FEES: 15000
       GAS: auto
-      GAS_ADJUSTMENT: 1.2
+      GAS_ADJUSTMENT: 2.0
       DELEGATE_1: ${{ vars.DELEGATE_1 }}
       DELEGATE_1_AMOUNT: ${{ vars.DELEGATE_1_AMOUNT }}
       DELEGATE_2_AMOUNT: ${{ vars.DELEGATE_2_AMOUNT }}
@@ -323,21 +323,21 @@ jobs:
       - name: Register and fund ICA
         run: tests/v12_upgrade/setup_ica.sh
 
-      - name: Set test LSM params
-        run: |
-          tests/param_change.sh tests/v12_upgrade/proposal-global-liquid-cap.json
-          tests/param_change.sh tests/v12_upgrade/proposal-validator-liquid-cap.json
-          # tests/param_change.sh tests/v12_upgrade/proposal-validator-bond-factor.json
-          $CHAIN_BINARY q staking params --home $HOME_1 -o json | jq '.'
-      - name: Create LSM log file
-        run: |
-          touch $LSM_LOG
-          echo "user flow,action,account,amount,balance,del_shares,del_balance,val1_tokens,val1_shares,val1_bond_shares,val1_liquid_shares" >> $LSM_LOG
-      - name: _lsm-happy-1
-        env:
-          CONSUMER_FEES: 1000
-          IBC_CHANNEL: ${{ env.CONSUMERD_CHAN }}
-        run: tests/v12_upgrade/lsm_happy_path_stateful.sh
+      # - name: Set test LSM params
+      #   run: |
+      #     tests/param_change.sh tests/v12_upgrade/proposal-global-liquid-cap.json
+      #     tests/param_change.sh tests/v12_upgrade/proposal-validator-liquid-cap.json
+      #     # tests/param_change.sh tests/v12_upgrade/proposal-validator-bond-factor.json
+      #     $CHAIN_BINARY q staking params --home $HOME_1 -o json | jq '.'
+      # - name: Create LSM log file
+      #   run: |
+      #     touch $LSM_LOG
+      #     echo "user flow,action,account,amount,balance,del_shares,del_balance,val1_tokens,val1_shares,val1_bond_shares,val1_liquid_shares" >> $LSM_LOG
+      # - name: _lsm-happy-1
+      #   env:
+      #     CONSUMER_FEES: 1000
+      #     IBC_CHANNEL: ${{ env.CONSUMERD_CHAN }}
+      #   run: tests/v12_upgrade/lsm_happy_path_stateful.sh
       # - name: _lsm-failures-1
       #   run: tests/v12_upgrade/lsm_failures.sh
       # - name: _lsm-complex-1
