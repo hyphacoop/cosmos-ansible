@@ -36,12 +36,12 @@ for name in release_names:
 
 # Remove all rcs from the list if there is a final release available
 for rc in rc_releases:
-    if rc.split('-')[0] not in releases:
+    components = rc.split('.')
+    if int(components[0][1:]) > version_major:
         releases.append(rc)
 
 # Set upgrade versions to target for each release
 # matrix = {release: [] for release in releases}
-
 matrix = {}
 for release in releases:
     rel_major_version = int(release.split('.')[0][1:])
