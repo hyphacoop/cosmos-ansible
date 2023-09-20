@@ -106,9 +106,10 @@ toml set --toml-path $CONSUMER_HOME_2/config/config.toml p2p.persistent_peers "$
 toml set --toml-path $CONSUMER_HOME_3/config/config.toml p2p.persistent_peers "$VAL1_PEER"
 
 echo "Setting a short commit timeout..."
-toml set --toml-path $CONSUMER_HOME_1/config/config.toml consensus.timeout_commit "$COMMIT_TIMEOUT"
-toml set --toml-path $CONSUMER_HOME_2/config/config.toml consensus.timeout_commit "$COMMIT_TIMEOUT"
-toml set --toml-path $CONSUMER_HOME_2/config/config.toml consensus.timeout_commit "$COMMIT_TIMEOUT"
+seconds=s
+toml set --toml-path $CONSUMER_HOME_1/config/config.toml consensus.timeout_commit "$COMMIT_TIMEOUT$seconds"
+toml set --toml-path $CONSUMER_HOME_2/config/config.toml consensus.timeout_commit "$COMMIT_TIMEOUT$seconds"
+toml set --toml-path $CONSUMER_HOME_2/config/config.toml consensus.timeout_commit "$COMMIT_TIMEOUT$seconds"
 
 # Set fast_sync to false - or block_sync for ICS v3
 toml set --toml-path $CONSUMER_HOME_1/config/config.toml fast_sync false
