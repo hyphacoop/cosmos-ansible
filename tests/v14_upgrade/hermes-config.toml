@@ -46,7 +46,7 @@ ccv_consumer_chain = true
 id = 'two-v200'
 rpc_addr = 'http://localhost:27201'
 grpc_addr = 'http://localhost:26201'
-websocket_addr = 'ws://localhost:27201/websocket'
+event_source = { mode = 'push', url = 'ws://localhost:27201/websocket', batch_delay = '500ms' }
 rpc_timeout = '15s'
 account_prefix = 'cosmos'
 key_name = 'wallet'
@@ -63,7 +63,7 @@ ccv_consumer_chain = true
 id = 'three-v310'
 rpc_addr = 'http://localhost:27301'
 grpc_addr = 'http://localhost:26301'
-websocket_addr = 'ws://localhost:27301/websocket'
+event_source = { mode = 'push', url = 'ws://localhost:27301/websocket', batch_delay = '500ms' }
 rpc_timeout = '15s'
 account_prefix = 'cosmos'
 key_name = 'wallet'
@@ -80,7 +80,7 @@ ccv_consumer_chain = true
 id = 'four-v200'
 rpc_addr = 'http://localhost:27401'
 grpc_addr = 'http://localhost:26401'
-websocket_addr = 'ws://localhost:27401/websocket'
+event_source = { mode = 'push', url = 'ws://localhost:27401/websocket', batch_delay = '500ms' }
 rpc_timeout = '15s'
 account_prefix = 'cosmos'
 key_name = 'wallet'
@@ -97,7 +97,7 @@ ccv_consumer_chain = true
 id = 'five'
 rpc_addr = 'http://localhost:37001'
 grpc_addr = 'http://localhost:36001'
-websocket_addr = 'ws://localhost:37001/websocket'
+event_source = { mode = 'push', url = 'ws://localhost:37001/websocket', batch_delay = '500ms' }
 rpc_timeout = '15s'
 account_prefix = 'stride'
 key_name = 'wallet'
@@ -114,7 +114,7 @@ ccv_consumer_chain = true
 id = 'six-v310'
 rpc_addr = 'http://localhost:27601'
 grpc_addr = 'http://localhost:26601'
-websocket_addr = 'ws://localhost:27601/websocket'
+event_source = { mode = 'push', url = 'ws://localhost:276001/websocket', batch_delay = '500ms' }
 rpc_timeout = '15s'
 account_prefix = 'cosmos'
 key_name = 'wallet'
@@ -131,7 +131,7 @@ ccv_consumer_chain = true
 id = 'testnet'
 rpc_addr = 'http://localhost:27001'
 grpc_addr = 'http://localhost:26001'
-websocket_addr = 'ws://localhost:27001/websocket'
+event_source = { mode = 'push', url = 'ws://localhost:27001/websocket', batch_delay = '500ms' }
 rpc_timeout = '15s'
 account_prefix = 'cosmos'
 key_name = 'wallet'
