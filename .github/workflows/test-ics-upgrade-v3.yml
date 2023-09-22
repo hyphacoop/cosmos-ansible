@@ -164,7 +164,7 @@ jobs:
         run: |
           wget $CONSUMER_CHAIN_BINARY_URL_3 -O $HOME/go/bin/$CONSUMER_CHAIN_BINARY_3 -q
           chmod +x $HOME/go/bin/$CONSUMER_CHAIN_BINARY_3
-          wget https://github.com/hyphacoop/cosmos-builds/releases/download/ics-consumer-v3.2.0-consumer-rc0/interchain-security-cd-linux -O $HOME/go/bin/$CONSUMER_CHAIN_BINARY_320 -q
+          wget https://github.com/hyphacoop/cosmos-builds/releases/download/ics-v3.2.0-consumer/interchain-security-cd -O $HOME/go/bin/$CONSUMER_CHAIN_BINARY_320 -q
           chmod +x $HOME/go/bin/$CONSUMER_CHAIN_BINARY_320
       - name: Initialize consumer chain a with ICS v3.1.0
         env:
