@@ -1,6 +1,7 @@
 ---
 # Provider paths
-provider_user_home: /home/provider
+provider_user: provider
+provider_user_home: /home/{{ provider_user }}
 provider_home: "{{ provider_user_home }}/.gaia"
 
 # Consumer paths

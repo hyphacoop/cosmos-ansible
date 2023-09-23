@@ -58,7 +58,7 @@ jobs:
         run: echo "transport = local" >> ansible.cfg
       - name: Run playbook
         run: |
-          ansible-playbook local-rs-testnet.yml -i examples/inventory-local-rs-testnet.yml --extra-vars "reboot=false node_user=runner enable_swap=false target_provider=127.0.0.1 target_consumer=127.0.0.1"
+          ansible-playbook local-rs-testnet.yml -i examples/inventory-local-rs-testnet.yml --extra-vars "reboot=false node_user=runner provider_user=runner consumer_user=runner enable_swap=false target_provider=127.0.0.1 target_consumer=127.0.0.1"
       - name: Check gaiad service
         run: systemctl status cv-provider
       - name: Check blocks are being produced
