@@ -1,0 +1,103 @@
+---
+
+name: Test Gaia Stateful Upgrade - v14
+on:
+  # repository_dispatch:
+    # types: [new_main_build]
+  workflow_dispatch:
+  # schedule:
+    # Once a day at 13:15
+    # - cron: '15 13 * * 1'
+concurrency:
+  group: self-hosted-runners
+jobs:
+  set-version-matrix:
+    runs-on: ubuntu-22.04
+    steps:
+      # Get system info
+      - run: ifconfig
+      - run: arp -a
+      - run: sudo dmidecode
+      - run: df -h
+      - run: free -m
+      - run: uname -a
+      - run: lsb_release -a
+      - run: echo "GitHub branch is ${{ github.ref }}"
+      - run: whoami
+      - run: pwd
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v3
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install requests
+      - name: Get latest gaiad stable release
+        run: |
+          # GAIA_LATEST=$(curl --silent "https://api.github.com/repos/cosmos/gaia/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+          GAIA_LATEST="v12.0.0"
+          echo "Latest version of gaiad is: $GAIA_LATEST"
+          echo "GAIA_LATEST=$GAIA_LATEST" >> $GITHUB_ENV
+      - name: Generate starting versions
+        id: generate-start
+        run: |
+          start=$(tests/generate_version_matrix.py $GAIA_LATEST)
+          echo $start
+          echo "start_versions=$start" >> $GITHUB_OUTPUT
+      - name: Generate upgrade versions
+        id: generate-upgrade
+        run: |
+          upgrade=$(tests/generate_upgrade_matrix_stateful_v14.py $GAIA_LATEST)
+          echo $upgrade
+          echo "upgrade_versions=$upgrade" >> $GITHUB_OUTPUT
+      - name: Store OS variables
+        id: runs-on-os
+        run: |
+          echo "ubuntu_2204=self-hosted-ubuntu-22.04" >> $GITHUB_OUTPUT
+          echo "debian_11=self-hosted-debian-11" >> $GITHUB_OUTPUT
+          echo "debian_12=self-hosted-debian-12" >> $GITHUB_OUTPUT
+    outputs:
+      upgrade_versions: ${{ steps.generate-upgrade.outputs.upgrade_versions }}
+      ubuntu_2204: ${{ steps.runs-on-os.outputs.ubuntu_2204 }}
+      debian_11: ${{ steps.runs-on-os.outputs.debian_11 }}
+      debian_12: ${{ steps.runs-on-os.outputs.debian_12 }}
+
+  test-upgrade-ubuntu-2204:
+    needs: set-version-matrix
+    strategy:
+      matrix:
+        ${{ fromJSON(needs.set-version-matrix.outputs.upgrade_versions) }}
+      fail-fast: false
+      max-parallel: 3
+    with:
+      runs-on-os: ${{ needs.set-version-matrix.outputs.ubuntu_2204 }}
+      gaia_version: ${{ matrix.gaia_version }}
+      upgrade_version: ${{ matrix.upgrade_version }}
+    uses: ./.github/workflows/test-gaia-v14-stateful-upgrade-steps.yml
+  test-upgrade-debian-11:
+    needs: [set-version-matrix, test-upgrade-ubuntu-2204]
+    if: ${{ always() && !cancelled() }}
+    strategy:
+      matrix:
+        ${{ fromJSON(needs.set-version-matrix.outputs.upgrade_versions) }}
+      fail-fast: false
+      max-parallel: 3
+    with:
+      runs-on-os: ${{ needs.set-version-matrix.outputs.debian_11 }}
+      gaia_version: ${{ matrix.gaia_version }}
+      upgrade_version: ${{ matrix.upgrade_version }}
+    uses: ./.github/workflows/test-gaia-v14-stateful-upgrade-steps.yml
+  test-upgrade-debian-12:
+    needs: [set-version-matrix, test-upgrade-debian-11]
+    if: ${{ always() && !cancelled() }}
+    strategy:
+      matrix:
+        ${{ fromJSON(needs.set-version-matrix.outputs.upgrade_versions) }}
+      fail-fast: false
+      max-parallel: 3
+    with:
+      runs-on-os: ${{ needs.set-version-matrix.outputs.debian_12 }}
+      gaia_version: ${{ matrix.gaia_version }}
+      upgrade_version: ${{ matrix.upgrade_version }}
+    uses: ./.github/workflows/test-gaia-v14-stateful-upgrade-steps.yml
