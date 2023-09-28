@@ -206,12 +206,6 @@ jobs:
         run: $CHAIN_BINARY version --long
       - name: _blocks-1
         run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 5 # 5 blocks
-      # - name: _txs-1
-        # run: tests/patch_upgrade/patch_test_tx.sh
-      # - name: _api-1
-        # run: tests/test_endpoints_api.sh localhost $VAL1_API_PORT
-      # - name: _rpc-1
-        # run: tests/test_endpoints_rpc.sh localhost $VAL1_RPC_PORT
       - name: Validators initial state
         run: |
           $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
@@ -281,7 +275,6 @@ jobs:
         env:
           CONSUMER_CHAIN_ID: one-v120
         run: |
-          $CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1
           client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
           hermes create connection --a-chain $CONSUMER_CHAIN_ID --a-client 07-tendermint-0 --b-client $client_id
           hermes create channel --a-chain $CONSUMER_CHAIN_ID --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
@@ -297,7 +290,8 @@ jobs:
           CONSUMER_HOME_1: /home/runner/.one_1
         run: |
           client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
-          hermes --json query client connections --chain $CONSUMER_CHAIN_ID --client $client_id
+          connection_id=$(hermes --json query client connections --chain $CONSUMER_CHAIN_ID --client $client_id | grep result | jq -r '.result[0]')
+          echo "connection: $connection_id"
           export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V12_BINARY
           tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-1
 
