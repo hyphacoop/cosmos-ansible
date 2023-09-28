@@ -294,7 +294,7 @@ jobs:
           CONSUMER_HOME_1: /home/runner/.one_1
         run: |
           export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V12_BINARY
-          tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-1 2
+          tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-1
 
       - name: Initialize consumer chain with ICS v2.0.0
         env:
@@ -320,6 +320,7 @@ jobs:
           CON1_PPROF_PORT: 29201
           CON2_PPROF_PORT: 29202
           CON3_PPROF_PORT: 29203
+          DOWNTIME_BLOCKS: 100000
         run: |
           export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V2_BINARY
           tests/major_fresh_upgrade/init_consumer.sh
@@ -361,7 +362,7 @@ jobs:
         run: |
           export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V2_BINARY
           $CHAIN_BINARY q ibc channel channels --home $HOME_1 -o json | jq '.'
-          tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-3 3
+          tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-3
       - name: _one-v120-vsc-2
         env:
           CON1_RPC_PORT: 27101
@@ -434,7 +435,7 @@ jobs:
           CONSUMER_HOME_1: /home/runner/.three_1
         run: |
           export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V3_BINARY
-          tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-5 4
+          tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-5
 
       - name: Test software upgrade for published releases
         if: ${{ matrix.upgrade_version != 'main' }}
@@ -474,100 +475,122 @@ jobs:
           CON1_RPC_PORT: 27301
         run: tests/major_fresh_upgrade/test_ccv.sh
 
-      # - name: Initialize consumer chain with ICS v2.0.0
-      #   env:
-      #     CONSUMER_CHAIN_ID: four-v200
-      #     CONSUMER_HOME_1: /home/runner/.four_1
-      #     CONSUMER_HOME_2: /home/runner/.four_2
-      #     CON1_API_PORT: 25401
-      #     CON1_GRPC_PORT: 26401
-      #     CON1_RPC_PORT: 27401
-      #     CON1_P2P_PORT: 28401
-      #     CON1_PPROF_PORT: 29401
-      #     CON2_API_PORT: 25402
-      #     CON2_GRPC_PORT: 26402
-      #     CON2_RPC_PORT: 27402
-      #     CON2_P2P_PORT: 28402
-      #     CON2_PPROF_PORT: 29402
-      #     CONSUMER_SERVICE_1: four_1.service
-      #     CONSUMER_SERVICE_2: four_2.service
-      #     DOWNTIME_BLOCKS: 100000
-      #   run: |
-      #     export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V2_BINARY
-      #     tests/major_fresh_upgrade/init_consumer.sh
-      # - name: Prepare consumer chain four-v200
-      #   env:
-      #     CONSUMER_CHAIN_ID: four-v200
-      #     CONSUMER_HOME_1: /home/runner/.four_1
-      #     CONSUMER_HOME_2: /home/runner/.four_2
-      #     CONSUMER_SERVICE_1: four_1.service
-      #     CONSUMER_SERVICE_2: four_2.service
-      #   run: |
-      #     tests/major_fresh_upgrade/prepare_consumer.sh
-      # - name: Start consumer chain four-v200
-      #   env:
-      #     CONSUMER_CHAIN_ID: four-v200
-      #     CONSUMER_SERVICE_1: four_1.service
-      #     CONSUMER_SERVICE_2: four_2.service
-      #   run: |
-      #     sudo systemctl enable $CONSUMER_SERVICE_1 --now
-      #     sleep 5
-      #     journalctl -u $CONSUMER_SERVICE_1
-      # - name: _four-v200-blocks-1
-      #   env:
-      #     CON1_RPC_PORT: 27401
-      #   run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT 5
-      # - name: Establish CCV channel for four-v200
-      #   run: |
-      #     client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r '.chains[] | select(.chain_id=="four-v200").client_id')
-      #     hermes create connection --a-chain four-v200 --a-client 07-tendermint-0 --b-client $client_id
-      #     hermes create channel --a-chain four-v200 --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
-      #     sudo systemctl restart hermes
-      #     sleep 10
-      # - name: _four-v200-vsc-1
-      #   env:
-      #     CON1_RPC_PORT: 27401
-      #   run: tests/major_fresh_upgrade/test_ccv.sh
-      # - name: _four-v200-ibc
-      #   env:
-      #     CONSUMER_CHAIN_ID: four-v200
-      #     CONSUMER_HOME_1: /home/runner/.four_1
-      #   run: |
-      #     export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V2_BINARY
-      #     tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-7 5
+      - name: Initialize consumer chain with ICS v2.0.0
+        env:
+          CONSUMER_CHAIN_ID: four-v200
+          CONSUMER_HOME_1: /home/runner/.four_1
+          CONSUMER_HOME_2: /home/runner/.four_2
+          CONSUMER_HOME_3: /home/runner/.four_3
+          CONSUMER_SERVICE_1: four_1.service
+          CONSUMER_SERVICE_2: four_2.service
+          CONSUMER_SERVICE_3: four_3.service
+          CON1_API_PORT: 25401
+          CON2_API_PORT: 25402
+          CON3_API_PORT: 25403
+          CON1_GRPC_PORT: 26401
+          CON2_GRPC_PORT: 26402
+          CON3_GRPC_PORT: 26403
+          CON1_RPC_PORT: 27401
+          CON2_RPC_PORT: 27402
+          CON3_RPC_PORT: 27403
+          CON1_P2P_PORT: 28401
+          CON2_P2P_PORT: 28402
+          CON3_P2P_PORT: 28403
+          CON1_PPROF_PORT: 29401
+          CON2_PPROF_PORT: 29402
+          CON3_PPROF_PORT: 29403
+          DOWNTIME_BLOCKS: 100000
+        run: |
+          export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V2_BINARY
+          tests/major_fresh_upgrade/init_consumer.sh
+      - name: Prepare consumer chain four-v200
+        env:
+          CONSUMER_CHAIN_ID: four-v200
+          CONSUMER_HOME_1: /home/runner/.four_1
+          CONSUMER_HOME_2: /home/runner/.four_2
+          CONSUMER_HOME_3: /home/runner/.four_3
+        run: |
+          tests/major_fresh_upgrade/prepare_consumer.sh
+      - name: Start consumer chain four-v200
+        env:
+          CONSUMER_CHAIN_ID: four-v200
+          CONSUMER_SERVICE_1: four_1.service
+          CONSUMER_SERVICE_2: four_2.service
+          CONSUMER_SERVICE_3: four_3.service
+        run: |
+          sudo systemctl enable $CONSUMER_SERVICE_1 --now
+          sleep 5
+          journalctl -u $CONSUMER_SERVICE_1
+      - name: _Consumer chain produces blocks> ICS v2.0.0 chain 2
+        env:
+          CON1_RPC_PORT: 27401
+        run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT 5
+      - name: Establish CCV channel for four-v200
+        run: |
+          client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r '.chains[] | select(.chain_id=="four-v200").client_id')
+          hermes create connection --a-chain four-v200 --a-client 07-tendermint-0 --b-client $client_id
+          hermes create channel --a-chain four-v200 --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
+          sudo systemctl restart hermes
+          sleep 10
+      - name: _CCV channel verified> ICS v2.0.0 chain 2
+        env:
+          CON1_RPC_PORT: 27401
+        run: tests/major_fresh_upgrade/test_ccv.sh
+      - name: _IBC transfer successful> ICS v2.0.0 chain 2
+        env:
+          CONSUMER_CHAIN_ID: four-v200
+          CONSUMER_HOME_1: /home/runner/.four_1
+        run: |
+          export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V2_BINARY
+          tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-7
 
-      # - name: Start Stride chain
-      #   run: tests/major_fresh_upgrade/start_stride.sh
-      # - name: _stride-blocks-1
-      #   run: tests/test_block_production.sh 127.0.0.1 $STRIDE_RPC_1 5 # 5 blocks
-      # - name: Prepare Stride chain upgrade # saves $STRIDE_REV_HEIGHT environment variable
-      #   run: tests/major_fresh_upgrade/upgrade_stride.sh
-      # - name: Re-launch Stride as a consumer chain
-      #   run: tests/major_fresh_upgrade/launch_stride_consumer.sh
-      # - name: _stride-blocks-2
-      #   run: tests/test_block_production.sh 127.0.0.1 $STRIDE_RPC_1 5 # 5 blocks
-      # - name: Establish CCV channel for five
-      #   run: |
-      #     client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r '.chains[] | select(.chain_id=="five").client_id')
-      #     hermes create connection --a-chain five --a-client 07-tendermint-0 --b-client $client_id
-      #     hermes create channel --a-chain five --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
-      #     sudo systemctl restart hermes
-      #     sleep 10
-      # - name: _five-vsc-1
-      #   env:
-      #     CON1_RPC_PORT: 37001
-      #   run: tests/major_fresh_upgrade/test_ccv.sh
-      # - name: _five-ibc
-      #   env:
-      #     CONSUMER_CHAIN_ID: five
-      #     CONSUMER_HOME_1: /home/runner/.stride1
-      #     CONSUMER_CHAIN_BINARY: strided
-      #     CONSUMER_DENOM: ustrd
-      #     CONSUMER_FEES: 1000
-      #     RECIPIENT: stride1r5v5srda7xfth3hn2s26txvrcrntldjucq88rn
-      #   run: |
-      #     $CHAIN_BINARY q ibc channel channels --home $HOME_1
-      #     tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-9
+      - name: Start Stride chain
+        run: tests/major_fresh_upgrade/start_stride.sh
+      - name: _stride-blocks-1
+        run: tests/test_block_production.sh 127.0.0.1 $STRIDE_RPC_1 5 # 5 blocks
+      - name: Prepare Stride chain upgrade # saves $STRIDE_REV_HEIGHT environment variable
+        run: tests/major_fresh_upgrade/upgrade_stride.sh
+      - name: Re-launch Stride as a consumer chain
+        run: tests/major_fresh_upgrade/launch_stride_consumer.sh
+      - name: _Consumer chain produces blocks after changeover from sovereign
+        run: tests/test_block_production.sh 127.0.0.1 $STRIDE_RPC_1 5 # 5 blocks
+      - name: Establish CCV channel for five
+        run: |
+          client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r '.chains[] | select(.chain_id=="five").client_id')
+          hermes create connection --a-chain five --a-client 07-tendermint-0 --b-client $client_id
+          hermes create channel --a-chain five --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
+          sudo systemctl restart hermes
+          sleep 10
+      - name: _CCV channel verified> sovereign-consumer chain
+        env:
+          CON1_RPC_PORT: 37001
+        run: tests/major_fresh_upgrade/test_ccv.sh
+      - name: _IBC transfer successful> sovereign-consumer chain
+        env:
+          CONSUMER_CHAIN_ID: five
+          CONSUMER_HOME_1: /home/runner/.stride1
+          CONSUMER_CHAIN_BINARY: strided
+          CONSUMER_DENOM: ustrd
+          CONSUMER_FEES: 1000
+          RECIPIENT: stride1r5v5srda7xfth3hn2s26txvrcrntldjucq88rn
+        run: |
+          $CHAIN_BINARY q ibc channel channels --home $HOME_1
+          tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh channel-9
+      - name: Register and fund ICA
+        run: tests/v12_upgrade/setup_ica.sh
+      
+      - name: Set test LSM params
+        run: |
+          tests/param_change.sh tests/v12_upgrade/proposal-global-liquid-cap.json
+          tests/param_change.sh tests/v12_upgrade/proposal-validator-liquid-cap.json
+          tests/param_change.sh tests/v12_upgrade/proposal-validator-bond-factor.json
+
+      - name: lsm-happy-1
+        env:
+          BASE_FEES: 3000
+          CONSUMER_FEES: 1000
+          IBC_CHANNEL: channel-9
+        run: tests/v12_upgrade/lsm_happy_path.sh
 
       # - name: Initialize consumer chain with ICS v3.1.0
       #   env:
