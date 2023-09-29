@@ -118,36 +118,36 @@ toml set --toml-path $EQ_CONSUMER_HOME_1/config/config.toml block_sync false
 
 echo "Setting up services..."
 
-sudo touch /etc/systemd/system/$CON_EQ1_SERVICE_ORIGINAL
-echo "[Unit]"                               | sudo tee /etc/systemd/system/$CON_EQ1_SERVICE_ORIGINAL
-echo "Description=Consumer service"       | sudo tee /etc/systemd/system/$CON_EQ1_SERVICE_ORIGINAL -a
-echo "After=network-online.target"          | sudo tee /etc/systemd/system/$CON_EQ1_SERVICE_ORIGINAL -a
-echo ""                                     | sudo tee /etc/systemd/system/$CON_EQ1_SERVICE_ORIGINAL -a
-echo "[Service]"                            | sudo tee /etc/systemd/system/$CON_EQ1_SERVICE_ORIGINAL -a
-echo "User=$USER"                            | sudo tee /etc/systemd/system/$CON_EQ1_SERVICE_ORIGINAL -a
-echo "ExecStart=$HOME/go/bin/$CONSUMER_CHAIN_BINARY start --x-crisis-skip-assert-invariants --home $EQ_CONSUMER_HOME_1" | sudo tee /etc/systemd/system/$CON_EQ1_SERVICE_ORIGINAL -a
-echo "Restart=no"                       | sudo tee /etc/systemd/system/$CON_EQ1_SERVICE_ORIGINAL -a
-echo "LimitNOFILE=4096"                     | sudo tee /etc/systemd/system/$CON_EQ1_SERVICE_ORIGINAL -a
-echo ""                                     | sudo tee /etc/systemd/system/$CON_EQ1_SERVICE_ORIGINAL -a
-echo "[Install]"                            | sudo tee /etc/systemd/system/$CON_EQ1_SERVICE_ORIGINAL -a
-echo "WantedBy=multi-user.target"           | sudo tee /etc/systemd/system/$CON_EQ1_SERVICE_ORIGINAL -a
+sudo touch /etc/systemd/system/$EQ_CONSUMER_SERVICE_1
+echo "[Unit]"                               | sudo tee /etc/systemd/system/$EQ_CONSUMER_SERVICE_1
+echo "Description=Consumer service"       | sudo tee /etc/systemd/system/$EQ_CONSUMER_SERVICE_1 -a
+echo "After=network-online.target"          | sudo tee /etc/systemd/system/$EQ_CONSUMER_SERVICE_1 -a
+echo ""                                     | sudo tee /etc/systemd/system/$EQ_CONSUMER_SERVICE_1 -a
+echo "[Service]"                            | sudo tee /etc/systemd/system/$EQ_CONSUMER_SERVICE_1 -a
+echo "User=$USER"                            | sudo tee /etc/systemd/system/$EQ_CONSUMER_SERVICE_1 -a
+echo "ExecStart=$HOME/go/bin/$CONSUMER_CHAIN_BINARY start --x-crisis-skip-assert-invariants --home $EQ_CONSUMER_HOME_1" | sudo tee /etc/systemd/system/$EQ_CONSUMER_SERVICE_1 -a
+echo "Restart=no"                       | sudo tee /etc/systemd/system/$EQ_CONSUMER_SERVICE_1 -a
+echo "LimitNOFILE=4096"                     | sudo tee /etc/systemd/system/$EQ_CONSUMER_SERVICE_1 -a
+echo ""                                     | sudo tee /etc/systemd/system/$EQ_CONSUMER_SERVICE_1 -a
+echo "[Install]"                            | sudo tee /etc/systemd/system/$EQ_CONSUMER_SERVICE_1 -a
+echo "WantedBy=multi-user.target"           | sudo tee /etc/systemd/system/$EQ_CONSUMER_SERVICE_1 -a
 
-sudo touch /etc/systemd/system/$CON_EQ1_SERVICE_DOUBLE
-echo "[Unit]"                               | sudo tee /etc/systemd/system/$CON_EQ1_SERVICE_DOUBLE
-echo "Description=Consumer service"       | sudo tee /etc/systemd/system/$CON_EQ1_SERVICE_DOUBLE -a
-echo "After=network-online.target"          | sudo tee /etc/systemd/system/$CON_EQ1_SERVICE_DOUBLE -a
-echo ""                                     | sudo tee /etc/systemd/system/$CON_EQ1_SERVICE_DOUBLE -a
-echo "[Service]"                            | sudo tee /etc/systemd/system/$CON_EQ1_SERVICE_DOUBLE -a
-echo "User=$USER"                            | sudo tee /etc/systemd/system/$CON_EQ1_SERVICE_DOUBLE -a
-echo "ExecStart=$HOME/go/bin/$CONSUMER_CHAIN_BINARY start --x-crisis-skip-assert-invariants --home $EQ_CONSUMER_HOME_1_DOUBLE" | sudo tee /etc/systemd/system/$CON_EQ1_SERVICE_DOUBLE -a
-echo "Restart=no"                       | sudo tee /etc/systemd/system/$CON_EQ1_SERVICE_DOUBLE -a
-echo "LimitNOFILE=4096"                     | sudo tee /etc/systemd/system/$CON_EQ1_SERVICE_DOUBLE -a
-echo ""                                     | sudo tee /etc/systemd/system/$CON_EQ1_SERVICE_DOUBLE -a
-echo "[Install]"                            | sudo tee /etc/systemd/system/$CON_EQ1_SERVICE_DOUBLE -a
-echo "WantedBy=multi-user.target"           | sudo tee /etc/systemd/system/$CON_EQ1_SERVICE_DOUBLE -a
+sudo touch /etc/systemd/system/$EQ_CONSUMER_SERVICE_2
+echo "[Unit]"                               | sudo tee /etc/systemd/system/$EQ_CONSUMER_SERVICE_2
+echo "Description=Consumer service"       | sudo tee /etc/systemd/system/$EQ_CONSUMER_SERVICE_2 -a
+echo "After=network-online.target"          | sudo tee /etc/systemd/system/$EQ_CONSUMER_SERVICE_2 -a
+echo ""                                     | sudo tee /etc/systemd/system/$EQ_CONSUMER_SERVICE_2 -a
+echo "[Service]"                            | sudo tee /etc/systemd/system/$EQ_CONSUMER_SERVICE_2 -a
+echo "User=$USER"                            | sudo tee /etc/systemd/system/$EQ_CONSUMER_SERVICE_2 -a
+echo "ExecStart=$HOME/go/bin/$CONSUMER_CHAIN_BINARY start --x-crisis-skip-assert-invariants --home $EQ_CONSUMER_HOME_1_DOUBLE" | sudo tee /etc/systemd/system/$EQ_CONSUMER_SERVICE_2 -a
+echo "Restart=no"                       | sudo tee /etc/systemd/system/$EQ_CONSUMER_SERVICE_2 -a
+echo "LimitNOFILE=4096"                     | sudo tee /etc/systemd/system/$EQ_CONSUMER_SERVICE_2 -a
+echo ""                                     | sudo tee /etc/systemd/system/$EQ_CONSUMER_SERVICE_2 -a
+echo "[Install]"                            | sudo tee /etc/systemd/system/$EQ_CONSUMER_SERVICE_2 -a
+echo "WantedBy=multi-user.target"           | sudo tee /etc/systemd/system/$EQ_CONSUMER_SERVICE_2 -a
 
 echo "Starting consumer service..."
-sudo systemctl enable $CON_EQ1_SERVICE_ORIGINAL --now
+sudo systemctl enable $EQ_CONSUMER_SERVICE_1 --now
 
 sleep 20
 $CONSUMER_CHAIN_BINARY q block --home $EQ_CONSUMER_HOME_1 | jq '.'
@@ -186,7 +186,7 @@ fi
 sudo systemctl stop $CONSUMER_SERVICE_1
 
 # Stop validator
-sudo systemctl stop $CON_EQ1_SERVICE_ORIGINAL
+sudo systemctl stop $EQ_CONSUMER_SERVICE_1
 
 # Duplicate home folder
 cp -r $EQ_CONSUMER_HOME_1/ $EQ_CONSUMER_HOME_1_DOUBLE/
@@ -214,11 +214,11 @@ echo "{}" > $EQ_CONSUMER_HOME_1_DOUBLE/config/addrbook.json
 echo "{}" > $EQ_CONSUMER_HOME_1/config/addrbook.json
 
 # Start duplicate
-sudo systemctl enable $CON_EQ1_SERVICE_DOUBLE --now
+sudo systemctl enable $EQ_CONSUMER_SERVICE_2 --now
 sleep 30
 
 # Start original
-sudo systemctl start $CON_EQ1_SERVICE_ORIGINAL
+sudo systemctl start $EQ_CONSUMER_SERVICE_1
 
 # Restart whale
 sudo systemctl start $CONSUMER_SERVICE_1
@@ -229,9 +229,9 @@ sleep 60
 # echo con2 log:
 # journalctl -u $CONSUMER_SERVICE_2 | tail -n 50
 # echo "Original log:"
-# journalctl -u $CON_EQ1_SERVICE_ORIGINAL | tail -n 50
+# journalctl -u $EQ_CONSUMER_SERVICE_1 | tail -n 50
 # echo "Double log:"
-# journalctl -u $CON_EQ1_SERVICE_DOUBLE | tail -n 50
+# journalctl -u $EQ_CONSUMER_SERVICE_2 | tail -n 50
 
 evidence=$($CONSUMER_CHAIN_BINARY q evidence --home $CONSUMER_HOME_1 -o json | jq -r '.evidence | length')
 echo "$evidence"
@@ -284,14 +284,14 @@ echo "Status: $status"
 if [ $status == "true" ]; then
   echo "Success: validator has been tombstoned!"
   sudo systemctl disable $EQ_PROVIDER_SERVICE --now
-  sudo systemctl disable $CON_EQ1_SERVICE_ORIGINAL --now
-  sudo systemctl disable $CON_EQ1_SERVICE_DOUBLE --now
+  sudo systemctl disable $EQ_CONSUMER_SERVICE_1 --now
+  sudo systemctl disable $EQ_CONSUMER_SERVICE_2 --now
   rm -rf $EQ_PROVIDER_HOME
   rm -rf $EQ_CONSUMER_HOME_1
   rm -rf $EQ_CONSUMER_HOME_1_DOUBLE
   sudo rm /etc/systemd/system/$EQ_PROVIDER_SERVICE
-  sudo rm /etc/systemd/system/$CON_EQ1_SERVICE_ORIGINAL
-  sudo rm /etc/systemd/system/$CON_EQ1_SERVICE_DOUBLE
+  sudo rm /etc/systemd/system/$EQ_CONSUMER_SERVICE_1
+  sudo rm /etc/systemd/system/$EQ_CONSUMER_SERVICE_2
 else
   echo "Failure: validator was not tombstoned."
   exit 1
