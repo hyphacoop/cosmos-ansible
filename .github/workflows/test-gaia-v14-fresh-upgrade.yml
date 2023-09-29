@@ -204,7 +204,7 @@ jobs:
         run: sudo journalctl -u $PROVIDER_SERVICE_1
       - name: Print Gaia version
         run: $CHAIN_BINARY version --long
-      - name: _blocks-1
+      - name: Block production check
         run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 5 # 5 blocks
       - name: Validators initial state
         run: |
@@ -291,10 +291,10 @@ jobs:
         run: |
           export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V12_BINARY
           client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
-          gaia_connection=$($CHAIN_BINARY q ibc connection connection -o json | jq -r --arg client "$client_id" 'connections[] | select(.client_id==$client).id')
+          gaia_connection=$($CHAIN_BINARY q ibc connection connections -o json | jq -r --arg client "$client_id" 'connections[] | select(.client_id==$client).id')
           echo "connection from gaia cli: $gaia"
-          connection_id=$(hermes --json query client connections --chain $CONSUMER_CHAIN_ID --client $client_id | grep result | jq -r '.result[0]')
-          channel_id=$(hermes --json query connection channels --chain $CONSUMER_CHAIN_ID --connection $connection_id | grep result | jq -r '.result[] | select(.port_id=="transfer").channel_id')
+          connection_id=$(hermes --json query client connections --chain $CHAIN_ID --client $client_id | grep result | jq -r '.result[0]')
+          channel_id=$(hermes --json query connection channels --chain $CHAIN_ID --connection $connection_id | grep result | jq -r '.result[] | select(.port_id=="transfer").channel_id')
           tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh $channel_id
 
       - name: Initialize consumer chain with ICS v2.0.0
@@ -346,10 +346,12 @@ jobs:
       - name: _Pre-upgrade consumer chain produces blocks> ICS v2.0.0 chain 1
         run: tests/test_block_production.sh 127.0.0.1 27201 5
       - name: Establish CCV channel for two-v200
+        env:
+          CONSUMER_CHAIN_ID: two-v200
         run: |
-          client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r '.chains[] | select(.chain_id=="two-v200").client_id')
-          hermes create connection --a-chain two-v200 --a-client 07-tendermint-0 --b-client 07-tendermint-1
-          hermes create channel --a-chain two-v200 --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
+          client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
+          hermes create connection --a-chain $CONSUMER_CHAIN_ID --a-client 07-tendermint-0 --b-client $client_id
+          hermes create channel --a-chain $CONSUMER_CHAIN_ID --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
           sudo systemctl restart hermes
           sleep 10
       - name: _Pre-upgrade CCV channel verified> ICS v2.0.0 chain 1
@@ -364,9 +366,9 @@ jobs:
           export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V2_BINARY
           client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
           echo "client_id: $client_id"
-          hermes --json query client connections --chain $CONSUMER_CHAIN_ID --client $client_id
-          connection_id=$(hermes --json query client connections --chain $CONSUMER_CHAIN_ID --client $client_id | grep result | jq -r '.result[0]')
-          channel_id=$(hermes --json query connection channels --chain $CONSUMER_CHAIN_ID --connection $connection_id | grep result | jq -r '.result[] | select(.port_id=="transfer").channel_id')
+          hermes --json query client connections --chain $CHAIN_ID --client $client_id
+          connection_id=$(hermes --json query client connections --chain $CHAIN_ID --client $client_id | grep result | jq -r '.result[0]')
+          channel_id=$(hermes --json query connection channels --chain $CHAIN_ID --connection $connection_id | grep result | jq -r '.result[] | select(.port_id=="transfer").channel_id')
           tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh $channel_id
       - name: _one-v120-vsc-2
         env:
