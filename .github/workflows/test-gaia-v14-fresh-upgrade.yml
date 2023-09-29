@@ -870,6 +870,8 @@ jobs:
           CONSUMER_SERVICE_3: three_3.service
         run: |
           sudo systemctl enable $CONSUMER_SERVICE_1 --now
+          sudo systemctl enable $CONSUMER_SERVICE_2 --now
+          sudo systemctl enable $CONSUMER_SERVICE_3 --now
           sleep 5
           journalctl -u $CONSUMER_SERVICE_1
       - name: _Pre-upgrade consumer chain produces blocks> ICS v3.1.0 chain 1
