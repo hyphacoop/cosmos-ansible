@@ -294,7 +294,6 @@ jobs:
           connection_id=$($CHAIN_BINARY q ibc connection connections -o json --home $HOME_1 | jq -r --arg client "$client_id" '.connections[] | select(.client_id==$client).id')
           channel_id=$($CHAIN_BINARY q ibc channel connections $connection_id -o json --home $HOME_1 | jq -r '.channels[] | select(.port_id=="transfer").channel_id')
           tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh $channel_id
-
       - name: Initialize consumer chain with ICS v2.0.0
         env:
           CONSUMER_CHAIN_ID: two-v200
@@ -363,10 +362,8 @@ jobs:
         run: |
           export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V2_BINARY
           client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
-          echo "client_id: $client_id"
-          hermes --json query client connections --chain $CHAIN_ID --client $client_id
-          connection_id=$(hermes --json query client connections --chain $CHAIN_ID --client $client_id | grep result | jq -r '.result[0]')
-          channel_id=$(hermes --json query connection channels --chain $CHAIN_ID --connection $connection_id | grep result | jq -r '.result[] | select(.port_id=="transfer").channel_id')
+          connection_id=$($CHAIN_BINARY q ibc connection connections -o json --home $HOME_1 | jq -r --arg client "$client_id" '.connections[] | select(.client_id==$client).id')
+          channel_id=$($CHAIN_BINARY q ibc channel connections $connection_id -o json --home $HOME_1 | jq -r '.channels[] | select(.port_id=="transfer").channel_id')
           tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh $channel_id
       - name: _one-v120-vsc-2
         env:
@@ -441,8 +438,8 @@ jobs:
         run: |
           export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V3_BINARY
           client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
-          connection_id=$(hermes --json query client connections --chain $CONSUMER_CHAIN_ID --client $client_id | grep result | jq -r '.result[0]')
-          channel_id=$(hermes --json query connection channels --chain $CONSUMER_CHAIN_ID --connection $connection_id | grep result | jq -r '.result[] | select(.port_id=="transfer").channel_id')
+          connection_id=$($CHAIN_BINARY q ibc connection connections -o json --home $HOME_1 | jq -r --arg client "$client_id" '.connections[] | select(.client_id==$client).id')
+          channel_id=$($CHAIN_BINARY q ibc channel connections $connection_id -o json --home $HOME_1 | jq -r '.channels[] | select(.port_id=="transfer").channel_id')
           tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh $channel_id
 
       - name: Test software upgrade for published releases
@@ -587,8 +584,8 @@ jobs:
         run: |
           $CHAIN_BINARY q ibc channel channels --home $HOME_1
           client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
-          connection_id=$(hermes --json query client connections --chain $CONSUMER_CHAIN_ID --client $client_id | grep result | jq -r '.result[0]')
-          channel_id=$(hermes --json query connection channels --chain $CONSUMER_CHAIN_ID --connection $connection_id | grep result | jq -r '.result[] | select(.port_id=="transfer").channel_id')
+          connection_id=$($CHAIN_BINARY q ibc connection connections -o json --home $HOME_1 | jq -r --arg client "$client_id" '.connections[] | select(.client_id==$client).id')
+          channel_id=$($CHAIN_BINARY q ibc channel connections $connection_id -o json --home $HOME_1 | jq -r '.channels[] | select(.port_id=="transfer").channel_id')
           tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh $channel_id
       - name: Register and fund ICA
         run: tests/v12_upgrade/setup_ica.sh
@@ -674,8 +671,8 @@ jobs:
         run: |
           export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V3_BINARY
           client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
-          connection_id=$(hermes --json query client connections --chain $CONSUMER_CHAIN_ID --client $client_id | grep result | jq -r '.result[0]')
-          channel_id=$(hermes --json query connection channels --chain $CONSUMER_CHAIN_ID --connection $connection_id | grep result | jq -r '.result[] | select(.port_id=="transfer").channel_id')
+          connection_id=$($CHAIN_BINARY q ibc connection connections -o json --home $HOME_1 | jq -r --arg client "$client_id" '.connections[] | select(.client_id==$client).id')
+          channel_id=$($CHAIN_BINARY q ibc channel connections $connection_id -o json --home $HOME_1 | jq -r '.channels[] | select(.port_id=="transfer").channel_id')
           tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh $channel_id
 
       - name: _Final CCV channel check> ICS v1.2.0-multiden
