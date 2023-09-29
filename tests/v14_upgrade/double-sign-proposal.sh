@@ -183,12 +183,15 @@ else
 fi
 
 # Stop whale
+echo "Stopping whale validator..."
 sudo systemctl stop $CONSUMER_SERVICE_1
+sleep 10
 
 # Stop validator
 sudo systemctl stop $EQ_CONSUMER_SERVICE_1
 
 # Duplicate home folder
+echo "Duplicating home folder..."
 cp -r $EQ_CONSUMER_HOME_1/ $EQ_CONSUMER_HOME_2/
 
 # Update peer info
@@ -214,13 +217,16 @@ echo "{}" > $EQ_CONSUMER_HOME_2/config/addrbook.json
 echo "{}" > $EQ_CONSUMER_HOME_1/config/addrbook.json
 
 # Start duplicate
+echo "Starting second node..."
 sudo systemctl enable $EQ_CONSUMER_SERVICE_2 --now
 sleep 30
 
 # Start original
+echo "Starting first node..."
 sudo systemctl start $EQ_CONSUMER_SERVICE_1
 
 # Restart whale
+echo "Restarting whale validator..."
 sudo systemctl start $CONSUMER_SERVICE_1
 sleep 60
 
