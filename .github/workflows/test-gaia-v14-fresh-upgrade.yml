@@ -294,7 +294,7 @@ jobs:
           $CHAIN_BINARY q ibc connection connections -o json --home $HOME_1
           gaia_connection=$($CHAIN_BINARY q ibc connection connections -o json --home $HOME_1 | jq -r --arg client "$client_id" '.connections[] | select(.client_id==$client).id')
           echo "connection from gaia cli: $gaia_connection"
-          gaia_channel=$($CHAIN_BINARY q ibc channel connections $connection_id -o json --home $HOME_1 | jq -r '.channels[] | select(.port_id=="transfer").channel_id')
+          gaia_channel=$($CHAIN_BINARY q ibc channel connections $gaia_connection -o json --home $HOME_1 | jq -r '.channels[] | select(.port_id=="transfer").channel_id')
           echo "channel from gaia cli: $gaia_channel"
           connection_id=$(hermes --json query client connections --chain $CHAIN_ID --client $client_id | grep result | jq -r '.result[0]')
           channel_id=$(hermes --json query connection channels --chain $CHAIN_ID --connection $connection_id | grep result | jq -r '.result[] | select(.port_id=="transfer").channel_id')
