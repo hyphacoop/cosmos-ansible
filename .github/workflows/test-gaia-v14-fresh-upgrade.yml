@@ -292,7 +292,9 @@ jobs:
           export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V12_BINARY
           client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
           gaia_connection=$($CHAIN_BINARY q ibc connection connections -o json | jq -r --arg client "$client_id" 'connections[] | select(.client_id==$client).id')
-          echo "connection from gaia cli: $gaia"
+          echo "connection from gaia cli: $gaia_connection"
+          gaia_channel=$($CHAIN_BINARY q ibc channel connections $connection_id -o json | jq -r '.channels[] | select(.port_id=="transfer").channel_id')
+          echo "channel from gaia cli: $gaia_channel"
           connection_id=$(hermes --json query client connections --chain $CHAIN_ID --client $client_id | grep result | jq -r '.result[0]')
           channel_id=$(hermes --json query connection channels --chain $CHAIN_ID --connection $connection_id | grep result | jq -r '.result[] | select(.port_id=="transfer").channel_id')
           tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh $channel_id
