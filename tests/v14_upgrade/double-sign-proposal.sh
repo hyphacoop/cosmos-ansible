@@ -139,7 +139,7 @@ echo "After=network-online.target"          | sudo tee /etc/systemd/system/$EQ_C
 echo ""                                     | sudo tee /etc/systemd/system/$EQ_CONSUMER_SERVICE_2 -a
 echo "[Service]"                            | sudo tee /etc/systemd/system/$EQ_CONSUMER_SERVICE_2 -a
 echo "User=$USER"                            | sudo tee /etc/systemd/system/$EQ_CONSUMER_SERVICE_2 -a
-echo "ExecStart=$HOME/go/bin/$CONSUMER_CHAIN_BINARY start --x-crisis-skip-assert-invariants --home $EQ_CONSUMER_HOME_1_DOUBLE" | sudo tee /etc/systemd/system/$EQ_CONSUMER_SERVICE_2 -a
+echo "ExecStart=$HOME/go/bin/$CONSUMER_CHAIN_BINARY start --x-crisis-skip-assert-invariants --home $EQ_CONSUMER_HOME_2" | sudo tee /etc/systemd/system/$EQ_CONSUMER_SERVICE_2 -a
 echo "Restart=no"                       | sudo tee /etc/systemd/system/$EQ_CONSUMER_SERVICE_2 -a
 echo "LimitNOFILE=4096"                     | sudo tee /etc/systemd/system/$EQ_CONSUMER_SERVICE_2 -a
 echo ""                                     | sudo tee /etc/systemd/system/$EQ_CONSUMER_SERVICE_2 -a
@@ -189,28 +189,28 @@ sudo systemctl stop $CONSUMER_SERVICE_1
 sudo systemctl stop $EQ_CONSUMER_SERVICE_1
 
 # Duplicate home folder
-cp -r $EQ_CONSUMER_HOME_1/ $EQ_CONSUMER_HOME_1_DOUBLE/
+cp -r $EQ_CONSUMER_HOME_1/ $EQ_CONSUMER_HOME_2/
 
 # Update peer info
 CON2_NODE_ID=$($CONSUMER_CHAIN_BINARY tendermint show-node-id --home $CONSUMER_HOME_2)
 CON2_PEER="$CON2_NODE_ID@localhost:$CON2_P2P_PORT"
-toml set --toml-path $EQ_CONSUMER_HOME_1_DOUBLE/config/config.toml p2p.persistent_peers "$CON2_PEER"
+toml set --toml-path $EQ_CONSUMER_HOME_2/config/config.toml p2p.persistent_peers "$CON2_PEER"
 
 # Update ports
-toml set --toml-path $EQ_CONSUMER_HOME_1_DOUBLE/config/app.toml api.address "tcp://0.0.0.0:$CON_EQ1D_API_PORT"
+toml set --toml-path $EQ_CONSUMER_HOME_2/config/app.toml api.address "tcp://0.0.0.0:$CON_EQ1D_API_PORT"
 # Set different ports for grpc
-toml set --toml-path $EQ_CONSUMER_HOME_1_DOUBLE/config/app.toml grpc.address "0.0.0.0:$CON_EQ1D_GRPC_PORT"
+toml set --toml-path $EQ_CONSUMER_HOME_2/config/app.toml grpc.address "0.0.0.0:$CON_EQ1D_GRPC_PORT"
 # config.toml
 # Set different ports for rpc
-toml set --toml-path $EQ_CONSUMER_HOME_1_DOUBLE/config/config.toml rpc.laddr "tcp://0.0.0.0:$CON_EQ1D_RPC_PORT"
+toml set --toml-path $EQ_CONSUMER_HOME_2/config/config.toml rpc.laddr "tcp://0.0.0.0:$CON_EQ1D_RPC_PORT"
 # Set different ports for rpc pprof
-toml set --toml-path $EQ_CONSUMER_HOME_1_DOUBLE/config/config.toml rpc.pprof_laddr "localhost:$CON_EQ1D_PPROF_PORT"
+toml set --toml-path $EQ_CONSUMER_HOME_2/config/config.toml rpc.pprof_laddr "localhost:$CON_EQ1D_PPROF_PORT"
 # Set different ports for p2p
-toml set --toml-path $EQ_CONSUMER_HOME_1_DOUBLE/config/config.toml p2p.laddr "tcp://0.0.0.0:$CON_EQ1D_P2P_PORT"
+toml set --toml-path $EQ_CONSUMER_HOME_2/config/config.toml p2p.laddr "tcp://0.0.0.0:$CON_EQ1D_P2P_PORT"
 
 # Wipe the state and address books
-echo '{"height": "0","round": 0,"step": 0,"signature":"","signbytes":""}' > $EQ_CONSUMER_HOME_1_DOUBLE/data/priv_validator_state.json
-echo "{}" > $EQ_CONSUMER_HOME_1_DOUBLE/config/addrbook.json
+echo '{"height": "0","round": 0,"step": 0,"signature":"","signbytes":""}' > $EQ_CONSUMER_HOME_2/data/priv_validator_state.json
+echo "{}" > $EQ_CONSUMER_HOME_2/config/addrbook.json
 echo "{}" > $EQ_CONSUMER_HOME_1/config/addrbook.json
 
 # Start duplicate
@@ -288,7 +288,7 @@ if [ $status == "true" ]; then
   sudo systemctl disable $EQ_CONSUMER_SERVICE_2 --now
   rm -rf $EQ_PROVIDER_HOME
   rm -rf $EQ_CONSUMER_HOME_1
-  rm -rf $EQ_CONSUMER_HOME_1_DOUBLE
+  rm -rf $EQ_CONSUMER_HOME_2
   sudo rm /etc/systemd/system/$EQ_PROVIDER_SERVICE
   sudo rm /etc/systemd/system/$EQ_CONSUMER_SERVICE_1
   sudo rm /etc/systemd/system/$EQ_CONSUMER_SERVICE_2
