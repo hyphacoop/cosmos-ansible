@@ -7,8 +7,8 @@ echo "Setting up provider node..."
 $CHAIN_BINARY config chain-id $CHAIN_ID --home $EQ_PROVIDER_HOME
 $CHAIN_BINARY config keyring-backend test --home $EQ_PROVIDER_HOME
 $CHAIN_BINARY config broadcast-mode block --home $EQ_PROVIDER_HOME
-$CHAIN_BINARY config node tcp://localhost:$VAL_EQ1_RPC_PORT --home $EQ_PROVIDER_HOME
-$CHAIN_BINARY init malval_1 --chain-id $CHAIN_ID --home $EQ_PROVIDER_HOME
+$CHAIN_BINARY config node tcp://localhost:$EQ_PROV_RPC_PORT --home $EQ_PROVIDER_HOME
+$CHAIN_BINARY init malval_prop --chain-id $CHAIN_ID --home $EQ_PROVIDER_HOME
 
 echo "Getting genesis file..."
 cp $HOME_1/config/genesis.json $EQ_PROVIDER_HOME/config/genesis.json
@@ -74,7 +74,7 @@ echo "Setting up consumer node..."
 $CONSUMER_CHAIN_BINARY config chain-id $CONSUMER_CHAIN_ID --home $EQ_CONSUMER_HOME_1
 $CONSUMER_CHAIN_BINARY config keyring-backend test --home $EQ_CONSUMER_HOME_1
 $CONSUMER_CHAIN_BINARY config node tcp://localhost:$EQ_CON_RPC_PORT_1 --home $EQ_CONSUMER_HOME_1
-$CONSUMER_CHAIN_BINARY init malval_1 --chain-id $CONSUMER_CHAIN_ID --home $EQ_CONSUMER_HOME_1
+$CONSUMER_CHAIN_BINARY init malval_prop --chain-id $CONSUMER_CHAIN_ID --home $EQ_CONSUMER_HOME_1
 
 echo "Copying key from provider node to consumer one..."
 cp $EQ_PROVIDER_HOME/config/priv_validator_key.json $EQ_CONSUMER_HOME_1/config/priv_validator_key.json
@@ -153,21 +153,21 @@ sleep 20
 $CONSUMER_CHAIN_BINARY q block --home $EQ_CONSUMER_HOME_1 | jq '.'
 
 echo "Create new validator key..."
-$CHAIN_BINARY keys add malval_1 --home $EQ_PROVIDER_HOME
-malval_1=$($CHAIN_BINARY keys list --home $EQ_PROVIDER_HOME --output json | jq -r '.[] | select(.name=="malval_1").address')
+$CHAIN_BINARY keys add malval_prop --home $EQ_PROVIDER_HOME
+malval_prop=$($CHAIN_BINARY keys list --home $EQ_PROVIDER_HOME --output json | jq -r '.[] | select(.name=="malval_prop").address')
 
 echo "Fund new validator..."
-submit_tx "tx bank send $WALLET_1 $malval_1 100000000uatom --from $WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -o json -y" $CHAIN_BINARY $HOME_1
+submit_tx "tx bank send $WALLET_1 $malval_prop 100000000uatom --from $WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -o json -y" $CHAIN_BINARY $HOME_1
 
 total_before=$(curl http://localhost:$CON1_RPC_PORT/validators | jq -r '.result.total')
 
 echo "Create validator..."
-# submit_tx "tx staking create-validator --amount 5000000$DENOM --pubkey $($CHAIN_BINARY tendermint show-validator --home $EQ_PROVIDER_HOME) --moniker malval_1 --chain-id $CHAIN_ID --commission-rate 0.10 --commission-max-rate 0.20 --commission-max-change-rate 0.01 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees 1000$DENOM --from $malval_1 -y" $CHAIN_BINARY $EQ_PROVIDER_HOME
+# submit_tx "tx staking create-validator --amount 5000000$DENOM --pubkey $($CHAIN_BINARY tendermint show-validator --home $EQ_PROVIDER_HOME) --moniker malval_prop --chain-id $CHAIN_ID --commission-rate 0.10 --commission-max-rate 0.20 --commission-max-change-rate 0.01 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees 1000$DENOM --from $malval_prop -y" $CHAIN_BINARY $EQ_PROVIDER_HOME
 $CHAIN_BINARY tx staking create-validator --amount 5000000$DENOM \
 --pubkey $($CHAIN_BINARY tendermint show-validator --home $EQ_PROVIDER_HOME) \
---moniker malval_1 --chain-id $CHAIN_ID \
+--moniker malval_prop --chain-id $CHAIN_ID \
 --commission-rate 0.10 --commission-max-rate 0.20 --commission-max-change-rate 0.01 \
---gas auto --gas-adjustment $GAS_ADJUSTMENT --fees 2000$DENOM --from $malval_1 --home $EQ_PROVIDER_HOME -b block -y
+--gas auto --gas-adjustment $GAS_ADJUSTMENT --fees 2000$DENOM --from $malval_prop --home $EQ_PROVIDER_HOME -b block -y
 
 sleep 20
 
@@ -254,16 +254,16 @@ eq_time=$($CHAIN_BINARY q block --home $HOME_1 | jq -r '.block.header.time')
 echo $eq_time
 
 echo "Setting height..."
-jq -r --argjson HEIGHT $eq_height '.equivocations[0].height = $HEIGHT' tests/v13_upgrade/equivoque.json > tests/v13_upgrade/equivoque-1.json
+jq -r --argjson HEIGHT $eq_height '.equivocations[0].height = $HEIGHT' tests/v14_upgrade/equivoque.json > tests/v14_upgrade/equivoque-1.json
 echo "Setting time..."
-jq -r --arg EQTIME "$eq_time" '.equivocations[0].time = $EQTIME' tests/v13_upgrade/equivoque-1.json > tests/v13_upgrade/equivoque-2.json
+jq -r --arg EQTIME "$eq_time" '.equivocations[0].time = $EQTIME' tests/v14_upgrade/equivoque-1.json > tests/v14_upgrade/equivoque-2.json
 echo "Setting power..."
-jq -r --argjson POWER $power '.equivocations[0].power = $POWER' tests/v13_upgrade/equivoque-2.json > tests/v13_upgrade/equivoque-3.json
+jq -r --argjson POWER $power '.equivocations[0].power = $POWER' tests/v14_upgrade/equivoque-2.json > tests/v14_upgrade/equivoque-3.json
 echo "Setting address..."
-jq -r --arg ADDRESS "$addr" '.equivocations[0].consensus_address = $ADDRESS' tests/v13_upgrade/equivoque-3.json > tests/v13_upgrade/equivoque-4.json
+jq -r --arg ADDRESS "$addr" '.equivocations[0].consensus_address = $ADDRESS' tests/v14_upgrade/equivoque-3.json > tests/v14_upgrade/equivoque-4.json
 
 echo "Submit equivocation proposal..."
-proposal="$CHAIN_BINARY tx gov submit-proposal equivocation tests/v13_upgrade/equivoque-4.json --from $MONIKER_1 --home $HOME_1 -o json --gas auto --gas-adjustment 1.2 --fees $BASE_FEES$DENOM -b block -y"
+proposal="$CHAIN_BINARY tx gov submit-proposal equivocation tests/v14_upgrade/equivoque-4.json --from $MONIKER_1 --home $HOME_1 -o json --gas auto --gas-adjustment 1.2 --fees $BASE_FEES$DENOM -b block -y"
 echo $proposal
 txhash=$($proposal | jq -r '.txhash')
 sleep $((COMMIT_TIMEOUT+2))
