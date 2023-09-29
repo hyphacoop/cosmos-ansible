@@ -219,11 +219,12 @@ echo "{}" > $EQ_CONSUMER_HOME_1/config/addrbook.json
 # Start duplicate
 echo "Starting second node..."
 sudo systemctl enable $EQ_CONSUMER_SERVICE_2 --now
-sleep 30
+sleep 10
 
 # Start original
 echo "Starting first node..."
 sudo systemctl start $EQ_CONSUMER_SERVICE_1
+sleep 10
 
 # Restart whale
 echo "Restarting whale validator..."
