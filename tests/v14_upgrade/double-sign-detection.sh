@@ -269,6 +269,7 @@ else
 fi
 
 # Submit proposal to tombstone validator
+$CONSUMER_CHAIN_BINARY q evidence --home $CONSUMER_HOME_1 -o json | jq -r '.'
 power=$($CONSUMER_CHAIN_BINARY q evidence --home $CONSUMER_HOME_1 -o json | jq -r '.evidence[0].power')
 addr=$($CONSUMER_CHAIN_BINARY q evidence --home $CONSUMER_HOME_1 -o json | jq -r '.evidence[0].consensus_address')
 eq_height=$($CHAIN_BINARY q block --home $HOME_1 | jq -r '.block.header.height')

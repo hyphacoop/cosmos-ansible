@@ -1014,4 +1014,6 @@ jobs:
           EQ_CON_PPROF_PORT_2: 29204
         run: |
           export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V3_BINARY
+          sudo systemctl start hermes-evidence
           tests/v14_upgrade/double-sign-detection.sh
+          sudo systemctl stop hermes-evidence
