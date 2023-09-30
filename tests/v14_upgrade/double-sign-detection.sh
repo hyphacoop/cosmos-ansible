@@ -168,7 +168,6 @@ $CHAIN_BINARY tx staking create-validator --amount 5000000$DENOM \
 --moniker malval_det --chain-id $CHAIN_ID \
 --commission-rate 0.10 --commission-max-rate 0.20 --commission-max-change-rate 0.01 \
 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees 2000$DENOM --from $malval_det --home $EQ_PROVIDER_HOME -b block -y
-
 sleep 20
 
 echo "Check validator is in the consumer chain..."
@@ -183,12 +182,15 @@ else
 fi
 
 # Stop whale
+echo "Stopping whale validator..."
 sudo systemctl stop $CONSUMER_SERVICE_1
+sleep 10
 
 # Stop validator
 sudo systemctl stop $EQ_CONSUMER_SERVICE_1
 
 # Duplicate home folder
+echo "Duplicating home folder..."
 cp -r $EQ_CONSUMER_HOME_1/ $EQ_CONSUMER_HOME_2/
 
 # Update peer info
@@ -214,13 +216,17 @@ echo "{}" > $EQ_CONSUMER_HOME_2/config/addrbook.json
 echo "{}" > $EQ_CONSUMER_HOME_1/config/addrbook.json
 
 # Start duplicate
+echo "Starting second node..."
 sudo systemctl enable $EQ_CONSUMER_SERVICE_2 --now
-sleep 30
+sleep 10
 
 # Start original
+echo "Starting first node..."
 sudo systemctl start $EQ_CONSUMER_SERVICE_1
+sleep 10
 
 # Restart whale
+echo "Restarting whale validator..."
 sudo systemctl start $CONSUMER_SERVICE_1
 sleep 60
 
@@ -313,4 +319,3 @@ else
   echo "Failure: validator was not tombstoned."
   exit 1
 fi
-

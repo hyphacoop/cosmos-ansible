@@ -168,7 +168,6 @@ $CHAIN_BINARY tx staking create-validator --amount 5000000$DENOM \
 --moniker malval_prop --chain-id $CHAIN_ID \
 --commission-rate 0.10 --commission-max-rate 0.20 --commission-max-change-rate 0.01 \
 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees 2000$DENOM --from $malval_prop --home $EQ_PROVIDER_HOME -b block -y
-
 sleep 20
 
 echo "Check validator is in the consumer chain..."
@@ -235,10 +234,10 @@ sleep 60
 # journalctl -u $CONSUMER_SERVICE_1 | tail -n 50
 # echo con2 log:
 # journalctl -u $CONSUMER_SERVICE_2 | tail -n 50
-echo "Node 1 log:"
-journalctl -u $EQ_CONSUMER_SERVICE_1 | tail -n 50
-echo "Node 2 log:"
-journalctl -u $EQ_CONSUMER_SERVICE_2 | tail -n 50
+# echo "Node 1 log:"
+# journalctl -u $EQ_CONSUMER_SERVICE_1 | tail -n 50
+# echo "Node 2 log:"
+# journalctl -u $EQ_CONSUMER_SERVICE_2 | tail -n 50
 
 evidence=$($CONSUMER_CHAIN_BINARY q evidence --home $CONSUMER_HOME_1 -o json | jq -r '.evidence | length')
 echo "$evidence"
@@ -303,4 +302,3 @@ else
   echo "Failure: validator was not tombstoned."
   exit 1
 fi
-
