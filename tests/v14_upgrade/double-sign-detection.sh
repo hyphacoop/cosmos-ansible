@@ -161,10 +161,10 @@ echo "Fund new validator..."
 submit_tx "tx bank send $WALLET_1 $malval_det 100000000$DENOM --from $WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -o json -y" $CHAIN_BINARY $HOME_1
 sleep 5
 
-total_before=$(curl http://localhost:$CON1_RPC_PORT/validators | jq -r '.result.total')
+total_before=$(curl -s http://localhost:$CON1_RPC_PORT/validators | jq -r '.result.total')
 
 $CHAIN_BINARY keys list --home $EQ_PROVIDER_HOME
-$CHAIN_BINARY q bank balances $malval_det --home $HOME_1
+$CHAIN_BINARY q bank balances $malval_det --home $EQ_PROVIDER_HOME
 echo "Create validator..."
 # submit_tx "tx staking create-validator --amount 5000000$DENOM --pubkey $($CHAIN_BINARY tendermint show-validator --home $EQ_PROVIDER_HOME) --moniker malval_det --chain-id $CHAIN_ID --commission-rate 0.10 --commission-max-rate 0.20 --commission-max-change-rate 0.01 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees 1000$DENOM --from $malval_det -y" $CHAIN_BINARY $EQ_PROVIDER_HOME
 $CHAIN_BINARY tx staking create-validator --amount 5000000$DENOM \
@@ -175,7 +175,7 @@ $CHAIN_BINARY tx staking create-validator --amount 5000000$DENOM \
 sleep 20
 
 echo "Check validator is in the consumer chain..."
-total_after=$(curl http://localhost:$CON1_RPC_PORT/validators | jq -r '.result.total')
+total_after=$(curl -s http://localhost:$CON1_RPC_PORT/validators | jq -r '.result.total')
 total=$(( $total_after - $total_before ))
 
 if [ $total == 1 ]; then
