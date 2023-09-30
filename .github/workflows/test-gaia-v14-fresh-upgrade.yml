@@ -757,8 +757,8 @@ jobs:
       WALLET_3: cosmos1v8zgdpzqfazvk6fgwhqqhzx0hfannrajezuc6t
       WALLET_4: cosmos1ty2qlurqsxj6sgs378hxmzyxh0ds8ukc70w844
       WALLET_RELAYER: cosmos1ty2qlurqsxj6sgs378hxmzyxh0ds8ukc70w844
-      VAL1_STAKE: 800000000
-      VAL2_STAKE: 200000000
+      VAL1_STAKE: 500000000
+      VAL2_STAKE: 500000000
       VAL3_STAKE: 10000000
       VAL_FUNDS: 11000000000
       VAL_STAKE: 1000000000
