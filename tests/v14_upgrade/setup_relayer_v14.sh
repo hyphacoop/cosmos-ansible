@@ -50,7 +50,7 @@ echo "Restart=no"                           | sudo tee /etc/systemd/system/herme
 echo "LimitNOFILE=4096"                     | sudo tee /etc/systemd/system/hermes-evidence.service -a
 echo ""                                     | sudo tee /etc/systemd/system/hermes-evidence.service -a
 echo "[Install]"                            | sudo tee /etc/systemd/system/hermes-evidence.service -a
-echo "WantedBy=multi-user.target"           | sudo tee /etc/systemd/system/hermes-evidence.service -
+echo "WantedBy=multi-user.target"           | sudo tee /etc/systemd/system/hermes-evidence.service -a
 sudo systemctl daemon-reload
 sudo systemctl enable hermes
 sudo systemctl enable hermes-evidence
