@@ -228,7 +228,7 @@ sleep 10
 # Restart whale
 echo "Restarting whale validator..."
 sudo systemctl start $CONSUMER_SERVICE_1
-sleep 60
+sleep 90
 
 # echo "con1 log:"
 # journalctl -u $CONSUMER_SERVICE_1 | tail -n 50
