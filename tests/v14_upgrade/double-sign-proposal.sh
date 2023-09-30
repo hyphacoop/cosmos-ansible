@@ -230,14 +230,14 @@ echo "Restarting whale validator..."
 sudo systemctl start $CONSUMER_SERVICE_1
 sleep 90
 
-# echo "con1 log:"
-# journalctl -u $CONSUMER_SERVICE_1 | tail -n 50
+echo "con1 log:"
+journalctl -u $CONSUMER_SERVICE_1 | tail -n 50
 # echo con2 log:
 # journalctl -u $CONSUMER_SERVICE_2 | tail -n 50
-# echo "Node 1 log:"
-# journalctl -u $EQ_CONSUMER_SERVICE_1 | tail -n 50
-# echo "Node 2 log:"
-# journalctl -u $EQ_CONSUMER_SERVICE_2 | tail -n 50
+echo "Node 1 log:"
+journalctl -u $EQ_CONSUMER_SERVICE_1 | tail -n 50
+echo "Node 2 log:"
+journalctl -u $EQ_CONSUMER_SERVICE_2 | tail -n 50
 
 evidence=$($CONSUMER_CHAIN_BINARY q evidence --home $CONSUMER_HOME_1 -o json | jq -r '.evidence | length')
 echo "$evidence"
