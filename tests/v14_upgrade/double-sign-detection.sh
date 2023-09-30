@@ -163,6 +163,8 @@ sleep 5
 
 total_before=$(curl -s http://localhost:$CON1_RPC_PORT/validators | jq -r '.result.total')
 
+journalctl -u $PROVIDER_SERVICE_1 | tail -n 10
+journalctl -u $EQ_PROVIDER_SERVICE | tail -n 10
 $CHAIN_BINARY keys list --home $EQ_PROVIDER_HOME
 $CHAIN_BINARY q bank balances $malval_det --home $EQ_PROVIDER_HOME
 echo "Create validator..."
