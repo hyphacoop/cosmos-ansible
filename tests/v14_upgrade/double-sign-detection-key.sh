@@ -76,7 +76,13 @@ $CONSUMER_CHAIN_BINARY config keyring-backend test --home $EQ_CONSUMER_HOME_1
 $CONSUMER_CHAIN_BINARY config node tcp://localhost:$EQ_CON_RPC_PORT_1 --home $EQ_CONSUMER_HOME_1
 $CONSUMER_CHAIN_BINARY init malval_det --chain-id $CONSUMER_CHAIN_ID --home $EQ_CONSUMER_HOME_1
 
-echo "Copying key from provider node to consumer one..."
+echo "Submit key assignment transaction..."
+key=$($CONSUMER_CHAIN_BINARY tendermint show-validator --home $EQ_CONSUMER_HOME)
+$CHAIN_BINARY tx provider assign-consensus-key $CONSUMER_CHAIN_ID $key --from $malval_det --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM --home $EQ_PROVIDER_HOME -y
+
+sleep 12
+$CHAIN_BINARY q provider validator-consumer-key $CONSUMER_CHAIN_ID $($CHAIN_BINARY tendermint show-address --home $EQ_PROVIDER_HOME) --home $HOME_1
+
 cp $EQ_PROVIDER_HOME/config/priv_validator_key.json $EQ_CONSUMER_HOME_1/config/priv_validator_key.json
 cp $EQ_PROVIDER_HOME/config/node_key.json $EQ_CONSUMER_HOME_1/config/node_key.json
 
@@ -157,7 +163,7 @@ $CHAIN_BINARY keys add malval_det --home $EQ_PROVIDER_HOME
 malval_det=$($CHAIN_BINARY keys list --home $EQ_PROVIDER_HOME --output json | jq -r '.[] | select(.name=="malval_det").address')
 
 echo "Fund new validator..."
-submit_tx "tx bank send $WALLET_1 $malval_det 100000000$DENOM --from $WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -o json -y" $CHAIN_BINARY $HOME_1
+submit_tx "tx bank send $WALLET_1 $malval_det 100000000uatom --from $WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -o json -y" $CHAIN_BINARY $HOME_1
 
 total_before=$(curl http://localhost:$CON1_RPC_PORT/validators | jq -r '.result.total')
 
@@ -275,7 +281,8 @@ addr=$($CONSUMER_CHAIN_BINARY q evidence --home $CONSUMER_HOME_1 -o json | jq -r
 eq_height=$($CHAIN_BINARY q block --home $HOME_1 | jq -r '.block.header.height')
 eq_time=$($CHAIN_BINARY q block --home $HOME_1 | jq -r '.block.header.time')
 
-echo $eq_time
+# Get provider address
+prov_addr=$($CHAIN_BINARY q provider validator-provider-key $CONSUMER_CHAIN_ID $addr --home $HOME_1 -o json | jq -r '.provider_address')
 
 echo "Setting height..."
 jq -r --argjson HEIGHT $eq_height '.equivocations[0].height = $HEIGHT' tests/v14_upgrade/equivoque.json > tests/v14_upgrade/equivoque-1.json
@@ -284,7 +291,7 @@ jq -r --arg EQTIME "$eq_time" '.equivocations[0].time = $EQTIME' tests/v14_upgra
 echo "Setting power..."
 jq -r --argjson POWER $power '.equivocations[0].power = $POWER' tests/v14_upgrade/equivoque-2.json > tests/v14_upgrade/equivoque-3.json
 echo "Setting address..."
-jq -r --arg ADDRESS "$addr" '.equivocations[0].consensus_address = $ADDRESS' tests/v14_upgrade/equivoque-3.json > tests/v14_upgrade/equivoque-4.json
+jq -r --arg ADDRESS "$prov_addr" '.equivocations[0].consensus_address = $ADDRESS' tests/v14_upgrade/equivoque-3.json > tests/v14_upgrade/equivoque-4.json
 
 echo "Submit equivocation proposal..."
 proposal="$CHAIN_BINARY tx gov submit-proposal equivocation tests/v14_upgrade/equivoque-4.json --from $MONIKER_1 --home $HOME_1 -o json --gas auto --gas-adjustment 1.2 --fees $BASE_FEES$DENOM -b block -y"
@@ -312,7 +319,6 @@ rm -rf $EQ_CONSUMER_HOME_2
 sudo rm /etc/systemd/system/$EQ_PROVIDER_SERVICE
 sudo rm /etc/systemd/system/$EQ_CONSUMER_SERVICE_1
 sudo rm /etc/systemd/system/$EQ_CONSUMER_SERVICE_2
-
 
 status=$($CHAIN_BINARY q slashing signing-infos --home $HOME_1 -o json | jq -r --arg ADDRESS "$addr" '.info[] | select(.address==$ADDRESS) | .tombstoned')
 echo "Status: $status"

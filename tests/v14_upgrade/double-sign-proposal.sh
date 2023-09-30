@@ -157,7 +157,7 @@ $CHAIN_BINARY keys add malval_prop --home $EQ_PROVIDER_HOME
 malval_prop=$($CHAIN_BINARY keys list --home $EQ_PROVIDER_HOME --output json | jq -r '.[] | select(.name=="malval_prop").address')
 
 echo "Fund new validator..."
-submit_tx "tx bank send $WALLET_1 $malval_prop 100000000uatom --from $WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -o json -y" $CHAIN_BINARY $HOME_1
+submit_tx "tx bank send $WALLET_1 $malval_prop 100000000$DENOM --from $WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -o json -y" $CHAIN_BINARY $HOME_1
 
 total_before=$(curl http://localhost:$CON1_RPC_PORT/validators | jq -r '.result.total')
 
@@ -285,19 +285,20 @@ sleep $(($COMMIT_TIMEOUT+2))
 echo "Waiting for proposal to pass..."
 sleep $VOTING_PERIOD
 
+sudo systemctl disable $EQ_PROVIDER_SERVICE --now
+sudo systemctl disable $EQ_CONSUMER_SERVICE_1 --now
+sudo systemctl disable $EQ_CONSUMER_SERVICE_2 --now
+rm -rf $EQ_PROVIDER_HOME
+rm -rf $EQ_CONSUMER_HOME_1
+rm -rf $EQ_CONSUMER_HOME_2
+sudo rm /etc/systemd/system/$EQ_PROVIDER_SERVICE
+sudo rm /etc/systemd/system/$EQ_CONSUMER_SERVICE_1
+sudo rm /etc/systemd/system/$EQ_CONSUMER_SERVICE_2
+
 status=$($CHAIN_BINARY q slashing signing-infos --home $HOME_1 -o json | jq -r --arg ADDRESS "$addr" '.info[] | select(.address==$ADDRESS) | .tombstoned')
 echo "Status: $status"
 if [ $status == "true" ]; then
   echo "Success: validator has been tombstoned!"
-  sudo systemctl disable $EQ_PROVIDER_SERVICE --now
-  sudo systemctl disable $EQ_CONSUMER_SERVICE_1 --now
-  sudo systemctl disable $EQ_CONSUMER_SERVICE_2 --now
-  rm -rf $EQ_PROVIDER_HOME
-  rm -rf $EQ_CONSUMER_HOME_1
-  rm -rf $EQ_CONSUMER_HOME_2
-  sudo rm /etc/systemd/system/$EQ_PROVIDER_SERVICE
-  sudo rm /etc/systemd/system/$EQ_CONSUMER_SERVICE_1
-  sudo rm /etc/systemd/system/$EQ_CONSUMER_SERVICE_2
 else
   echo "Failure: validator was not tombstoned."
   exit 1
