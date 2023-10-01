@@ -281,8 +281,7 @@ echo "Validator operator address: $val_address"
 
 $CHAIN_BINARY q staking validator $val_address --home $HOME_1
 jailed=$($CHAIN_BINARY q staking validator $val_address --home $HOME_1 -o json | jq -r '.jailed')
-echo "Expected jailed status: $jailed_expected, actual status: $jailed_actual"
-if [ $jailed_actual != true ]; then
+if [ $jailed != true ]; then
   echo "Equivocation detection failure: validator was not jailed."
   exit 1
 else
