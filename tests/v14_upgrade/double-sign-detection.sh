@@ -250,8 +250,8 @@ echo "Restarting whale validator..."
 sudo systemctl start $CONSUMER_SERVICE_1
 sleep 90
 
-echo "con1 log:"
-journalctl -u $CONSUMER_SERVICE_1 | tail -n 50
+# echo "con1 log:"
+# journalctl -u $CONSUMER_SERVICE_1 | tail -n 50
 # echo con2 log:
 # journalctl -u $CONSUMER_SERVICE_2 | tail -n 50
 # echo "Original log:"
@@ -259,15 +259,14 @@ journalctl -u $CONSUMER_SERVICE_1 | tail -n 50
 # echo "Double log:"
 # journalctl -u $EQ_CONSUMER_SERVICE_2 | tail -n 50
 
-$CONSUMER_CHAIN_BINARY q evidence --home $CONSUMER_HOME_1 -o json | jq '.'
 consensus_address=$($CONSUMER_CHAIN_BINARY tendermint show-address --home $EQ_CONSUMER_HOME_1)
 validator_check=$($CONSUMER_CHAIN_BINARY q evidence --home $CONSUMER_HOME_1 -o json | jq '.' | grep $consensus_address)
 echo $validator_check
 if [ -z "$validator_check" ]; then
-  echo "Equivocation evidence found!"
-else
   echo "No equivocation evidence found."
   exit 1
+else
+  echo "Equivocation evidence found!"
 fi
 
 echo "Wait for evidence to reach the provider chain..."
