@@ -10,6 +10,18 @@ $CHAIN_BINARY config broadcast-mode block --home $EQ_PROVIDER_HOME
 $CHAIN_BINARY config node tcp://localhost:$EQ_PROV_RPC_PORT --home $EQ_PROVIDER_HOME
 $CHAIN_BINARY init malval_det --chain-id $CHAIN_ID --home $EQ_PROVIDER_HOME
 
+echo "Copying snapshot from validator 2..."
+sudo systemctl stop $PROVIDER_SERVICE_2
+cp -R $HOME_2/data/application.db $EQ_PROVIDER_HOME/data/
+cp -R $HOME_2/data/blockstore.db $EQ_PROVIDER_HOME/data/
+cp -R $HOME_2/data/cs.wal $EQ_PROVIDER_HOME/data/
+cp -R $HOME_2/data/evidence.db $EQ_PROVIDER_HOME/data/
+cp -R $HOME_2/data/snapshots $EQ_PROVIDER_HOME/data/
+cp -R $HOME_2/data/state.db $EQ_PROVIDER_HOME/data/
+cp -R $HOME_2/data/tx_index.db $EQ_PROVIDER_HOME/data/
+cp -R $HOME_2/data/upgrade-info.json $EQ_PROVIDER_HOME/data/
+sudo systemctl start $PROVIDER_SERVICE_2
+
 echo "Getting genesis file..."
 cp $HOME_1/config/genesis.json $EQ_PROVIDER_HOME/config/genesis.json
 
@@ -163,7 +175,9 @@ sleep 5
 
 total_before=$(curl -s http://localhost:$CON1_RPC_PORT/validators | jq -r '.result.total')
 
+echo "Provider service 1:"
 journalctl -u $PROVIDER_SERVICE_1 | tail -n 10
+echo "Eq provider service:"
 journalctl -u $EQ_PROVIDER_SERVICE | tail -n 10
 $CHAIN_BINARY keys list --home $EQ_PROVIDER_HOME
 $CHAIN_BINARY q bank balances $malval_det --home $EQ_PROVIDER_HOME
