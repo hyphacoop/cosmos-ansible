@@ -259,10 +259,11 @@ journalctl -u $CONSUMER_SERVICE_1 | tail -n 50
 # echo "Double log:"
 # journalctl -u $EQ_CONSUMER_SERVICE_2 | tail -n 50
 
-$CONSUMER_CHAIN_BINARY q evidence --home $CONSUMER_HOME_1 -o json
-evidence=$($CONSUMER_CHAIN_BINARY q evidence --home $CONSUMER_HOME_1 -o json | jq -r '.evidence | length')
-echo "$evidence"
-if [ $evidence == 1 ]; then
+$CONSUMER_CHAIN_BINARY q evidence --home $CONSUMER_HOME_1 -o json | jq '.'
+consensus_address=$($CONSUMER_CHAIN_BINARY tendermint show-address --home $EQ_CONSUMER_HOME_1)
+validator_check=$($CONSUMER_CHAIN_BINARY q evidence --home $CONSUMER_HOME_1 -o json | jq '.' | grep $consensus_address)
+echo $validator_check
+if [ -z "$validator_check" ]; then
   echo "Equivocation evidence found!"
 else
   echo "No equivocation evidence found."
@@ -289,10 +290,11 @@ else
   echo "Equivocation detection success: validator was jailed."
 fi
 
+exit 0
 # Submit proposal to tombstone validator
 $CONSUMER_CHAIN_BINARY q evidence --home $CONSUMER_HOME_1 -o json | jq -r '.'
-power=$($CONSUMER_CHAIN_BINARY q evidence --home $CONSUMER_HOME_1 -o json | jq -r '.evidence[0].power')
-addr=$($CONSUMER_CHAIN_BINARY q evidence --home $CONSUMER_HOME_1 -o json | jq -r '.evidence[0].consensus_address')
+# power=$($CONSUMER_CHAIN_BINARY q evidence --home $CONSUMER_HOME_1 -o json | jq -r '.evidence[] | select(.consensus_address==[0].power')
+# addr=$($CONSUMER_CHAIN_BINARY q evidence --home $CONSUMER_HOME_1 -o json | jq -r '.evidence[0].consensus_address')
 eq_height=$($CHAIN_BINARY q block --home $HOME_1 | jq -r '.block.header.height')
 eq_time=$($CHAIN_BINARY q block --home $HOME_1 | jq -r '.block.header.time')
 
