@@ -254,11 +254,12 @@ echo "con1 log:"
 journalctl -u $CONSUMER_SERVICE_1 | tail -n 50
 # echo con2 log:
 # journalctl -u $CONSUMER_SERVICE_2 | tail -n 50
-echo "Original log:"
-journalctl -u $EQ_CONSUMER_SERVICE_1 | tail -n 50
-echo "Double log:"
-journalctl -u $EQ_CONSUMER_SERVICE_2 | tail -n 50
+# echo "Original log:"
+# journalctl -u $EQ_CONSUMER_SERVICE_1 | tail -n 50
+# echo "Double log:"
+# journalctl -u $EQ_CONSUMER_SERVICE_2 | tail -n 50
 
+$CONSUMER_CHAIN_BINARY q evidence --home $CONSUMER_HOME_1 -o json
 evidence=$($CONSUMER_CHAIN_BINARY q evidence --home $CONSUMER_HOME_1 -o json | jq -r '.evidence | length')
 echo "$evidence"
 if [ $evidence == 1 ]; then
