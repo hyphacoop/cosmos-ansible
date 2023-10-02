@@ -710,7 +710,359 @@ jobs:
   #       run: tests/test_validator_jailed.sh $VALOPER_2 true
   #     - name: _Soft opt-out test> Validator must not be jailed
   #       run: tests/test_validator_jailed.sh $VALOPER_3 false
-  test-v14:
+  # test-v14-1:
+  #   runs-on: ubuntu-22.04
+  #   needs: set-version-matrix
+  #   strategy:
+  #     matrix:
+  #       ${{ fromJSON(needs.set-version-matrix.outputs.upgrade_versions) }}
+  #     fail-fast: false
+  #   env:
+  #     COMMIT_TIMEOUT: 3
+  #     COSMOVISOR: false
+  #     UPGRADE_MECHANISM: binary
+  #     # Provider chain variables
+  #     CHAIN_BINARY: gaiad
+  #     CHAIN_ID: testnet
+  #     DENOM: uatom
+  #     BASE_FEES: 1500
+  #     HIGH_FEES: 10000
+  #     GAS: auto
+  #     GAS_ADJUSTMENT: 1.4
+  #     VOTING_PERIOD: 10s
+  #     # Provider node variables
+  #     HOME_1: /home/runner/.val1
+  #     HOME_2: /home/runner/.val2
+  #     HOME_3: /home/runner/.val3
+  #     PROVIDER_SERVICE_1: gaia1.service
+  #     PROVIDER_SERVICE_2: gaia2.service
+  #     PROVIDER_SERVICE_3: gaia3.service
+  #     MNEMONIC_1: abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon art
+  #     MNEMONIC_2: abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon garage
+  #     MNEMONIC_3: abandon cash abandon cash abandon cash abandon cash abandon cash abandon cash abandon cash abandon cash abandon cash abandon cash abandon cash abandon earth
+  #     MNEMONIC_RELAYER: abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon success
+  #     MNEMONIC_4: abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon success
+  #     MNEMONIC_5: abandon fame abandon fame abandon fame abandon fame abandon fame abandon fame abandon fame abandon fame abandon fame abandon fame abandon fame abandon claim
+  #     MONIKER_1: val1
+  #     MONIKER_2: val2
+  #     MONIKER_3: val3
+  #     MONIKER_RELAYER: relayer
+  #     MONIKER_4: relayer
+  #     MONIKER_5: wallet5
+  #     VALOPER_1: cosmosvaloper1r5v5srda7xfth3hn2s26txvrcrntldju7lnwmv
+  #     VALOPER_2: cosmosvaloper1ay4dpm0kjmvtpug28vgw5w32yyjxa5spq248vn
+  #     VALOPER_3: cosmosvaloper1v8zgdpzqfazvk6fgwhqqhzx0hfannrajukgdkc
+  #     WALLET_1: cosmos1r5v5srda7xfth3hn2s26txvrcrntldjumt8mhl
+  #     WALLET_2: cosmos1ay4dpm0kjmvtpug28vgw5w32yyjxa5sp97pjqq
+  #     WALLET_3: cosmos1v8zgdpzqfazvk6fgwhqqhzx0hfannrajezuc6t
+  #     WALLET_4: cosmos1ty2qlurqsxj6sgs378hxmzyxh0ds8ukc70w844
+  #     WALLET_RELAYER: cosmos1ty2qlurqsxj6sgs378hxmzyxh0ds8ukc70w844
+  #     VAL1_STAKE: 500000000
+  #     VAL2_STAKE: 500000000
+  #     VAL3_STAKE: 10000000
+  #     VAL_FUNDS: 11000000000
+  #     VAL_STAKE: 1000000000
+  #     VAL_STAKE_STEP: 1000000
+  #     VAL1_API_PORT: 25001
+  #     VAL2_API_PORT: 25002
+  #     VAL3_API_PORT: 25003
+  #     VAL1_GRPC_PORT: 26001
+  #     VAL2_GRPC_PORT: 26002
+  #     VAL3_GRPC_PORT: 26003
+  #     VAL1_RPC_PORT: 27001
+  #     VAL2_RPC_PORT: 27002
+  #     VAL3_RPC_PORT: 27003
+  #     VAL1_P2P_PORT: 28001
+  #     VAL2_P2P_PORT: 28002
+  #     VAL3_P2P_PORT: 28003
+  #     VAL1_PPROF_PORT: 29001
+  #     VAL2_PPROF_PORT: 29002
+  #     VAL3_PPROF_PORT: 29003
+  #     # Consumer chain variables
+  #     DOWNTIME_BLOCKS: 10000
+  #     RECIPIENT: cosmos1r5v5srda7xfth3hn2s26txvrcrntldjumt8mhl
+  #     HERMES_VERSION: v1.6.0
+  #     ICS_120: false
+  #     # Reference ICS chain variables
+  #     CONSUMER_DENOM: ucon
+  #     CONSUMER_FEES: 500
+  #     CONSUMER_CHAIN_V3_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-v3.1.0/interchain-security-cd-linux
+  #     CONSUMER_CHAIN_V3_BINARY: consumerd_v3.1.0
+  #   steps:
+  #     - name: Consumer chain binary URLs
+  #       run: |
+  #         echo "$CONSUMER_CHAIN_V3_BINARY runs off $CONSUMER_CHAIN_V3_BINARY_URL"
+  #     - name: Update PATH
+  #       run: |
+  #         mkdir -p $HOME/go/bin
+  #         echo "$HOME/go/bin" >> $GITHUB_PATH
+  #         echo "$HOME/.hermes" >> $GITHUB_PATH
+  #     - name: Bypass the grub-efi-amd64-signed package
+  #       run: sudo apt-mark hold grub-efi-amd64-signed
+  #     - name: Check out repository code
+  #       uses: actions/checkout@v3
+  #     - name: Set up Python
+  #       uses: actions/setup-python@v3
+  #       with:
+  #         python-version: '3.10'
+  #     - name: Install dependencies
+  #       run: |
+  #         python -m pip install --upgrade pip
+  #         python -m pip install toml-cli
+  #     - name: Start chain
+  #       env:
+  #         START_VERSION: ${{matrix.gaia_version}}
+  #       run: tests/major_fresh_upgrade/start_chain.sh
+  #     - name: Check Gaia log
+  #       run: sudo journalctl -u $PROVIDER_SERVICE_1
+  #     - name: Print Gaia version
+  #       run: $CHAIN_BINARY version --long
+  #     - name: Block production check
+  #       run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 5 # 5 blocks
+  #     - name: Set up relayer
+  #       run: tests/v14_upgrade/setup_relayer_v14.sh
+  #     - name: Download consumer chain binaries
+  #       run: |
+  #         wget $CONSUMER_CHAIN_V3_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_V3_BINARY -q
+  #         chmod +x $HOME/go/bin/$CONSUMER_CHAIN_V3_BINARY
+
+  #     - name: Initialize consumer chain with ICS v3.1.0
+  #       env:
+  #         CONSUMER_CHAIN_ID: three-v310
+  #         CONSUMER_HOME_1: /home/runner/.three_1
+  #         CONSUMER_HOME_2: /home/runner/.three_2
+  #         CONSUMER_HOME_3: /home/runner/.three_3
+  #         CONSUMER_SERVICE_1: three_1.service
+  #         CONSUMER_SERVICE_2: three_2.service
+  #         CONSUMER_SERVICE_3: three_3.service
+  #         CON1_API_PORT: 25301
+  #         CON2_API_PORT: 25302
+  #         CON3_API_PORT: 25303
+  #         CON1_GRPC_PORT: 26301
+  #         CON2_GRPC_PORT: 26302
+  #         CON3_GRPC_PORT: 26303
+  #         CON1_RPC_PORT: 27301
+  #         CON2_RPC_PORT: 27302
+  #         CON3_RPC_PORT: 27303
+  #         CON1_P2P_PORT: 28301
+  #         CON2_P2P_PORT: 28302
+  #         CON3_P2P_PORT: 28303
+  #         CON1_PPROF_PORT: 29301
+  #         CON2_PPROF_PORT: 29302
+  #         CON3_PPROF_PORT: 29303
+  #         DOWNTIME_BLOCKS: 100000
+  #       run: |
+  #         export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V3_BINARY
+  #         tests/major_fresh_upgrade/init_consumer.sh
+  #     - name: Prepare consumer chain three-v310
+  #       env:
+  #         CONSUMER_CHAIN_ID: three-v310
+  #         CONSUMER_HOME_1: /home/runner/.three_1
+  #         CONSUMER_HOME_2: /home/runner/.three_2
+  #         CONSUMER_HOME_3: /home/runner/.three_3
+  #       run: |
+  #         tests/major_fresh_upgrade/prepare_consumer.sh
+  #     - name: Start consumer chain three-v310
+  #       env:
+  #         CONSUMER_CHAIN_ID: three-v310
+  #         CONSUMER_SERVICE_1: three_1.service
+  #         CONSUMER_SERVICE_2: three_2.service
+  #         CONSUMER_SERVICE_3: three_3.service
+  #       run: |
+  #         sudo systemctl enable $CONSUMER_SERVICE_1 --now
+  #         sudo systemctl enable $CONSUMER_SERVICE_2 --now
+  #         sudo systemctl enable $CONSUMER_SERVICE_3 --now
+  #         sleep 5
+  #         journalctl -u $CONSUMER_SERVICE_1
+  #     - name: _Pre-upgrade consumer chain produces blocks> ICS v3.1.0 chain 1
+  #       env:
+  #         CON1_RPC_PORT: 27301
+  #       run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT 5
+  #     - name: Establish CCV channel for three-v310
+  #       env:
+  #         CONSUMER_CHAIN_ID: three-v310
+  #       run: |
+  #         client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
+  #         hermes create connection --a-chain $CONSUMER_CHAIN_ID --a-client 07-tendermint-0 --b-client $client_id
+  #         hermes create channel --a-chain $CONSUMER_CHAIN_ID --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
+  #         sudo systemctl restart hermes
+  #         sleep 10
+  #     - name: _Pre-upgrade CCV channel verified> ICS v3.1.0 chain 1
+  #       env:
+  #         CON1_RPC_PORT: 27301
+  #       run: tests/major_fresh_upgrade/test_ccv.sh
+  #     - name: _Pre-upgrade IBC transfer successful> ICS v3.1.0 chain 1
+  #       env:
+  #         CONSUMER_CHAIN_ID: three-v310
+  #         CONSUMER_HOME_1: /home/runner/.three_1
+  #       run: |
+  #         export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V3_BINARY
+  #         client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
+  #         connection_id=$($CHAIN_BINARY q ibc connection connections -o json --home $HOME_1 | jq -r --arg client "$client_id" '.connections[] | select(.client_id==$client).id')
+  #         channel_id=$($CHAIN_BINARY q ibc channel connections $connection_id -o json --home $HOME_1 | jq -r '.channels[] | select(.port_id=="transfer").channel_id')
+  #         tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh $channel_id
+
+  #     - name: _Test double signing> equivocation via proposal
+  #       env:
+  #         CONSUMER_CHAIN_ID: three-v310
+  #         CONSUMER_HOME_1: /home/runner/.three_1
+  #         CONSUMER_HOME_2: /home/runner/.three_2
+  #         EQ_PROVIDER_HOME: /home/runner/.eqp
+  #         EQ_CONSUMER_HOME_1: /home/runner/.eqc_1
+  #         EQ_CONSUMER_HOME_2: /home/runner/.eqc_2
+  #         CONSUMER_SERVICE_1: three_1.service
+  #         CONSUMER_SERVICE_2: three_2.service
+  #         EQ_PROVIDER_SERVICE: eq_provider.service
+  #         EQ_CONSUMER_SERVICE_1: eq_consumer_1.service
+  #         EQ_CONSUMER_SERVICE_2: eq_consumer_2.service
+  #         CON1_API_PORT: 25301
+  #         CON2_API_PORT: 25302
+  #         CON1_GRPC_PORT: 26301
+  #         CON2_GRPC_PORT: 26302
+  #         CON1_RPC_PORT: 27301
+  #         CON2_RPC_PORT: 27302
+  #         CON1_P2P_PORT: 28301
+  #         CON2_P2P_PORT: 28302
+  #         CON1_PPROF_PORT: 29301
+  #         CON2_PPROF_PORT: 29302
+  #         EQ_PROV_API_PORT: 25004
+  #         EQ_PROV_GRPC_PORT: 26004
+  #         EQ_PROV_RPC_PORT: 27004
+  #         EQ_PROV_P2P_PORT: 28004
+  #         EQ_PROV_PPROF_PORT: 29004
+  #         EQ_CON_API_PORT_1: 25104
+  #         EQ_CON_API_PORT_2: 25204
+  #         EQ_CON_GRPC_PORT_1: 26104
+  #         EQ_CON_GRPC_PORT_2: 26204
+  #         EQ_CON_RPC_PORT_1: 27104
+  #         EQ_CON_RPC_PORT_2: 27204
+  #         EQ_CON_P2P_PORT_1: 28104
+  #         EQ_CON_P2P_PORT_2: 28204
+  #         EQ_CON_PPROF_PORT_1: 29104
+  #         EQ_CON_PPROF_PORT_2: 29204
+  #       run: |
+  #         export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V3_BINARY
+  #         tests/v14_upgrade/double-sign-proposal.sh
+
+  #     - name: Test software upgrade for published releases
+  #       if: ${{ matrix.upgrade_version != 'main' }}
+  #       env:
+  #         DOWNLOAD_URL: https://github.com/cosmos/gaia/releases/download/${{ matrix.upgrade_version }}/gaiad-${{ matrix.upgrade_version }}-linux-amd64
+  #       run: |
+  #         echo $DOWNLOAD_URL
+  #         tests/major_fresh_upgrade/software_upgrade.sh 127.0.0.1 $VAL1_RPC_PORT v14
+  #     - name: Test software upgrade for main branch
+  #       if: ${{ matrix.upgrade_version == 'main' }}
+  #       env:
+  #         DOWNLOAD_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/gaiad-linux-main/gaiad-linux
+  #       run: |
+  #         tests/major_fresh_upgrade/software_upgrade.sh 127.0.0.1 $VAL1_RPC_PORT v14
+
+  #     - name: _Blocks produced after upgrade
+  #       run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 5
+  #     - name: _Transactions verified> bank send, delegate, and withdraw rewards
+  #       env:
+  #         BASE_FEES: 2000
+  #       run: tests/patch_upgrade/patch_test_tx.sh
+  #     - name: _API endpoints check
+  #       run: tests/test_endpoints_api.sh localhost $VAL1_API_PORT
+  #     - name: _RPC endpoints check
+  #       run: tests/test_endpoints_rpc.sh localhost $VAL1_RPC_PORT
+
+  #     - name: _CCV channel verified> ICS v3.1.0
+  #       env:
+  #         CON1_RPC_PORT: 27301
+  #       run: tests/major_fresh_upgrade/test_ccv.sh
+
+  #     - name: _Test double signing> equivocation via detection
+  #       env:
+  #         CONSUMER_CHAIN_ID: three-v310
+  #         CONSUMER_HOME_1: /home/runner/.three_1
+  #         CONSUMER_HOME_2: /home/runner/.three_2
+  #         EQ_PROVIDER_HOME: /home/runner/.eqp
+  #         EQ_CONSUMER_HOME_1: /home/runner/.eqc_1
+  #         EQ_CONSUMER_HOME_2: /home/runner/.eqc_2
+  #         CONSUMER_SERVICE_1: three_1.service
+  #         CONSUMER_SERVICE_2: three_2.service
+  #         EQ_PROVIDER_SERVICE: eq_provider.service
+  #         EQ_CONSUMER_SERVICE_1: eq_consumer_1.service
+  #         EQ_CONSUMER_SERVICE_2: eq_consumer_2.service
+  #         CON1_API_PORT: 25301
+  #         CON2_API_PORT: 25302
+  #         CON1_GRPC_PORT: 26301
+  #         CON2_GRPC_PORT: 26302
+  #         CON1_RPC_PORT: 27301
+  #         CON2_RPC_PORT: 27302
+  #         CON1_P2P_PORT: 28301
+  #         CON2_P2P_PORT: 28302
+  #         CON1_PPROF_PORT: 29301
+  #         CON2_PPROF_PORT: 29302
+  #         EQ_PROV_API_PORT: 25004
+  #         EQ_PROV_GRPC_PORT: 26004
+  #         EQ_PROV_RPC_PORT: 27004
+  #         EQ_PROV_P2P_PORT: 28004
+  #         EQ_PROV_PPROF_PORT: 29004
+  #         EQ_CON_API_PORT_1: 25104
+  #         EQ_CON_API_PORT_2: 25204
+  #         EQ_CON_GRPC_PORT_1: 26104
+  #         EQ_CON_GRPC_PORT_2: 26204
+  #         EQ_CON_RPC_PORT_1: 27104
+  #         EQ_CON_RPC_PORT_2: 27204
+  #         EQ_CON_P2P_PORT_1: 28104
+  #         EQ_CON_P2P_PORT_2: 28204
+  #         EQ_CON_PPROF_PORT_1: 29104
+  #         EQ_CON_PPROF_PORT_2: 29204
+  #       run: |
+  #         export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V3_BINARY
+  #         sudo systemctl start hermes-evidence
+  #         tests/v14_upgrade/double-sign-detection.sh
+  #         sudo systemctl stop hermes-evidence
+
+  #     - name: _Test double signing> equivocation with assigned key via detection
+  #       env:
+  #         CONSUMER_CHAIN_ID: three-v310
+  #         CONSUMER_HOME_1: /home/runner/.three_1
+  #         CONSUMER_HOME_2: /home/runner/.three_2
+  #         EQ_PROVIDER_HOME: /home/runner/.eqp
+  #         EQ_CONSUMER_HOME_1: /home/runner/.eqc_1
+  #         EQ_CONSUMER_HOME_2: /home/runner/.eqc_2
+  #         CONSUMER_SERVICE_1: three_1.service
+  #         CONSUMER_SERVICE_2: three_2.service
+  #         EQ_PROVIDER_SERVICE: eq_provider.service
+  #         EQ_CONSUMER_SERVICE_1: eq_consumer_1.service
+  #         EQ_CONSUMER_SERVICE_2: eq_consumer_2.service
+  #         CON1_API_PORT: 25301
+  #         CON2_API_PORT: 25302
+  #         CON1_GRPC_PORT: 26301
+  #         CON2_GRPC_PORT: 26302
+  #         CON1_RPC_PORT: 27301
+  #         CON2_RPC_PORT: 27302
+  #         CON1_P2P_PORT: 28301
+  #         CON2_P2P_PORT: 28302
+  #         CON1_PPROF_PORT: 29301
+  #         CON2_PPROF_PORT: 29302
+  #         EQ_PROV_API_PORT: 25004
+  #         EQ_PROV_GRPC_PORT: 26004
+  #         EQ_PROV_RPC_PORT: 27004
+  #         EQ_PROV_P2P_PORT: 28004
+  #         EQ_PROV_PPROF_PORT: 29004
+  #         EQ_CON_API_PORT_1: 25104
+  #         EQ_CON_API_PORT_2: 25204
+  #         EQ_CON_GRPC_PORT_1: 26104
+  #         EQ_CON_GRPC_PORT_2: 26204
+  #         EQ_CON_RPC_PORT_1: 27104
+  #         EQ_CON_RPC_PORT_2: 27204
+  #         EQ_CON_P2P_PORT_1: 28104
+  #         EQ_CON_P2P_PORT_2: 28204
+  #         EQ_CON_PPROF_PORT_1: 29104
+  #         EQ_CON_PPROF_PORT_2: 29204
+  #       run: |
+  #         export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V3_BINARY
+  #         sudo systemctl start hermes-evidence
+  #         tests/v14_upgrade/double-sign-detection-key.sh
+  #         sudo systemctl stop hermes-evidence
+
+  test-v14-2:
     runs-on: ubuntu-22.04
     needs: set-version-matrix
     strategy:
@@ -902,48 +1254,6 @@ jobs:
           channel_id=$($CHAIN_BINARY q ibc channel connections $connection_id -o json --home $HOME_1 | jq -r '.channels[] | select(.port_id=="transfer").channel_id')
           tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh $channel_id
 
-      # - name: _Test double signing> equivocation via proposal
-      #   env:
-      #     CONSUMER_CHAIN_ID: three-v310
-      #     CONSUMER_HOME_1: /home/runner/.three_1
-      #     CONSUMER_HOME_2: /home/runner/.three_2
-      #     EQ_PROVIDER_HOME: /home/runner/.eqp
-      #     EQ_CONSUMER_HOME_1: /home/runner/.eqc_1
-      #     EQ_CONSUMER_HOME_2: /home/runner/.eqc_2
-      #     CONSUMER_SERVICE_1: three_1.service
-      #     CONSUMER_SERVICE_2: three_2.service
-      #     EQ_PROVIDER_SERVICE: eq_provider.service
-      #     EQ_CONSUMER_SERVICE_1: eq_consumer_1.service
-      #     EQ_CONSUMER_SERVICE_2: eq_consumer_2.service
-      #     CON1_API_PORT: 25301
-      #     CON2_API_PORT: 25302
-      #     CON1_GRPC_PORT: 26301
-      #     CON2_GRPC_PORT: 26302
-      #     CON1_RPC_PORT: 27301
-      #     CON2_RPC_PORT: 27302
-      #     CON1_P2P_PORT: 28301
-      #     CON2_P2P_PORT: 28302
-      #     CON1_PPROF_PORT: 29301
-      #     CON2_PPROF_PORT: 29302
-      #     EQ_PROV_API_PORT: 25004
-      #     EQ_PROV_GRPC_PORT: 26004
-      #     EQ_PROV_RPC_PORT: 27004
-      #     EQ_PROV_P2P_PORT: 28004
-      #     EQ_PROV_PPROF_PORT: 29004
-      #     EQ_CON_API_PORT_1: 25104
-      #     EQ_CON_API_PORT_2: 25204
-      #     EQ_CON_GRPC_PORT_1: 26104
-      #     EQ_CON_GRPC_PORT_2: 26204
-      #     EQ_CON_RPC_PORT_1: 27104
-      #     EQ_CON_RPC_PORT_2: 27204
-      #     EQ_CON_P2P_PORT_1: 28104
-      #     EQ_CON_P2P_PORT_2: 28204
-      #     EQ_CON_PPROF_PORT_1: 29104
-      #     EQ_CON_PPROF_PORT_2: 29204
-      #   run: |
-      #     export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V3_BINARY
-      #     tests/v14_upgrade/double-sign-proposal.sh
-
       - name: Test software upgrade for published releases
         if: ${{ matrix.upgrade_version != 'main' }}
         env:
@@ -960,104 +1270,32 @@ jobs:
 
       - name: _Blocks produced after upgrade
         run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 5
-      - name: _Transactions verified> bank send, delegate, and withdraw rewards
-        env:
-          BASE_FEES: 2000
-        run: tests/patch_upgrade/patch_test_tx.sh
-      - name: _API endpoints check
-        run: tests/test_endpoints_api.sh localhost $VAL1_API_PORT
-      - name: _RPC endpoints check
-        run: tests/test_endpoints_rpc.sh localhost $VAL1_RPC_PORT
 
       - name: _CCV channel verified> ICS v3.1.0
         env:
           CON1_RPC_PORT: 27301
         run: tests/major_fresh_upgrade/test_ccv.sh
 
-      # - name: _Test double signing> equivocation via detection
-      #   env:
-      #     CONSUMER_CHAIN_ID: three-v310
-      #     CONSUMER_HOME_1: /home/runner/.three_1
-      #     CONSUMER_HOME_2: /home/runner/.three_2
-      #     EQ_PROVIDER_HOME: /home/runner/.eqp
-      #     EQ_CONSUMER_HOME_1: /home/runner/.eqc_1
-      #     EQ_CONSUMER_HOME_2: /home/runner/.eqc_2
-      #     CONSUMER_SERVICE_1: three_1.service
-      #     CONSUMER_SERVICE_2: three_2.service
-      #     EQ_PROVIDER_SERVICE: eq_provider.service
-      #     EQ_CONSUMER_SERVICE_1: eq_consumer_1.service
-      #     EQ_CONSUMER_SERVICE_2: eq_consumer_2.service
-      #     CON1_API_PORT: 25301
-      #     CON2_API_PORT: 25302
-      #     CON1_GRPC_PORT: 26301
-      #     CON2_GRPC_PORT: 26302
-      #     CON1_RPC_PORT: 27301
-      #     CON2_RPC_PORT: 27302
-      #     CON1_P2P_PORT: 28301
-      #     CON2_P2P_PORT: 28302
-      #     CON1_PPROF_PORT: 29301
-      #     CON2_PPROF_PORT: 29302
-      #     EQ_PROV_API_PORT: 25004
-      #     EQ_PROV_GRPC_PORT: 26004
-      #     EQ_PROV_RPC_PORT: 27004
-      #     EQ_PROV_P2P_PORT: 28004
-      #     EQ_PROV_PPROF_PORT: 29004
-      #     EQ_CON_API_PORT_1: 25104
-      #     EQ_CON_API_PORT_2: 25204
-      #     EQ_CON_GRPC_PORT_1: 26104
-      #     EQ_CON_GRPC_PORT_2: 26204
-      #     EQ_CON_RPC_PORT_1: 27104
-      #     EQ_CON_RPC_PORT_2: 27204
-      #     EQ_CON_P2P_PORT_1: 28104
-      #     EQ_CON_P2P_PORT_2: 28204
-      #     EQ_CON_PPROF_PORT_1: 29104
-      #     EQ_CON_PPROF_PORT_2: 29204
-      #   run: |
-      #     export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V3_BINARY
-      #     sudo systemctl start hermes-evidence
-      #     tests/v14_upgrade/double-sign-detection.sh
-      #     sudo systemctl stop hermes-evidence
-
-      - name: _Test double signing> equivocation with assigned key via detection
+      - name: _Test fork> equivocation via detection
         env:
           CONSUMER_CHAIN_ID: three-v310
-          CONSUMER_HOME_1: /home/runner/.three_1
-          CONSUMER_HOME_2: /home/runner/.three_2
-          EQ_PROVIDER_HOME: /home/runner/.eqp
-          EQ_CONSUMER_HOME_1: /home/runner/.eqc_1
-          EQ_CONSUMER_HOME_2: /home/runner/.eqc_2
-          CONSUMER_SERVICE_1: three_1.service
-          CONSUMER_SERVICE_2: three_2.service
-          EQ_PROVIDER_SERVICE: eq_provider.service
-          EQ_CONSUMER_SERVICE_1: eq_consumer_1.service
-          EQ_CONSUMER_SERVICE_2: eq_consumer_2.service
-          CON1_API_PORT: 25301
-          CON2_API_PORT: 25302
-          CON1_GRPC_PORT: 26301
-          CON2_GRPC_PORT: 26302
-          CON1_RPC_PORT: 27301
-          CON2_RPC_PORT: 27302
-          CON1_P2P_PORT: 28301
-          CON2_P2P_PORT: 28302
-          CON1_PPROF_PORT: 29301
-          CON2_PPROF_PORT: 29302
-          EQ_PROV_API_PORT: 25004
-          EQ_PROV_GRPC_PORT: 26004
-          EQ_PROV_RPC_PORT: 27004
-          EQ_PROV_P2P_PORT: 28004
-          EQ_PROV_PPROF_PORT: 29004
-          EQ_CON_API_PORT_1: 25104
-          EQ_CON_API_PORT_2: 25204
-          EQ_CON_GRPC_PORT_1: 26104
-          EQ_CON_GRPC_PORT_2: 26204
-          EQ_CON_RPC_PORT_1: 27104
-          EQ_CON_RPC_PORT_2: 27204
-          EQ_CON_P2P_PORT_1: 28104
-          EQ_CON_P2P_PORT_2: 28204
-          EQ_CON_PPROF_PORT_1: 29104
-          EQ_CON_PPROF_PORT_2: 29204
+          CONSUMER_HOME_1F: /home/runner/.three_1f
+          CONSUMER_HOME_2F: /home/runner/.three_2f
+          CONSUMER_SERVICE_1F: three_1f.service
+          CONSUMER_SERVICE_2F: three_2f.service
+          CON1F_API_PORT: 25401
+          CON2F_API_PORT: 25402
+          CON1F_GRPC_PORT: 26401
+          CON2F_GRPC_PORT: 26402
+          CON1F_RPC_PORT: 27401
+          CON2F_RPC_PORT: 27402
+          CON1F_P2P_PORT: 28401
+          CON2F_P2P_PORT: 28402
+          CON1F_PPROF_PORT: 29401
+          CON2F_PPROF_PORT: 29402
         run: |
           export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V3_BINARY
+          
           sudo systemctl start hermes-evidence
-          tests/v14_upgrade/double-sign-detection-key.sh
+          tests/v14_upgrade/light-client.sh
           sudo systemctl stop hermes-evidence

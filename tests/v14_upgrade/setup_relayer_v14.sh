@@ -12,6 +12,8 @@ export PATH="$PATH:~/.hermes"
 
 echo "Setting up Hermes config..."
 cp tests/v14_upgrade/hermes-config.toml ~/.hermes/config.toml
+echo "Setting up Hermes config..."
+cp tests/v14_upgrade/hermes-config-2.toml ~/.hermes/config-2.toml
 
 echo "Adding relayer keys..."
 echo $MNEMONIC_RELAYER > mnemonic.txt
