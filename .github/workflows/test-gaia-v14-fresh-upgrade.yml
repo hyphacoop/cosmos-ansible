@@ -1295,7 +1295,4 @@ jobs:
           CON2F_PPROF_PORT: 29402
         run: |
           export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V3_BINARY
-          
-          sudo systemctl start hermes-evidence
           tests/v14_upgrade/light-client.sh
-          sudo systemctl stop hermes-evidence
