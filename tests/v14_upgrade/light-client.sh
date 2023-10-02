@@ -7,16 +7,16 @@ TRUSTED_HEIGHT=$(hermes --json --config ~/.hermes/config.toml query client conse
 echo "Trusted height: $TRUSTED_HEIGHT"
 
 echo "1. Stop $CONSUMER_SERVICE_1 and $CONSUMER_SERVICE_2..."
-systemctl stop $CONSUMER_SERVICE_1
-systemctl stop $CONSUMER_SERVICE_2
+sudo systemctl stop $CONSUMER_SERVICE_1
+sudo systemctl stop $CONSUMER_SERVICE_2
 
 echo "2. Duplicate validator home folder..."
 cp -r $CONSUMER_HOME_1 $CONSUMER_HOME_1F
 cp -r $CONSUMER_HOME_2 $CONSUMER_HOME_2F
 
 echo "Start $CONSUMER_SERVICE_1 AND $CONSUMER_SERVICE_2 again..."
-systemctl start $CONSUMER_SERVICE_1
-systemctl start $CONSUMER_SERVICE_2
+sudo systemctl start $CONSUMER_SERVICE_1
+sudo systemctl start $CONSUMER_SERVICE_2
 sleep 10
 
 echo "3. Clear persistent peers..."
@@ -42,8 +42,8 @@ echo "{}" > $CONSUMER_HOME_1F/config/addrbook.json
 echo "{}" > $CONSUMER_HOME_2F/config/addrbook.json
 
 echo "6. Start fork."
-systemctl start $CONSUMER_SERVICE_1F
-systemctl start $CONSUMER_SERVICE_2F
+sudo systemctl start $CONSUMER_SERVICE_1F
+sudo systemctl start $CONSUMER_SERVICE_2F
 sleep 5
 
 echo "7. Update the light client of the consumer chain fork on the provider"
