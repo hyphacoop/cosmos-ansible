@@ -59,6 +59,13 @@ toml set --toml-path $EQ_PROVIDER_HOME/config/config.toml p2p.persistent_peers "
 # Set fast_sync to false
 toml set --toml-path $EQ_PROVIDER_HOME/config/config.toml fast_sync false
 
+echo "Create new validator key..."
+$CHAIN_BINARY keys add malval_det --home $EQ_PROVIDER_HOME
+malval_det=$($CHAIN_BINARY keys list --home $EQ_PROVIDER_HOME --output json | jq -r '.[] | select(.name=="malval_det").address')
+
+echo "Fund new validator..."
+submit_tx "tx bank send $WALLET_1 $malval_det 100000000uatom --from $WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -o json -y" $CHAIN_BINARY $HOME_1
+
 echo "Setting up service..."
 
 sudo touch /etc/systemd/system/$EQ_PROVIDER_SERVICE
@@ -172,13 +179,6 @@ sudo systemctl enable $EQ_CONSUMER_SERVICE_1 --now
 
 sleep 20
 $CONSUMER_CHAIN_BINARY q block --home $EQ_CONSUMER_HOME_1 | jq '.'
-
-echo "Create new validator key..."
-$CHAIN_BINARY keys add malval_det --home $EQ_PROVIDER_HOME
-malval_det=$($CHAIN_BINARY keys list --home $EQ_PROVIDER_HOME --output json | jq -r '.[] | select(.name=="malval_det").address')
-
-echo "Fund new validator..."
-submit_tx "tx bank send $WALLET_1 $malval_det 100000000uatom --from $WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -o json -y" $CHAIN_BINARY $HOME_1
 
 total_before=$(curl http://localhost:$CON1_RPC_PORT/validators | jq -r '.result.total')
 
