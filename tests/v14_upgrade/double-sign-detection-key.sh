@@ -89,7 +89,7 @@ $CONSUMER_CHAIN_BINARY config node tcp://localhost:$EQ_CON_RPC_PORT_1 --home $EQ
 $CONSUMER_CHAIN_BINARY init malval_det --chain-id $CONSUMER_CHAIN_ID --home $EQ_CONSUMER_HOME_1
 
 echo "Submit key assignment transaction..."
-key=$($CONSUMER_CHAIN_BINARY tendermint show-validator --home $EQ_CONSUMER_HOME)
+key=$($CONSUMER_CHAIN_BINARY tendermint show-validator --home $EQ_CONSUMER_HOME_1)
 $CHAIN_BINARY tx provider assign-consensus-key $CONSUMER_CHAIN_ID $key --from $malval_det --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM --home $EQ_PROVIDER_HOME -y
 
 sleep 12
