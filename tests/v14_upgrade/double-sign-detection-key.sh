@@ -21,6 +21,7 @@ cp -R $HOME_2/data/state.db $EQ_PROVIDER_HOME/data/
 cp -R $HOME_2/data/tx_index.db $EQ_PROVIDER_HOME/data/
 cp -R $HOME_2/data/upgrade-info.json $EQ_PROVIDER_HOME/data/
 sudo systemctl start $PROVIDER_SERVICE_2
+sleep 10
 
 echo "Getting genesis file..."
 cp $HOME_1/config/genesis.json $EQ_PROVIDER_HOME/config/genesis.json
