@@ -126,9 +126,6 @@ $command
 sleep 12
 $CHAIN_BINARY q provider validator-consumer-key $CONSUMER_CHAIN_ID $($CHAIN_BINARY tendermint show-address --home $EQ_PROVIDER_HOME) --home $HOME_1
 
-cp $EQ_PROVIDER_HOME/config/priv_validator_key.json $EQ_CONSUMER_HOME_1/config/priv_validator_key.json
-cp $EQ_PROVIDER_HOME/config/node_key.json $EQ_CONSUMER_HOME_1/config/node_key.json
-
 echo "Getting patched genesis file..."
 cp $CONSUMER_HOME_1/config/genesis.json $EQ_CONSUMER_HOME_1/config/genesis.json
 
@@ -248,16 +245,16 @@ sleep 10
 # Restart whale
 echo "Restarting whale validator..."
 sudo systemctl start $CONSUMER_SERVICE_1
-sleep 60
+sleep 90
 
 # echo "con1 log:"
 # journalctl -u $CONSUMER_SERVICE_1 | tail -n 50
 # echo con2 log:
 # journalctl -u $CONSUMER_SERVICE_2 | tail -n 50
-# echo "Original log:"
-# journalctl -u $EQ_CONSUMER_SERVICE_1 | tail -n 50
-# echo "Double log:"
-# journalctl -u $EQ_CONSUMER_SERVICE_2 | tail -n 50
+echo "Original log:"
+journalctl -u $EQ_CONSUMER_SERVICE_1 | tail -n 50
+echo "Double log:"
+journalctl -u $EQ_CONSUMER_SERVICE_2 | tail -n 50
 
 $CONSUMER_CHAIN_BINARY q evidence --home $CONSUMER_HOME_1 -o json | jq '.'
 consensus_address=$($CONSUMER_CHAIN_BINARY tendermint show-address --home $EQ_CONSUMER_HOME_1)
