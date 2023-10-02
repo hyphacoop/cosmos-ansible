@@ -90,6 +90,26 @@ sleep 20
 $CHAIN_BINARY q block --home $EQ_PROVIDER_HOME | jq '.'
 curl http://localhost:$EQ_PROV_RPC_PORT/status | jq -r '.result.sync_info'
 
+echo "Create validator..."
+total_before=$(curl http://localhost:$CON1_RPC_PORT/validators | jq -r '.result.total')
+$CHAIN_BINARY tx staking create-validator --amount 5000000$DENOM \
+--pubkey $($CHAIN_BINARY tendermint show-validator --home $EQ_PROVIDER_HOME) \
+--moniker malval_det --chain-id $CHAIN_ID \
+--commission-rate 0.10 --commission-max-rate 0.20 --commission-max-change-rate 0.01 \
+--gas auto --gas-adjustment $GAS_ADJUSTMENT --fees 2000$DENOM --from $malval_det --home $EQ_PROVIDER_HOME -b block -y
+sleep 20
+
+echo "Check validator is in the consumer chain..."
+total_after=$(curl http://localhost:$CON1_RPC_PORT/validators | jq -r '.result.total')
+total=$(( $total_after - $total_before ))
+
+if [ $total == 1 ]; then
+  echo "Validator created!"
+else
+  echo "Validator not created."
+  exit 1
+fi
+
 echo "Setting up consumer node..."
 $CONSUMER_CHAIN_BINARY config chain-id $CONSUMER_CHAIN_ID --home $EQ_CONSUMER_HOME_1
 $CONSUMER_CHAIN_BINARY config keyring-backend test --home $EQ_CONSUMER_HOME_1
@@ -180,28 +200,6 @@ sudo systemctl enable $EQ_CONSUMER_SERVICE_1 --now
 
 sleep 20
 $CONSUMER_CHAIN_BINARY q block --home $EQ_CONSUMER_HOME_1 | jq '.'
-
-total_before=$(curl http://localhost:$CON1_RPC_PORT/validators | jq -r '.result.total')
-
-echo "Create validator..."
-# submit_tx "tx staking create-validator --amount 5000000$DENOM --pubkey $($CHAIN_BINARY tendermint show-validator --home $EQ_PROVIDER_HOME) --moniker malval_det --chain-id $CHAIN_ID --commission-rate 0.10 --commission-max-rate 0.20 --commission-max-change-rate 0.01 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees 1000$DENOM --from $malval_det -y" $CHAIN_BINARY $EQ_PROVIDER_HOME
-$CHAIN_BINARY tx staking create-validator --amount 5000000$DENOM \
---pubkey $($CHAIN_BINARY tendermint show-validator --home $EQ_PROVIDER_HOME) \
---moniker malval_det --chain-id $CHAIN_ID \
---commission-rate 0.10 --commission-max-rate 0.20 --commission-max-change-rate 0.01 \
---gas auto --gas-adjustment $GAS_ADJUSTMENT --fees 2000$DENOM --from $malval_det --home $EQ_PROVIDER_HOME -b block -y
-sleep 20
-
-echo "Check validator is in the consumer chain..."
-total_after=$(curl http://localhost:$CON1_RPC_PORT/validators | jq -r '.result.total')
-total=$(( $total_after - $total_before ))
-
-if [ $total == 1 ]; then
-  echo "Validator created!"
-else
-  echo "Validator not created."
-  exit 1
-fi
 
 # Stop whale
 echo "Stopping whale validator..."
