@@ -90,7 +90,10 @@ $CONSUMER_CHAIN_BINARY init malval_det --chain-id $CONSUMER_CHAIN_ID --home $EQ_
 
 echo "Submit key assignment transaction..."
 key=$($CONSUMER_CHAIN_BINARY tendermint show-validator --home $EQ_CONSUMER_HOME_1)
-$CHAIN_BINARY tx provider assign-consensus-key $CONSUMER_CHAIN_ID $key --from $malval_det --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM --home $EQ_PROVIDER_HOME -y
+echo "Consumer key: $key"
+command="$CHAIN_BINARY tx provider assign-consensus-key $CONSUMER_CHAIN_ID $key --from $malval_det --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM --home $EQ_PROVIDER_HOME -y"
+echo $command
+$command
 
 sleep 12
 $CHAIN_BINARY q provider validator-consumer-key $CONSUMER_CHAIN_ID $($CHAIN_BINARY tendermint show-address --home $EQ_PROVIDER_HOME) --home $HOME_1
