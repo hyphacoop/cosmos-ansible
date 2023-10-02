@@ -64,7 +64,7 @@ $CHAIN_BINARY keys add malval_det --home $EQ_PROVIDER_HOME
 malval_det=$($CHAIN_BINARY keys list --home $EQ_PROVIDER_HOME --output json | jq -r '.[] | select(.name=="malval_det").address')
 
 echo "Fund new validator..."
-submit_tx "tx bank send $WALLET_1 $malval_det 100000000uatom --from $WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -o json -y" $CHAIN_BINARY $HOME_1
+submit_tx "tx bank send $WALLET_1 $malval_det 100000000uatom --from $WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $HIGH_FEES$DENOM -o json -y" $CHAIN_BINARY $HOME_1
 
 echo "Setting up service..."
 
