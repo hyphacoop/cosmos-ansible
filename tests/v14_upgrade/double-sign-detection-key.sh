@@ -10,6 +10,18 @@ $CHAIN_BINARY config broadcast-mode block --home $EQ_PROVIDER_HOME
 $CHAIN_BINARY config node tcp://localhost:$EQ_PROV_RPC_PORT --home $EQ_PROVIDER_HOME
 $CHAIN_BINARY init malval_det --chain-id $CHAIN_ID --home $EQ_PROVIDER_HOME
 
+echo "Copying snapshot from validator 2..."
+sudo systemctl stop $PROVIDER_SERVICE_2
+cp -R $HOME_2/data/application.db $EQ_PROVIDER_HOME/data/
+cp -R $HOME_2/data/blockstore.db $EQ_PROVIDER_HOME/data/
+cp -R $HOME_2/data/cs.wal $EQ_PROVIDER_HOME/data/
+cp -R $HOME_2/data/evidence.db $EQ_PROVIDER_HOME/data/
+cp -R $HOME_2/data/snapshots $EQ_PROVIDER_HOME/data/
+cp -R $HOME_2/data/state.db $EQ_PROVIDER_HOME/data/
+cp -R $HOME_2/data/tx_index.db $EQ_PROVIDER_HOME/data/
+cp -R $HOME_2/data/upgrade-info.json $EQ_PROVIDER_HOME/data/
+sudo systemctl start $PROVIDER_SERVICE_2
+
 echo "Getting genesis file..."
 cp $HOME_1/config/genesis.json $EQ_PROVIDER_HOME/config/genesis.json
 
@@ -245,13 +257,15 @@ sleep 60
 # echo "Double log:"
 # journalctl -u $EQ_CONSUMER_SERVICE_2 | tail -n 50
 
-evidence=$($CONSUMER_CHAIN_BINARY q evidence --home $CONSUMER_HOME_1 -o json | jq -r '.evidence | length')
-echo "$evidence"
-if [ $evidence == 1 ]; then
-  echo "Equivocation evidence found!"
-else
+$CONSUMER_CHAIN_BINARY q evidence --home $CONSUMER_HOME_1 -o json | jq '.'
+consensus_address=$($CONSUMER_CHAIN_BINARY tendermint show-address --home $EQ_CONSUMER_HOME_1)
+validator_check=$($CONSUMER_CHAIN_BINARY q evidence --home $CONSUMER_HOME_1 -o json | jq '.' | grep $consensus_address)
+echo $validator_check
+if [ -z "$validator_check" ]; then
   echo "No equivocation evidence found."
   exit 1
+else
+  echo "Equivocation evidence found!"
 fi
 
 echo "Wait for evidence to reach the provider chain..."
@@ -266,8 +280,7 @@ echo "Validator operator address: $val_address"
 
 $CHAIN_BINARY q staking validator $val_address --home $HOME_1
 jailed=$($CHAIN_BINARY q staking validator $val_address --home $HOME_1 -o json | jq -r '.jailed')
-echo "Expected jailed status: $jailed_expected, actual status: $jailed_actual"
-if [ $jailed_actual != true ]; then
+if [ $jailed != true ]; then
   echo "Equivocation detection failure: validator was not jailed."
   exit 1
 else
@@ -276,8 +289,8 @@ fi
 
 # Submit proposal to tombstone validator
 $CONSUMER_CHAIN_BINARY q evidence --home $CONSUMER_HOME_1 -o json | jq -r '.'
-power=$($CONSUMER_CHAIN_BINARY q evidence --home $CONSUMER_HOME_1 -o json | jq -r '.evidence[0].power')
-addr=$($CONSUMER_CHAIN_BINARY q evidence --home $CONSUMER_HOME_1 -o json | jq -r '.evidence[0].consensus_address')
+# power=$($CONSUMER_CHAIN_BINARY q evidence --home $CONSUMER_HOME_1 -o json | jq -r '.evidence[0].power')
+# addr=$($CONSUMER_CHAIN_BINARY q evidence --home $CONSUMER_HOME_1 -o json | jq -r '.evidence[0].consensus_address')
 eq_height=$($CHAIN_BINARY q block --home $HOME_1 | jq -r '.block.header.height')
 eq_time=$($CHAIN_BINARY q block --home $HOME_1 | jq -r '.block.header.time')
 
