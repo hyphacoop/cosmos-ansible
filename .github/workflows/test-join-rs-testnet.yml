@@ -31,7 +31,9 @@ jobs:
           chain_version=$(curl -s $RPC_ENDPOINT/abci_info? | jq -r '.result.response.version')
           ansible-playbook node.yml -i examples/inventory-rs-testnet-provider.yml --extra-vars "target=local reboot=false chain_home={{ node_user_home }}/.gaia node_user=runner enable_swap=false use_cosmovisor=false chain_binary_release=https://github.com/cosmos/gaia/releases/download/$chain_version/gaiad-$chain_version-linux-amd64 chain_binary_source=release"
       - name: Check gaiad service
-        run: systemctl status gaiad
+        run: |
+          journalctl -u gaiad
+          systemctl status gaiad
       - name: Check blocks are being produced
         run: |
           chain_height=$(curl -s $RPC_ENDPOINT/block | jq -r '.result.block.header.height')
