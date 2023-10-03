@@ -1,6 +1,6 @@
 {
     "title": "Change evidence params to match Cosmos Hub",
-    "description": "Decrease the max block size from 1MiB to 200kB.",
+    "description": "Set max_bytes to 50000 and max_age_num_blocks to 1000000.",
     "changes": [
         {
             "subspace": "baseapp",
