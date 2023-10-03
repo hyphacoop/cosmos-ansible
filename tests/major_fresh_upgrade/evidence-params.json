@@ -6,6 +6,8 @@
             "subspace": "baseapp",
             "key": "EvidenceParams",
             "value": {
+                "max_age_duration": "172800000000000",
+                "max_age_num_blocks": "1000000",
                 "max_bytes": "50000"
             }
         }

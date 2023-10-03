@@ -906,7 +906,7 @@ jobs:
       - name: Set EvidenceParams to match mainnet
         run: |
           $CHAIN_BINARY q params subspace baseapp EvidenceParams --home $HOME_1
-          tests/param_change.sh tests/major_fresh_upgrade/evidence.json
+          tests/param_change.sh tests/major_fresh_upgrade/evidence-params.json
           sleep 10
           journalctl -u $PROVIDER_SERVICE_1 | tail -n 50
           $CHAIN_BINARY q params subspace baseapp EvidenceParams --home $HOME_1
@@ -914,14 +914,11 @@ jobs:
       - name: Set blocksize to 200kb and gas to 40000000
         run: |
           $CHAIN_BINARY q params subspace baseapp BlockParams --home $HOME_1  
-          tests/param_change.sh tests/major_fresh_upgrade/blocksize-max-bytes.json
+          tests/param_change.sh tests/major_fresh_upgrade/blocksize-params.json
           sleep 10
           journalctl -u $PROVIDER_SERVICE_1 | tail -n 50
-          tests/param_change.sh tests/major_fresh_upgrade/blocksize-max-gas.json
-          sleep 10
           $CHAIN_BINARY q params subspace baseapp BlockParams --home $HOME_1
-          journalctl -u $PROVIDER_SERVICE_1 | tail -n 50
-
+          
       - name: _Test double signing> equivocation via proposal
         env:
           CONSUMER_CHAIN_ID: three-v310
