@@ -46,10 +46,10 @@ sudo systemctl start $CONSUMER_SERVICE_1F
 sudo systemctl start $CONSUMER_SERVICE_2F
 sleep 5
 
-echo "7. Update the light client of the consumer chain fork on the provider"
-hermes --config ~/.hermes/config-2.toml update client --client 07-tendermint-0 --host-chain provider --trusted-height $TRUSTED_HEIGHT
+echo "7. Update the light client of the consumer chain fork on the provider chain"
+hermes --config ~/.hermes/config-2.toml update client --client 07-tendermint-0 --host-chain $CHAIN_ID --trusted-height $TRUSTED_HEIGHT
 
-echo "Waiting for evidence to be sent to provider..."
+echo "Waiting for evidence to be sent to provider chain..."
 sleep 60
 
 journalctl -u hermes | tail -n 50
