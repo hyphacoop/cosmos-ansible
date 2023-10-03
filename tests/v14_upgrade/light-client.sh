@@ -79,7 +79,9 @@ echo "7. Update the light client of the consumer chain fork on the provider chai
 hermes --config ~/.hermes/config-2.toml update client --client 07-tendermint-0 --host-chain $CHAIN_ID --trusted-height $TRUSTED_HEIGHT
 
 echo "Waiting for evidence to be sent to provider chain..."
-sleep 90
+sleep 30
+sudo systemctl restart hermes
+sleep 30
 
 journalctl -u hermes | tail -n 50
 
