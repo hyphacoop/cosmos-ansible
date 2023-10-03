@@ -947,7 +947,9 @@ jobs:
 
       - name: Set blocksize to 200kb and gas to 40000000
         run: |
-          tests/param_change.sh tests/major_fresh_upgrade/blocksize.json
+          tests/param_change.sh tests/major_fresh_upgrade/blocksize-max-bytes.json
+          sleep 10
+          tests/param_change.sh tests/major_fresh_upgrade/blocksize-max-gas.json
           sleep 10
           $CHAIN_BINARY q params subspace baseapp BlockParams --home $HOME_1
           
