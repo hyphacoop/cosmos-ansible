@@ -914,7 +914,7 @@ jobs:
       - name: Set blocksize to 200kb and gas to 40000000
         run: |
           $CHAIN_BINARY q params subspace baseapp BlockParams --home $HOME_1  
-          tests/param_change.sh tests/major_fresh_upgrade/blocksize-params.json
+          tests/param_change.sh tests/major_fresh_upgrade/block-params.json
           sleep 10
           journalctl -u $PROVIDER_SERVICE_1 | tail -n 50
           $CHAIN_BINARY q params subspace baseapp BlockParams --home $HOME_1
