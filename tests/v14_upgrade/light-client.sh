@@ -10,7 +10,7 @@ echo "1. Stop $CONSUMER_SERVICE_1 and $CONSUMER_SERVICE_2..."
 sudo systemctl stop $CONSUMER_SERVICE_1
 sudo systemctl stop $CONSUMER_SERVICE_2
 
-echo "2. Duplicate validator home folder..."
+echo "2. Duplicate validator home folders..."
 cp -r $CONSUMER_HOME_1 $CONSUMER_HOME_1F
 cp -r $CONSUMER_HOME_2 $CONSUMER_HOME_2F
 
@@ -41,9 +41,38 @@ echo "5. Wipe the address book..."
 echo "{}" > $CONSUMER_HOME_1F/config/addrbook.json
 echo "{}" > $CONSUMER_HOME_2F/config/addrbook.json
 
-echo "6. Start fork."
-sudo systemctl start $CONSUMER_SERVICE_1F
-sudo systemctl start $CONSUMER_SERVICE_2F
+echo "6. Set up fork services..."
+
+sudo touch /etc/systemd/system/$CONSUMER_SERVICE_1F
+echo "[Unit]"                               | sudo tee /etc/systemd/system/$CONSUMER_SERVICE_1F
+echo "Description=Consumer service"         | sudo tee /etc/systemd/system/$CONSUMER_SERVICE_1F -a
+echo "After=network-online.target"          | sudo tee /etc/systemd/system/$CONSUMER_SERVICE_1F -a
+echo ""                                     | sudo tee /etc/systemd/system/$CONSUMER_SERVICE_1F -a
+echo "[Service]"                            | sudo tee /etc/systemd/system/$CONSUMER_SERVICE_1F -a
+echo "User=$USER"                           | sudo tee /etc/systemd/system/$CONSUMER_SERVICE_1F -a
+echo "ExecStart=$HOME/go/bin/$CONSUMER_CHAIN_BINARY start --x-crisis-skip-assert-invariants --home $CONSUMER_HOME_1F" | sudo tee /etc/systemd/system/$CONSUMER_SERVICE_1F -a
+echo "Restart=no"                           | sudo tee /etc/systemd/system/$CONSUMER_SERVICE_1F -a
+echo "LimitNOFILE=4096"                     | sudo tee /etc/systemd/system/$CONSUMER_SERVICE_1F -a
+echo ""                                     | sudo tee /etc/systemd/system/$CONSUMER_SERVICE_1F -a
+echo "[Install]"                            | sudo tee /etc/systemd/system/$CONSUMER_SERVICE_1F -a
+echo "WantedBy=multi-user.target"           | sudo tee /etc/systemd/system/$CONSUMER_SERVICE_1F -a
+
+sudo touch /etc/systemd/system/$CONSUMER_SERVICE_2F
+echo "[Unit]"                               | sudo tee /etc/systemd/system/$CONSUMER_SERVICE_2F
+echo "Description=Consumer service"         | sudo tee /etc/systemd/system/$CONSUMER_SERVICE_2F -a
+echo "After=network-online.target"          | sudo tee /etc/systemd/system/$CONSUMER_SERVICE_2F -a
+echo ""                                     | sudo tee /etc/systemd/system/$CONSUMER_SERVICE_2F -a
+echo "[Service]"                            | sudo tee /etc/systemd/system/$CONSUMER_SERVICE_2F -a
+echo "User=$USER"                           | sudo tee /etc/systemd/system/$CONSUMER_SERVICE_2F -a
+echo "ExecStart=$HOME/go/bin/$CONSUMER_CHAIN_BINARY start --x-crisis-skip-assert-invariants --home $CONSUMER_HOME_2F" | sudo tee /etc/systemd/system/$CONSUMER_SERVICE_2F -a
+echo "Restart=no"                           | sudo tee /etc/systemd/system/$CONSUMER_SERVICE_2F -a
+echo "LimitNOFILE=4096"                     | sudo tee /etc/systemd/system/$CONSUMER_SERVICE_2F -a
+echo ""                                     | sudo tee /etc/systemd/system/$CONSUMER_SERVICE_2F -a
+echo "[Install]"                            | sudo tee /etc/systemd/system/$CONSUMER_SERVICE_2F -a
+echo "WantedBy=multi-user.target"           | sudo tee /etc/systemd/system/$CONSUMER_SERVICE_2F -a
+
+sudo systemctl enable $CONSUMER_SERVICE_1F --now
+sudo systemctl enable $CONSUMER_SERVICE_2F --now
 sleep 5
 
 echo "7. Update the light client of the consumer chain fork on the provider chain"
