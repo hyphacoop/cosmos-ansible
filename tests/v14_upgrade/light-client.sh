@@ -81,11 +81,13 @@ hermes --config ~/.hermes/config-2.toml update client --client 07-tendermint-0 -
 echo "Waiting for evidence to be sent to provider chain..."
 sleep 90
 
-journalctl -u hermes | tail -n 100
+journalctl -u hermes | tail -n 50
 
 echo "consumer 1:"
 journalctl -u $CONSUMER_SERVICE_1 | tail -n 50
 echo "consumer 1f:"
 journalctl -u $CONSUMER_SERVICE_1F | tail -n 50
+echo "validator 1:"
+journalctl -u $PROVIDER_SERVICE_1 | tail -n 50
 
 $CHAIN_BINARY q slashing signing-infos --home $HOME_1
