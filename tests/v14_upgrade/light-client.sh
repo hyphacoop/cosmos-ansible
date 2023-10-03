@@ -14,10 +14,10 @@ echo "2. Duplicate validator home folders..."
 cp -r $CONSUMER_HOME_1 $CONSUMER_HOME_1F
 cp -r $CONSUMER_HOME_2 $CONSUMER_HOME_2F
 
-echo "Start $CONSUMER_SERVICE_1 AND $CONSUMER_SERVICE_2 again..."
+echo "Start $CONSUMER_SERVICE_1 and $CONSUMER_SERVICE_2 again..."
 sudo systemctl start $CONSUMER_SERVICE_1
 sudo systemctl start $CONSUMER_SERVICE_2
-sleep 10
+sleep 15
 
 echo "3. Clear persistent peers..."
 CON2_NODE_ID=$($CONSUMER_CHAIN_BINARY tendermint show-node-id --home $CONSUMER_HOME_2F)
@@ -79,13 +79,13 @@ echo "7. Update the light client of the consumer chain fork on the provider chai
 hermes --config ~/.hermes/config-2.toml update client --client 07-tendermint-0 --host-chain $CHAIN_ID --trusted-height $TRUSTED_HEIGHT
 
 echo "Waiting for evidence to be sent to provider chain..."
-sleep 60
+sleep 90
 
-journalctl -u hermes | tail -n 50
+journalctl -u hermes | tail -n 100
 
 echo "consumer 1:"
-journalctl -u $CONSUMER_SERVICE_1 | tail -n 20
+journalctl -u $CONSUMER_SERVICE_1 | tail -n 50
 echo "consumer 1f:"
-journalctl -u $CONSUMER_SERVICE_1F | tail -n 20
+journalctl -u $CONSUMER_SERVICE_1F | tail -n 50
 
 $CHAIN_BINARY q slashing signing-infos --home $HOME_1
