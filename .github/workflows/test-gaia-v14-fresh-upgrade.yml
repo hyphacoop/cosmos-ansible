@@ -907,9 +907,11 @@ jobs:
         run: |
           tests/param_change.sh tests/major_fresh_upgrade/blocksize-max-bytes.json
           sleep 10
+          journalctl -u $PROVIDER_SERVICE_1 | tail -n 50
           tests/param_change.sh tests/major_fresh_upgrade/blocksize-max-gas.json
           sleep 10
           $CHAIN_BINARY q params subspace baseapp BlockParams --home $HOME_1
+          journalctl -u $PROVIDER_SERVICE_1 | tail -n 50
 
       - name: _Test double signing> equivocation via proposal
         env:
@@ -956,7 +958,9 @@ jobs:
 
           
       - name: _Blocks produced after block size change
-        run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 5
+        run: |
+          journalctl -u $PROVIDER_SERVICE_1 | tail -n 50
+          tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 5
 
       # - name: Test software upgrade for published releases
       #   if: ${{ matrix.upgrade_version != 'main' }}
