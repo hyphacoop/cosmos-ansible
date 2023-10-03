@@ -1,12 +1,12 @@
 {
-    "title": "Decrease max block size from to 200kB",
-    "description": "Decrease the max block size to 200kB.",
+    "title": "Set max block size from to 2MB",
+    "description": "Set the max block size to 2MB.",
     "changes": [
         {
             "subspace": "baseapp",
             "key": "BlockParams",
             "value": {
-                "max_bytes": "200000",
+                "max_bytes": "2097152",
                 "max_gas": "40000000"
             }
         }

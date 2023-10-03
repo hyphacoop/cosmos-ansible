@@ -911,7 +911,7 @@ jobs:
           journalctl -u $PROVIDER_SERVICE_1 | tail -n 50
           $CHAIN_BINARY q params subspace baseapp EvidenceParams --home $HOME_1
 
-      - name: Set blocksize to 200kb and gas to 40000000
+      - name: Set blocksize to 2MB and gas to 40000000
         run: |
           $CHAIN_BINARY q params subspace baseapp BlockParams --home $HOME_1  
           tests/param_change.sh tests/major_fresh_upgrade/block-params.json
@@ -960,8 +960,6 @@ jobs:
         run: |
           export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V3_BINARY
           tests/v14_upgrade/double-sign-proposal.sh
-
-
           
       - name: _Blocks produced after block size change
         run: |
