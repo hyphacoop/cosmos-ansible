@@ -6,7 +6,7 @@
             "subspace": "baseapp",
             "key": "BlockParams",
             "value": {
-                "max_bytes": "2097152",
+                "max_bytes": "200000",
                 "max_gas": "40000000"
             }
         }
