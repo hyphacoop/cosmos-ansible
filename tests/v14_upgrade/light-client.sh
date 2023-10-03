@@ -73,7 +73,7 @@ echo "WantedBy=multi-user.target"           | sudo tee /etc/systemd/system/$CONS
 
 sudo systemctl enable $CONSUMER_SERVICE_1F --now
 sudo systemctl enable $CONSUMER_SERVICE_2F --now
-sleep 5
+sleep 20
 
 echo "7. Update the light client of the consumer chain fork on the provider chain"
 hermes --config ~/.hermes/config-2.toml update client --client 07-tendermint-0 --host-chain $CHAIN_ID --trusted-height $TRUSTED_HEIGHT
@@ -83,7 +83,7 @@ sleep 30
 sudo systemctl restart hermes
 sleep 30
 
-journalctl -u hermes | tail -n 50
+journalctl -u hermes | tail -n 100
 
 echo "consumer 1:"
 journalctl -u $CONSUMER_SERVICE_1 | tail -n 50

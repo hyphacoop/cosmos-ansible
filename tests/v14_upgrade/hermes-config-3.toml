@@ -27,9 +27,9 @@ port = 3001
 
 [[chains]]
 id = 'three-v310'
-rpc_addr = 'http://localhost:27301'
-grpc_addr = 'http://localhost:26301'
-event_source = { mode = 'push', url = 'ws://localhost:27301/websocket', batch_delay = '500ms' }
+rpc_addr = 'http://localhost:27401'
+grpc_addr = 'http://localhost:26401'
+event_source = { mode = 'push', url = 'ws://localhost:27401/websocket', batch_delay = '500ms' }
 rpc_timeout = '15s'
 account_prefix = 'cosmos'
 key_name = 'wallet'
