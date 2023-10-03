@@ -273,7 +273,7 @@ fi
 echo "Wait for evidence to reach the provider chain..."
 sleep 60
 
-# journalctl -u hermes-evidence
+journalctl -u hermes-evidence
 
 hex_address=$($CHAIN_BINARY keys parse $malval_det --output json | jq -r '.bytes')
 echo "Validator hex address: $hex_address"
