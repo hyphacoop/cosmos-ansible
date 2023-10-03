@@ -93,3 +93,21 @@ echo "validator 1:"
 journalctl -u $PROVIDER_SERVICE_1 | tail -n 50
 
 $CHAIN_BINARY q slashing signing-infos --home $HOME_1
+
+$CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1
+jailed=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.jailed')
+if [ $jailed != true ]; then
+  echo "Equivocation detection failure: validator $VALOPER_1 was not jailed."
+  exit 1
+else
+  echo "Equivocation detection success: validator $VALOPER_1 was jailed."
+fi
+
+$CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1
+jailed=$($CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq -r '.jailed')
+if [ $jailed != true ]; then
+  echo "Equivocation detection failure: validator $VALOPER_2 was not jailed."
+  exit 1
+else
+  echo "Equivocation detection success: validator $VALOPER_2 was jailed."
+fi
