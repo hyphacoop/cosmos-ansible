@@ -86,11 +86,11 @@ sleep 30
 journalctl -u hermes | tail -n 100
 
 echo "consumer 1:"
-journalctl -u $CONSUMER_SERVICE_1 | tail -n 50
+journalctl -u $CONSUMER_SERVICE_1 | tail -n 10
 echo "consumer 1f:"
-journalctl -u $CONSUMER_SERVICE_1F | tail -n 50
+journalctl -u $CONSUMER_SERVICE_1F | tail -n 10
 echo "validator 1:"
-journalctl -u $PROVIDER_SERVICE_1 | tail -n 50
+journalctl -u $PROVIDER_SERVICE_1 | tail -n 10
 
 $CHAIN_BINARY q ibc client status 07-tendermint-0 --home $HOME_1
 $CHAIN_BINARY q ibc client state 07-tendermint-0 -o json --home $HOME_1 | jq -r '.client_state.frozen_height'
