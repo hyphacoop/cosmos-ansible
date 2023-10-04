@@ -92,6 +92,9 @@ journalctl -u $CONSUMER_SERVICE_1F | tail -n 50
 echo "validator 1:"
 journalctl -u $PROVIDER_SERVICE_1 | tail -n 50
 
+$CHAIN_BINARY q ibc client status 07-tendermint-0
+$CHAIN_BINARY q ibc client state 07-tendermint-0 -o json | jq -r '.client_state.frozen_height'
+
 $CHAIN_BINARY q slashing signing-infos --home $HOME_1
 
 $CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1
