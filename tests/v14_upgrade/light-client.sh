@@ -83,8 +83,8 @@ sleep 30
 sudo systemctl restart hermes
 sleep 30
 
+echo "Hermes:"
 journalctl -u hermes | tail -n 100
-
 echo "consumer 1:"
 journalctl -u $CONSUMER_SERVICE_1 | tail -n 10
 echo "consumer 1f:"

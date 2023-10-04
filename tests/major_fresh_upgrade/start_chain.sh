@@ -2,7 +2,7 @@
 # 1. Set up a two-validator provider chain.
 
 # Install Gaia binary
-CHAIN_BINARY_URL=https://github.com/cosmos/gaia/releases/download/$START_VERSION/gaiad-$START_VERSION-linux-amd64
+# CHAIN_BINARY_URL=https://github.com/cosmos/gaia/releases/download/$START_VERSION/gaiad-$START_VERSION-linux-amd64
 echo "Installing Gaia..."
 wget $CHAIN_BINARY_URL -O $HOME/go/bin/$CHAIN_BINARY -q
 chmod +x $HOME/go/bin/$CHAIN_BINARY
@@ -46,6 +46,11 @@ cp reward_reg.json $HOME_1/config/genesis.json
 cat $HOME_1/config/genesis.json
 
 # Add funds to accounts
+$CHAIN_BINARY genesis add-genesis-account $MONIKER_1 $VAL_FUNDS$DENOM --home $HOME_1
+$CHAIN_BINARY genesis add-genesis-account $MONIKER_2 $VAL_FUNDS$DENOM --home $HOME_1
+$CHAIN_BINARY genesis add-genesis-account $MONIKER_3 $VAL_FUNDS$DENOM --home $HOME_1
+$CHAIN_BINARY genesis add-genesis-account $MONIKER_4 $VAL_FUNDS$DENOM --home $HOME_1
+$CHAIN_BINARY genesis add-genesis-account $MONIKER_5 $VAL_FUNDS$DENOM --home $HOME_1
 $CHAIN_BINARY add-genesis-account $MONIKER_1 $VAL_FUNDS$DENOM --home $HOME_1
 $CHAIN_BINARY add-genesis-account $MONIKER_2 $VAL_FUNDS$DENOM --home $HOME_1
 $CHAIN_BINARY add-genesis-account $MONIKER_3 $VAL_FUNDS$DENOM --home $HOME_1
@@ -57,6 +62,10 @@ mkdir -p $HOME_1/config/gentx
 VAL1_NODE_ID=$($CHAIN_BINARY tendermint show-node-id --home $HOME_1)
 VAL2_NODE_ID=$($CHAIN_BINARY tendermint show-node-id --home $HOME_2)
 VAL3_NODE_ID=$($CHAIN_BINARY tendermint show-node-id --home $HOME_3)
+$CHAIN_BINARY genesis gentx $MONIKER_1 $VAL1_STAKE$DENOM --pubkey "$($CHAIN_BINARY tendermint show-validator --home $HOME_1)" --node-id $VAL1_NODE_ID --moniker $MONIKER_1 --chain-id $CHAIN_ID --home $HOME_1 --output-document $HOME_1/config/gentx/$MONIKER_1-gentx.json
+$CHAIN_BINARY genesis gentx $MONIKER_2 $VAL2_STAKE$DENOM --pubkey "$($CHAIN_BINARY tendermint show-validator --home $HOME_2)" --node-id $VAL2_NODE_ID --moniker $MONIKER_2 --chain-id $CHAIN_ID --home $HOME_1 --output-document $HOME_1/config/gentx/$MONIKER_2-gentx.json
+$CHAIN_BINARY genesis gentx $MONIKER_3 $VAL3_STAKE$DENOM --pubkey "$($CHAIN_BINARY tendermint show-validator --home $HOME_3)" --node-id $VAL3_NODE_ID --moniker $MONIKER_3 --chain-id $CHAIN_ID --home $HOME_1 --output-document $HOME_1/config/gentx/$MONIKER_3-gentx.json
+$CHAIN_BINARY genesis collect-gentxs --home $HOME_1
 $CHAIN_BINARY gentx $MONIKER_1 $VAL1_STAKE$DENOM --pubkey "$($CHAIN_BINARY tendermint show-validator --home $HOME_1)" --node-id $VAL1_NODE_ID --moniker $MONIKER_1 --chain-id $CHAIN_ID --home $HOME_1 --output-document $HOME_1/config/gentx/$MONIKER_1-gentx.json
 $CHAIN_BINARY gentx $MONIKER_2 $VAL2_STAKE$DENOM --pubkey "$($CHAIN_BINARY tendermint show-validator --home $HOME_2)" --node-id $VAL2_NODE_ID --moniker $MONIKER_2 --chain-id $CHAIN_ID --home $HOME_1 --output-document $HOME_1/config/gentx/$MONIKER_2-gentx.json
 $CHAIN_BINARY gentx $MONIKER_3 $VAL3_STAKE$DENOM --pubkey "$($CHAIN_BINARY tendermint show-validator --home $HOME_3)" --node-id $VAL3_NODE_ID --moniker $MONIKER_3 --chain-id $CHAIN_ID --home $HOME_1 --output-document $HOME_1/config/gentx/$MONIKER_3-gentx.json
@@ -76,8 +85,8 @@ jq -r '.app_state.slashing.params.downtime_jail_duration |= "5s"' slashing.json 
 # jq -r '.app_state.staking.params.validator_liquid_staking_cap = "0.200000000000000000"' lsm-2.json > lsm-3.json
 
 echo "Patching genesis for ICA messages..."
-jq -r '.app_state.interchainaccounts.host_genesis_state.params.allow_messages[0] = "*"' slashing-2.json > ./ica_host.json
-mv ica_host.json $HOME_1/config/genesis.json
+# jq -r '.app_state.interchainaccounts.host_genesis_state.params.allow_messages[0] = "*"' slashing-2.json > ./ica_host.json
+# mv ica_host.json $HOME_1/config/genesis.json
 
 echo "Copying genesis file to other nodes..."
 cp $HOME_1/config/genesis.json $HOME_2/config/genesis.json 
@@ -147,6 +156,9 @@ VAL3_PEER="$VAL3_NODE_ID@localhost:$VAL3_P2P_PORT"
 toml set --toml-path $HOME_1/config/config.toml p2p.persistent_peers "$VAL2_PEER,$VAL3_PEER"
 
 # Set fast_sync to false
+toml set --toml-path $HOME_1/config/config.toml block_sync false
+toml set --toml-path $HOME_2/config/config.toml block_sync false
+toml set --toml-path $HOME_3/config/config.toml block_sync false
 toml set --toml-path $HOME_1/config/config.toml fast_sync false
 toml set --toml-path $HOME_2/config/config.toml fast_sync false
 toml set --toml-path $HOME_3/config/config.toml fast_sync false
