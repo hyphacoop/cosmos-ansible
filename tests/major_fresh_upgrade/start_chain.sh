@@ -43,7 +43,6 @@ jq -r --arg denom "$DENOM" '.app_state.mint.params.mint_denom |= $denom' min_dep
 jq -r --arg denom "$DENOM" '.app_state.staking.params.bond_denom |= $denom' mint.json > bond_denom.json
 jq -r --arg denom "$DENOM" '.app_state.provider.params.consumer_reward_denom_registration_fee.denom = $denom' bond_denom.json > reward_reg.json
 cp reward_reg.json $HOME_1/config/genesis.json
-cat $HOME_1/config/genesis.json
 
 # Add funds to accounts
 $CHAIN_BINARY add-genesis-account $MONIKER_1 $VAL_FUNDS$DENOM --home $HOME_1
@@ -81,6 +80,8 @@ echo "Patching genesis for ICA messages..."
 # mv ica_host.json $HOME_1/config/genesis.json
 # pd
 mv slashing-2.json $HOME_1/config/genesis.json
+
+cat $HOME_1/config/genesis.json
 
 echo "Copying genesis file to other nodes..."
 cp $HOME_1/config/genesis.json $HOME_2/config/genesis.json 
