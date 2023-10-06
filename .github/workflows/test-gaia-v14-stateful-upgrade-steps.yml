@@ -163,7 +163,7 @@ jobs:
         run: tests/major_stateful_upgrade/start_chain.sh
       - name: _Blocks produced after upgrade to v14
         run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 50 2100
-      - name: _Provider TX> gaiad v14
+      - name: _Transactions verified> bank send, delegate, and withdraw rewards
         run: tests/major_stateful_upgrade/test_tx.sh
       - name: Send funds to wallet 4
         run: $CHAIN_BINARY tx bank send $WALLET_1 $WALLET_4 10000000$DENOM --home $HOME_1 --from $MONIKER_1 --keyring-backend test --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM --chain-id $CHAIN_ID -y -b block
