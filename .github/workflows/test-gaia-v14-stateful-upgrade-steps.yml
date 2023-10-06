@@ -299,7 +299,7 @@ jobs:
           screen -r hermes.service -p0 -X logfile flush 0
           echo "Wait for hermes to start..."
           sleep 100
-      - name: _Upgraded VSC successful> Stride
+      - name: _VSC successful> Stride consumer
         env:
           CON1_RPC_PORT: 37001
         run: tests/major_stateful_upgrade/test_ccv.sh
