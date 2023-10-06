@@ -243,7 +243,7 @@ jobs:
           CONSUMER_HOME_1: /home/runner/.conb1
           CONSUMER_SERVICE_1: conb1.service
         run: tests/major_stateful_upgrade/launch_consumer.sh
-      - name: _Block Production> ICS v2.0.0
+      - name: _Consumer chain produces blocks> ICS v2.0.0
         run: tests/test_block_production.sh 127.0.0.1 27201 10
       - name: Establish CCV channel for consumer b
         run: |
