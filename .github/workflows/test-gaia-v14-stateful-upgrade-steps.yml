@@ -303,7 +303,7 @@ jobs:
         env:
           CON1_RPC_PORT: 37001
         run: tests/major_stateful_upgrade/test_ccv.sh
-      - name: _Upgraded IBC transfer successful> Stride
+      - name: _IBC transfer successful> Stride consumer
         env:
           CONSUMER_CHAIN_ID: consumerd
           CONSUMER_HOME_1: /home/runner/.stride1
