@@ -161,7 +161,7 @@ jobs:
           START_VERSION: ${{inputs.gaia_version}}
           ARCHIVE_URL: "https://files.polypore.xyz/archived-state/latest_v13.tar.gz"
         run: tests/major_stateful_upgrade/start_chain.sh
-      - name: _Provider Block Production> gaiad v14
+      - name: _Blocks produced after upgrade to v14
         run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 50 2100
       - name: _Provider TX> gaiad v14
         run: tests/major_stateful_upgrade/test_tx.sh
