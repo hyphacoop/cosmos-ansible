@@ -283,7 +283,7 @@ jobs:
         run: tests/major_stateful_upgrade/upgrade_stride.sh
       - name: Re-launch Stride as a consumer chain
         run: tests/major_stateful_upgrade/launch_stride_consumer.sh
-      - name: _Upgraded block Production> Stride
+      - name: _Consumer chain produces blocks after changeover from sovereign> Stride
         run: tests/test_block_production.sh 127.0.0.1 $STRIDE_RPC_1 5 # 5 blocks
       - name: Establish CCV channel for consumer d
         run: |
