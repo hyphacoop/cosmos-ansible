@@ -11,8 +11,8 @@
   template:
     src: consumer-addition-proposal.json.j2
     dest: '{{ provider_user_home }}/consumer-proposal.json'
-    owner: 'provider'
-    group: 'provider'
+    owner: '{{ provider_user }}'
+    group: '{{ provider_user }}'
 
 - name: Submit consumer chain proposal
   shell: |
