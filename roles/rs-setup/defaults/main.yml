@@ -7,7 +7,7 @@ provider_home: "{{ provider_user_home }}/.gaia"
 # Consumer paths
 consumer_user: consumer
 consumer_user_home: /home/{{ consumer_user }}
-consumer_home: /home/consumer/.consumer
+consumer_home: "{{ consumer_user_home }}/.consumer
 
 # Provider chain
 chain_binary_name: "gaiad"
