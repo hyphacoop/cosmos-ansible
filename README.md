@@ -51,31 +51,31 @@ Watch the video below to see the playbook in action:
 
 ### Playbook Tags
 
-Use `gaia_control.py` to run only part of the `gaia` playbook:
+Use `node_control.py` to run only part of the `node` playbook:
 
 ```
-./gaia-control.py [-i inventory] [-t target] operation
+./node_control.py [-i inventory] [-t target] operation
 ```
 
-The inventory argument is optional and defaults to `inventory.yml` (e.g. `./gaia-control.py restart`).
+The inventory argument is optional and defaults to `inventory.yml` (e.g. `./node_control.py restart`).
 
 The target option is the server IP or domain.
 
 The operation will apply to all the nodes in the inventory:
-- `restart` restarts the gaiad/cosmovisor service
-- `stop` stops the gaiad/cosmovisor service
-- `start` starts thegaiad/cosmovisor service
+- `restart` restarts the node binary/cosmovisor service
+- `stop` stops the node binary/cosmovisor service
+- `start` starts the node binary/cosmovisor service
 - `reboot` reboots the machine
-- `reset` runs `gaiad unsafe-reset-all`
+- `reset` runs `node_binary unsafe-reset-all`
 
 ### Role Folder Structure
 
-- The `gaia` role provides the core functionality of this toolkit
-- Node setup: `roles/gaia/tasks/main.yml`
-- Default variables: `roles/gaia/defaults/main.yml`
-- Systemd services: `roles/gaia/templates/`
-- To add a variable to the gaia config files, add it to:
-  - `roles/gaia/templates/ansible_vars.json.j2`  
+- The `node` role provides the core functionality of this toolkit
+- Node setup: `roles/node/tasks/main.yml`
+- Default variables: `roles/node/defaults/main.yml`
+- Systemd services: `roles/node/templates/`
+- To add a variable to the node config files, add it to:
+  - `roles/node/templates/ansible_vars.json.j2`
 
 ## 🌴 Automatic Tests
 
