@@ -72,8 +72,8 @@ jobs:
           CON1_RPC_PORT: 27101
           CHAIN_BINARY: "/home/runner/go/bin/gaiad"
           HOME_1: "/home/runner/.gaia"
-          VALOPER_1: "validator"
-          VAL_STAKE_STEP: "100000000000000"
+          VALOPER_1: "cosmosvaloper1r5v5srda7xfth3hn2s26txvrcrntldju7lnwmv"
+          VAL_STAKE_STEP: "1000000"
           MONIKER_1: "validator"
           DENOM: "uatom"
           GAS: "auto"
