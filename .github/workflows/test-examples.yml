@@ -6,7 +6,7 @@ on:
   schedule:
     # At 9:00 on Mondays.
     - cron: '0 9 * * 1'
-  push:
+  push: 
 jobs:
   # fresh-state-testnet:
   #   runs-on: ubuntu-22.04
