@@ -70,6 +70,7 @@ jobs:
       - name: Test CCV
         env:
           CON1_RPC_PORT: 26660
+          VAL1_RPC_PORT: 26650
           CHAIN_BINARY: "/home/runner/go/bin/gaiad"
           HOME_1: "/home/runner/.gaia"
           VALOPER_1: "cosmosvaloper1r5v5srda7xfth3hn2s26txvrcrntldju7lnwmv"
