@@ -6,7 +6,7 @@ on:
   schedule:
     # At 9:00 on Mondays.
     - cron: '0 9 * * 1'
-  push: 
+  push:
 jobs:
   # fresh-state-testnet:
   #   runs-on: ubuntu-22.04
@@ -64,9 +64,6 @@ jobs:
       - name: Check blocks are being produced on provider
         run: |
           tests/test_block_production.sh 127.0.0.1 26650 10
-      - name: Check blocks are being produced on consumer
-        run: |
-          tests/test_block_production.sh 127.0.0.1 26660 10
       - name: Check blocks are being produced on consumer
         run: |
           tests/test_block_production.sh 127.0.0.1 26660 10
