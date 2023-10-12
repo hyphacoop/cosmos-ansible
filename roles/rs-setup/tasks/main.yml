@@ -11,21 +11,21 @@
   template:
     src: consumer-addition-proposal.json.j2
     dest: '{{ provider_user_home }}/consumer-proposal.json'
-    owner: 'provider'
-    group: 'provider'
+    owner: '{{ provider_user }}'
+    group: '{{ provider_user }}'
 
 - name: Submit consumer chain proposal
   shell: |
     {{ chain_binary_name }} tx gov submit-proposal consumer-addition {{ provider_user_home }}/consumer-proposal.json --keyring-backend test --chain-id {{ chain_id }} --from validator --home {{ provider_home }} --gas auto --fees {{ chain_tx_fees }} --gas-adjustment {{ gas_adjustment }} -b block -y --output json > {{ provider_user_home }}/proposal_result.json
   environment:
     PATH: "{{provider_home}}/cosmovisor/current/bin:{{ ansible_env.PATH }}"
-  become_user: provider
+  become_user: '{{ provider_user }}'
 
 - name: Collect proposal ID
   shell: |
     jq -r '.logs[0].events[4].attributes[0].value' {{ provider_user_home }}/proposal_result.json
   register: proposal_id
-  become_user: provider
+  become_user: '{{ provider_user }}'
 
 - name: Print proposal ID
   debug:
@@ -36,7 +36,7 @@
     {{ chain_binary_name }} tx gov vote {{proposal_id.stdout}} yes --from validator --keyring-backend test --chain-id {{ provider_chain_id }} --home {{ provider_home }} --gas auto --fees {{ chain_tx_fees }} --gas-adjustment {{ gas_adjustment }} -b block -y
   environment:
     PATH: "{{ provider_home }}/cosmovisor/current/bin:{{ ansible_env.PATH }}"
-  become_user: provider
+  become_user: '{{ provider_user }}'
 
 - name: Collect voting period
   shell: |
@@ -47,7 +47,7 @@
   register: voting_period_seconds
   environment:
     PATH: "{{ provider_home }}/cosmovisor/current/bin:{{ ansible_env.PATH }}"
-  become_user: provider
+  become_user: '{{ provider_user }}'
 
 - name: Wait for voting period to end
   pause:
@@ -59,7 +59,7 @@
   register: proposal_status
   environment:
     PATH: "{{ provider_home }}/cosmovisor/current/bin:{{ ansible_env.PATH }}"
-  become_user: provider
+  become_user: '{{ provider_user }}'
 
 - name: Fail if proposal does not pass
   fail:
@@ -71,7 +71,7 @@
     {{ chain_binary_name }} q provider consumer-genesis {{consumer_chain_id}} --home {{provider_home}} -o json > {{provider_user_home}}/ccv-state.json
   environment:
     PATH: "{{provider_home}}/cosmovisor/current/bin:{{ ansible_env.PATH }}"
-  become_user: provider
+  become_user: '{{ provider_user }}'
 
 - name: Copy consumer genesis into provider home folder
   shell: |
