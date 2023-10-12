@@ -1,6 +1,6 @@
 #!/bin/bash
 # Test Validator Set Changes
-set -x
+
 # Delegate additional stake to val 1
 echo "Delegating additional stake to $MONIKER_1..."
 $CHAIN_BINARY --home $HOME_1 tx staking delegate $VALOPER_1 $VAL_STAKE_STEP$DENOM --from $MONIKER_1 --keyring-backend test --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --fees 1000$DENOM -b block -y --chain-id $CHAIN_ID
