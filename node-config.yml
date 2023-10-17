@@ -1,0 +1,6 @@
+---
+- name: Edit config
+  hosts: node
+  become: true
+  roles:
+  - node-config
