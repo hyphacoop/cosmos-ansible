@@ -3,7 +3,7 @@
 all:
   vars:
     chain_home_clear: true
-    chain_version: v12.0.0
+    chain_version: v13.0.0
     api_enabled: true
     chain_id: "my-devnet"
     chain_use_ssl_proxy: true
