@@ -23,6 +23,9 @@ mkdir -p $HOME/go/bin
 wget -nv $CHAIN_BINARY_URL -O $HOME/go/bin/$CHAIN_BINARY
 chmod +x $HOME/go/bin/$CHAIN_BINARY
 
+# Printing Gaia binary checksum
+echo GAIA_CHECKSUM: $(sha256sum $HOME/go/bin/$CHAIN_BINARY)
+
 echo "Patching config files..."
 # app.toml
 # minimum_gas_prices
