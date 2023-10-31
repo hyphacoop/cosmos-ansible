@@ -7,6 +7,9 @@ echo "Installing Gaia..."
 wget $CHAIN_BINARY_URL -O $HOME/go/bin/$CHAIN_BINARY -q
 chmod +x $HOME/go/bin/$CHAIN_BINARY
 
+# Printing Gaia binary checksum
+echo GAIA_CHECKSUM: $(sha256sum $HOME/go/bin/$CHAIN_BINARY)
+
 # Initialize home directories
 echo "Initializing node homes..."
 $CHAIN_BINARY config chain-id $CHAIN_ID --home $HOME_1
