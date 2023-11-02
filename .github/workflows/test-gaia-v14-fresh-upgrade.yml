@@ -5,7 +5,7 @@ on:
   repository_dispatch:
     types: [new_main_build]
   schedule:
-      - cron: '0 6,14 * * 1-6'
+    - cron: '0 6,14 * * 1-6'
   workflow_dispatch:
 jobs:
   set-version-matrix:
@@ -591,7 +591,7 @@ jobs:
           tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh $channel_id
       - name: Register and fund ICA
         run: tests/v12_upgrade/setup_ica.sh
-      
+
       - name: Set test LSM params
         run: |
           tests/param_change.sh tests/v12_upgrade/proposal-global-liquid-cap.json
@@ -947,7 +947,7 @@ jobs:
       #   run: |
       #     export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V3_BINARY
       #     tests/v14_upgrade/double-sign-proposal.sh
-          
+
       - name: Test software upgrade for published releases
         if: ${{ matrix.upgrade_version != 'main' }}
         env:
