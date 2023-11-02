@@ -20,13 +20,16 @@ $CONSUMER_CHAIN_BINARY config keyring-backend test --home $CONSUMER_HOME_3
 $CHAIN_BINARY config node tcp://localhost:$CON3_RPC_PORT --home $CONSUMER_HOME_3
 $CONSUMER_CHAIN_BINARY init $MONIKER_3 --chain-id $CONSUMER_CHAIN_ID --home $CONSUMER_HOME_3
 
-echo "Copying keys from provider nodes to consumer ones..."
-cp $HOME_1/config/priv_validator_key.json $CONSUMER_HOME_1/config/priv_validator_key.json
-cp $HOME_1/config/node_key.json $CONSUMER_HOME_1/config/node_key.json
-cp $HOME_2/config/priv_validator_key.json $CONSUMER_HOME_2/config/priv_validator_key.json
-cp $HOME_2/config/node_key.json $CONSUMER_HOME_2/config/node_key.json
-cp $HOME_3/config/priv_validator_key.json $CONSUMER_HOME_3/config/priv_validator_key.json
-cp $HOME_3/config/node_key.json $CONSUMER_HOME_3/config/node_key.json
+echo "Submit key assignment tx..."
+CON1_PUBKEY=$($CONSUMER_CHAIN_BINARY tendermint show-validator --home $CONSUMER_HOME_1)
+CON2_PUBKEY=$($CONSUMER_CHAIN_BINARY tendermint show-validator --home $CONSUMER_HOME_2)
+CON3_PUBKEY=$($CONSUMER_CHAIN_BINARY tendermint show-validator --home $CONSUMER_HOME_3)
+$CHAIN_BINARY tx provider assign-consensus-key $CONSUMER_CHAIN_ID $CON1_PUBKEY --from $WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM --home $HOME_1 -y
+sleep $COMMIT_TIMEOUT
+$CHAIN_BINARY tx provider assign-consensus-key $CONSUMER_CHAIN_ID $CON2_PUBKEY --from $WALLET_2 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM --home $HOME_1 -y
+sleep $COMMIT_TIMEOUT
+$CHAIN_BINARY tx provider assign-consensus-key $CONSUMER_CHAIN_ID $CON3_PUBKEY --from $WALLET_3 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM --home $HOME_1 -y
+sleep $COMMIT_TIMEOUT
 
 # Update genesis file with right denom
 sed -i s%stake%$CONSUMER_DENOM%g $CONSUMER_HOME_1/config/genesis.json
@@ -109,7 +112,7 @@ echo "Setting a short commit timeout..."
 seconds=s
 toml set --toml-path $CONSUMER_HOME_1/config/config.toml consensus.timeout_commit "$COMMIT_TIMEOUT$seconds"
 toml set --toml-path $CONSUMER_HOME_2/config/config.toml consensus.timeout_commit "$COMMIT_TIMEOUT$seconds"
-toml set --toml-path $CONSUMER_HOME_3/config/config.toml consensus.timeout_commit "$COMMIT_TIMEOUT$seconds"
+toml set --toml-path $CONSUMER_HOME_2/config/config.toml consensus.timeout_commit "$COMMIT_TIMEOUT$seconds"
 
 # Set fast_sync to false - or block_sync for ICS v3
 toml set --toml-path $CONSUMER_HOME_1/config/config.toml fast_sync false

@@ -1,0 +1,13 @@
+{
+    "title": "Equivoque validator",
+    "description": "Attempt to tombstone validator.",
+    "equivocations": [
+        {
+            "height": 100,
+            "time": "2023-10-10T10:10:10.000000Z",
+            "power": 100,
+            "consensus_address": "cosmosvalcons1"
+        }
+    ],
+    "deposit": "10000000uatom"
+}

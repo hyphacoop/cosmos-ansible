@@ -2,7 +2,7 @@
 # 1. Set up a two-validator provider chain.
 
 # Install Gaia binary
-CHAIN_BINARY_URL=https://github.com/cosmos/gaia/releases/download/$START_VERSION/gaiad-$START_VERSION-linux-amd64
+# CHAIN_BINARY_URL=https://github.com/cosmos/gaia/releases/download/$START_VERSION/gaiad-$START_VERSION-linux-amd64
 echo "Installing Gaia..."
 wget $CHAIN_BINARY_URL -O $HOME/go/bin/$CHAIN_BINARY -q
 chmod +x $HOME/go/bin/$CHAIN_BINARY
@@ -39,14 +39,12 @@ echo $MNEMONIC_5 | $CHAIN_BINARY keys add $MONIKER_5 --keyring-backend test --ho
 
 # Update genesis file with right denom
 echo "Setting denom to $DENOM..."
-cat $HOME_1/config/genesis.json
 jq -r --arg denom "$DENOM" '.app_state.crisis.constant_fee.denom |= $denom' $HOME_1/config/genesis.json > crisis.json
 jq -r --arg denom "$DENOM" '.app_state.gov.deposit_params.min_deposit[0].denom |= $denom' crisis.json > min_deposit.json
 jq -r --arg denom "$DENOM" '.app_state.mint.params.mint_denom |= $denom' min_deposit.json > mint.json
 jq -r --arg denom "$DENOM" '.app_state.staking.params.bond_denom |= $denom' mint.json > bond_denom.json
 jq -r --arg denom "$DENOM" '.app_state.provider.params.consumer_reward_denom_registration_fee.denom = $denom' bond_denom.json > reward_reg.json
 cp reward_reg.json $HOME_1/config/genesis.json
-cat $HOME_1/config/genesis.json
 
 # Add funds to accounts
 $CHAIN_BINARY add-genesis-account $MONIKER_1 $VAL_FUNDS$DENOM --home $HOME_1
@@ -69,8 +67,8 @@ echo "Patching genesis file for fast governance..."
 jq -r ".app_state.gov.voting_params.voting_period = \"$VOTING_PERIOD\"" $HOME_1/config/genesis.json  > ./voting.json
 jq -r ".app_state.gov.deposit_params.min_deposit[0].amount = \"1\"" ./voting.json > ./gov.json
 
-echo "Setting slashing window to 10..."
-jq -r --arg SLASH "10" '.app_state.slashing.params.signed_blocks_window |= $SLASH' ./gov.json > ./slashing.json
+echo "Setting slashing window to 10000..."
+jq -r --arg SLASH "10000" '.app_state.slashing.params.signed_blocks_window |= $SLASH' ./gov.json > ./slashing.json
 jq -r '.app_state.slashing.params.downtime_jail_duration |= "5s"' slashing.json > slashing-2.json
 
 # echo "Patching genesis file for LSM params..."
@@ -79,8 +77,13 @@ jq -r '.app_state.slashing.params.downtime_jail_duration |= "5s"' slashing.json 
 # jq -r '.app_state.staking.params.validator_liquid_staking_cap = "0.200000000000000000"' lsm-2.json > lsm-3.json
 
 echo "Patching genesis for ICA messages..."
-jq -r '.app_state.interchainaccounts.host_genesis_state.params.allow_messages[0] = "*"' slashing-2.json > ./ica_host.json
-mv ica_host.json $HOME_1/config/genesis.json
+# Gaia
+# jq -r '.app_state.interchainaccounts.host_genesis_state.params.allow_messages[0] = "*"' slashing-2.json > ./ica_host.json
+# mv ica_host.json $HOME_1/config/genesis.json
+# pd
+mv slashing-2.json $HOME_1/config/genesis.json
+
+cat $HOME_1/config/genesis.json
 
 echo "Copying genesis file to other nodes..."
 cp $HOME_1/config/genesis.json $HOME_2/config/genesis.json 
@@ -150,6 +153,9 @@ VAL3_PEER="$VAL3_NODE_ID@localhost:$VAL3_P2P_PORT"
 toml set --toml-path $HOME_1/config/config.toml p2p.persistent_peers "$VAL2_PEER,$VAL3_PEER"
 
 # Set fast_sync to false
+toml set --toml-path $HOME_1/config/config.toml block_sync false
+toml set --toml-path $HOME_2/config/config.toml block_sync false
+toml set --toml-path $HOME_3/config/config.toml block_sync false
 toml set --toml-path $HOME_1/config/config.toml fast_sync false
 toml set --toml-path $HOME_2/config/config.toml fast_sync false
 toml set --toml-path $HOME_3/config/config.toml fast_sync false

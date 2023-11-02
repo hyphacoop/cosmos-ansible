@@ -1,0 +1,295 @@
+#!/bin/bash
+# Test equivocation proposal for double-signing
+
+source tests/process_tx.sh
+
+echo "Setting up provider node..."
+$CHAIN_BINARY config chain-id $CHAIN_ID --home $EQ_PROVIDER_HOME
+$CHAIN_BINARY config keyring-backend test --home $EQ_PROVIDER_HOME
+$CHAIN_BINARY config broadcast-mode block --home $EQ_PROVIDER_HOME
+$CHAIN_BINARY config node tcp://localhost:$EQ_PROV_RPC_PORT --home $EQ_PROVIDER_HOME
+$CHAIN_BINARY init malval_det --chain-id $CHAIN_ID --home $EQ_PROVIDER_HOME
+
+echo "Copying snapshot from validator 2..."
+sudo systemctl stop $PROVIDER_SERVICE_2
+cp -R $HOME_2/data/application.db $EQ_PROVIDER_HOME/data/
+cp -R $HOME_2/data/blockstore.db $EQ_PROVIDER_HOME/data/
+cp -R $HOME_2/data/cs.wal $EQ_PROVIDER_HOME/data/
+cp -R $HOME_2/data/evidence.db $EQ_PROVIDER_HOME/data/
+cp -R $HOME_2/data/snapshots $EQ_PROVIDER_HOME/data/
+cp -R $HOME_2/data/state.db $EQ_PROVIDER_HOME/data/
+cp -R $HOME_2/data/tx_index.db $EQ_PROVIDER_HOME/data/
+cp -R $HOME_2/data/upgrade-info.json $EQ_PROVIDER_HOME/data/
+sudo systemctl start $PROVIDER_SERVICE_2
+
+echo "Getting genesis file..."
+cp $HOME_1/config/genesis.json $EQ_PROVIDER_HOME/config/genesis.json
+
+echo "Patching config files..."
+# app.toml
+# minimum_gas_prices
+sed -i -e "/minimum-gas-prices =/ s^= .*^= \"0.0025$DENOM\"^" $EQ_PROVIDER_HOME/config/app.toml
+# Enable API
+toml set --toml-path $EQ_PROVIDER_HOME/config/app.toml api.enable true
+# Set different ports for api
+toml set --toml-path $EQ_PROVIDER_HOME/config/app.toml api.address "tcp://0.0.0.0:$EQ_PROV_API_PORT"
+# Set different ports for grpc
+toml set --toml-path $EQ_PROVIDER_HOME/config/app.toml grpc.address "0.0.0.0:$EQ_PROV_GRPC_PORT"
+# Turn off grpc web
+toml set --toml-path $EQ_PROVIDER_HOME/config/app.toml grpc-web.enable false
+# config.toml
+# Set different ports for rpc
+toml set --toml-path $EQ_PROVIDER_HOME/config/config.toml rpc.laddr "tcp://0.0.0.0:$EQ_PROV_RPC_PORT"
+# Set different ports for rpc pprof
+toml set --toml-path $EQ_PROVIDER_HOME/config/config.toml rpc.pprof_laddr "localhost:$EQ_PROV_PPROF_PORT"
+# Set different ports for p2p
+toml set --toml-path $EQ_PROVIDER_HOME/config/config.toml p2p.laddr "tcp://0.0.0.0:$EQ_PROV_P2P_PORT"
+# Allow duplicate IPs in p2p
+toml set --toml-path $EQ_PROVIDER_HOME/config/config.toml p2p.allow_duplicate_ip true
+echo "Setting a short commit timeout..."
+seconds=s
+toml set --toml-path $EQ_PROVIDER_HOME/config/config.toml consensus.timeout_commit "$COMMIT_TIMEOUT$seconds"
+# Set persistent peers
+echo "Setting persistent peers..."
+VAL2_NODE_ID=$($CHAIN_BINARY tendermint show-node-id --home $HOME_2)
+VAL3_NODE_ID=$($CHAIN_BINARY tendermint show-node-id --home $HOME_3)
+VAL2_PEER="$VAL2_NODE_ID@localhost:$VAL2_P2P_PORT"
+VAL3_PEER="$VAL3_NODE_ID@localhost:$VAL3_P2P_PORT"
+toml set --toml-path $EQ_PROVIDER_HOME/config/config.toml p2p.persistent_peers "$VAL2_PEER,$VAL3_PEER"
+# Set fast_sync to false
+toml set --toml-path $EQ_PROVIDER_HOME/config/config.toml fast_sync false
+
+echo "Setting up service..."
+
+sudo touch /etc/systemd/system/$EQ_PROVIDER_SERVICE
+echo "[Unit]"                               | sudo tee /etc/systemd/system/$EQ_PROVIDER_SERVICE
+echo "Description=Gaia service"             | sudo tee /etc/systemd/system/$EQ_PROVIDER_SERVICE -a
+echo "After=network-online.target"          | sudo tee /etc/systemd/system/$EQ_PROVIDER_SERVICE -a
+echo ""                                     | sudo tee /etc/systemd/system/$EQ_PROVIDER_SERVICE -a
+echo "[Service]"                            | sudo tee /etc/systemd/system/$EQ_PROVIDER_SERVICE -a
+echo "User=$USER"                           | sudo tee /etc/systemd/system/$EQ_PROVIDER_SERVICE -a
+echo "ExecStart=$HOME/go/bin/$CHAIN_BINARY start --x-crisis-skip-assert-invariants --home $EQ_PROVIDER_HOME" | sudo tee /etc/systemd/system/$EQ_PROVIDER_SERVICE -a
+echo "Restart=no"                           | sudo tee /etc/systemd/system/$EQ_PROVIDER_SERVICE -a
+echo "LimitNOFILE=4096"                     | sudo tee /etc/systemd/system/$EQ_PROVIDER_SERVICE -a
+echo ""                                     | sudo tee /etc/systemd/system/$EQ_PROVIDER_SERVICE -a
+echo "[Install]"                            | sudo tee /etc/systemd/system/$EQ_PROVIDER_SERVICE -a
+echo "WantedBy=multi-user.target"           | sudo tee /etc/systemd/system/$EQ_PROVIDER_SERVICE -a
+
+echo "Starting provider service..."
+sudo systemctl enable $EQ_PROVIDER_SERVICE --now
+
+sleep 20
+$CHAIN_BINARY q block --home $EQ_PROVIDER_HOME | jq '.'
+curl http://localhost:$EQ_PROV_RPC_PORT/status | jq -r '.result.sync_info'
+
+echo "Setting up consumer node..."
+$CONSUMER_CHAIN_BINARY config chain-id $CONSUMER_CHAIN_ID --home $EQ_CONSUMER_HOME_1
+$CONSUMER_CHAIN_BINARY config keyring-backend test --home $EQ_CONSUMER_HOME_1
+$CONSUMER_CHAIN_BINARY config node tcp://localhost:$EQ_CON_RPC_PORT_1 --home $EQ_CONSUMER_HOME_1
+$CONSUMER_CHAIN_BINARY init malval_det --chain-id $CONSUMER_CHAIN_ID --home $EQ_CONSUMER_HOME_1
+
+echo "Copying key from provider node to consumer one..."
+cp $EQ_PROVIDER_HOME/config/priv_validator_key.json $EQ_CONSUMER_HOME_1/config/priv_validator_key.json
+cp $EQ_PROVIDER_HOME/config/node_key.json $EQ_CONSUMER_HOME_1/config/node_key.json
+
+echo "Getting patched genesis file..."
+cp $CONSUMER_HOME_1/config/genesis.json $EQ_CONSUMER_HOME_1/config/genesis.json
+
+echo "Patching config files..."
+# app.toml
+# minimum_gas_prices
+sed -i -e "/minimum-gas-prices =/ s^= .*^= \"0$CONSUMER_DENOM\"^" $EQ_CONSUMER_HOME_1/config/app.toml
+# Enable API
+toml set --toml-path $EQ_CONSUMER_HOME_1/config/app.toml api.enable true
+# Set different ports for api
+toml set --toml-path $EQ_CONSUMER_HOME_1/config/app.toml api.address "tcp://0.0.0.0:$EQ_CON_API_PORT_1"
+# Set different ports for grpc
+toml set --toml-path $EQ_CONSUMER_HOME_1/config/app.toml grpc.address "0.0.0.0:$EQ_CON_GRPC_PORT_1"
+# Turn off grpc web
+toml set --toml-path $EQ_CONSUMER_HOME_1/config/app.toml grpc-web.enable false
+# config.toml
+# Set different ports for rpc
+toml set --toml-path $EQ_CONSUMER_HOME_1/config/config.toml rpc.laddr "tcp://0.0.0.0:$EQ_CON_RPC_PORT_1"
+# Set different ports for rpc pprof
+toml set --toml-path $EQ_CONSUMER_HOME_1/config/config.toml rpc.pprof_laddr "localhost:$EQ_CON_PPROF_PORT_1"
+# Set different ports for p2p
+toml set --toml-path $EQ_CONSUMER_HOME_1/config/config.toml p2p.laddr "tcp://0.0.0.0:$EQ_CON_P2P_PORT_1"
+echo "Set no strict address book rules..."
+toml set --toml-path $EQ_CONSUMER_HOME_1/config/config.toml p2p.addr_book_strict false
+# Allow duplicate IPs in p2p
+toml set --toml-path $EQ_CONSUMER_HOME_1/config/config.toml p2p.allow_duplicate_ip true
+echo "Setting persistent peer..."
+CON1_NODE_ID=$($CONSUMER_CHAIN_BINARY tendermint show-node-id --home $CONSUMER_HOME_1)
+CON1_PEER="$CON1_NODE_ID@localhost:$CON1_P2P_PORT"
+toml set --toml-path $EQ_CONSUMER_HOME_1/config/config.toml p2p.persistent_peers "$CON1_PEER"
+echo "Setting a short commit timeout..."
+toml set --toml-path $EQ_CONSUMER_HOME_1/config/config.toml consensus.timeout_commit "1s"
+# Set fast_sync to false - or block_sync for ICS v3
+toml set --toml-path $EQ_CONSUMER_HOME_1/config/config.toml fast_sync false
+toml set --toml-path $EQ_CONSUMER_HOME_1/config/config.toml block_sync false
+
+echo "Setting up services..."
+
+sudo touch /etc/systemd/system/$EQ_CONSUMER_SERVICE_1
+echo "[Unit]"                               | sudo tee /etc/systemd/system/$EQ_CONSUMER_SERVICE_1
+echo "Description=Consumer service"       | sudo tee /etc/systemd/system/$EQ_CONSUMER_SERVICE_1 -a
+echo "After=network-online.target"          | sudo tee /etc/systemd/system/$EQ_CONSUMER_SERVICE_1 -a
+echo ""                                     | sudo tee /etc/systemd/system/$EQ_CONSUMER_SERVICE_1 -a
+echo "[Service]"                            | sudo tee /etc/systemd/system/$EQ_CONSUMER_SERVICE_1 -a
+echo "User=$USER"                            | sudo tee /etc/systemd/system/$EQ_CONSUMER_SERVICE_1 -a
+echo "ExecStart=$HOME/go/bin/$CONSUMER_CHAIN_BINARY start --x-crisis-skip-assert-invariants --home $EQ_CONSUMER_HOME_1" | sudo tee /etc/systemd/system/$EQ_CONSUMER_SERVICE_1 -a
+echo "Restart=no"                       | sudo tee /etc/systemd/system/$EQ_CONSUMER_SERVICE_1 -a
+echo "LimitNOFILE=4096"                     | sudo tee /etc/systemd/system/$EQ_CONSUMER_SERVICE_1 -a
+echo ""                                     | sudo tee /etc/systemd/system/$EQ_CONSUMER_SERVICE_1 -a
+echo "[Install]"                            | sudo tee /etc/systemd/system/$EQ_CONSUMER_SERVICE_1 -a
+echo "WantedBy=multi-user.target"           | sudo tee /etc/systemd/system/$EQ_CONSUMER_SERVICE_1 -a
+
+sudo touch /etc/systemd/system/$EQ_CONSUMER_SERVICE_2
+echo "[Unit]"                               | sudo tee /etc/systemd/system/$EQ_CONSUMER_SERVICE_2
+echo "Description=Consumer service"       | sudo tee /etc/systemd/system/$EQ_CONSUMER_SERVICE_2 -a
+echo "After=network-online.target"          | sudo tee /etc/systemd/system/$EQ_CONSUMER_SERVICE_2 -a
+echo ""                                     | sudo tee /etc/systemd/system/$EQ_CONSUMER_SERVICE_2 -a
+echo "[Service]"                            | sudo tee /etc/systemd/system/$EQ_CONSUMER_SERVICE_2 -a
+echo "User=$USER"                            | sudo tee /etc/systemd/system/$EQ_CONSUMER_SERVICE_2 -a
+echo "ExecStart=$HOME/go/bin/$CONSUMER_CHAIN_BINARY start --x-crisis-skip-assert-invariants --home $EQ_CONSUMER_HOME_2" | sudo tee /etc/systemd/system/$EQ_CONSUMER_SERVICE_2 -a
+echo "Restart=no"                       | sudo tee /etc/systemd/system/$EQ_CONSUMER_SERVICE_2 -a
+echo "LimitNOFILE=4096"                     | sudo tee /etc/systemd/system/$EQ_CONSUMER_SERVICE_2 -a
+echo ""                                     | sudo tee /etc/systemd/system/$EQ_CONSUMER_SERVICE_2 -a
+echo "[Install]"                            | sudo tee /etc/systemd/system/$EQ_CONSUMER_SERVICE_2 -a
+echo "WantedBy=multi-user.target"           | sudo tee /etc/systemd/system/$EQ_CONSUMER_SERVICE_2 -a
+
+echo "Starting consumer service..."
+sudo systemctl enable $EQ_CONSUMER_SERVICE_1 --now
+
+sleep 20
+$CONSUMER_CHAIN_BINARY q block --home $EQ_CONSUMER_HOME_1 | jq '.'
+
+echo "Create new validator key..."
+$CHAIN_BINARY keys add malval_det --home $EQ_PROVIDER_HOME
+malval_det=$($CHAIN_BINARY keys list --home $EQ_PROVIDER_HOME --output json | jq -r '.[] | select(.name=="malval_det").address')
+echo "address: $malval_det"
+
+echo "Fund new validator..."
+submit_tx "tx bank send $WALLET_1 $malval_det 100000000$DENOM --from $WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -o json -y" $CHAIN_BINARY $HOME_1
+sleep 5
+
+total_before=$(curl -s http://localhost:$CON1_RPC_PORT/validators | jq -r '.result.total')
+
+echo "Provider service 1:"
+journalctl -u $PROVIDER_SERVICE_1 | tail -n 10
+echo "Eq provider service:"
+journalctl -u $EQ_PROVIDER_SERVICE | tail -n 10
+$CHAIN_BINARY keys list --home $EQ_PROVIDER_HOME
+$CHAIN_BINARY q bank balances $malval_det --home $EQ_PROVIDER_HOME
+echo "Create validator..."
+# submit_tx "tx staking create-validator --amount 5000000$DENOM --pubkey $($CHAIN_BINARY tendermint show-validator --home $EQ_PROVIDER_HOME) --moniker malval_det --chain-id $CHAIN_ID --commission-rate 0.10 --commission-max-rate 0.20 --commission-max-change-rate 0.01 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees 1000$DENOM --from $malval_det -y" $CHAIN_BINARY $EQ_PROVIDER_HOME
+$CHAIN_BINARY tx staking create-validator --amount 5000000$DENOM \
+--pubkey $($CHAIN_BINARY tendermint show-validator --home $EQ_PROVIDER_HOME) \
+--moniker malval_det --chain-id $CHAIN_ID \
+--commission-rate 0.10 --commission-max-rate 0.20 --commission-max-change-rate 0.01 \
+--gas auto --gas-adjustment $GAS_ADJUSTMENT --fees 2000$DENOM --from $malval_det --home $EQ_PROVIDER_HOME -b block -y
+sleep 20
+
+echo "Check validator is in the consumer chain..."
+total_after=$(curl -s http://localhost:$CON1_RPC_PORT/validators | jq -r '.result.total')
+total=$(( $total_after - $total_before ))
+
+if [ $total == 1 ]; then
+  echo "Validator created!"
+else
+  echo "Validator not created."
+  exit 1
+fi
+
+# Stop whale
+echo "Stopping whale validator..."
+sudo systemctl stop $CONSUMER_SERVICE_1
+sleep 10
+
+# Stop validator
+sudo systemctl stop $EQ_CONSUMER_SERVICE_1
+
+# Duplicate home folder
+echo "Duplicating home folder..."
+cp -r $EQ_CONSUMER_HOME_1/ $EQ_CONSUMER_HOME_2/
+
+# Update peer info
+CON2_NODE_ID=$($CONSUMER_CHAIN_BINARY tendermint show-node-id --home $CONSUMER_HOME_2)
+CON2_PEER="$CON2_NODE_ID@localhost:$CON2_P2P_PORT"
+toml set --toml-path $EQ_CONSUMER_HOME_2/config/config.toml p2p.persistent_peers "$CON2_PEER"
+
+# Update ports
+toml set --toml-path $EQ_CONSUMER_HOME_2/config/app.toml api.address "tcp://0.0.0.0:$EQ_CON_API_PORT_2"
+# Set different ports for grpc
+toml set --toml-path $EQ_CONSUMER_HOME_2/config/app.toml grpc.address "0.0.0.0:$EQ_CON_GRPC_PORT_2"
+# config.toml
+# Set different ports for rpc
+toml set --toml-path $EQ_CONSUMER_HOME_2/config/config.toml rpc.laddr "tcp://0.0.0.0:$EQ_CON_RPC_PORT_2"
+# Set different ports for rpc pprof
+toml set --toml-path $EQ_CONSUMER_HOME_2/config/config.toml rpc.pprof_laddr "localhost:$EQ_CON_PPROF_PORT_2"
+# Set different ports for p2p
+toml set --toml-path $EQ_CONSUMER_HOME_2/config/config.toml p2p.laddr "tcp://0.0.0.0:$EQ_CON_P2P_PORT_2"
+
+# Wipe the state and address books
+echo '{"height": "0","round": 0,"step": 0,"signature":"","signbytes":""}' > $EQ_CONSUMER_HOME_2/data/priv_validator_state.json
+echo "{}" > $EQ_CONSUMER_HOME_2/config/addrbook.json
+echo "{}" > $EQ_CONSUMER_HOME_1/config/addrbook.json
+
+# Start duplicate
+echo "Starting second node..."
+sudo systemctl enable $EQ_CONSUMER_SERVICE_2 --now
+sleep 10
+
+# Start original
+echo "Starting first node..."
+sudo systemctl start $EQ_CONSUMER_SERVICE_1
+sleep 10
+
+# Restart whale
+echo "Restarting whale validator..."
+sudo systemctl start $CONSUMER_SERVICE_1
+sleep 90
+
+# echo "con1 log:"
+# journalctl -u $CONSUMER_SERVICE_1 | tail -n 50
+# echo con2 log:
+# journalctl -u $CONSUMER_SERVICE_2 | tail -n 50
+# echo "Original log:"
+# journalctl -u $EQ_CONSUMER_SERVICE_1 | tail -n 50
+# echo "Double log:"
+# journalctl -u $EQ_CONSUMER_SERVICE_2 | tail -n 50
+
+$CONSUMER_CHAIN_BINARY q evidence --home $CONSUMER_HOME_1 -o json | jq '.'
+consensus_address=$($CONSUMER_CHAIN_BINARY tendermint show-address --home $EQ_CONSUMER_HOME_1)
+validator_check=$($CONSUMER_CHAIN_BINARY q evidence --home $CONSUMER_HOME_1 -o json | jq '.' | grep $consensus_address)
+echo $validator_check
+if [ -z "$validator_check" ]; then
+  echo "No equivocation evidence found."
+  exit 1
+else
+  echo "Equivocation evidence found!"
+fi
+
+echo "Wait for evidence to reach the provider chain..."
+sleep 60
+
+journalctl -u hermes-evidence
+
+status=$($CHAIN_BINARY q slashing signing-info $($CHAIN_BINARY tendermint show-validator --home $HOME_1) --home $HOME_1 -o json | jq '.tombstoned')
+echo "Status: $status"
+if [ $status == "true" ]; then
+  echo "Success: validator has been tombstoned!"
+else
+  echo "Failure: validator was not tombstoned."
+  exit 1
+fi
+
+sudo systemctl disable $EQ_PROVIDER_SERVICE --now
+sudo systemctl disable $EQ_CONSUMER_SERVICE_1 --now
+sudo systemctl disable $EQ_CONSUMER_SERVICE_2 --now
+rm -rf $EQ_PROVIDER_HOME
+rm -rf $EQ_CONSUMER_HOME_1
+rm -rf $EQ_CONSUMER_HOME_2
+sudo rm /etc/systemd/system/$EQ_PROVIDER_SERVICE
+sudo rm /etc/systemd/system/$EQ_CONSUMER_SERVICE_1
+sudo rm /etc/systemd/system/$EQ_CONSUMER_SERVICE_2

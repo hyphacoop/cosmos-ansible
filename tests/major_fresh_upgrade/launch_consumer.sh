@@ -38,7 +38,9 @@ echo "Patching the consumer genesis file..."
 jq -s '.[0].app_state.ccvconsumer = .[1] | .[0]' $CONSUMER_HOME_1/config/genesis.json ccv.json > consumer-genesis.json
 cp consumer-genesis.json $CONSUMER_HOME_1/config/genesis.json
 cp consumer-genesis.json $CONSUMER_HOME_2/config/genesis.json
+cp consumer-genesis.json $CONSUMER_HOME_3/config/genesis.json
 
 echo "Starting the consumer chain..."
 sudo systemctl enable $CONSUMER_SERVICE_1 --now
-sudo systemctl enable $CONSUMER_SERVICE_2 --now
+# sudo systemctl enable $CONSUMER_SERVICE_2 --now
+# sudo systemctl enable $CONSUMER_SERVICE_3 --now

@@ -1,0 +1,16 @@
+{
+    "title": "Change evidence params to match Cosmos Hub",
+    "description": "Set max_bytes to 50000 and max_age_num_blocks to 1000000.",
+    "changes": [
+        {
+            "subspace": "baseapp",
+            "key": "EvidenceParams",
+            "value": {
+                "max_age_duration": "172800000000000",
+                "max_age_num_blocks": "1000000",
+                "max_bytes": "50000"
+            }
+        }
+    ],
+    "deposit": "10000000uatom"
+}

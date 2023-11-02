@@ -1,0 +1,15 @@
+{
+    "title": "Set max block size from to 2MB",
+    "description": "Set the max block size to 2MB.",
+    "changes": [
+        {
+            "subspace": "baseapp",
+            "key": "BlockParams",
+            "value": {
+                "max_bytes": "200000",
+                "max_gas": "40000000"
+            }
+        }
+    ],
+    "deposit": "10000000uatom"
+}

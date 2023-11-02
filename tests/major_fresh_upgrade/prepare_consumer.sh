@@ -26,7 +26,7 @@ $CHAIN_BINARY q gov tally $proposal_id --home $HOME_1
 
 echo "Waiting for proposal to pass..."
 sleep $VOTING_PERIOD
-
+sleep $VOTING_PERIOD
 #$CHAIN_BINARY q gov proposals --home $HOME_1
 
 echo "Collecting the CCV state..."
@@ -48,3 +48,4 @@ echo "Patching the consumer genesis file..."
 jq -s '.[0].app_state.ccvconsumer = .[1] | .[0]' $CONSUMER_HOME_1/config/genesis.json ccv.json > consumer-genesis.json
 cp consumer-genesis.json $CONSUMER_HOME_1/config/genesis.json
 cp consumer-genesis.json $CONSUMER_HOME_2/config/genesis.json
+cp consumer-genesis.json $CONSUMER_HOME_3/config/genesis.json
