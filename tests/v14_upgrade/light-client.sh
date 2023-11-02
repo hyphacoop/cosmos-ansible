@@ -97,20 +97,20 @@ $CHAIN_BINARY q ibc client state 07-tendermint-0 -o json --home $HOME_1 | jq -r 
 
 $CHAIN_BINARY q slashing signing-infos --home $HOME_1
 
-$CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1
-jailed=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.jailed')
-if [ $jailed != true ]; then
-  echo "Detection failure: validator $VALOPER_1 was not jailed."
-  exit 1
+status=$($CHAIN_BINARY q slashing signing-info $($CHAIN_BINARY tendermint show-validator --home $HOME_1) --home $HOME_1 -o json | jq '.tombstoned')
+echo "Status: $status"
+if [ $status == "true" ]; then
+  echo "Success: validator 1 has been tombstoned!"
 else
-  echo "Detection success: validator $VALOPER_1 was jailed."
+  echo "Failure: validator 1 was not tombstoned."
+  exit 1
 fi
 
-$CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1
-jailed=$($CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq -r '.jailed')
-if [ $jailed != true ]; then
-  echo "Detection failure: validator $VALOPER_2 was not jailed."
-  exit 1
+status=$($CHAIN_BINARY q slashing signing-info $($CHAIN_BINARY tendermint show-validator --home $HOME_2) --home $HOME_1 -o json | jq '.tombstoned')
+echo "Status: $status"
+if [ $status == "true" ]; then
+  echo "Success: validator 2 has been tombstoned!"
 else
-  echo "Detection success: validator $VALOPER_2 was jailed."
+  echo "Failure: validator 2 was not tombstoned."
+  exit 1
 fi
