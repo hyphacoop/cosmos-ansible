@@ -199,7 +199,9 @@ jobs:
       - name: Start chain
         env:
           START_VERSION: ${{matrix.gaia_version}}
-        run: tests/major_fresh_upgrade/start_chain.sh
+        run: |
+          export CHAIN_BINARY_URL=https://github.com/cosmos/gaia/releases/download/$START_VERSION/gaiad-$START_VERSION-linux-amd64
+          tests/major_fresh_upgrade/start_chain.sh
       - name: Check Gaia log
         run: sudo journalctl -u $PROVIDER_SERVICE_1
       - name: Print Gaia version
