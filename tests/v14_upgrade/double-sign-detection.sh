@@ -275,55 +275,14 @@ sleep 60
 
 journalctl -u hermes-evidence
 
-hex_address=$($CHAIN_BINARY keys parse $malval_det --output json | jq -r '.bytes')
-echo "Validator hex address: $hex_address"
-val_address=$($CHAIN_BINARY keys parse $hex_address --output json | jq -r '.formats[2]')
-echo "Validator operator address: $val_address"
-
-$CHAIN_BINARY q staking validator $val_address --home $HOME_1
-jailed=$($CHAIN_BINARY q staking validator $val_address --home $HOME_1 -o json | jq -r '.jailed')
-if [ $jailed != true ]; then
-  echo "Equivocation detection failure: validator was not jailed."
-  exit 1
+status=$($CHAIN_BINARY q slashing signing-infos --home $HOME_1 -o json | jq -r --arg ADDRESS "$addr" '.info[] | select(.address==$ADDRESS) | .tombstoned')
+echo "Status: $status"
+if [ $status == "true" ]; then
+  echo "Success: validator has been tombstoned!"
 else
-  echo "Equivocation detection success: validator was jailed."
+  echo "Failure: validator was not tombstoned."
+  exit 1
 fi
-
-exit 0
-# Submit proposal to tombstone validator
-$CONSUMER_CHAIN_BINARY q evidence --home $CONSUMER_HOME_1 -o json | jq -r '.'
-# power=$($CONSUMER_CHAIN_BINARY q evidence --home $CONSUMER_HOME_1 -o json | jq -r '.evidence[] | select(.consensus_address==[0].power')
-# addr=$($CONSUMER_CHAIN_BINARY q evidence --home $CONSUMER_HOME_1 -o json | jq -r '.evidence[0].consensus_address')
-eq_height=$($CHAIN_BINARY q block --home $HOME_1 | jq -r '.block.header.height')
-eq_time=$($CHAIN_BINARY q block --home $HOME_1 | jq -r '.block.header.time')
-
-echo $eq_time
-
-echo "Setting height..."
-jq -r --argjson HEIGHT $eq_height '.equivocations[0].height = $HEIGHT' tests/v14_upgrade/equivoque.json > tests/v14_upgrade/equivoque-1.json
-echo "Setting time..."
-jq -r --arg EQTIME "$eq_time" '.equivocations[0].time = $EQTIME' tests/v14_upgrade/equivoque-1.json > tests/v14_upgrade/equivoque-2.json
-echo "Setting power..."
-jq -r --argjson POWER $power '.equivocations[0].power = $POWER' tests/v14_upgrade/equivoque-2.json > tests/v14_upgrade/equivoque-3.json
-echo "Setting address..."
-jq -r --arg ADDRESS "$addr" '.equivocations[0].consensus_address = $ADDRESS' tests/v14_upgrade/equivoque-3.json > tests/v14_upgrade/equivoque-4.json
-
-echo "Submit equivocation proposal..."
-proposal="$CHAIN_BINARY tx gov submit-proposal equivocation tests/v14_upgrade/equivoque-4.json --from $MONIKER_1 --home $HOME_1 -o json --gas auto --gas-adjustment 1.2 --fees $BASE_FEES$DENOM -b block -y"
-echo $proposal
-txhash=$($proposal | jq -r '.txhash')
-sleep $((COMMIT_TIMEOUT+2))
-# Get proposal ID
-$CHAIN_BINARY q tx $txhash --home $HOME_1
-proposal_id=$($CHAIN_BINARY q tx $txhash --home $HOME_1 --output json | jq -r '.logs[].events[] | select(.type=="submit_proposal") | .attributes[] | select(.key=="proposal_id") | .value')
-
-echo "Voting on proposal $proposal_id..."
-$CHAIN_BINARY tx gov vote $proposal_id yes --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM --from $WALLET_1 --keyring-backend test --home $HOME_1 --chain-id $CHAIN_ID -b block -y
-sleep $(($COMMIT_TIMEOUT+2))
-# $CHAIN_BINARY q gov tally $proposal_id --home $HOME_1
-
-echo "Waiting for proposal to pass..."
-sleep $VOTING_PERIOD
 
 sudo systemctl disable $EQ_PROVIDER_SERVICE --now
 sudo systemctl disable $EQ_CONSUMER_SERVICE_1 --now
@@ -334,13 +293,3 @@ rm -rf $EQ_CONSUMER_HOME_2
 sudo rm /etc/systemd/system/$EQ_PROVIDER_SERVICE
 sudo rm /etc/systemd/system/$EQ_CONSUMER_SERVICE_1
 sudo rm /etc/systemd/system/$EQ_CONSUMER_SERVICE_2
-
-
-status=$($CHAIN_BINARY q slashing signing-infos --home $HOME_1 -o json | jq -r --arg ADDRESS "$addr" '.info[] | select(.address==$ADDRESS) | .tombstoned')
-echo "Status: $status"
-if [ $status == "true" ]; then
-  echo "Success: validator has been tombstoned!"
-else
-  echo "Failure: validator was not tombstoned."
-  exit 1
-fi

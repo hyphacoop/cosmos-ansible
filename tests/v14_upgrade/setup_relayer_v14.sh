@@ -2,10 +2,8 @@
 # Set up a relayer and IBC channels
 
 echo "Downloading Hermes..."
-# wget https://github.com/informalsystems/hermes/releases/download/$HERMES_VERSION/hermes-$HERMES_VERSION-x86_64-unknown-linux-gnu.tar.gz -O hermes-$HERMES_VERSION.tar.gz
-# tar -xzvf hermes-$HERMES_VERSION.tar.gz
-wget https://github.com/hyphacoop/cosmos-builds/releases/download/hermes-preview/hermes-preview -O hermes
-chmod +x hermes
+wget https://github.com/informalsystems/hermes/releases/download/$HERMES_VERSION/hermes-$HERMES_VERSION-x86_64-unknown-linux-gnu.tar.gz -O hermes-$HERMES_VERSION.tar.gz
+tar -xzvf hermes-$HERMES_VERSION.tar.gz
 mkdir -p ~/.hermes
 cp hermes ~/.hermes/hermes
 export PATH="$PATH:~/.hermes"
