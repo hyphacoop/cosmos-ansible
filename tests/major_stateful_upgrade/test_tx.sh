@@ -2,7 +2,7 @@
 # Test transactions with a fresh state.
 
 set +e
-set +x 
+set -x 
 
 check_code()
 {
