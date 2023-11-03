@@ -275,7 +275,7 @@ sleep 60
 
 journalctl -u hermes-evidence
 
-status=$($CHAIN_BINARY q slashing signing-info $($CHAIN_BINARY tendermint show-validator --home $HOME_1) --home $HOME_1 -o json | jq '.tombstoned')
+status=$($CHAIN_BINARY q slashing signing-info $($CHAIN_BINARY tendermint show-validator --home $EQ_PROVIDER_HOME) --home $HOME_1 -o json | jq '.tombstoned')
 echo "Status: $status"
 if [ $status == "true" ]; then
   echo "Success: validator has been tombstoned!"
