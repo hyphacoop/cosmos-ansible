@@ -152,8 +152,7 @@ jobs:
       - name: Test software upgrade for main branch
         if: ${{ inputs.upgrade_version == 'main' }}
         env:
-          # DOWNLOAD_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/gaiad-linux-main/gaiad-linux
-          DOWNLOAD_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/gaiad-linux-e6da2cc3d1602a6c64fc50c90ea60651177d911b/gaiad-linux
+          DOWNLOAD_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/gaiad-linux-main/gaiad-linux
         run: |
           echo "$DOWNLOAD_URL"
           echo "DOWNLOAD_URL=$DOWNLOAD_URL" >> $GITHUB_ENV
@@ -163,7 +162,7 @@ jobs:
           ARCHIVE_URL: "https://files.polypore.xyz/archived-state/latest_v13.tar.gz"
         run: tests/major_stateful_upgrade/start_chain.sh
       - name: _Blocks produced after upgrade to v14
-        run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 50 2100
+        run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 200 2100
       # - name: Sleep
       #   run: sleep 10h
       - name: _Transactions verified> bank send, delegate, and withdraw rewards
