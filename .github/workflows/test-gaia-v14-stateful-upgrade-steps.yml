@@ -211,7 +211,7 @@ jobs:
           # set screen to flush log to 0
           screen -r hermes.service -p0 -X logfile flush 0
           echo "Wait for hermes to start..."
-          sleep 300
+          sleep 600
       - name: _VSC successful> ICS v3.1.0
         run: tests/major_stateful_upgrade/test_ccv.sh
       - name: _IBC transfer successful> ICS v3.1.0
@@ -260,7 +260,7 @@ jobs:
           # set screen to flush log to 0
           screen -r hermes.service -p0 -X logfile flush 0
           echo "Wait for hermes to start..."
-          sleep 300
+          sleep 600
       - name: _VSC successful> ICS v2.0.0
         env:
           CON1_RPC_PORT: 27201
@@ -300,7 +300,7 @@ jobs:
           # set screen to flush log to 0
           screen -r hermes.service -p0 -X logfile flush 0
           echo "Wait for hermes to start..."
-          sleep 300
+          sleep 600
       - name: _VSC successful> Stride consumer
         env:
           CON1_RPC_PORT: 37001
