@@ -37,7 +37,7 @@ jobs:
       - name: Get latest gaiad stable release
         run: |
           # GAIA_LATEST=$(curl --silent "https://api.github.com/repos/cosmos/gaia/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
-          GAIA_LATEST="v13.0.0"
+          GAIA_LATEST="v13.0.1"
           echo "Latest version of gaiad is: $GAIA_LATEST"
           echo "GAIA_LATEST=$GAIA_LATEST" >> $GITHUB_ENV
       - name: Generate starting versions
