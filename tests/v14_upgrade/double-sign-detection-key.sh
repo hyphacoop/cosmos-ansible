@@ -1,6 +1,10 @@
 #!/bin/bash
 # Test equivocation proposal for double-signing
 
+UNBOND_AMOUNT=10000000
+REDELEGATE_AMOUNT=5000000
+SLASH_FACTOR=0.05
+
 source tests/process_tx.sh
 
 echo "Setting up provider node..."
@@ -92,7 +96,7 @@ curl http://localhost:$EQ_PROV_RPC_PORT/status | jq -r '.result.sync_info'
 
 echo "Create validator..."
 total_before=$(curl http://localhost:$CON1_RPC_PORT/validators | jq -r '.result.total')
-$CHAIN_BINARY tx staking create-validator --amount 5000000$DENOM \
+$CHAIN_BINARY tx staking create-validator --amount 50000000$DENOM \
 --pubkey $($CHAIN_BINARY tendermint show-validator --home $EQ_PROVIDER_HOME) \
 --moniker malval_det --chain-id $CHAIN_ID \
 --commission-rate 0.10 --commission-max-rate 0.20 --commission-max-change-rate 0.01 \
@@ -198,6 +202,21 @@ sudo systemctl enable $EQ_CONSUMER_SERVICE_1 --now
 sleep 20
 $CONSUMER_CHAIN_BINARY q block --home $EQ_CONSUMER_HOME_1 | jq '.'
 
+val_bytes=$($CHAIN_BINARY keys parse $malval_det --output json | jq -r '.bytes')
+eq_valoper=$($CHAIN_BINARY keys parse $val_bytes --output json | jq -r '.formats[2]')
+echo "Validator address: $eq_valoper"
+
+$CHAIN_BINARY tx staking unbond $eq_valoper $UNBOND_AMOUNT$DENOM --from $malval_det --home $EQ_PROVIDER_HOME --gas auto --gas-adjustment 1.2 --fees 1000$DENOM -y
+sleep 10
+$CHAIN_BINARY tx staking redelegate $eq_valoper $VALOPER_3 $REDELEGATE_AMOUNT$DENOM --from $malval_det --home $EQ_PROVIDER_HOME --gas auto --gas-adjustment 1.2 --fees 1000$DENOM -y
+sleep 10
+
+start_tokens=$($CHAIN_BINARY q staking validators --home $HOME_1 -o json | jq -r --arg oper "$eq_valoper" '.validators[] | select(.operator_address==$oper).tokens')
+start_unbonding=$($CHAIN_BINARY q staking unbonding-delegations-from $eq_valoper --home $HOME_1 -o json | jq -r '.unbonding_responses[0].entries[0].balance')
+start_redelegation_dest=$($CHAIN_BINARY q staking validators --home $HOME_1 -o json | jq -r --arg oper "$VALOPER_3" '.validators[] | select(.operator_address==$oper).tokens')
+
+echo "Attempting to double sign..."
+
 # Stop whale
 echo "Stopping whale validator..."
 sudo systemctl stop $CONSUMER_SERVICE_1
@@ -279,6 +298,57 @@ if [ $status == "true" ]; then
 else
   echo "Failure: validator was not tombstoned."
   exit 1
+fi
+
+echo "Slashing checks:"
+end_tokens=$($CHAIN_BINARY q staking validators --home $HOME_1 -o json | jq -r --arg oper "$eq_valoper" '.validators[] | select(.operator_address==$oper).tokens')
+end_unbonding=$($CHAIN_BINARY q staking unbonding-delegations-from $eq_valoper --home $HOME_1 -o json | jq -r '.unbonding_responses[0].entries[0].balance')
+end_redelegation_dest=$($CHAIN_BINARY q staking validators --home $HOME_1 -o json | jq -r --arg oper "$VALOPER_3" '.validators[] | select(.operator_address==$oper).tokens')
+
+echo "Validator tokens: $start_tokens -> $end_tokens"
+echo "Unbonding delegations: $start_unbonding -> $end_unbonding"
+echo "Redelegation recipient: $start_redelegation_dest -> $end_redelegation_dest"
+
+expected_slashed_tokens=$(echo "$SLASH_FACTOR * $start_tokens" | bc -l)
+expected_slashed_unbonding=$(echo "$SLASH_FACTOR * $start_unbonding" | bc -l)
+expected_slashed_redelegation=$(echo "$SLASH_FACTOR * $REDELEGATE_AMOUNT" | bc -l)
+expected_slashed_total=$(echo "$SLASH_FACTOR * ($start_tokens + $start_unbonding + $REDELEGATE_AMOUNT)" | bc -l)
+
+bonded_tokens_slashed=$(echo "$start_tokens - $end_tokens" | bc)
+unbonding_slashed=$(echo "$start_unbonding - $end_unbonding" | bc)
+redelegation_dest_slashed=$(echo "$start_redelegation_dest - $end_redelegation_dest" | bc)
+total_slashed=$(echo "$bonded_tokens_slashed + $unbonding_slashed + $redelegation_dest_slashed" | bc -l)
+echo "Tokens slashed: $bonded_tokens_slashed, expected: $expected_slashed_tokens"
+echo "Unbonding delegations slashed: $unbonding_slashed, expected: $expected_slashed_unbonding"
+echo "Redelegations slashed: $redelegation_dest_slashed, expected: $expected_slashed_redelegation"
+echo "Total slashed: $total_slashed, expected: $expected_slashed_total"
+
+if [[ $total_slashed -ne ${expected_slashed_total%.*} ]]; then
+  echo "Total slashed tokens does not match expected value."
+  exit 1
+else
+  echo "Total slashed tokens: pass"
+fi
+
+if [[ $bonded_tokens_slashed -ne ${expected_slashed_tokens%.*} ]]; then
+  echo "Slashed bonded tokens does not match expected value."
+  exit 1
+else
+  echo "Slashed bonded tokens: pass"
+fi
+
+if [[ $unbonding_slashed -ne ${expected_slashed_unbonding%.*} ]]; then
+  echo "Slashed unbonding tokens does not match expected value."
+  exit 1
+else
+  echo "Slashed unbonding tokens: pass"
+fi
+
+if [[ $redelegation_dest_slashed -ne ${expected_slashed_redelegation%.*} ]]; then
+  echo "Slashed redelegation tokens does not match expected value."
+  exit 1
+else
+  echo "Slashed redelegation tokens: pass"
 fi
 
 sudo systemctl disable $EQ_PROVIDER_SERVICE --now

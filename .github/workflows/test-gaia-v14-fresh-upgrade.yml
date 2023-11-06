@@ -44,6 +44,7 @@ jobs:
           echo "upgrade_versions=$upgrade" >> $GITHUB_OUTPUT
     outputs:
       upgrade_versions: ${{ steps.generate-upgrade.outputs.upgrade_versions }}
+
   test-upgrade:
     runs-on: ubuntu-22.04
     needs: set-version-matrix
@@ -968,8 +969,8 @@ jobs:
       #   env:
       #     BASE_FEES: 2000
       #   run: tests/patch_upgrade/patch_test_tx.sh
-      # - name: _API endpoints check
-      #   run: tests/test_endpoints_api.sh localhost $VAL1_API_PORT
+      - name: _API endpoints check
+        run: tests/test_endpoints_api.sh localhost $VAL1_API_PORT
       # - name: _RPC endpoints check
       #   run: tests/test_endpoints_rpc.sh localhost $VAL1_RPC_PORT
 
