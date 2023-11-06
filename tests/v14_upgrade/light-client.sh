@@ -15,7 +15,7 @@ sleep 10
 start_tokens_1=$($CHAIN_BINARY q staking validators --home $HOME_1 -o json | jq -r --arg oper "$VALOPER_1" '.validators[] | select(.operator_address==$oper).tokens')
 start_tokens_2=$($CHAIN_BINARY q staking validators --home $HOME_1 -o json | jq -r --arg oper "$VALOPER_2" '.validators[] | select(.operator_address==$oper).tokens')
 start_unbonding_1=$($CHAIN_BINARY q staking unbonding-delegations-from $VALOPER_1 --home $HOME_1 -o json | jq -r '.unbonding_responses[0].entries[0].balance')
-start_unbonding_1=$($CHAIN_BINARY q staking unbonding-delegations-from $VALOPER_2 --home $HOME_1 -o json | jq -r '.unbonding_responses[0].entries[0].balance')
+start_unbonding_2=$($CHAIN_BINARY q staking unbonding-delegations-from $VALOPER_2 --home $HOME_1 -o json | jq -r '.unbonding_responses[0].entries[0].balance')
 start_redelegation_dest=$($CHAIN_BINARY q staking validators --home $HOME_1 -o json | jq -r --arg oper "$VALOPER_3" '.validators[] | select(.operator_address==$oper).tokens')
 
 # Validators 1 and 2 will copy the chain
@@ -167,7 +167,7 @@ echo "Validator 1 tokens slashed: $bonded_tokens_slashed_1, expected: $expected_
 echo "Validator 2 tokens slashed: $bonded_tokens_slashed_2, expected: $expected_slashed_tokens_2"
 echo "Validator 1 unbonding delegations slashed: $unbonding_slashed_1, expected: $expected_slashed_unbonding_1"
 echo "Validator 2 unbonding delegations slashed: $unbonding_slashed_2, expected: $expected_slashed_unbonding_2"
-echo "Validator 1 redelegations slashed: $redelegation_dest_slashed, expected: $expected_slashed_redelegation_"
+echo "Validator 1 redelegations slashed: $redelegation_dest_slashed, expected: $expected_slashed_redelegation"
 echo "Validator 1 total slashed: $total_slashed_1, expected: $expected_slashed_total_1"
 echo "Validator 2 total slashed: $total_slashed_2, expected: $expected_slashed_total_2"
 
