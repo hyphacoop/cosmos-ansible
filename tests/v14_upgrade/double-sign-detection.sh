@@ -1,6 +1,9 @@
 #!/bin/bash
 # Test equivocation proposal for double-signing
 
+UNBOND_AMOUNT=10000000
+REDELEGATE_AMOUNT=5000000
+
 source tests/process_tx.sh
 
 echo "Setting up provider node..."
@@ -162,7 +165,7 @@ echo "Starting consumer service..."
 sudo systemctl enable $EQ_CONSUMER_SERVICE_1 --now
 
 sleep 20
-$CONSUMER_CHAIN_BINARY q block --home $EQ_CONSUMER_HOME_1 | jq '.'
+# $CONSUMER_CHAIN_BINARY q block --home $EQ_CONSUMER_HOME_1 | jq '.'
 
 echo "Create new validator key..."
 $CHAIN_BINARY keys add malval_det --home $EQ_PROVIDER_HOME
@@ -200,6 +203,18 @@ else
   echo "Validator not created."
   exit 1
 fi
+
+
+
+echo "Validators:"
+$CHAIN_BINARY q staking validators --home $HOME_1 -o json | jq '.'
+
+$CHAIN_BINARY keys parse $malval_det --output json | jq '.'
+
+# $CHAIN_BINARY tx staking unbond $VALOPER_3 $UNBOND_AMOUNT$DENOM --from $WALLET_3 --home $HOME_1 --gas auto --gas-adjustment 1.2 --fees 1000$DENOM -y
+# sleep 10
+# $CHAIN_BINARY tx staking redelegate $VALOPER_3 $VALOPER_2 $REDELEGATE_AMOUNT$DENOM --from $WALLET_3 --home $HOME_1 --gas auto --gas-adjustment 1.2 --fees 1000$DENOM -y
+# sleep 10
 
 # Stop whale
 echo "Stopping whale validator..."
