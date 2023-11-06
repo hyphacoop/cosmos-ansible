@@ -908,47 +908,47 @@ jobs:
           channel_id=$($CHAIN_BINARY q ibc channel connections $connection_id -o json --home $HOME_1 | jq -r '.channels[] | select(.port_id=="transfer").channel_id')
           tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh $channel_id
 
-      # - name: _Test double signing> equivocation via proposal
-      #   env:
-      #     CONSUMER_CHAIN_ID: three-v310
-      #     CONSUMER_HOME_1: /home/runner/.three_1
-      #     CONSUMER_HOME_2: /home/runner/.three_2
-      #     EQ_PROVIDER_HOME: /home/runner/.eqp
-      #     EQ_CONSUMER_HOME_1: /home/runner/.eqc_1
-      #     EQ_CONSUMER_HOME_2: /home/runner/.eqc_2
-      #     CONSUMER_SERVICE_1: three_1.service
-      #     CONSUMER_SERVICE_2: three_2.service
-      #     EQ_PROVIDER_SERVICE: eq_provider.service
-      #     EQ_CONSUMER_SERVICE_1: eq_consumer_1.service
-      #     EQ_CONSUMER_SERVICE_2: eq_consumer_2.service
-      #     CON1_API_PORT: 25301
-      #     CON2_API_PORT: 25302
-      #     CON1_GRPC_PORT: 26301
-      #     CON2_GRPC_PORT: 26302
-      #     CON1_RPC_PORT: 27301
-      #     CON2_RPC_PORT: 27302
-      #     CON1_P2P_PORT: 28301
-      #     CON2_P2P_PORT: 28302
-      #     CON1_PPROF_PORT: 29301
-      #     CON2_PPROF_PORT: 29302
-      #     EQ_PROV_API_PORT: 25004
-      #     EQ_PROV_GRPC_PORT: 26004
-      #     EQ_PROV_RPC_PORT: 27004
-      #     EQ_PROV_P2P_PORT: 28004
-      #     EQ_PROV_PPROF_PORT: 29004
-      #     EQ_CON_API_PORT_1: 25104
-      #     EQ_CON_API_PORT_2: 25204
-      #     EQ_CON_GRPC_PORT_1: 26104
-      #     EQ_CON_GRPC_PORT_2: 26204
-      #     EQ_CON_RPC_PORT_1: 27104
-      #     EQ_CON_RPC_PORT_2: 27204
-      #     EQ_CON_P2P_PORT_1: 28104
-      #     EQ_CON_P2P_PORT_2: 28204
-      #     EQ_CON_PPROF_PORT_1: 29104
-      #     EQ_CON_PPROF_PORT_2: 29204
-      #   run: |
-      #     export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V3_BINARY
-      #     tests/v14_upgrade/double-sign-proposal.sh
+      - name: _Test double signing> equivocation via proposal
+        env:
+          CONSUMER_CHAIN_ID: three-v310
+          CONSUMER_HOME_1: /home/runner/.three_1
+          CONSUMER_HOME_2: /home/runner/.three_2
+          EQ_PROVIDER_HOME: /home/runner/.eqp
+          EQ_CONSUMER_HOME_1: /home/runner/.eqc_1
+          EQ_CONSUMER_HOME_2: /home/runner/.eqc_2
+          CONSUMER_SERVICE_1: three_1.service
+          CONSUMER_SERVICE_2: three_2.service
+          EQ_PROVIDER_SERVICE: eq_provider.service
+          EQ_CONSUMER_SERVICE_1: eq_consumer_1.service
+          EQ_CONSUMER_SERVICE_2: eq_consumer_2.service
+          CON1_API_PORT: 25301
+          CON2_API_PORT: 25302
+          CON1_GRPC_PORT: 26301
+          CON2_GRPC_PORT: 26302
+          CON1_RPC_PORT: 27301
+          CON2_RPC_PORT: 27302
+          CON1_P2P_PORT: 28301
+          CON2_P2P_PORT: 28302
+          CON1_PPROF_PORT: 29301
+          CON2_PPROF_PORT: 29302
+          EQ_PROV_API_PORT: 25004
+          EQ_PROV_GRPC_PORT: 26004
+          EQ_PROV_RPC_PORT: 27004
+          EQ_PROV_P2P_PORT: 28004
+          EQ_PROV_PPROF_PORT: 29004
+          EQ_CON_API_PORT_1: 25104
+          EQ_CON_API_PORT_2: 25204
+          EQ_CON_GRPC_PORT_1: 26104
+          EQ_CON_GRPC_PORT_2: 26204
+          EQ_CON_RPC_PORT_1: 27104
+          EQ_CON_RPC_PORT_2: 27204
+          EQ_CON_P2P_PORT_1: 28104
+          EQ_CON_P2P_PORT_2: 28204
+          EQ_CON_PPROF_PORT_1: 29104
+          EQ_CON_PPROF_PORT_2: 29204
+        run: |
+          export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V3_BINARY
+          tests/v14_upgrade/double-sign-proposal.sh
 
       - name: Test software upgrade for published releases
         if: ${{ matrix.upgrade_version != 'main' }}
