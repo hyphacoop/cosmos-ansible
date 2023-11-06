@@ -210,7 +210,7 @@ echo "Validator address:"
 # $CHAIN_BINARY q staking validators --home $HOME_1 -o json | jq '.'
 
 val_bytes=$($CHAIN_BINARY keys parse $malval_det --output json | jq -r '.bytes')
-valoper=$($CHAIN_BINARY keys parse $val_bytes --output json | jq -r '.')
+valoper=$($CHAIN_BINARY keys parse $val_bytes --output json | jq -r '.formats[2]')
 echo "$valoper"
 
 # $CHAIN_BINARY tx staking unbond $VALOPER_3 $UNBOND_AMOUNT$DENOM --from $WALLET_3 --home $HOME_1 --gas auto --gas-adjustment 1.2 --fees 1000$DENOM -y
