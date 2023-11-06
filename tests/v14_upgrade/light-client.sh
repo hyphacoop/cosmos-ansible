@@ -101,14 +101,14 @@ hermes --config ~/.hermes/config-2.toml update client --client 07-tendermint-0 -
 echo "Waiting for evidence to be sent to provider chain..."
 # sleep 30
 # sudo systemctl restart hermes
-sleep 30
+sleep 60
 
 echo "Hermes:"
 journalctl -u hermes | tail -n 100
 echo "consumer 1:"
-journalctl -u $CONSUMER_SERVICE_1 | tail -n 10
+journalctl -u $CONSUMER_SERVICE_1 | tail -n 20
 echo "consumer 1f:"
-journalctl -u $CONSUMER_SERVICE_1F | tail -n 10
+journalctl -u $CONSUMER_SERVICE_1F | tail -n 20
 echo "validator 1:"
 journalctl -u $PROVIDER_SERVICE_1 | tail -n 10
 
