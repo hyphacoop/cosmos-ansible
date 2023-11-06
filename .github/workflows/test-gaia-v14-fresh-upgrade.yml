@@ -161,7 +161,7 @@ jobs:
         run: |
           BUILD_TAG=gaiad-linux-${{matrix.upgrade_version}}
           TARGET_COMMIT=$(curl -s -L -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" https://api.github.com/repos/hyphacoop/cosmos-builds/releases/tags/$BUILD_TAG | jq -r '.name')
-          echo $TARGET_COMMIT
+          echo TARGET_COMMIT: $TARGET_COMMIT
       - name: Consumer chain binary URLs
         run: |
           echo "$CONSUMER_CHAIN_V12_BINARY runs off $CONSUMER_CHAIN_V12_BINARY_URL"
