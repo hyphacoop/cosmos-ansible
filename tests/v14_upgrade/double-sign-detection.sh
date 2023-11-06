@@ -187,7 +187,7 @@ $CHAIN_BINARY keys list --home $EQ_PROVIDER_HOME
 $CHAIN_BINARY q bank balances $malval_det --home $EQ_PROVIDER_HOME
 echo "Create validator..."
 # submit_tx "tx staking create-validator --amount 5000000$DENOM --pubkey $($CHAIN_BINARY tendermint show-validator --home $EQ_PROVIDER_HOME) --moniker malval_det --chain-id $CHAIN_ID --commission-rate 0.10 --commission-max-rate 0.20 --commission-max-change-rate 0.01 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees 1000$DENOM --from $malval_det -y" $CHAIN_BINARY $EQ_PROVIDER_HOME
-$CHAIN_BINARY tx staking create-validator --amount 5000000$DENOM \
+$CHAIN_BINARY tx staking create-validator --amount 50000000$DENOM \
 --pubkey $($CHAIN_BINARY tendermint show-validator --home $EQ_PROVIDER_HOME) \
 --moniker malval_det --chain-id $CHAIN_ID \
 --commission-rate 0.10 --commission-max-rate 0.20 --commission-max-change-rate 0.01 \
