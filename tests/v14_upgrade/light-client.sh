@@ -1,5 +1,23 @@
 #!/bin/bash
 
+UNBOND_AMOUNT_1=10000000
+UNBOND_AMOUNT_2=2000000
+REDELEGATE_AMOUNT=5000000
+SLASH_FACTOR=0.05
+
+$CHAIN_BINARY tx staking unbond $VALOPER_1 $UNBOND_AMOUNT_1$DENOM --from $WALLET_1 --home $HOME_1 --gas auto --gas-adjustment 1.2 --fees 1000$DENOM -y
+sleep 10
+$CHAIN_BINARY tx staking redelegate $VALOPER_1 $VALOPER_3 $REDELEGATE_AMOUNT$DENOM --from $WALLET_1 --home $HOME_1 --gas auto --gas-adjustment 1.2 --fees 1000$DENOM -y
+sleep 10
+$CHAIN_BINARY tx staking unbond $VALOPER_2 $UNBOND_AMOUNT_2$DENOM --from $WALLET_2 --home $HOME_1 --gas auto --gas-adjustment 1.2 --fees 1000$DENOM -y
+sleep 10
+
+start_tokens_1=$($CHAIN_BINARY q staking validators --home $HOME_1 -o json | jq -r --arg oper "$VALOPER_1" '.validators[] | select(.operator_address==$oper).tokens')
+start_tokens_2=$($CHAIN_BINARY q staking validators --home $HOME_1 -o json | jq -r --arg oper "$VALOPER_2" '.validators[] | select(.operator_address==$oper).tokens')
+start_unbonding_1=$($CHAIN_BINARY q staking unbonding-delegations-from $eq_valoper --home $HOME_1 -o json | jq -r '.unbonding_responses[0].entries[0].balance')
+start_unbonding_1=$($CHAIN_BINARY q staking unbonding-delegations-from $eq_valoper --home $HOME_1 -o json | jq -r '.unbonding_responses[0].entries[0].balance')
+start_redelegation_dest=$($CHAIN_BINARY q staking validators --home $HOME_1 -o json | jq -r --arg oper "$VALOPER_3" '.validators[] | select(.operator_address==$oper).tokens')
+
 # Validators 1 and 2 will copy the chain
 
 echo "0. Get trusted height"
@@ -113,4 +131,89 @@ if [ $status == "true" ]; then
 else
   echo "Failure: validator 2 was not tombstoned."
   exit 1
+fi
+
+echo "Slashing checks:"
+end_tokens_1=$($CHAIN_BINARY q staking validators --home $HOME_1 -o json | jq -r --arg oper "$VALOPER_1" '.validators[] | select(.operator_address==$oper).tokens')
+end_tokens_2=$($CHAIN_BINARY q staking validators --home $HOME_1 -o json | jq -r --arg oper "$VALOPER_2" '.validators[] | select(.operator_address==$oper).tokens')
+end_unbonding_1=$($CHAIN_BINARY q staking unbonding-delegations-from $VALOPER_1 --home $HOME_1 -o json | jq -r '.unbonding_responses[0].entries[0].balance')
+end_unbonding_2=$($CHAIN_BINARY q staking unbonding-delegations-from $VALOPER_2 --home $HOME_1 -o json | jq -r '.unbonding_responses[0].entries[0].balance')
+end_redelegation_dest=$($CHAIN_BINARY q staking validators --home $HOME_1 -o json | jq -r --arg oper "$VALOPER_3" '.validators[] | select(.operator_address==$oper).tokens')
+
+echo "Validator 1 tokens: $start_tokens_1 -> $end_tokens_1"
+echo "Validator 2 tokens: $start_tokens_1 -> $end_tokens_1"
+echo "Validator 1 unbonding delegations: $start_unbonding_1 -> $end_unbonding_1"
+echo "Validator 2 unbonding delegations: $start_unbonding_2 -> $end_unbonding_2"
+echo "Redelegation recipient: $start_redelegation_dest -> $end_redelegation_dest"
+
+expected_slashed_tokens_1=$(echo "$SLASH_FACTOR * $start_tokens_1" | bc -l)
+expected_slashed_tokens_2=$(echo "$SLASH_FACTOR * $start_tokens_2" | bc -l)
+expected_slashed_unbonding_1=$(echo "$SLASH_FACTOR * $start_unbonding_1" | bc -l)
+expected_slashed_unbonding_2=$(echo "$SLASH_FACTOR * $start_unbonding_2" | bc -l)
+expected_slashed_redelegation=$(echo "$SLASH_FACTOR * $REDELEGATE_AMOUNT" | bc -l)
+expected_slashed_total_1=$(echo "$SLASH_FACTOR * ($start_tokens_1 + $start_unbonding_1 + $REDELEGATE_AMOUNT)" | bc -l)
+expected_slashed_total_2=$(echo "$SLASH_FACTOR * ($start_tokens_2 + $start_unbonding_2)" | bc -l)
+
+bonded_tokens_slashed_1=$(echo "$start_tokens_1 - $end_tokens_1" | bc)
+bonded_tokens_slashed_2=$(echo "$start_tokens_2 - $end_tokens_2" | bc)
+unbonding_slashed_1=$(echo "$start_unbonding_1 - $end_unbonding_1" | bc)
+unbonding_slashed_2=$(echo "$start_unbonding_2 - $end_unbonding_2" | bc)
+redelegation_dest_slashed=$(echo "$start_redelegation_dest - $end_redelegation_dest" | bc)
+total_slashed_1=$(echo "$bonded_tokens_slashed_1 + $unbonding_slashed_1 + $redelegation_dest_slashed" | bc -l)
+total_slashed_2=$(echo "$bonded_tokens_slashed_2 + $unbonding_slashed_2" | bc -l)
+echo "Validator 1 tokens slashed: $bonded_tokens_slashed_1, expected: $expected_slashed_tokens_1"
+echo "Validator 2 tokens slashed: $bonded_tokens_slashed_2, expected: $expected_slashed_tokens_2"
+echo "Validator 1 unbonding delegations slashed: $unbonding_slashed_1, expected: $expected_slashed_unbonding_1"
+echo "Validator 2 unbonding delegations slashed: $unbonding_slashed_2, expected: $expected_slashed_unbonding_2"
+echo "Validator 1 redelegations slashed: $redelegation_dest_slashed, expected: $expected_slashed_redelegation_"
+echo "Validator 1 total slashed: $total_slashed_1, expected: $expected_slashed_total_1"
+echo "Validator 2 total slashed: $total_slashed_2, expected: $expected_slashed_total_2"
+
+if [[ $total_slashed_1 -ne ${expected_slashed_total_1%.*} ]]; then
+  echo "Total slashed tokens does not match expected value - val1."
+  exit 1
+else
+  echo "Total slashed tokens for val1: pass"
+fi
+
+if [[ $total_slashed_2 -ne ${expected_slashed_total_2%.*} ]]; then
+  echo "Total slashed tokens does not match expected value - val2."
+  exit 1
+else
+  echo "Total slashed tokens for val2: pass"
+fi
+
+if [[ $bonded_tokens_slashed_1 -ne ${expected_slashed_tokens_1%.*} ]]; then
+  echo "Slashed bonded tokens does not match expected value - val1."
+  exit 1
+else
+  echo "Slashed bonded tokens for val1: pass"
+fi
+
+if [[ $bonded_tokens_slashed_2 -ne ${expected_slashed_tokens_2%.*} ]]; then
+  echo "Slashed bonded tokens does not match expected value - val2."
+  exit 1
+else
+  echo "Slashed bonded tokens for val2: pass"
+fi
+
+if [[ $unbonding_slashed_1 -ne ${expected_slashed_unbonding_1%.*} ]]; then
+  echo "Slashed unbonding tokens does not match expected value - val1."
+  exit 1
+else
+  echo "Slashed unbonding tokens for val1: pass"
+fi
+
+if [[ $unbonding_slashed_2 -ne ${expected_slashed_unbonding_2%.*} ]]; then
+  echo "Slashed unbonding tokens does not match expected value - val2."
+  exit 1
+else
+  echo "Slashed unbonding tokens for val2: pass"
+fi
+
+if [[ $redelegation_dest_slashed -ne ${expected_slashed_redelegation%.*} ]]; then
+  echo "Slashed redelegation tokens does not match expected value."
+  exit 1
+else
+  echo "Slashed redelegation tokens: pass"
 fi
