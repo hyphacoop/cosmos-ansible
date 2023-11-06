@@ -14,8 +14,8 @@ sleep 10
 
 start_tokens_1=$($CHAIN_BINARY q staking validators --home $HOME_1 -o json | jq -r --arg oper "$VALOPER_1" '.validators[] | select(.operator_address==$oper).tokens')
 start_tokens_2=$($CHAIN_BINARY q staking validators --home $HOME_1 -o json | jq -r --arg oper "$VALOPER_2" '.validators[] | select(.operator_address==$oper).tokens')
-start_unbonding_1=$($CHAIN_BINARY q staking unbonding-delegations-from $eq_valoper --home $HOME_1 -o json | jq -r '.unbonding_responses[0].entries[0].balance')
-start_unbonding_1=$($CHAIN_BINARY q staking unbonding-delegations-from $eq_valoper --home $HOME_1 -o json | jq -r '.unbonding_responses[0].entries[0].balance')
+start_unbonding_1=$($CHAIN_BINARY q staking unbonding-delegations-from $VALOPER_1 --home $HOME_1 -o json | jq -r '.unbonding_responses[0].entries[0].balance')
+start_unbonding_1=$($CHAIN_BINARY q staking unbonding-delegations-from $VALOPER_2 --home $HOME_1 -o json | jq -r '.unbonding_responses[0].entries[0].balance')
 start_redelegation_dest=$($CHAIN_BINARY q staking validators --home $HOME_1 -o json | jq -r --arg oper "$VALOPER_3" '.validators[] | select(.operator_address==$oper).tokens')
 
 # Validators 1 and 2 will copy the chain
@@ -24,24 +24,26 @@ echo "0. Get trusted height"
 TRUSTED_HEIGHT=$(hermes --json --config ~/.hermes/config.toml query client consensus --chain $CHAIN_ID --client 07-tendermint-0 | tail -n 1 | jq '.result[2].revision_height')
 echo "Trusted height: $TRUSTED_HEIGHT"
 
-echo "1. Stop $CONSUMER_SERVICE_1 and $CONSUMER_SERVICE_2..."
-sudo systemctl stop $CONSUMER_SERVICE_1
-sudo systemctl stop $CONSUMER_SERVICE_2
+# echo "1. Stop $CONSUMER_SERVICE_1 and $CONSUMER_SERVICE_2..."
+# sudo systemctl stop $CONSUMER_SERVICE_1
+# sudo systemctl stop $CONSUMER_SERVICE_2
 
 echo "2. Copy validator home folders..."
 cp -r $CONSUMER_HOME_1 $CONSUMER_HOME_1F
 cp -r $CONSUMER_HOME_2 $CONSUMER_HOME_2F
 
-echo "Start $CONSUMER_SERVICE_1 and $CONSUMER_SERVICE_2 again..."
-sudo systemctl start $CONSUMER_SERVICE_1
-sudo systemctl start $CONSUMER_SERVICE_2
-sleep 15
+# echo "Start $CONSUMER_SERVICE_1 and $CONSUMER_SERVICE_2 again..."
+# sudo systemctl start $CONSUMER_SERVICE_1
+# sudo systemctl start $CONSUMER_SERVICE_2
+# sleep 15
 
 echo "3. Clear persistent peers..."
+CON1_NODE_ID=$($CONSUMER_CHAIN_BINARY tendermint show-node-id --home $CONSUMER_HOME_1F)
 CON2_NODE_ID=$($CONSUMER_CHAIN_BINARY tendermint show-node-id --home $CONSUMER_HOME_2F)
+CON1_PEER="$CON1_NODE_ID@127.0.0.1:$CON1F_P2P_PORT"
 CON2_PEER="$CON2_NODE_ID@127.0.0.1:$CON2F_P2P_PORT"
 toml set --toml-path $CONSUMER_HOME_1F/config/config.toml p2p.persistent_peers "$CON2_PEER"
-toml set --toml-path $CONSUMER_HOME_2F/config/config.toml p2p.persistent_peers ""
+toml set --toml-path $CONSUMER_HOME_2F/config/config.toml p2p.persistent_peers "$CON1_PEER"
 
 echo "4. Update ports..."
 toml set --toml-path $CONSUMER_HOME_1F/config/app.toml api.address "tcp://0.0.0.0:$CON1F_API_PORT"
@@ -97,8 +99,8 @@ echo "7. Update the light client of the consumer chain on the provider chain"
 hermes --config ~/.hermes/config-2.toml update client --client 07-tendermint-0 --host-chain $CHAIN_ID --trusted-height $TRUSTED_HEIGHT
 
 echo "Waiting for evidence to be sent to provider chain..."
-sleep 30
-sudo systemctl restart hermes
+# sleep 30
+# sudo systemctl restart hermes
 sleep 30
 
 echo "Hermes:"
