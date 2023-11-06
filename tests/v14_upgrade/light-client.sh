@@ -219,3 +219,6 @@ if [[ $redelegation_dest_slashed -ne ${expected_slashed_redelegation%.*} ]]; the
 else
   echo "Slashed redelegation tokens: pass"
 fi
+
+client_status=$(hermes --json query client status --chain provider --client 07-tendermint-0 | tail -n 1 | jq -r '.result')
+echo $client_status
