@@ -205,14 +205,9 @@ else
   exit 1
 fi
 
-
-
-echo "Validator address:"
-# $CHAIN_BINARY q staking validators --home $HOME_1 -o json | jq '.'
-
 val_bytes=$($CHAIN_BINARY keys parse $malval_det --output json | jq -r '.bytes')
 eq_valoper=$($CHAIN_BINARY keys parse $val_bytes --output json | jq -r '.formats[2]')
-echo "$eq_valoper"
+echo "Validator address: $eq_valoper"
 
 $CHAIN_BINARY tx staking unbond $eq_valoper $UNBOND_AMOUNT$DENOM --from $malval_det --home $EQ_PROVIDER_HOME --gas auto --gas-adjustment 1.2 --fees 1000$DENOM -y
 sleep 10
