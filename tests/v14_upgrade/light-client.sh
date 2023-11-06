@@ -221,7 +221,6 @@ else
 fi
 
 client_status=$(hermes --json query client status --chain $CHAIN_ID --client 07-tendermint-0 | tail -n 1 | jq -r '.result')
-echo $client_status
 
 if [[ "$client_status" != "Frozen" ]]; then
   echo "Failure: Client is not frozen."
