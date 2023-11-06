@@ -7,6 +7,7 @@ on:
   schedule:
     - cron: '0 6,14 * * 1-6'
   workflow_dispatch:
+  push:
 jobs:
   set-version-matrix:
     runs-on: ubuntu-22.04
@@ -968,8 +969,8 @@ jobs:
       #   env:
       #     BASE_FEES: 2000
       #   run: tests/patch_upgrade/patch_test_tx.sh
-      # - name: _API endpoints check
-      #   run: tests/test_endpoints_api.sh localhost $VAL1_API_PORT
+      - name: _API endpoints check
+        run: tests/test_endpoints_api.sh localhost $VAL1_API_PORT
       # - name: _RPC endpoints check
       #   run: tests/test_endpoints_rpc.sh localhost $VAL1_RPC_PORT
 
