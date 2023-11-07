@@ -11,8 +11,8 @@ sed "s%\"chain_id\": \"\"%\"chain_id\": \"$CONSUMER_CHAIN_ID\"%g" proposal-remov
 rm proposal-remove.json
 
 echo "Passing proposal..."
-$CHAIN_BINARY tx gov submit-proposal consumer-removal proposal-remove-$CONSUMER_CHAIN_ID.json --home $HOME_1 --gas auto --fees 1000$DENOM --from $MONIKER_2 --keyring-backend test --chain-id $CHAIN_ID -b block -y
-$CHAIN_BINARY tx gov vote $PROPOSAL_ID yes --home $HOME_1 --gas auto --fees 1000$DENOM --from $MONIKER_2  --keyring-backend test --chain-id $CHAIN_ID -b block -y
+$CHAIN_BINARY tx gov submit-proposal consumer-removal proposal-remove-$CONSUMER_CHAIN_ID.json --home $HOME_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM --from $MONIKER_2 --keyring-backend test --chain-id $CHAIN_ID -b block -y
+$CHAIN_BINARY tx gov vote $PROPOSAL_ID yes --home $HOME_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM --from $MONIKER_2  --keyring-backend test --chain-id $CHAIN_ID -b block -y
 
 echo "Waiting for proposal to pass and chain to stop..."
 sleep 30
