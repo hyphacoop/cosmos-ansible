@@ -4,6 +4,9 @@ set -e
 # cosmos next upgrade version name
 cosmos_upgrade_name="v14"
 
+# cosmos current major version
+cosmos_current_name="v13"
+
 # cosmos-genesis-tinkerer repo config
 gh_branch="main"
 gh_user="hypha-bot"
@@ -50,8 +53,9 @@ echo \"Removing \$(basename \$URL)\"
 rm \$(basename \$URL)
 if [ ! -d cosmovisor/upgrades ]
 then
-    echo \"Creating cosmovisor/upgrades directory\"
-    mkdir -p cosmovisor/upgrades
+    echo \"Creating cosmovisor/upgrades/v8-Rho/bin directory\"
+    mkdir -p cosmovisor/upgrades/\$cosmos_current_name/bin
+    cp cosmovisor/genesis/bin/gaiad cosmovisor/upgrades/\$cosmos_current_name/bin/gaiad
 fi
 " > ~gaia/quicksync.sh
 chmod +x ~gaia/quicksync.sh
