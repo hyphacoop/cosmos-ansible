@@ -31,8 +31,13 @@ echo $MNEMONIC_2 | $CHAIN_BINARY keys add $MONIKER_2 --keyring-backend test --ho
 echo $MNEMONIC_4 | $CHAIN_BINARY keys add $MONIKER_4 --keyring-backend test --home $HOME_1 --recover
 echo $MNEMONIC_2 | $CHAIN_BINARY keys add $MONIKER_2 --keyring-backend test --home $HOME_2 --recover
 
-# Update genesis file with right denom
-sed -i s%stake%$DENOM%g $HOME_1/config/genesis.json
+echo "Setting denom to $DENOM..."
+jq -r --arg denom "$DENOM" '.app_state.crisis.constant_fee.denom |= $denom' $HOME_1/config/genesis.json > crisis.json
+jq -r --arg denom "$DENOM" '.app_state.gov.deposit_params.min_deposit[0].denom |= $denom' crisis.json > min_deposit.json
+jq -r --arg denom "$DENOM" '.app_state.mint.params.mint_denom |= $denom' min_deposit.json > mint.json
+jq -r --arg denom "$DENOM" '.app_state.staking.params.bond_denom |= $denom' mint.json > bond_denom.json
+jq -r --arg denom "$DENOM" '.app_state.provider.params.consumer_reward_denom_registration_fee.denom = $denom' bond_denom.json > reward_reg.json
+cp reward_reg.json $HOME_1/config/genesis.json
 
 # Add funds to accounts
 $CHAIN_BINARY add-genesis-account $MONIKER_1 $VAL_FUNDS$DENOM --home $HOME_1
