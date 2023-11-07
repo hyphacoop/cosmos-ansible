@@ -1,6 +1,6 @@
 ---
 
-name: Test v10 Patch Upgrades
+name: Test v13 Patch Upgrades
 on:
   workflow_dispatch:
   push:
