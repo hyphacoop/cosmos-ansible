@@ -53,7 +53,7 @@ echo \"Removing \$(basename \$URL)\"
 rm \$(basename \$URL)
 if [ ! -d cosmovisor/upgrades ]
 then
-    echo \"Creating cosmovisor/upgrades/v8-Rho/bin directory\"
+    echo \"Creating cosmovisor/upgrades/\$cosmos_current_name/bin directory\"
     mkdir -p cosmovisor/upgrades/\$cosmos_current_name/bin
     cp cosmovisor/genesis/bin/gaiad cosmovisor/upgrades/\$cosmos_current_name/bin/gaiad
 fi
