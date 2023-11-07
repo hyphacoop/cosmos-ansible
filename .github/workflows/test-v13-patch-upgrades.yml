@@ -146,7 +146,9 @@ jobs:
       - name: Launch consumer chain a
         env:
           CONSUMER_CHAIN_ID: consumera
-        run: tests/patch_upgrade/patch_launch_consumer.sh 1
+        run: |
+          ICS_120=true
+          tests/patch_upgrade/patch_launch_consumer.sh 1
       - name: consumera-blocks-1
         run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT
       - name: consumera-signatures-1

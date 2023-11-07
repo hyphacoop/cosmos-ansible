@@ -25,6 +25,12 @@ $CHAIN_BINARY q provider consumer-genesis $CONSUMER_CHAIN_ID -o json --home $HOM
 jq '.params |= . + {"soft_opt_out_threshold": "0.05"}' ccv-pre.json > ccv.json
 jq '.' ccv.json
 
+if $ICS_120 ; then
+    echo "Patching for ICS v1.2.0"
+    jq 'del(.preCCV)' ccv.json > ccv-120.json
+    cp ccv-120.json ccv.json
+fi
+
 echo "Patching the consumer genesis file..."
 jq -s '.[0].app_state.ccvconsumer = .[1] | .[0]' $CONSUMER_HOME_1/config/genesis.json ccv.json > consumer-genesis.json
 cp consumer-genesis.json $CONSUMER_HOME_1/config/genesis.json
