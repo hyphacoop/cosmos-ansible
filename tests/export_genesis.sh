@@ -51,10 +51,11 @@ echo \"Execting \$(basename \$URL)\"
 lz4 -d \$(basename \$URL) | tar xf -
 echo \"Removing \$(basename \$URL)\"
 rm \$(basename \$URL)
-if [ ! -l cosmovisor/current ]
+if [ ! -L cosmovisor/current ]
 then
     ln -s /home/gaia/.gaia/cosmovisor/genesis cosmovisor/current
 fi
+echo \"Syncing with gaiad version: \$(~gaia/.gaia/cosmovisor/current/bin/gaiad version)\"
 " > ~gaia/quicksync.sh
 chmod +x ~gaia/quicksync.sh
 echo "Running ~gaia/quicksync.sh as gaia user"
