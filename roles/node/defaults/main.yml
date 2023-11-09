@@ -148,6 +148,19 @@ p2p_private_peer_ids: false
 p2p_allow_duplicate_ip: false
 p2p_handshake_timeout: 20s
 p2p_dial_timeout: 3s
+## config.toml: Mempool Config
+mempool_version: "v0"
+mempool_recheck: true
+mempool_broadcast: true
+mempool_wal_dir: ""
+mempool_size: 5000
+mempool_max_txs_bytes: 1073741824
+mempool_cache_size: 10000
+mempool_keep_invalid_txs: false
+mempool_max_tx_bytes: 1048576
+mempool_max_batch_bytes: 0
+mempool_ttl_duration: "0s"
+mempool_ttl_num_blocks: 0
 ## config.toml: State Sync Config
 statesync_enabled: false
 statesync_rpc_servers: ''
