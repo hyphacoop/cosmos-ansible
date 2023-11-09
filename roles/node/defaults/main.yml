@@ -6,17 +6,13 @@ node_user_home: "/home/{{node_user}}"
 chain_home: "{{node_user_home}}/.gaia"
 chain_home_clear: false
 node_unsafe_reset: false
-chain_version: v13.0.0
+chain_version: v13.0.2
 chain_repository: https://github.com/cosmos/gaia.git
 chain_binary_release: "https://github.com/cosmos/gaia/releases/download/{{ chain_version }}/gaiad-{{ chain_version }}-{{binary_arch_map[ansible_architecture]}}"
 chain_upgrade_binary_release: "https://github.com/cosmos/gaia/releases/download/{{ chain_upgrade_version }}/gaiad-{{ chain_upgrade_version }}-{{binary_arch_map[ansible_architecture]}}"
 chain_binary_source: "build"
 chain_bin: "{{ node_user_home }}/go/bin/{{chain_binary_name}}"
 node_service_name: "gaiad"
-chain_gov_testing: false
-chain_voting_period: 10s
-chain_denom: uatom
-chain_id: "cosmos-testnet"
 chain_repo_dir: "{{ node_user_home }}/chain-repo"
 chain_moniker: "{{inventory_hostname}}"
 chain_start: true
@@ -24,6 +20,16 @@ chain_recover_delegator: false
 delegator_account_name: delegator
 delegator_account_coins: "1000000000000"
 validator_moniker: "{{inventory_hostname}}"
+
+# genesis config
+chain_gov_testing: false
+chain_voting_period: 10s
+chain_denom: uatom
+chain_id: "cosmos-testnet"
+chain_block_max_bytes: "22020096"
+chain_evidence_max_bytes: "1048576"
+chain_globalfee_min_gas_prices: []
+chain_auth_cost_per_byte: "10"
 
 # Default variables for creating a validator
 chain_create_validator: false
