@@ -255,6 +255,67 @@
     regexp: '"stake"'
     replace: '"{{chain_denom}}"'
 
+- name: Read the genesis file
+  shell: cat {{ chain_home }}/config/genesis.json
+  register: genesis_input
+
+- name: Register genesis file json
+  set_fact:
+    genesis_json: "{{ genesis_input.stdout | from_json }}"
+
+- name: Update block params
+  set_fact:
+    updated_block_params: "{{ genesis_json['consensus_params']['block'] | combine({'max_bytes': chain_block_max_bytes}, recursive=True) }}"
+
+- name: Update evidence params
+  set_fact:
+    updated_evidence_params: "{{ genesis_json['consensus_params']['evidence'] | combine({'max_bytes': chain_evidence_max_bytes}, recursive=True) }}"
+
+- name: Update consensus block
+  set_fact:
+    updated_consensus_params: "{{ genesis_json['consensus_params'] | combine({'block': updated_block_params}, recursive=True) }}"
+
+- name: Update consensus evidence
+  set_fact:
+    updated_consensus_params: "{{ updated_consensus_params | combine({'evidence': updated_evidence_params}, recursive=True) }}"
+
+- name: Update genesis consensus
+  set_fact:
+    updated_genesis: "{{ genesis_json | combine({'consensus_params': updated_consensus_params}, recursive=True) }}"
+
+- name: Update auth params
+  set_fact:
+    updated_auth_params: "{{ genesis_json['app_state']['auth']['params'] | combine({'tx_size_cost_per_byte': chain_auth_cost_per_byte}, recursive=True) }}"
+
+- name: Update auth module
+  set_fact:
+    updated_auth: "{{ genesis_json['app_state']['auth'] | combine({'params': updated_auth_params}, recursive=True) }}"
+
+- name: Update globalfee params
+  set_fact:
+    updated_globalfee_params: "{{ genesis_json['app_state']['globalfee']['params'] | combine({'minimum_gas_prices': chain_globalfee_min_gas_prices}, recursive=True) }}"
+
+- name: Update globalfee module
+  set_fact:
+    updated_globalfee: "{{ genesis_json['app_state']['globalfee'] | combine({'params': updated_globalfee_params}, recursive=True) }}"
+
+- name: Update app_state with auth
+  set_fact:
+    updated_app_state: "{{ genesis_json['app_state'] | combine({'auth': updated_auth}, recursive=True) }}"
+
+- name: Update app_state with globalfee
+  set_fact:
+    updated_app_state: "{{ updated_app_state | combine({'globalfee': updated_globalfee}, recursive=True) }}"
+
+- name: Update genesis app_state
+  set_fact:
+    updated_genesis: "{{ updated_genesis | combine({'app_state': updated_app_state}, recursive=True) }}"
+
+- name: Write the updated genesis
+  copy:
+    content: "{{ updated_genesis }}"
+    dest: "{{ chain_home }}/config/genesis.json"
+
 # Transfer genesis and required files to multi-node machines
 - name: Transfer multi-node config/genesis.json
   when: start_multinode or sync_multinode_genesis
