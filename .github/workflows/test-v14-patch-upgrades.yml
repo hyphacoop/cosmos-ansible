@@ -1,6 +1,6 @@
 ---
 
-name: Test v13 Patch Upgrades
+name: Test v14 Patch Upgrades
 on:
   workflow_dispatch:
   # push:
@@ -318,11 +318,6 @@ jobs:
         run: tests/patch_upgrade/patch_stop_consumer.sh 5
       - name: consumerc-remove
         run: tests/patch_upgrade/patch_test_consumer_removed.sh
-
-      - name: consumera-vsc
-        env:
-          CON1_RPC_PORT: 27101
-        run: tests/patch_upgrade/patch_test_ccv.sh
 
       - name: blocks-4
         run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT

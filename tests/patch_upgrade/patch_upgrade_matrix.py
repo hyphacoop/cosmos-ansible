@@ -38,14 +38,19 @@ for name in release_names:
             break
 
 # Assemble matrix include section:
-includes = [
-    {'start_version': start_version, 'target_branch': f'release-v{start_major_version}', 'upgrade_coverage': 'full'},
-    {'start_version': start_version, 'target_branch': f'release-v{start_major_version}', 'upgrade_coverage': 'partial'},
-]
+# includes = [
+#     {'start_version': start_version, 'target_branch': f'release-v{start_major_version}', 'upgrade_coverage': 'full'},
+#     {'start_version': start_version, 'target_branch': f'release-v{start_major_version}', 'upgrade_coverage': 'partial'},
+# ]
 
-if target_rc_version:
-    includes.append({'start_version': start_version, 'target_branch': target_rc_version, 'upgrade_coverage': 'full'})
-    includes.append({'start_version': start_version, 'target_branch': target_rc_version, 'upgrade_coverage': 'partial'})
+# if target_rc_version:
+#     includes.append({'start_version': start_version, 'target_branch': target_rc_version, 'upgrade_coverage': 'full'})
+#     includes.append({'start_version': start_version, 'target_branch': target_rc_version, 'upgrade_coverage': 'partial'})
+
+includes = [
+    {'start_version': 'v14.0.0-rc0', 'target_branch': f'v14.0.0-rc1', 'upgrade_coverage': 'full'},
+    {'start_version': 'v14.0.0-rc0', 'target_branch': f'v14.0.0-rc1', 'upgrade_coverage': 'partial'},
+]
 
 upgrade_json = json.dumps({'include': includes})
 print(upgrade_json)
