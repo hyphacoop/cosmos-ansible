@@ -3,7 +3,7 @@
 name: Test v14 Patch Upgrades
 on:
   workflow_dispatch:
-  # push:
+  push:
 jobs:
   set-version-matrix:
     runs-on: ubuntu-22.04
