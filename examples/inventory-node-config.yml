@@ -31,3 +31,6 @@ all:
           client_toml:
             - key: chain-id
               value: my-testnet
+            - key: mempool.max_txs_bytes
+              toml_cli_args: "--to-int"
+              value: 52428800

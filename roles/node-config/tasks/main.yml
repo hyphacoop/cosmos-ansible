@@ -34,7 +34,7 @@
 
 - name: Configure {{ chain_home }}/config/config.toml 
   shell: |
-    {{ node_user_home }}/env/bin/toml set --toml-path {{ chain_home }}/config/config.toml {{ config_toml[count].key }} "{{ config_toml[count].value }}"
+    {{ node_user_home }}/env/bin/toml set --toml-path {{ chain_home }}/config/config.toml {{ config_toml[count].key }} {{ config_toml[count].value }}
   become_user: '{{ node_user }}'
   when: config_toml is defined
   loop: "{{ config_toml }}"
@@ -43,7 +43,7 @@
 
 - name: Configure {{ chain_home }}/config/app.toml 
   shell: |
-    {{ node_user_home }}/env/bin/toml set --toml-path {{ chain_home }}/config/app.toml {{ app_toml[count].key }} "{{ app_toml[count].value }}"
+    {{ node_user_home }}/env/bin/toml set --toml-path {{ chain_home }}/config/app.toml {{ app_toml[count].key }} {{ app_toml[count].value }}
   become_user: '{{ node_user }}'
   when: app_toml is defined
   loop: "{{ app_toml }}"
@@ -52,7 +52,7 @@
 
 - name: Configure {{ chain_home }}/config/client.toml 
   shell: |
-    {{ node_user_home }}/env/bin/toml set --toml-path {{ chain_home }}/config/client.toml {{ client_toml[count].key }} "{{ client_toml[count].value }}"
+    {{ node_user_home }}/env/bin/toml set {{ toml_cli_args }} --toml-path {{ chain_home }}/config/client.toml {{ client_toml[count].key }} {{ client_toml[count].value }}
   become_user: '{{ node_user }}'
   when: client_toml is defined
   loop: "{{ client_toml }}"

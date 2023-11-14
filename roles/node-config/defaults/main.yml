@@ -11,3 +11,4 @@ machine_upgrade: false
 chain_version: v13.0.0
 chain_binary_release: "https://github.com/cosmos/gaia/releases/download/{{ chain_version }}/gaiad-{{ chain_version }}-linux-amd64"
 chain_upgrade: false
+toml_cli_args: ""
