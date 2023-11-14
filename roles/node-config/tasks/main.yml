@@ -84,7 +84,7 @@
     enabled: true
     name: "{{ chain_service }}"
   become: true
-  when: chain_upgrade | default(false) | bool
+  when: (chain_upgrade | default(false) | bool) and (not machine_reboot)
 
 - name: Restart node
   systemd:
@@ -98,4 +98,4 @@
 - name: Reboot machine
   reboot:
   become: true
-  when: (machine_reboot | default(false) | bool) and (not chain_restart | default(false) | bool) and (not chain_upgrade | default(false) | bool)
+  when: (machine_reboot | default(false) | bool)
