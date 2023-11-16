@@ -5,7 +5,7 @@ set -e
 cosmos_upgrade_name="v14"
 
 # cosmos current major version name
-cosmos_current_name="v13"
+export cosmos_current_name="v13"
 
 # cosmos-genesis-tinkerer repo config
 gh_branch="main"
