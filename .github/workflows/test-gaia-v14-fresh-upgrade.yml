@@ -33,13 +33,13 @@ jobs:
       - name: Generate starting versions
         id: generate-start
         run: |
-          start=$(tests/generate_version_matrix.py v13.0.2)
+          start=$(tests/generate_version_matrix.py v13.0.1)
           echo $start
           echo "start_versions=$start" >> $GITHUB_OUTPUT
       - name: Generate upgrade versions
         id: generate-upgrade
         run: |
-          upgrade=$(tests/generate_upgrade_matrix_fresh.py v13.0.2)
+          upgrade=$(tests/generate_upgrade_matrix_fresh.py v13.0.1)
           echo $upgrade
           echo "upgrade_versions=$upgrade" >> $GITHUB_OUTPUT
     outputs:
