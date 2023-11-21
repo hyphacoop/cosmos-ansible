@@ -185,6 +185,7 @@ jobs:
           PROVIDER_VERSION: ${{ matrix.provider }}
         run: |
           export CHAIN_BINARY_URL=https://github.com/hyphacoop/cosmos-builds/releases/download/ics-provider-$PROVIDER_VERSION/interchain-security-pd-linux
+          echo $CHAIN_BINARY_URL
           tests/major_fresh_upgrade/start_chain.sh
       - name: Check chain log
         run: sudo journalctl -u $PROVIDER_SERVICE_1
@@ -330,7 +331,7 @@ jobs:
           sudo systemctl enable $CONSUMER_SERVICE_1 --now
           sleep 5
           journalctl -u $CONSUMER_SERVICE_1
-      - name: _Pre-upgrade consumer chain produces blocks> ICS v2.0.0 chain 1
+      - name: _Pre-upgrade consumer chain produces blocks> ICS v2.0.0
         run: tests/test_block_production.sh 127.0.0.1 27201 5
       - name: Establish CCV channel for two-v200
         env:
@@ -341,11 +342,11 @@ jobs:
           hermes create channel --a-chain $CONSUMER_CHAIN_ID --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
           sudo systemctl restart hermes
           sleep 10
-      - name: _Pre-upgrade CCV channel verified> ICS v2.0.0 chain 1
+      - name: _Pre-upgrade CCV channel verified> ICS v2.0.0
         env:
           CON1_RPC_PORT: 27201
         run: tests/major_fresh_upgrade/test_ccv.sh
-      - name: _Pre-upgrade IBC transfer successful> ICS v2.0.0 chain 1
+      - name: _Pre-upgrade IBC transfer successful> ICS v2.0.0
         env:
           CONSUMER_CHAIN_ID: two-v200
           CONSUMER_HOME_1: /home/runner/.two_1
@@ -402,7 +403,7 @@ jobs:
           sudo systemctl enable $CONSUMER_SERVICE_1 --now
           sleep 5
           journalctl -u $CONSUMER_SERVICE_1
-      - name: _Pre-upgrade consumer chain produces blocks> ICS v3.0.0 chain 1
+      - name: _Pre-upgrade consumer chain produces blocks> ICS v3.0.0
         env:
           CON1_RPC_PORT: 27301
         run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT 5
@@ -415,11 +416,11 @@ jobs:
           hermes create channel --a-chain $CONSUMER_CHAIN_ID --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
           sudo systemctl restart hermes
           sleep 10
-      - name: _Pre-upgrade CCV channel verified> ICS v3.0.0 chain 1
+      - name: _Pre-upgrade CCV channel verified> ICS v3.0.0
         env:
           CON1_RPC_PORT: 27301
         run: tests/major_fresh_upgrade/test_ccv.sh
-      - name: _Pre-upgrade IBC transfer successful> ICS v3.0.0 chain 1
+      - name: _Pre-upgrade IBC transfer successful> ICS v3.0.0
         env:
           CONSUMER_CHAIN_ID: three-v300
           CONSUMER_HOME_1: /home/runner/.three_1
@@ -476,7 +477,7 @@ jobs:
           sudo systemctl enable $CONSUMER_SERVICE_1 --now
           sleep 5
           journalctl -u $CONSUMER_SERVICE_1
-      - name: _Consumer chain produces blocks> ICS v2.0.0 chain 2
+      - name: _Consumer chain produces blocks> ICS v3.1.0
         env:
           CON1_RPC_PORT: 27401
         run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT 5
@@ -498,7 +499,7 @@ jobs:
           CONSUMER_CHAIN_ID: four-v310
           CONSUMER_HOME_1: /home/runner/.four_1
         run: |
-          export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V2_BINARY
+          export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V31_BINARY
           client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
           connection_id=$($CHAIN_BINARY q ibc connection connections -o json --home $HOME_1 | jq -r --arg client "$client_id" '.connections[] | select(.client_id==$client).id')
           channel_id=$($CHAIN_BINARY q ibc channel connections $connection_id -o json --home $HOME_1 | jq -r '.channels[] | select(.port_id=="transfer").channel_id')
@@ -545,7 +546,7 @@ jobs:
           tests/major_fresh_upgrade/prepare_consumer.sh
       - name: Start consumer chain five-v320
         env:
-          CONSUMER_CHAIN_ID: six-v320
+          CONSUMER_CHAIN_ID: five-v320
           CONSUMER_SERVICE_1: five_1.service
           CONSUMER_SERVICE_2: five_2.service
           CONSUMER_SERVICE_3: five_3.service
@@ -575,7 +576,7 @@ jobs:
           CONSUMER_CHAIN_ID: five-v320
           CONSUMER_HOME_1: /home/runner/.five_1
         run: |
-          export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V3_BINARY
+          export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V32_BINARY
           client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
           connection_id=$($CHAIN_BINARY q ibc connection connections -o json --home $HOME_1 | jq -r --arg client "$client_id" '.connections[] | select(.client_id==$client).id')
           channel_id=$($CHAIN_BINARY q ibc channel connections $connection_id -o json --home $HOME_1 | jq -r '.channels[] | select(.port_id=="transfer").channel_id')
