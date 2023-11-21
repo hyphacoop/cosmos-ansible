@@ -47,9 +47,9 @@ jobs:
     # needs: set-version-matrix
     strategy:
       matrix:
-        provider: ['v2.0.0','v2.1.0-provider-lsm']
+        provider: ['v2.0.0','v2.1.0-provider-lsm','v2.3.0-provider-lsm','v3.0.0','v3.1.0','v3.2.0-rc0']
         # ${{ fromJSON(needs.set-version-matrix.outputs.upgrade_versions) }}
-      # fail-fast: false
+      fail-fast: false
     # environment: major-upgrade-fresh-workflow
     env:
       COMMIT_TIMEOUT: 3
