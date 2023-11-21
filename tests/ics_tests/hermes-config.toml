@@ -98,7 +98,7 @@ ccv_consumer_chain = true
 type = "CosmosSdk"
 
 [[chains]]
-id = 'five-320'
+id = 'five-v320'
 rpc_addr = 'http://localhost:27501'
 grpc_addr = 'http://localhost:26501'
 event_source = { mode = 'push', url = 'ws://localhost:27501/websocket', batch_delay = '500ms' }
