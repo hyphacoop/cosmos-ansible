@@ -48,8 +48,8 @@ for name in release_names:
 #     includes.append({'start_version': start_version, 'target_branch': target_rc_version, 'upgrade_coverage': 'partial'})
 
 includes = [
-    {'start_version': 'v14.0.0-rc0', 'target_branch': f'v14.0.0-rc1', 'upgrade_coverage': 'full'},
-    {'start_version': 'v14.0.0-rc0', 'target_branch': f'v14.0.0-rc1', 'upgrade_coverage': 'partial'},
+    {'start_version': 'v14.0.0-rc1', 'target_branch': f'v14.1.0-rc0', 'upgrade_coverage': 'full'},
+    {'start_version': 'v14.0.0-rc1', 'target_branch': f'v14.1.0-rc0', 'upgrade_coverage': 'partial'},
 ]
 
 upgrade_json = json.dumps({'include': includes})

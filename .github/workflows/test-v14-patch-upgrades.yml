@@ -254,7 +254,9 @@ jobs:
         run: tests/patch_upgrade/patch_test_partial_upgrade.sh
 
       - name: blocks-3
-        run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT
+        run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 5
+      - name: blocks-4
+        run: tests/test_block_production.sh 127.0.0.1 $VAL2_RPC_PORT 5
       - name: signatures-3
         run: tests/patch_upgrade/patch_test_signatures.sh $VAL1_RPC_PORT 2  # two validators
       - name: txs-2
@@ -319,7 +321,10 @@ jobs:
       - name: consumerc-remove
         run: tests/patch_upgrade/patch_test_consumer_removed.sh
 
-      - name: blocks-4
-        run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT
+      - name: blocks-5
+        run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 5
+      - name: blocks-6
+        run: tests/test_block_production.sh 127.0.0.1 $VAL2_RPC_PORT 5
+
       - name: signatures-4
         run: tests/patch_upgrade/patch_test_signatures.sh $VAL1_RPC_PORT 2  # two validators
