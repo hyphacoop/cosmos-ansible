@@ -201,12 +201,12 @@ jobs:
           chmod +x $HOME/go/bin/$CONSUMER_CHAIN_V12_BINARY
           wget $CONSUMER_CHAIN_V2_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_V2_BINARY -q
           chmod +x $HOME/go/bin/$CONSUMER_CHAIN_V2_BINARY
-          wget $CONSUMER_CHAIN_V30_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_V30_BINARY -q
-          chmod +x $HOME/go/bin/$CONSUMER_CHAIN_V30_BINARY
-          wget $CONSUMER_CHAIN_V31_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_V31_BINARY -q
-          chmod +x $HOME/go/bin/$CONSUMER_CHAIN_V31_BINARY
-          wget $CONSUMER_CHAIN_V32_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_V32_BINARY -q
-          chmod +x $HOME/go/bin/$CONSUMER_CHAIN_V32_BINARY
+          # wget $CONSUMER_CHAIN_V30_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_V30_BINARY -q
+          # chmod +x $HOME/go/bin/$CONSUMER_CHAIN_V30_BINARY
+          # wget $CONSUMER_CHAIN_V31_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_V31_BINARY -q
+          # chmod +x $HOME/go/bin/$CONSUMER_CHAIN_V31_BINARY
+          # wget $CONSUMER_CHAIN_V32_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_V32_BINARY -q
+          # chmod +x $HOME/go/bin/$CONSUMER_CHAIN_V32_BINARY
 
   #     - name: Initialize consumer chain with ICS v1.2.0-multiden
   #       env:
