@@ -382,7 +382,7 @@ jobs:
           CON3_PPROF_PORT: 29303
           DOWNTIME_BLOCKS: 100000
         run: |
-          export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V3_BINARY
+          export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V30_BINARY
           tests/major_fresh_upgrade/init_consumer.sh
       - name: Prepare consumer chain three-v300
         env:
@@ -424,7 +424,7 @@ jobs:
           CONSUMER_CHAIN_ID: three-v300
           CONSUMER_HOME_1: /home/runner/.three_1
         run: |
-          export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V3_BINARY
+          export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V30_BINARY
           client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
           connection_id=$($CHAIN_BINARY q ibc connection connections -o json --home $HOME_1 | jq -r --arg client "$client_id" '.connections[] | select(.client_id==$client).id')
           channel_id=$($CHAIN_BINARY q ibc channel connections $connection_id -o json --home $HOME_1 | jq -r '.channels[] | select(.port_id=="transfer").channel_id')
