@@ -8,7 +8,7 @@ sed "s%\"chain_id\": \"\"%\"chain_id\": \"$CONSUMER_CHAIN_ID\"%g" proposal-add-s
 rm proposal-add-spawn.json
 
 echo "Submitting proposal..."
-$CHAIN_BINARY tx gov submit-proposal consumer-addition proposal-add-$CONSUMER_CHAIN_ID.json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM --from $MONIKER_2 --keyring-backend test --home $HOME_2 --chain-id $CHAIN_ID -b block -y
+$CHAIN_BINARY tx gov submit-proposal consumer-addition proposal-add-$CONSUMER_CHAIN_ID.json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $HIGH_FEES$DENOM --from $MONIKER_2 --keyring-backend test --home $HOME_2 --chain-id $CHAIN_ID -y
 sleep 10
 
 $CHAIN_BINARY tx gov vote $1 yes --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM --from $MONIKER_1 --keyring-backend test --home $HOME_1 --chain-id $CHAIN_ID -b block -y
