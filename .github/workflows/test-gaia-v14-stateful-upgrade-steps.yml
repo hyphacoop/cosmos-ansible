@@ -73,8 +73,8 @@ jobs:
       CON1_P2P_PORT: 28101
       CON1_PPROF_PORT: 6163
       CONSUMER_SERVICE_1: cona1.service
-      BASE_FEES: 20000
-      HIGH_FEES: 25000
+      BASE_FEES: 10000
+      HIGH_FEES: 15000
       GAS: auto
       GAS_ADJUSTMENT: 2.0
       DELEGATE_1: ${{ vars.DELEGATE_1 }}
