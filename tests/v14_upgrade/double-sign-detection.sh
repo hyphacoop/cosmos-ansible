@@ -262,7 +262,7 @@ sleep 10
 # Start original
 echo "Starting first node..."
 sudo systemctl start $EQ_CONSUMER_SERVICE_1
-sleep 10
+sleep 30
 
 # Restart whale
 echo "Restarting whale validator..."
