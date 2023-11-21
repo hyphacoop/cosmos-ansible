@@ -193,16 +193,20 @@ jobs:
       - name: Validators initial state
         run: |
           $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
-  #     - name: Set up relayer
-  #       run: tests/v14_upgrade/setup_relayer.sh
-  #     - name: Download consumer chain binaries
-  #       run: |
-  #         wget $CONSUMER_CHAIN_V12_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_V12_BINARY -q
-  #         chmod +x $HOME/go/bin/$CONSUMER_CHAIN_V12_BINARY
-  #         wget $CONSUMER_CHAIN_V2_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_V2_BINARY -q
-  #         chmod +x $HOME/go/bin/$CONSUMER_CHAIN_V2_BINARY
-  #         wget $CONSUMER_CHAIN_V3_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_V3_BINARY -q
-  #         chmod +x $HOME/go/bin/$CONSUMER_CHAIN_V3_BINARY
+      - name: Set up relayer
+        run: tests/ics_tests/setup_relayer.sh
+      - name: Download consumer chain binaries
+        run: |
+          wget $CONSUMER_CHAIN_V12_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_V12_BINARY -q
+          chmod +x $HOME/go/bin/$CONSUMER_CHAIN_V12_BINARY
+          wget $CONSUMER_CHAIN_V2_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_V2_BINARY -q
+          chmod +x $HOME/go/bin/$CONSUMER_CHAIN_V2_BINARY
+          wget $CONSUMER_CHAIN_V30_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_V30_BINARY -q
+          chmod +x $HOME/go/bin/$CONSUMER_CHAIN_V30_BINARY
+          wget $CONSUMER_CHAIN_V31_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_V31_BINARY -q
+          chmod +x $HOME/go/bin/$CONSUMER_CHAIN_V30_BINARY
+          wget $CONSUMER_CHAIN_V32_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_V32_BINARY -q
+          chmod +x $HOME/go/bin/$CONSUMER_CHAIN_V30_BINARY
 
   #     - name: Initialize consumer chain with ICS v1.2.0-multiden
   #       env:
