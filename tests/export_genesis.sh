@@ -4,6 +4,9 @@ set -e
 # cosmos next upgrade version name
 cosmos_upgrade_name="v14"
 
+# cosmos current major version name
+export cosmos_current_name="v13"
+
 # cosmos-genesis-tinkerer repo config
 gh_branch="main"
 gh_user="hypha-bot"
@@ -48,11 +51,13 @@ echo \"Execting \$(basename \$URL)\"
 lz4 -d \$(basename \$URL) | tar xf -
 echo \"Removing \$(basename \$URL)\"
 rm \$(basename \$URL)
-if [ ! -d cosmovisor/upgrades ]
+if [ ! -L cosmovisor/current ]
 then
-    echo \"Creating cosmovisor/upgrades directory\"
-    mkdir -p cosmovisor/upgrades
+    mkdir -p /home/gaia/.gaia/cosmovisor/upgrades/\$cosmos_current_name/bin
+    cp /home/gaia/.gaia/cosmovisor/genesis/bin/gaiad  /home/gaia/.gaia/cosmovisor/upgrades/\$cosmos_current_name/bin/gaiad
+    ln -s /home/gaia/.gaia/cosmovisor/upgrades/\$cosmos_current_name /home/gaia/.gaia/cosmovisor/current
 fi
+echo \"Syncing with gaiad version: \$(~gaia/.gaia/cosmovisor/current/bin/gaiad version)\"
 " > ~gaia/quicksync.sh
 chmod +x ~gaia/quicksync.sh
 echo "Running ~gaia/quicksync.sh as gaia user"
