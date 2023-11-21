@@ -124,11 +124,11 @@ jobs:
       CONSUMER_CHAIN_V12_BINARY: consumerd_v1.2.0
       CONSUMER_CHAIN_V2_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-v2.0.0/interchain-security-cd-linux
       CONSUMER_CHAIN_V2_BINARY: consumerd_v2.0.0
-      CONSUMER_CHAIN_V30_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-v3.0.0/interchain-security-cd-linux
+      CONSUMER_CHAIN_V30_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-consumer-v3.0.0/interchain-security-cd-linux
       CONSUMER_CHAIN_V30_BINARY: consumerd_v3.0.0
       CONSUMER_CHAIN_V31_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-v3.1.0/interchain-security-cd-linux
       CONSUMER_CHAIN_V31_BINARY: consumerd_v3.1.0
-      CONSUMER_CHAIN_V32_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-v3.2.0/interchain-security-cd-linux
+      CONSUMER_CHAIN_V32_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-consumer-v3.2.0-rc0/interchain-security-cd-linux
       CONSUMER_CHAIN_V32_BINARY: consumerd_v3.2.0
       
     steps:
@@ -178,35 +178,36 @@ jobs:
       #     go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@$COSMOVISOR_VERSION
       #     echo "COSMOVISOR=true" >> $GITHUB_ENV
       #     echo "$HOME_1/cosmovisor/current/bin" >> $GITHUB_PATH
-      - name: Start chain
-        # env:
-          # START_VERSION: ${{matrix.gaia_version}}
-        run: |
-          export CHAIN_BINARY_URL=https://github.com/hyphacoop/cosmos-builds/releases/download/ics-provider-v2.0.0/interchain-security-pd-linux
-          tests/major_fresh_upgrade/start_chain.sh
-      - name: Check chain log
-        run: sudo journalctl -u $PROVIDER_SERVICE_1
-      - name: Print chain version
-        run: $CHAIN_BINARY version --long
-      - name: Block production check
-        run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 5 # 5 blocks
-      - name: Validators initial state
-        run: |
-          $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
-      - name: Set up relayer
-        run: tests/ics_tests/setup_relayer.sh
+      
+      # - name: Start chain
+      #   # env:
+      #     # START_VERSION: ${{matrix.gaia_version}}
+      #   run: |
+      #     export CHAIN_BINARY_URL=https://github.com/hyphacoop/cosmos-builds/releases/download/ics-provider-v2.0.0/interchain-security-pd-linux
+      #     tests/major_fresh_upgrade/start_chain.sh
+      # - name: Check chain log
+      #   run: sudo journalctl -u $PROVIDER_SERVICE_1
+      # - name: Print chain version
+      #   run: $CHAIN_BINARY version --long
+      # - name: Block production check
+      #   run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 5 # 5 blocks
+      # - name: Validators initial state
+      #   run: |
+      #     $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
+      # - name: Set up relayer
+      #   run: tests/ics_tests/setup_relayer.sh
       - name: Download consumer chain binaries
         run: |
-          wget $CONSUMER_CHAIN_V12_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_V12_BINARY -q
+          wget $CONSUMER_CHAIN_V12_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_V12_BINARY
           chmod +x $HOME/go/bin/$CONSUMER_CHAIN_V12_BINARY
-          wget $CONSUMER_CHAIN_V2_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_V2_BINARY -q
+          wget $CONSUMER_CHAIN_V2_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_V2_BINARY
           chmod +x $HOME/go/bin/$CONSUMER_CHAIN_V2_BINARY
-          # wget $CONSUMER_CHAIN_V30_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_V30_BINARY -q
-          # chmod +x $HOME/go/bin/$CONSUMER_CHAIN_V30_BINARY
-          # wget $CONSUMER_CHAIN_V31_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_V31_BINARY -q
-          # chmod +x $HOME/go/bin/$CONSUMER_CHAIN_V31_BINARY
-          # wget $CONSUMER_CHAIN_V32_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_V32_BINARY -q
-          # chmod +x $HOME/go/bin/$CONSUMER_CHAIN_V32_BINARY
+          wget $CONSUMER_CHAIN_V30_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_V30_BINARY
+          chmod +x $HOME/go/bin/$CONSUMER_CHAIN_V30_BINARY
+          wget $CONSUMER_CHAIN_V31_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_V31_BINARY -q
+          chmod +x $HOME/go/bin/$CONSUMER_CHAIN_V31_BINARY
+          wget $CONSUMER_CHAIN_V32_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_V32_BINARY -q
+          chmod +x $HOME/go/bin/$CONSUMER_CHAIN_V32_BINARY
 
   #     - name: Initialize consumer chain with ICS v1.2.0-multiden
   #       env:
