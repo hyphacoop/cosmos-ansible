@@ -37,6 +37,8 @@ echo $MNEMONIC_3 | $CHAIN_BINARY keys add $MONIKER_3 --keyring-backend test --ho
 echo $MNEMONIC_4 | $CHAIN_BINARY keys add $MONIKER_4 --keyring-backend test --home $HOME_1 --recover
 echo $MNEMONIC_5 | $CHAIN_BINARY keys add $MONIKER_5 --keyring-backend test --home $HOME_1 --recover
 
+cat $HOME_1/config/genesis.json
+
 # Update genesis file with right denom
 echo "Setting denom to $DENOM..."
 jq -r --arg denom "$DENOM" '.app_state.crisis.constant_fee.denom |= $denom' $HOME_1/config/genesis.json > crisis.json
@@ -76,6 +78,7 @@ $CHAIN_BINARY genesis gentx $MONIKER_2 $VAL2_STAKE$DENOM --pubkey "$($CHAIN_BINA
 $CHAIN_BINARY genesis gentx $MONIKER_3 $VAL3_STAKE$DENOM --pubkey "$($CHAIN_BINARY tendermint show-validator --home $HOME_3)" --node-id $VAL3_NODE_ID --moniker $MONIKER_3 --chain-id $CHAIN_ID --home $HOME_1 --output-document $HOME_1/config/gentx/$MONIKER_3-gentx.json
 $CHAIN_BINARY genesis collect-gentxs --home $HOME_1
 
+cat $HOME_1/config/genesis.json
 echo "Patching genesis file for fast governance..."
 if $LEGACY_PROPOSAL ; then
     jq -r ".app_state.gov.params.voting_period = \"$VOTING_PERIOD\"" $HOME_1/config/genesis.json  > voting-1.json
@@ -85,6 +88,7 @@ else
     jq -r ".app_state.gov.deposit_params.min_deposit[0].amount = \"1\"" voting-1.json > voting-2.json
 fi
 cp voting-2.json $HOME_1/config/genesis.json
+cat $HOME_1/config/genesis.json
 
 echo "Setting slashing window to 10000..."
 jq -r --arg SLASH "10000" '.app_state.slashing.params.signed_blocks_window |= $SLASH' ./gov.json > ./slashing.json
