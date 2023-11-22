@@ -19,7 +19,7 @@ slashing_result=$(gaiad q slashing signing-info '{"@type":"/cosmos.crypto.ed2551
 
 echo "PUPMOS slashing result: $slashing_result"
 
-if [ $slashing_result != "false" ]
+if [ "$slashing_result" != "false" ]
 then
     echo "PUPMOS slashing result is not false"
     slashing_not_false=1
