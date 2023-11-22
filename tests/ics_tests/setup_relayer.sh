@@ -16,9 +16,8 @@ echo $MNEMONIC_RELAYER > mnemonic.txt
 hermes keys add --chain $CHAIN_ID --mnemonic-file mnemonic.txt
 hermes keys add --chain one-v120 --mnemonic-file mnemonic.txt
 hermes keys add --chain two-v200 --mnemonic-file mnemonic.txt
-hermes keys add --chain three-v300 --mnemonic-file mnemonic.txt
-hermes keys add --chain four-v310 --mnemonic-file mnemonic.txt
-hermes keys add --chain five-v320 --mnemonic-file mnemonic.txt
+hermes keys add --chain three-v310 --mnemonic-file mnemonic.txt
+hermes keys add --chain four-v320 --mnemonic-file mnemonic.txt
 
 echo "Creating services..."
 sudo touch /etc/systemd/system/hermes.service
