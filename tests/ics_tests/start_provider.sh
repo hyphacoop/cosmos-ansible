@@ -87,12 +87,14 @@ else
     jq -r ".app_state.gov.voting_params.voting_period = \"$VOTING_PERIOD\"" $HOME_1/config/genesis.json  > voting-1.json
     jq -r ".app_state.gov.deposit_params.min_deposit[0].amount = \"1\"" voting-1.json > voting-2.json
 fi
-cp voting-2.json $HOME_1/config/genesis.json
-cat $HOME_1/config/genesis.json
+cp voting-2.json gov.json
+
 
 echo "Setting slashing window to 10000..."
 jq -r --arg SLASH "10000" '.app_state.slashing.params.signed_blocks_window |= $SLASH' ./gov.json > ./slashing.json
 jq -r '.app_state.slashing.params.downtime_jail_duration |= "5s"' slashing.json > slashing-2.json
+
+cat $HOME_1/config/genesis.json
 
 # echo "Patching genesis file for LSM params..."
 # jq -r '.app_state.staking.params.validator_bond_factor = "10.000000000000000000"' slashing-2.json > lsm-1.json
