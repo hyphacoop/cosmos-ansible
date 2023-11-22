@@ -186,7 +186,7 @@ jobs:
         run: |
           export CHAIN_BINARY_URL=https://github.com/hyphacoop/cosmos-builds/releases/download/ics-provider-$PROVIDER_VERSION/interchain-security-pd-linux
           echo $CHAIN_BINARY_URL
-          tests/major_fresh_upgrade/start_chain.sh
+          tests/ics_tests/start_provider.sh
       - name: Check chain log
         run: sudo journalctl -u $PROVIDER_SERVICE_1
       - name: Print chain version
