@@ -9,7 +9,7 @@ rm proposal-add-spawn.json
 
 echo "Submitting proposal..."
 $CHAIN_BINARY tx gov submit-proposal consumer-addition proposal-add-$CONSUMER_CHAIN_ID.json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $HIGH_FEES$DENOM --from $MONIKER_2 --keyring-backend test --home $HOME_2 --chain-id $CHAIN_ID -y
-sleep 10
+sleep 30
 
 journalctl -u $PROVIDER_SERVICE_1 | tail -n 50
 journalctl -u $PROVIDER_SERVICE_2 | tail -n 50
