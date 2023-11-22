@@ -118,7 +118,7 @@ jobs:
       RECIPIENT: cosmos1r5v5srda7xfth3hn2s26txvrcrntldjumt8mhl
       HERMES_VERSION: v1.7.0
       ICS_120: false
-      PROVIDER_LEGACY: false
+      LEGACY_PROPOSAL: false
       # Reference ICS chain variables
       CONSUMER_DENOM: ucon
       CONSUMER_FEES: 500
@@ -171,7 +171,7 @@ jobs:
       - name: Use legacy proposal command
         if: ${{ (matrix.provider == 'v3.0.0' || matrix.provider == 'v3.1.0' ) || matrix.provider == 'v3.2.0-rc0'}}
         run: |
-          echo "PROVIDER_LEGACY=true" >> $GITHUB_ENV
+          echo "LEGACY_PROPOSAL=true" >> $GITHUB_ENV
 
       # - name: Install Cosmovisor > v1.3.0
       #   if: ${{ (matrix.upgrade_mechanism == 'cv_manual' || matrix.upgrade_mechanism == 'cv_auto') && matrix.cv_version != 'v1.3.0' }}
