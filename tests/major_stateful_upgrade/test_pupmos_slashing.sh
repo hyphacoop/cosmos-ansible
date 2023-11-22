@@ -5,7 +5,7 @@ submit_proposal_cmd="gaiad --home $HOME_1 tx provider submit-consumer-double-vot
 echo "Running: $submit_proposal_cmd"
 $submit_proposal_cmd
 
-if [ $? -eq 0 ]
+if [ $? != 0 ]
 then
     echo "ERROR: submit-consumer-double-voting submitted successfully..."
     submit_successful=1
