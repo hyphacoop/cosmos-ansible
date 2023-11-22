@@ -9,10 +9,7 @@ rm proposal-add-spawn.json
 
 echo "Submitting proposal..."
 $CHAIN_BINARY tx gov submit-proposal consumer-addition proposal-add-$CONSUMER_CHAIN_ID.json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $HIGH_FEES$DENOM --from $MONIKER_2 --keyring-backend test --home $HOME_2 --chain-id $CHAIN_ID -y
-sleep 30
-
-journalctl -u $PROVIDER_SERVICE_1 | tail -n 50
-journalctl -u $PROVIDER_SERVICE_2 | tail -n 50
+sleep 8
 
 $CHAIN_BINARY tx gov vote $1 yes --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM --from $MONIKER_1 --keyring-backend test --home $HOME_1 --chain-id $CHAIN_ID -b block -y
 $CHAIN_BINARY tx gov vote $1 yes --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM --from $MONIKER_2 --keyring-backend test --home $HOME_2 --chain-id $CHAIN_ID -b block -y
@@ -20,6 +17,9 @@ $CHAIN_BINARY q gov tally $1 --home $HOME_1
 
 echo "Waiting for proposal to pass..."
 sleep $VOTING_PERIOD
+
+journalctl -u $PROVIDER_SERVICE_1 | tail -n 100
+journalctl -u $PROVIDER_SERVICE_2 | tail -n 100
 
 $CHAIN_BINARY q gov proposals --home $HOME_1
 
