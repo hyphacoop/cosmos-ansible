@@ -42,7 +42,7 @@ cat $HOME_1/config/genesis.json
 # Update genesis file with right denom
 echo "Setting denom to $DENOM..."
 jq -r --arg denom "$DENOM" '.app_state.crisis.constant_fee.denom |= $denom' $HOME_1/config/genesis.json > crisis.json
-if $LEGACY_PROPOSAL ; then
+if $PROVIDER_V3 ; then
     jq -r --arg denom "$DENOM" '.app_state.gov.params.min_deposit[0].denom |= $denom' crisis.json > min_deposit.json
 else
     jq -r --arg denom "$DENOM" '.app_state.gov.deposit_params.min_deposit[0].denom |= $denom' crisis.json > min_deposit.json
@@ -80,7 +80,7 @@ $CHAIN_BINARY genesis collect-gentxs --home $HOME_1
 
 cat $HOME_1/config/genesis.json
 echo "Patching genesis file for fast governance..."
-if $LEGACY_PROPOSAL ; then
+if $PROVIDER_V3 ; then
     jq -r ".app_state.gov.params.voting_period = \"$VOTING_PERIOD\"" $HOME_1/config/genesis.json  > voting-1.json
     jq -r '.app_state.gov.params.min_deposit[0].amount = "1"' voting-1.json > voting-2.json
 else
