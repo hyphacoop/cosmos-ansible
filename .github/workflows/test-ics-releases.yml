@@ -119,6 +119,7 @@ jobs:
       HERMES_VERSION: v1.7.0
       PROVIDER_V3: false
       CONSUMER_V120: false
+      CONSUMER_V200: false
       # Reference ICS chain variables
       CONSUMER_DENOM: ucon
       CONSUMER_FEES: 500
@@ -264,7 +265,7 @@ jobs:
           sudo systemctl enable $CONSUMER_SERVICE_1 --now
           sleep 5
           journalctl -u $CONSUMER_SERVICE_1
-      - name: _Pre-upgrade consumer chain produces blocks> ICS v1.2.0-multiden
+      - name: _Consumer chain produces blocks> ICS v1.2.0-multiden
         env:
           CON1_RPC_PORT: 27101
         run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT 5
@@ -277,11 +278,11 @@ jobs:
           hermes create channel --a-chain $CONSUMER_CHAIN_ID --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
           sudo systemctl restart hermes
           sleep 10
-      - name: _Pre-upgrade CCV channel verified> ICS v1.2.0-multiden
+      - name: _CCV channel verified> ICS v1.2.0-multiden
         env:
           CON1_RPC_PORT: 27101
         run: tests/major_fresh_upgrade/test_ccv.sh
-      - name: _Pre-upgrade IBC transfer successful> ICS v1.2.0-multiden
+      - name: _IBC transfer successful> ICS v1.2.0-multiden
         env:
           CONSUMER_CHAIN_ID: one-v120
           CONSUMER_HOME_1: /home/runner/.one_1
@@ -326,6 +327,7 @@ jobs:
           CONSUMER_HOME_2: /home/runner/.two_2
           CONSUMER_HOME_3: /home/runner/.two_3
         run: |
+          export CONSUMER_V200=true
           tests/ics_tests/prepare_consumer.sh
       - name: Start consumer chain two-v200
         env:
@@ -337,7 +339,7 @@ jobs:
           sudo systemctl enable $CONSUMER_SERVICE_1 --now
           sleep 5
           journalctl -u $CONSUMER_SERVICE_1
-      - name: _Pre-upgrade consumer chain produces blocks> ICS v2.0.0
+      - name: _Consumer chain produces blocks> ICS v2.0.0
         run: tests/test_block_production.sh 127.0.0.1 27201 5
       - name: Establish CCV channel for two-v200
         env:
@@ -348,11 +350,11 @@ jobs:
           hermes create channel --a-chain $CONSUMER_CHAIN_ID --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
           sudo systemctl restart hermes
           sleep 10
-      - name: _Pre-upgrade CCV channel verified> ICS v2.0.0
+      - name: _CCV channel verified> ICS v2.0.0
         env:
           CON1_RPC_PORT: 27201
         run: tests/major_fresh_upgrade/test_ccv.sh
-      - name: _Pre-upgrade IBC transfer successful> ICS v2.0.0
+      - name: _IBC transfer successful> ICS v2.0.0
         env:
           CONSUMER_CHAIN_ID: two-v200
           CONSUMER_HOME_1: /home/runner/.two_1
@@ -409,7 +411,7 @@ jobs:
           sudo systemctl enable $CONSUMER_SERVICE_1 --now
           sleep 5
           journalctl -u $CONSUMER_SERVICE_1
-      - name: _Pre-upgrade consumer chain produces blocks> ICS v3.0.0
+      - name: _Consumer chain produces blocks> ICS v3.0.0
         env:
           CON1_RPC_PORT: 27301
         run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT 5
@@ -422,11 +424,11 @@ jobs:
           hermes create channel --a-chain $CONSUMER_CHAIN_ID --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
           sudo systemctl restart hermes
           sleep 10
-      - name: _Pre-upgrade CCV channel verified> ICS v3.0.0
+      - name: _CCV channel verified> ICS v3.0.0
         env:
           CON1_RPC_PORT: 27301
         run: tests/major_fresh_upgrade/test_ccv.sh
-      - name: _Pre-upgrade IBC transfer successful> ICS v3.0.0
+      - name: _IBC transfer successful> ICS v3.0.0
         env:
           CONSUMER_CHAIN_ID: three-v300
           CONSUMER_HOME_1: /home/runner/.three_1

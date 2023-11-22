@@ -62,6 +62,13 @@ if $CONSUMER_V120 ; then
     cp ccv-120-2.json ccv.json
 fi
 
+if $CONSUMER_V200 ; then
+    # For provider >= v3.0.0
+    jq 'del(.provider_client_state.proof_specs[0].prehash_key_before_comparison)' ccv.json > ccv-200-1.json    
+    jq 'del(.provider_client_state.proof_specs[1].prehash_key_before_comparison)' ccv-200-1.json > ccv-200-2.json    
+    cp ccv-200-2.json ccv.json
+fi
+
 echo "Patching the consumer genesis file..."
 jq -s '.[0].app_state.ccvconsumer = .[1] | .[0]' $CONSUMER_HOME_1/config/genesis.json ccv.json > consumer-genesis.json
 cp consumer-genesis.json $CONSUMER_HOME_1/config/genesis.json
