@@ -50,6 +50,8 @@ echo "Patching the CCV state with the provider reward denom"
 jq --arg DENOM "$CONSUMER_DENOM" '.params.reward_denoms = [$DENOM]' ccv-optout.json > ccv-reward.json
 cp ccv-reward.json ccv.json
 
+jq '.' ccv.json
+
 if $CONSUMER_V120 ; then
     echo "Patching for ICS v1.2.0"
     jq 'del(.preCCV)' ccv.json > ccv-120.json
