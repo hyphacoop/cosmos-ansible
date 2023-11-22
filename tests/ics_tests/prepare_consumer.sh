@@ -1,7 +1,7 @@
 #!/bin/bash
 # Prepare a consumer chain to be started
 
-if $LEGACY_PROPOSAL ; then
+if $PROVIDER_V3 ; then
     echo "Patching add template with spawn time..."
     spawn_time=$(date -u --iso-8601=ns | sed s/+00:00/Z/ | sed s/,/./)
     jq -r --arg SPAWNTIME "$spawn_time" '.spawn_time |= $SPAWNTIME' tests/ics_tests/legacy-proposal-add-template.json > proposal-add-spawn.json
@@ -49,7 +49,7 @@ echo "Patching the CCV state with the provider reward denom"
 jq --arg DENOM "$CONSUMER_DENOM" '.params.reward_denoms = [$DENOM]' ccv-optout.json > ccv-reward.json
 cp ccv-reward.json ccv.json
 
-if $ICS_120 ; then
+if $CONSUMER_V120 ; then
     echo "Patching for ICS v1.2.0"
     jq 'del(.preCCV)' ccv.json > ccv-120.json
     cp ccv-120.json ccv.json
