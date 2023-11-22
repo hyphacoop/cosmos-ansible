@@ -25,7 +25,7 @@ Set up a node to join the Cosmos Hub [public testnet](https://github.com/cosmos/
 
 * **Inventory file:** [`inventory-public-testnet.yml`](inventory-public-testnet.yml)
 * **Chain ID:** `theta-testnet-001`
-* **Gaia version:** `v14.0.0-rc0`
+* **Gaia version:** `v14.1.0-rc0`
 
 ### Run the playbook 
 
@@ -43,7 +43,7 @@ Set up nodes to join the [Replicated Security Testnet](https://github.com/cosmos
 
 * **Inventory file:** [`inventory-rs-testnet-provider.yml`](inventory-rs-testnet-provider.yml)
 * **Chain ID:** `provider`
-* **Gaia version:** `v14.0.0-rc0`
+* **Gaia version:** `v14.1.0-rc0`
 
 Run the playbook:
 ```
@@ -102,7 +102,7 @@ Set up a node with a single validator account.
 * **Inventory file:** [`inventory-local.yml`](inventory-local.yml)
 * **Chain ID:** `my-testnet`
 * **Moniker:** `cosmos-node`
-* **Gaia version:** `13.0.0`
+* **Gaia version:** `13.0.2`
 * **Faucet REST server**
 
 ### Run the Playbook
@@ -123,7 +123,7 @@ The playbook will download the genesis file, and the validator keys are listed b
 
 * **Inventory file:** [`inventory-local-genesis.yml`](inventory-local-genesis.yml)
 * **Chain ID:** `local-testnet`
-* **Gaia version:** `13.0.0`
+* **Gaia version:** `13.0.2`
 * **Validator mnemonic:** [self-delegation-wallet-mnemonic.txt](validator-keys/validator-40/self-delegation-wallet-mnemonic.txt)
 * **Validator key:** [priv_validator_key.json](validator-keys/validator-40/priv_validator_key.json)
 * **Node key:** [node_key.json](validator-keys/validator-40/node_key.json)
