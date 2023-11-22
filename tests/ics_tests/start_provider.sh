@@ -78,12 +78,13 @@ $CHAIN_BINARY genesis collect-gentxs --home $HOME_1
 
 echo "Patching genesis file for fast governance..."
 if $LEGACY_PROPOSAL ; then
-    jq -r ".app_state.gov.params.voting_period = \"$VOTING_PERIOD\"" $HOME_1/config/genesis.json  > ./voting-1.json
-    jq -r '.app_state.gov.params.min_deposit[0].amount = "1"' ./voting-1.json > ./voting-2.json
+    jq -r ".app_state.gov.params.voting_period = \"$VOTING_PERIOD\"" $HOME_1/config/genesis.json  > voting-1.json
+    jq -r '.app_state.gov.params.min_deposit[0].amount = "1"' voting-1.json > voting-2.json
 else
-    jq -r ".app_state.gov.voting_params.voting_period = \"$VOTING_PERIOD\"" $HOME_1/config/genesis.json  > ./voting-1.json
-    jq -r ".app_state.gov.deposit_params.min_deposit[0].amount = \"1\"" ./voting-1.json > ./voting-2.json
+    jq -r ".app_state.gov.voting_params.voting_period = \"$VOTING_PERIOD\"" $HOME_1/config/genesis.json  > voting-1.json
+    jq -r ".app_state.gov.deposit_params.min_deposit[0].amount = \"1\"" voting-1.json > voting-2.json
 fi
+cp voting-2.json $HOME_1/config/genesis.json
 
 echo "Setting slashing window to 10000..."
 jq -r --arg SLASH "10000" '.app_state.slashing.params.signed_blocks_window |= $SLASH' ./gov.json > ./slashing.json
