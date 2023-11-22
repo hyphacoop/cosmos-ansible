@@ -55,8 +55,9 @@ jq '.' ccv.json
 if $CONSUMER_V120 ; then
     echo "Patching for ICS v1.2.0"
     jq 'del(.preCCV)' ccv.json > ccv-120.json
-    jq 'del(.prehash_key_before_comparison)' ccv-120.json > ccv-120-1.json    
-    cp ccv-120-1.json ccv.json
+    jq 'del(.provider_client_state.proof_specs[0].prehash_key_before_comparison)' ccv-120.json > ccv-120-1.json    
+    jq 'del(.provider_client_state.proof_specs[1].prehash_key_before_comparison)' ccv-120-1.json > ccv-120-2.json    
+    cp ccv-120-2.json ccv.json
 fi
 
 echo "Patching the consumer genesis file..."
