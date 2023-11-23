@@ -168,7 +168,7 @@ $CHAIN_BINARY tx staking create-validator --amount 5000000$DENOM \
 --moniker malval_prop --chain-id $CHAIN_ID \
 --commission-rate 0.10 --commission-max-rate 0.20 --commission-max-change-rate 0.01 \
 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees 2000$DENOM --from $malval_prop --home $EQ_PROVIDER_HOME -b block -y
-sleep 20
+sleep 90
 
 echo "Check validator is in the consumer chain..."
 total_after=$(curl http://localhost:$CON1_RPC_PORT/validators | jq -r '.result.total')
@@ -223,7 +223,7 @@ sleep 10
 # Start original
 echo "Starting first node..."
 sudo systemctl start $EQ_CONSUMER_SERVICE_1
-sleep 10
+sleep 30
 
 # Restart whale
 echo "Restarting whale validator..."

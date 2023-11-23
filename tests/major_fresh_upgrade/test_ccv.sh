@@ -6,7 +6,7 @@ echo "Delegating additional stake to $MONIKER_1..."
 $CHAIN_BINARY --home $HOME_1 tx staking delegate $VALOPER_1 $VAL_STAKE_STEP$DENOM --from $MONIKER_1 --keyring-backend test --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --fees 1000$DENOM -b block -y --chain-id $CHAIN_ID
 # Wait for consumer chain to get validator set update
 echo "Waiting for the validator set update to reach the consumer chain..."
-sleep $(($COMMIT_TIMEOUT*6))
+sleep $(($COMMIT_TIMEOUT*8))
 PROVIDER_BADDRESS=$(jq -r '.address' $HOME_1/config/priv_validator_key.json)
 PROVIDER_POWER=$(curl -s http://localhost:$VAL1_RPC_PORT/validators | jq -r '.result.validators[] | select(.address=="'$PROVIDER_BADDRESS'") | '.voting_power'')
 
