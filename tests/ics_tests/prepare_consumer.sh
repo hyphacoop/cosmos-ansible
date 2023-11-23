@@ -69,6 +69,13 @@ if $CONSUMER_V200 ; then
     cp ccv-200-2.json ccv.json
 fi
 
+if $CONSUMER_V320 ; then
+    # For provider < v3.2.0
+    jq '.params.retry_delay_period |= "3600s"' ccv.json > ccv-retry-delay.json    
+    cp ccv-retry-delay.json ccv.json
+
+jq '.' ccv.json
+
 echo "Patching the consumer genesis file..."
 jq -s '.[0].app_state.ccvconsumer = .[1] | .[0]' $CONSUMER_HOME_1/config/genesis.json ccv.json > consumer-genesis.json
 cp consumer-genesis.json $CONSUMER_HOME_1/config/genesis.json
