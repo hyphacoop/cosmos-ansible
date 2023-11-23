@@ -73,8 +73,8 @@ jobs:
       CON1_P2P_PORT: 28101
       CON1_PPROF_PORT: 6163
       CONSUMER_SERVICE_1: cona1.service
-      BASE_FEES: 10000
-      HIGH_FEES: 15000
+      BASE_FEES: 20000
+      HIGH_FEES: 25000
       GAS: auto
       GAS_ADJUSTMENT: 2.0
       DELEGATE_1: ${{ vars.DELEGATE_1 }}
@@ -163,10 +163,10 @@ jobs:
         run: tests/major_stateful_upgrade/start_chain.sh
       - name: _Blocks produced after upgrade to v14
         run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 200 2100
-      # - name: Sleep
-      #   run: sleep 10h
       - name: _Transactions verified> bank send, delegate, and withdraw rewards
         run: tests/major_stateful_upgrade/test_tx.sh
+      - name: _PUPMOS is safe
+        run: tests/major_stateful_upgrade/test_pupmos_slashing.sh
       - name: Send funds to wallet 4
         run: $CHAIN_BINARY tx bank send $WALLET_1 $WALLET_4 10000000$DENOM --home $HOME_1 --from $MONIKER_1 --keyring-backend test --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM --chain-id $CHAIN_ID -y -b block
       - name: Set unbonding time via gov proposal

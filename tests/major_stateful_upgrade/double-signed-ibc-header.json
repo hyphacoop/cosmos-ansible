@@ -1,0 +1,72 @@
+{
+    "signed_header": {
+        "header": {
+            "version": {
+                "block": 11,
+                "app": 0
+            },
+            "chain_id": "neutron-1",
+            "height": 1909052,
+            "time": "2023-08-01T17:04:55.725149815Z",
+            "last_block_id": {
+                "hash": "TUrbkeAeWAutVZg+JitiUAUgFZfrDKOuu4G0YcQiEu8=",
+                "part_set_header": {
+                    "total": 1,
+                    "hash": "cI1kgwH9G/q7sdG2ruEGTkPht/c7zEKuzwhFEipB/do="
+                }
+            },
+            "last_commit_hash": "bbzyhLpTK/CeiVUdvfyo7Q9Jj5lo1Mvw3Vo/V6AEZpU=",
+            "data_hash": "CPhvvLSt+whY+tSaiG1AyIJtqzNj1gcu38y1tEiVHQA=",
+            "validators_hash": "zIRyDPkrgF/EzRSVvA1kGlwPCaGzcseEbhLMfG7rNew=",
+            "next_validators_hash": "zIRyDPkrgF/EzRSVvA1kGlwPCaGzcseEbhLMfG7rNew=",
+            "consensus_hash": "vml94SL+cPwUT5B4L5ZAe/3n0gSLsv2tqMpUVEVA8gg=",
+            "app_hash": "zD+exTVQEu4kbtWI+uzzvEL1OvXVNFe0ux7Evk3I2AU=",
+            "last_results_hash": "wHrdFJkUf2dpJ+/kq8oTHrRWULfOhqTy/tOv+o0qtH0=",
+            "evidence_hash": "47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=",
+            "proposer_address": "sXGD4q/jPvA7TRrtk2bBn6m59ys="
+        },
+        "commit": {
+            "height": 1909052,
+            "round": 0,
+            "block_id": {
+                "hash": "S6mpAu6EBrOmxaYx/p7AiFcER3lvb+K4h/v4rM9zOgE=",
+                "part_set_header": {
+                    "total": 1,
+                    "hash": "5Hj/E1k5MliYhIVpFASMPbXh9k+9GiaYCOK0BN6I0aw="
+                }
+            },
+            "signatures": [
+                {
+                    "block_id_flag": 2,
+                    "validator_address": "bFDMRLTx3DKr0pcNis7LIErM74U=",
+                    "timestamp": "2023-08-01T17:04:57.615222110Z",
+                    "signature": "zObMasrKs2CNrF9ySAGjRzLIP4EKB9kPTGyfdn7qTJcnejZqXasW87F6in1B9mPrxAtyAcfzW3g5664KBdWuDg=="
+                }
+            ]
+        }
+    },
+    "validator_set": {
+        "validators": [
+            {
+                "address": "bFDMRLTx3DKr0pcNis7LIErM74U=",
+                "pub_key": {
+                    "ed25519": "0Nu7qOxlaLNKgOKM2Ck0fB6aKdsH1tjOeJw18VtES2g="
+                },
+                "voting_power": 100,
+                "proposer_priority": -200
+            }
+        ],
+        "proposer": {
+            "address": "VUz+QceJ8Nu7GbJuVItwsfVjybA=",
+            "pub_key": {
+                "ed25519": "0s8KDTgEcwmOBrHWvV7mtBlItJ3upgM1FJsciwREdy4="
+            },
+            "voting_power": 1,
+            "proposer_priority": -3
+        }
+    },
+    "trusted_height": {
+        "revision_height": 0
+    },
+    "trusted_validators": null
+}

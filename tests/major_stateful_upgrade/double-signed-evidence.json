@@ -1,0 +1,37 @@
+{
+    "vote_a": {
+        "type": 2,
+        "height": 1909052,
+        "round": 0,
+        "block_id": {
+            "hash": "",
+            "part_set_header": {
+                "total": 0,
+                "hash": ""
+            }
+        },
+        "timestamp": "2023-08-01T23:00:13.469852619Z",
+        "validator_address": "bFDMRLTx3DKr0pcNis7LIErM74U=",
+        "validator_index": 125,
+        "signature": "r5IXDz5rZL+kwhJomRSQi5pYMacwzvi/WgQnYA6/VHvgnsKp7qcWdUEXUWIJ0tP4Zc1g+N34oLg3TcIZMN5WDA=="
+    },
+    "vote_b": {
+        "type": 2,
+        "height": 1909052,
+        "round": 0,
+        "block_id": {
+            "hash": "S6mpAu6EBrOmxaYx/p7AiFcER3lvb+K4h/v4rM9zOgE=",
+            "part_set_header": {
+                "total": 1,
+                "hash": "5Hj/E1k5MliYhIVpFASMPbXh9k+9GiaYCOK0BN6I0aw="
+            }
+        },
+        "timestamp": "2023-08-01T17:04:57.61522211Z",
+        "validator_address": "bFDMRLTx3DKr0pcNis7LIErM74U=",
+        "validator_index": 125,
+        "signature": "zObMasrKs2CNrF9ySAGjRzLIP4EKB9kPTGyfdn7qTJcnejZqXasW87F6in1B9mPrxAtyAcfzW3g5664KBdWuDg=="
+    },
+    "total_voting_power": 249477458,
+    "validator_power": 267777,
+    "timestamp": "2023-08-01T17:04:55.725149815Z"
+}

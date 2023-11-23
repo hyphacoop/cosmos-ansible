@@ -119,7 +119,7 @@ rpc_timeout = '15s'
 account_prefix = 'cosmos'
 key_name = 'wallet'
 store_prefix = 'ibc'
-gas_price = { price = 0.0025, denom = 'uatom' }
+gas_price = { price = 0.005, denom = 'uatom' }
 gas_multiplier = 1.1
 max_gas = 10000000
 clock_drift = '10s'
