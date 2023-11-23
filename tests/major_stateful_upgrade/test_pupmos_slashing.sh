@@ -3,8 +3,12 @@
 submit_proposal_cmd="gaiad --home $HOME_1 tx provider submit-consumer-double-voting tests/major_stateful_upgrade/double-signed-evidence.json tests/major_stateful_upgrade/double-signed-ibc-header.json --from $MONIKER_1 --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM --chain-id $CHAIN_ID -y -b block"
 
 echo "Running: $submit_proposal_cmd"
+$submit_proposal_cmd
 
-if [ $submit_proposal_cmd ]
+exit_code=$?
+echo "cmd exit code: $exit_code"
+
+if [ $exit_code -eq 0 ]
 then
     echo "ERROR: submit-consumer-double-voting submitted successfully..."
     submit_successful=1
