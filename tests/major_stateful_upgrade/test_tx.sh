@@ -18,13 +18,13 @@ check_code()
 echo "Sending funds with tx bank send..."
 $CHAIN_BINARY tx bank send $WALLET_1 $WALLET_2 $VAL_STAKE_STEP$DENOM --home $HOME_1 --from $MONIKER_1 --keyring-backend test --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM --chain-id $CHAIN_ID -y -o json -b block
 #TXHASH=$($CHAIN_BINARY tx bank send $WALLET_1 $WALLET_2 $VAL_STAKE_STEP$DENOM --home $HOME_1 --from $MONIKER_1 --keyring-backend test --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM --chain-id $CHAIN_ID -y -o json -b block | jq '.txhash' | tr -d '"')
-check_code $TXHASH
 sleep 20
+check_code $TXHASH
 
 echo "Delegating funds from test account to validator..."
 TXHASH=$($CHAIN_BINARY tx staking delegate $VALOPER_1 $VAL_STAKE$DENOM --home $HOME_1 --from $MONIKER_2 --keyring-backend test --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM --chain-id $CHAIN_ID -y -o json -b block | jq '.txhash' | tr -d '"')
-check_code $TXHASH
 sleep 20
+check_code $TXHASH
 
 # Wait for rewards to accumulate
 echo "Waiting for rewards to accumulate"

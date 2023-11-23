@@ -165,6 +165,8 @@ jobs:
         run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 200 2100
       - name: _Transactions verified> bank send, delegate, and withdraw rewards
         run: tests/major_stateful_upgrade/test_tx.sh
+      - name: _PUPMOS is safe
+        run: tests/major_stateful_upgrade/test_pupmos_slashing.sh
       - name: Send funds to wallet 4
         run: $CHAIN_BINARY tx bank send $WALLET_1 $WALLET_4 10000000$DENOM --home $HOME_1 --from $MONIKER_1 --keyring-backend test --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM --chain-id $CHAIN_ID -y -b block
       - name: Set unbonding time via gov proposal
@@ -177,8 +179,6 @@ jobs:
         run: tests/test_endpoints_api.sh localhost $VAL1_API_PORT
       - name: _Provider RPC tests> gaiad v14
         run: tests/test_endpoints_rpc.sh localhost $VAL1_RPC_PORT
-      - name: _PUPMOS is safe
-        run: tests/major_stateful_upgrade/test_pupmos_slashing.sh
       - name: Set up relayer
         run: tests/major_stateful_upgrade/setup_relayer.sh
       - name: Download consumer chain binaries
