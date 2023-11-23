@@ -73,6 +73,7 @@ if $CONSUMER_V320 ; then
     # For provider < v3.2.0
     jq '.params.retry_delay_period |= "3600s"' ccv.json > ccv-retry-delay.json    
     cp ccv-retry-delay.json ccv.json
+fi
 
 jq '.' ccv.json
 
