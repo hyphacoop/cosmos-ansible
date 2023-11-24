@@ -132,7 +132,7 @@ jobs:
       CONSUMER_CHAIN_V30_BINARY: consumerd_v3.0.0
       CONSUMER_CHAIN_V31_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-v3.1.0/interchain-security-cd-linux
       CONSUMER_CHAIN_V31_BINARY: consumerd_v3.1.0
-      CONSUMER_CHAIN_V32_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-consumer-v3.2.0-rc1interchain-security-cd-linux
+      CONSUMER_CHAIN_V32_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-consumer-v3.2.0-rc1/interchain-security-cd-linux
       CONSUMER_CHAIN_V32_BINARY: consumerd_v3.2.0
       
     steps:
