@@ -171,7 +171,7 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install toml-cli
       - name: Use legacy proposal command
-        if: ${{ (matrix.provider == 'v3.0.0' || matrix.provider == 'v3.1.0' ) || matrix.provider == 'v3.2.0-rc0'}}
+        if: ${{ (matrix.provider == 'v3.0.0' || matrix.provider == 'v3.1.0' ) || matrix.provider == 'v3.2.0-rc1'}}
         run: |
           echo "PROVIDER_V3=true" >> $GITHUB_ENV
 
