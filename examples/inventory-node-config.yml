@@ -22,14 +22,17 @@ all:
           # config files to modify
           config_toml:
             - key: consensus.timeout_commit
+              toml_cli_args: ""
               value: 5s
             - key: rpc.laddr
               value: tcp://127.0.0.1:26657
           app_toml:
             - key: pruning
+              toml_cli_args: ""
               value: default
           client_toml:
             - key: chain-id
+              toml_cli_args: ""
               value: my-testnet
             - key: mempool.max_txs_bytes
               toml_cli_args: "--to-int"
