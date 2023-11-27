@@ -4,6 +4,4 @@
   roles:
   - role: provision-digitalocean
     become: false
-  - role: node
-    become: true
-    ansible_connection: ssh
+  serial: 5
