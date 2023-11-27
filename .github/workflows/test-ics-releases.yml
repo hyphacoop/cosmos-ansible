@@ -368,7 +368,6 @@ jobs:
           tests/ics_tests/test_consumer_ibc_transfer.sh $channel_id
 
       - name: Initialize consumer chain with ICS v3.1.0
-        if: ${{ matrix.provider != 'v3.2.0-rc1' }}
         env:
           CONSUMER_CHAIN_ID: three-v310
           CONSUMER_HOME_1: /home/runner/.three_1
