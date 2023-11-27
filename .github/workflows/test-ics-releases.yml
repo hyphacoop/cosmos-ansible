@@ -220,7 +220,6 @@ jobs:
           chmod +x $HOME/go/bin/$CONSUMER_CHAIN_V32_BINARY
 
       - name: Initialize consumer chain with ICS v1.2.0-multiden
-        if: ${{ matrix.provider != 'v3.2.0-rc1' }}
         env:
           CONSUMER_CHAIN_ID: one-v120
           CONSUMER_HOME_1: /home/runner/.one_1
@@ -249,7 +248,6 @@ jobs:
           export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V12_BINARY
           tests/major_fresh_upgrade/init_consumer.sh
       - name: Prepare consumer chain one-v120
-        if: ${{ matrix.provider != 'v3.2.0-rc1' }}
         env:
           CONSUMER_CHAIN_ID: one-v120
           CONSUMER_HOME_1: /home/runner/.one_1
@@ -259,7 +257,6 @@ jobs:
           export CONSUMER_V120=true
           tests/ics_tests/prepare_consumer.sh
       - name: Start consumer chain one-v120
-        if: ${{ matrix.provider != 'v3.2.0-rc1' }}
         env:
           CONSUMER_CHAIN_ID: one-v120
           CONSUMER_SERVICE_1: one_1.service
@@ -270,12 +267,10 @@ jobs:
           sleep 5
           journalctl -u $CONSUMER_SERVICE_1
       - name: _Consumer chain produces blocks> ICS v1.2.0-multiden
-        if: ${{ matrix.provider != 'v3.2.0-rc1' }}
         env:
           CON1_RPC_PORT: 27101
         run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT 5
       - name: Establish CCV channel for one-v120
-        if: ${{ matrix.provider != 'v3.2.0-rc1' }}
         env:
           CONSUMER_CHAIN_ID: one-v120
         run: |
@@ -285,12 +280,10 @@ jobs:
           sudo systemctl restart hermes
           sleep 10
       - name: _CCV channel verified> ICS v1.2.0-multiden
-        if: ${{ matrix.provider != 'v3.2.0-rc1' }}
         env:
           CON1_RPC_PORT: 27101
         run: tests/major_fresh_upgrade/test_ccv.sh
       - name: _IBC transfer successful> ICS v1.2.0-multiden
-        if: ${{ matrix.provider != 'v3.2.0-rc1' }}
         env:
           CONSUMER_CHAIN_ID: one-v120
           CONSUMER_HOME_1: /home/runner/.one_1
@@ -300,6 +293,7 @@ jobs:
           connection_id=$($CHAIN_BINARY q ibc connection connections -o json --home $HOME_1 | jq -r --arg client "$client_id" '.connections[] | select(.client_id==$client).id')
           channel_id=$($CHAIN_BINARY q ibc channel connections $connection_id -o json --home $HOME_1 | jq -r '.channels[] | select(.port_id=="transfer").channel_id')
           tests/ics_tests/test_consumer_ibc_transfer.sh $channel_id
+
       - name: Initialize consumer chain with ICS v2.0.0
         if: ${{ matrix.provider != 'v3.2.0-rc1' }}
         env:
