@@ -139,9 +139,9 @@ ansible-playbook node.yml -i examples/inventory-local-genesis.yml -e 'target=SER
 Set up a provider chain, a consumer chain, and Hermes on the same machine.
 
 * **Inventory file:** [`inventory-local-rs-testnet.yml`](inventory-local-rs-testnet.yml)
-* **Provider binary:** [`gaiad 13.0.0`](https://github.com/cosmos/gaia/releases/tag/v13.0.0)
+* **Provider binary:** [`gaiad 14.1.0`](https://github.com/cosmos/gaia/releases/tag/v14.1.0)
 * **Provider denom:** `uatom`
-* **Consumer binary:** [`interchain-security-cd v1.0.1`](https://github.com/cosmos/interchain-security/releases/tag/v1.0.1)
+* **Consumer binary:** [`interchain-security-cd v2.0.0`](https://github.com/cosmos/interchain-security/releases/tag/v2.0.0)
 * **Consumer denom:** `ucons`
 
 The RPC, API, and gRPC ports are set to non-default values so both chains can run on the same machine. You can modify the `consumer` host entry in the inventory file to install a different consumer chain.
