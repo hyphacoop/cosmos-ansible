@@ -397,7 +397,6 @@ jobs:
           export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V31_BINARY
           tests/major_fresh_upgrade/init_consumer.sh
       - name: Prepare consumer chain three-v310
-        if: ${{ matrix.provider != 'v3.2.0-rc1' }}
         env:
           CONSUMER_CHAIN_ID: three-v310
           CONSUMER_HOME_1: /home/runner/.three_1
@@ -406,7 +405,6 @@ jobs:
         run: |
           tests/ics_tests/prepare_consumer.sh
       - name: Start consumer chain three-v310
-        if: ${{ matrix.provider != 'v3.2.0-rc1' }}
         env:
           CONSUMER_CHAIN_ID: three-v310
           CONSUMER_SERVICE_1: three_1.service
@@ -417,12 +415,10 @@ jobs:
           sleep 5
           journalctl -u $CONSUMER_SERVICE_1
       - name: _Consumer chain produces blocks> ICS v3.1.0
-        if: ${{ matrix.provider != 'v3.2.0-rc1' }}
         env:
           CON1_RPC_PORT: 27301
         run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT 5
       - name: Establish CCV channel for three-v310
-        if: ${{ matrix.provider != 'v3.2.0-rc1' }}
         env:
           CONSUMER_CHAIN_ID: three-v310
         run: |
@@ -432,12 +428,10 @@ jobs:
           sudo systemctl restart hermes
           sleep 10
       - name: _CCV channel verified> ICS v3.1.0
-        if: ${{ matrix.provider != 'v3.2.0-rc1' }}
         env:
           CON1_RPC_PORT: 27301
         run: tests/major_fresh_upgrade/test_ccv.sh
       - name: _IBC transfer successful> ICS v3.1.0
-        if: ${{ matrix.provider != 'v3.2.0-rc1' }}
         env:
           CONSUMER_CHAIN_ID: three-v310
           CONSUMER_HOME_1: /home/runner/.three_1
@@ -448,7 +442,7 @@ jobs:
           channel_id=$($CHAIN_BINARY q ibc channel connections $connection_id -o json --home $HOME_1 | jq -r '.channels[] | select(.port_id=="transfer").channel_id')
           tests/ics_tests/test_consumer_ibc_transfer.sh $channel_id
 
-      - name: Initialize consumer chain with ICS v3.2.0-rc0
+      - name: Initialize consumer chain with ICS v3.2.0-rc1
         env:
           CONSUMER_CHAIN_ID: four-v320
           CONSUMER_HOME_1: /home/runner/.four_1
