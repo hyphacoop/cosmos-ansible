@@ -16,7 +16,7 @@ all:
     digitalocean_image: ubuntu-22-04-x64
     # Project to put the droplet in
     digitalocean_project: cosmos-testnet
-    # Size of droplet slug name from https://slugs.do-api.dev/ 
+    # Size of droplet slug name from https://slugs.do-api.dev/
     digitalocean_size: s-8vcpu-16gb
     # IDs of the SSH keys from digitalocean API
     digitalocean_ssh_keys:
