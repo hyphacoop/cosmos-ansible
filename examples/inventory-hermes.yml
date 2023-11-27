@@ -47,7 +47,7 @@ all:
               hermes_chain_clock_drift: '5s'
               hermes_chain_trusting_period: '1days'
               hermes_chain_trust_threshold: "{ numerator = '1', denominator = '3' }"
-              hermes_chain_consumer: false
+              hermes_chain_consumer: 'false'
             my-chain-2:
               hermes_relayer_mnemonic: 'examples/validator-keys/validator-40/self-delegation-wallet-mnemonic.txt'
               hermes_port_name: transfer
@@ -69,4 +69,4 @@ all:
               hermes_chain_clock_drift: '5s'
               hermes_chain_trusting_period: '1days'
               hermes_chain_trust_threshold: "{ numerator = '1', denominator = '3' }"
-              hermes_chain_consumer: false
+              hermes_chain_consumer: 'false'
