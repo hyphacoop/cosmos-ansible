@@ -35,7 +35,7 @@ port = {{ hermes_telemetry_port }}
 id = '{{ id }}'
 rpc_addr = '{{ chaindata.hermes_chain_rpc_url_schema }}://{{ chaindata.hermes_chain_rpc_hostname }}:{{ chaindata.hermes_chain_rpc_port }}'
 grpc_addr = '{{ chaindata.hermes_chain_grpc_url_schema }}://{{ chaindata.hermes_chain_grpc_hostname }}:{{ chaindata.hermes_chain_grpc_port }}'
-websocket_addr = '{{ chaindata.hermes_chain_websocket_url_schema }}://{{ chaindata.hermes_chain_rpc_hostname }}:{{ chaindata.hermes_chain_rpc_port }}/websocket'
+event_source = { mode = 'push', url = '{{ chaindata.hermes_chain_websocket_url_schema }}://{{ chaindata.hermes_chain_rpc_hostname }}:{{ chaindata.hermes_chain_rpc_port }}/websocket', batch_delay = '500ms' }
 rpc_timeout = '{{ chaindata.hermes_chain_rpc_timeout }}'
 account_prefix = '{{ chaindata.hermes_chain_account_prefix }}'
 key_name = '{{ chaindata.hermes_chain_key_name }}'
@@ -47,5 +47,7 @@ gas_multiplier = {{ chaindata.hermes_chain_gas_multiplier }}
 clock_drift = '{{ chaindata.hermes_chain_clock_drift }}'
 trusting_period = '{{ chaindata.hermes_chain_trusting_period }}'
 trust_threshold = {{ chaindata.hermes_chain_trust_threshold }}
+ccv_consumer_chain = {{ chaindata.hermes_chain_consumer }}
+type = "CosmosSdk"
 
 {% endfor %}
