@@ -1,0 +1,55 @@
+---
+all:
+  vars:
+    ansible_connection: local
+    digitalocean_api_key: dop_v1_replace_with_your_api_key
+    # Stop job if a droplet with same name exists
+    digitalocean_check: false
+    # Configure DNS hostnames
+    digitalocean_dns: true
+    # Delete DNS hostname during unprovision
+    # (leave false and the provision play will update existing records with the same hostname for faster DNS replication)
+    digitalocean_delete_dns: false
+    # DNS zone to configure
+    digitalocean_domain: cosmostest.network
+    # Image to use
+    digitalocean_image: ubuntu-22-04-x64
+    # Project to put the droplet in
+    digitalocean_project: cosmos-testnet
+    # Size of droplet slug name from https://slugs.do-api.dev/
+    digitalocean_size: s-8vcpu-16gb
+    # IDs of the SSH keys from digitalocean API
+    digitalocean_ssh_keys:
+    - '12345678'
+
+  children:
+    node:
+      hosts:
+        val1.cosmostest.network:
+          digitalocean_dns_hostname: val1
+          digitalocean_hostname: val1.cosmostest.network
+          digitalocean_region: ams3
+        val2.cosmostest.network:
+          digitalocean_dns_hostname: val2
+          digitalocean_hostname: val2.cosmostest.network
+          digitalocean_region: fra1
+        val3.cosmostest.network:
+          digitalocean_dns_hostname: val3
+          digitalocean_hostname: val3.cosmostest.network
+          digitalocean_region: nyc3
+        sen1.cosmostest.network:
+          digitalocean_dns_hostname: sen1
+          digitalocean_hostname: sen1.cosmostest.network
+          digitalocean_region: sfo3
+        sen2.cosmostest.network:
+          digitalocean_dns_hostname: sen2
+          digitalocean_hostname: sen2.cosmostest.network
+          digitalocean_region: tor1
+        sync1.cosmostest.network:
+          digitalocean_dns_hostname: sync1
+          digitalocean_hostname: sync1.cosmostest.network
+          digitalocean_region: fra1
+        sync2.cosmostest.network:
+          digitalocean_dns_hostname: sync2
+          digitalocean_hostname: sync2.cosmostest.network
+          digitalocean_region: nyc3

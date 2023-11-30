@@ -1,0 +1,7 @@
+---
+# Configure a chain node
+- hosts: node
+  roles:
+  - role: provision-digitalocean
+    become: false
+  serial: 5

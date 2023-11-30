@@ -1,0 +1,29 @@
+---
+- name: Delete Droplets
+  community.digitalocean.digital_ocean_droplet:
+    state: absent
+    oauth_token: "{{ digitalocean_api_key }}"
+    name: "{{ digitalocean_hostname }}"
+    unique_name: true
+  throttle: 3
+  register: droplet_info
+
+- name: Delete AAAA record DNS hostname for droplets
+  community.digitalocean.digital_ocean_domain_record:
+    state: absent
+    oauth_token: "{{ digitalocean_api_key }}"
+    domain: "{{ digitalocean_domain }}"
+    type: AAAA
+    name: "{{ digitalocean_dns_hostname }}"
+  throttle: 3
+  when: (digitalocean_dns | default(false) | bool) and (digitalocean_delete_dns | default(false) | bool)
+
+- name: Delete A record DNS hostname for droplets
+  community.digitalocean.digital_ocean_domain_record:
+    state: absent
+    oauth_token: "{{ digitalocean_api_key }}"
+    domain: "{{ digitalocean_domain }}"
+    type: A
+    name: "{{ digitalocean_dns_hostname }}"
+  throttle: 3
+  when: (digitalocean_dns | default(false) | bool) and (digitalocean_delete_dns | default(false) | bool)

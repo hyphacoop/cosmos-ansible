@@ -1,5 +1,5 @@
 ---
-- name: Create a new Droplet
+- name: Create new Droplets
   community.digitalocean.digital_ocean_droplet:
     state: present
     oauth_token: "{{ digitalocean_api_key }}"
@@ -10,8 +10,9 @@
     image: "{{ digitalocean_image }}"
     ipv6: true
     wait_timeout: 500
-    project_name: "{{ digitalocean_project }}"
+    project: "{{ digitalocean_project }}"
     ssh_keys: "{{ digitalocean_ssh_keys }}"
+  throttle: 3
   register: droplet_info
 
 - name: Show Droplet info
@@ -24,7 +25,7 @@
 
 - name: Error VM already exists
   fail: msg="The host {{ digitalocean_hostname }} already exists."
-  when: droplet_info.changed == false
+  when: (droplet_info.changed == false) and (digitalocean_check == true)
 
 - name: Store IPv6 address
   set_fact:
@@ -37,3 +38,32 @@
 - name: Store droplet_id
   set_fact:
     droplet_id: "{{ droplet_info.data.droplet.id }}"
+
+- name: Add AAAA record DNS hostname for droplets
+  community.digitalocean.digital_ocean_domain_record:
+    state: present
+    oauth_token: "{{ digitalocean_api_key }}"
+    domain: "{{ digitalocean_domain }}"
+    type: AAAA
+    ttl: "{{ digitalocean_dns_record_ttl }}"
+    name: "{{ digitalocean_dns_hostname }}"
+    data: "{{ droplet_ipv6 }}"
+    force_update: true
+  throttle: 3
+  when: digitalocean_dns | default(false) | bool
+
+- name: Add A record DNS hostname for droplets
+  community.digitalocean.digital_ocean_domain_record:
+    state: present
+    oauth_token: "{{ digitalocean_api_key }}"
+    domain: "{{ digitalocean_domain }}"
+    type: A
+    ttl: "{{ digitalocean_dns_record_ttl }}"
+    name: "{{ digitalocean_dns_hostname }}"
+    data: "{{ droplet_ipv4 }}"
+    force_update: true
+  when: digitalocean_dns | default(false) | bool
+  throttle: 3
+- name: Wait for DNS to update
+  ansible.builtin.pause:
+    minutes: 1

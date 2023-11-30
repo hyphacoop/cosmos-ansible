@@ -1,0 +1,7 @@
+---
+### Digital Ocean API defaults
+# Manage Digitalocean DNS
+digitalocean_dns: false
+# Delete DNS records when set to true,
+# keep DNS records as is when set to false
+digitalocean_delete_dns: false
