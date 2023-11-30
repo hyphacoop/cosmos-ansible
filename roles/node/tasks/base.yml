@@ -108,11 +108,13 @@
     - chain_restart
 
 - name: Remove golang apt package
+  when: ( use_cosmovisor | default(false) | bool ) or chain_binary_source == "build"
   ansible.builtin.apt:
     name: golang
     state: absent
 
 - name: Remove system Go files
+  when: ( use_cosmovisor | default(false) | bool ) or chain_binary_source == "build"
   file:
     state: absent
     path: "{{ item }}"
@@ -121,6 +123,7 @@
     - /usr/lib/go
 
 - name: Check golang version
+  when: ( use_cosmovisor | default(false) | bool ) or chain_binary_source == "build"
   shell: |
     PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
     go version
@@ -128,16 +131,13 @@
   ignore_errors: true
 
 - name: Extract golang
-  # TODO: Auto-detect go_arch
-  when: not go_version in go_current_version.stdout
+  when: (( use_cosmovisor | default(false) | bool ) or chain_binary_source == "build" ) and
+    not go_version in go_current_version.stdout
   unarchive:
     src: "https://golang.org/dl/go{{go_version}}.{{go_arch}}.tar.gz"
     dest: /usr/local
     remote_src: yes
   become: true
-
-# TODO: Firewall
-# - name: set up firewall (block by default?)
 
 - name: Check chain version
   shell: "{{chain_bin}} version"
