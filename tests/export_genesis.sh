@@ -191,7 +191,7 @@ chain_binary_release=https://github.com/hyphacoop/cosmos-builds/releases/downloa
 genesis_file=~/cosmos-genesis-tinkerer/mainnet-genesis-tinkered/tinkered-genesis_${current_block_time}_${chain_version}_${current_block}.json.gz"
 
 echo "Waiting till gaiad is building blocks"
-su gaia -c "tests/test_block_production.sh 127.0.0.1 26657 10 2100"
+su gaia -c "tests/test_block_production.sh 127.0.0.1 26657 50 2100"
 if [ $? -ne 0 ]
 then
     echo "gaiad failed to build blocks!"
@@ -208,7 +208,7 @@ if [ $build_block -eq 1 ]
 then
     echo "Get current height"
     current_block=$(curl -s 127.0.0.1:26657/block | jq -r .result.block.header.height)
-    upgrade_height=$(($current_block+20))
+    upgrade_height=$(($current_block+100))
 
     echo "Submitting the upgrade proposal"
     proposal="~/go/bin/gaiad --output json tx gov submit-proposal software-upgrade $cosmos_upgrade_name --from val --keyring-backend test --upgrade-height $upgrade_height --upgrade-info 'Test' --title gaia-upgrade --description 'test' --chain-id local-testnet --deposit 10uatom --fees 1000uatom --yes -b block"
