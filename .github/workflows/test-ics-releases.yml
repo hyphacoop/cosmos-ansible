@@ -47,7 +47,7 @@ jobs:
     # needs: set-version-matrix
     strategy:
       matrix:
-        provider: ['v2.0.0','v2.1.0-provider-lsm','v2.4.0-lsm','v3.1.0','v3.2.0-rc1']
+        provider: ['v2.0.0','v2.1.0-provider-lsm','v2.4.0-lsm','v3.1.0','v3.2.0']
         # ${{ fromJSON(needs.set-version-matrix.outputs.upgrade_versions) }}
       fail-fast: false
     # environment: major-upgrade-fresh-workflow
@@ -132,7 +132,7 @@ jobs:
       CONSUMER_CHAIN_V30_BINARY: consumerd_v3.0.0
       CONSUMER_CHAIN_V31_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-v3.1.0/interchain-security-cd-linux
       CONSUMER_CHAIN_V31_BINARY: consumerd_v3.1.0
-      CONSUMER_CHAIN_V32_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-consumer-v3.2.0-rc1/interchain-security-cd-linux
+      CONSUMER_CHAIN_V32_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-consumer-v3.2.0/interchain-security-cd-linux
       CONSUMER_CHAIN_V32_BINARY: consumerd_v3.2.0
       
     steps:
@@ -171,7 +171,7 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install toml-cli
       - name: Use legacy proposal command
-        if: ${{ (matrix.provider == 'v3.0.0' || matrix.provider == 'v3.1.0' ) || matrix.provider == 'v3.2.0-rc1'}}
+        if: ${{ (matrix.provider == 'v3.0.0' || matrix.provider == 'v3.1.0' ) || matrix.provider == 'v3.2.0'}}
         run: |
           echo "PROVIDER_V3=true" >> $GITHUB_ENV
 
@@ -441,7 +441,7 @@ jobs:
           channel_id=$($CHAIN_BINARY q ibc channel connections $connection_id -o json --home $HOME_1 | jq -r '.channels[] | select(.port_id=="transfer").channel_id')
           tests/ics_tests/test_consumer_ibc_transfer.sh $channel_id
 
-      - name: Initialize consumer chain with ICS v3.2.0-rc1
+      - name: Initialize consumer chain with ICS v3.2.0
         env:
           CONSUMER_CHAIN_ID: four-v320
           CONSUMER_HOME_1: /home/runner/.four_1
@@ -519,30 +519,23 @@ jobs:
           channel_id=$($CHAIN_BINARY q ibc channel connections $connection_id -o json --home $HOME_1 | jq -r '.channels[] | select(.port_id=="transfer").channel_id')
           tests/ics_tests/test_consumer_ibc_transfer.sh $channel_id
 
-  #     - name: _Final CCV channel check> ICS v1.2.0-multiden
-  #       env:
-  #         CON1_RPC_PORT: 27101
-  #       run: tests/major_fresh_upgrade/test_ccv.sh
-  #     - name: _Final CCV channel check> ICS v2.0.0 chain 1
-  #       env:
-  #         CON1_RPC_PORT: 27201
-  #       run: tests/major_fresh_upgrade/test_ccv.sh
-  #     - name: _Final CCV channel check> ICS v3.1.0 chain 1
-  #       env:
-  #         CON1_RPC_PORT: 27301
-  #       run: tests/major_fresh_upgrade/test_ccv.sh
-  #     - name: _Final CCV channel check> ICS v2.0.0 chain 2
-  #       env:
-  #         CON1_RPC_PORT: 27401
-  #       run: tests/major_fresh_upgrade/test_ccv.sh
-  #     - name: _Final CCV channel check> sovereign-consumer chain
-  #       env:
-  #         CON1_RPC_PORT: 37001
-  #       run: tests/major_fresh_upgrade/test_ccv.sh
-  #     - name: _Final CCV channel check> ICS v3.1.0 chain 2
-  #       env:
-  #         CON1_RPC_PORT: 27601
-  #       run: tests/major_fresh_upgrade/test_ccv.sh
+      - name: _Final CCV channel check> ICS v1.2.0-multiden
+        env:
+          CON1_RPC_PORT: 27101
+        run: tests/major_fresh_upgrade/test_ccv.sh
+      - name: _Final CCV channel check> ICS v2.0.0
+        env:
+          CON1_RPC_PORT: 27201
+        run: tests/major_fresh_upgrade/test_ccv.sh
+      - name: _Final CCV channel check> ICS v3.1.0
+        env:
+          CON1_RPC_PORT: 27301
+        run: tests/major_fresh_upgrade/test_ccv.sh
+      - name: _Final CCV channel check> ICS v3.2.0
+        env:
+          CON1_RPC_PORT: 27401
+        run: tests/major_fresh_upgrade/test_ccv.sh
+
 
   #     - name: _Soft opt-out test> Validator must be jailed
   #       run: tests/test_validator_jailed.sh $VALOPER_2 true
