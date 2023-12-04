@@ -175,19 +175,6 @@ jobs:
         run: |
           echo "PROVIDER_V3=true" >> $GITHUB_ENV
 
-      # - name: Install Cosmovisor > v1.3.0
-      #   if: ${{ (matrix.upgrade_mechanism == 'cv_manual' || matrix.upgrade_mechanism == 'cv_auto') && matrix.cv_version != 'v1.3.0' }}
-      #   run: |
-      #     go install cosmossdk.io/tools/cosmovisor/cmd/cosmovisor@$COSMOVISOR_VERSION
-      #     echo "COSMOVISOR=true" >> $GITHUB_ENV
-      #     echo "$HOME_1/cosmovisor/current/bin" >> $GITHUB_PATH
-      # - name: Install Cosmovisor v1.3.0
-      #   if: ${{ (matrix.upgrade_mechanism == 'cv_manual' || matrix.upgrade_mechanism == 'cv_auto') && matrix.cv_version == 'v1.3.0' }}
-      #   run: |
-      #     go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@$COSMOVISOR_VERSION
-      #     echo "COSMOVISOR=true" >> $GITHUB_ENV
-      #     echo "$HOME_1/cosmovisor/current/bin" >> $GITHUB_PATH
-      
       - name: Start chain
         env:
           PROVIDER_VERSION: ${{ matrix.provider }}
@@ -536,9 +523,7 @@ jobs:
           CON1_RPC_PORT: 27401
         run: tests/major_fresh_upgrade/test_ccv.sh
 
-
   #     - name: _Soft opt-out test> Validator must be jailed
   #       run: tests/test_validator_jailed.sh $VALOPER_2 true
   #     - name: _Soft opt-out test> Validator must not be jailed
   #       run: tests/test_validator_jailed.sh $VALOPER_3 false
-
