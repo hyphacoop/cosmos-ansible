@@ -206,6 +206,8 @@ jobs:
           chmod +x $HOME/go/bin/$CONSUMER_CHAIN_V31_BINARY
           wget $CONSUMER_CHAIN_V32_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_V32_BINARY -q
           chmod +x $HOME/go/bin/$CONSUMER_CHAIN_V32_BINARY
+          wget $CONSUMER_CHAIN_V33_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_V33_BINARY -q
+          chmod +x $HOME/go/bin/$CONSUMER_CHAIN_V33_BINARY
 
       - name: Initialize consumer chain with ICS v1.2.0-multiden
         env:
