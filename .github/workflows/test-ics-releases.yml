@@ -121,6 +121,7 @@ jobs:
       CONSUMER_V120: false
       CONSUMER_V200: false
       CONSUMER_V320: false
+      CONSUMER_V330: false
       # Reference ICS chain variables
       CONSUMER_DENOM: ucon
       CONSUMER_FEES: 500
@@ -547,7 +548,7 @@ jobs:
           CONSUMER_SERVICE_2: five_2.service
           CONSUMER_SERVICE_3: five_3.service
         run: |
-          export CONSUMER_V320=true
+          export CONSUMER_V330=true
           tests/ics_tests/prepare_consumer.sh
       - name: Start consumer chain five-v330
         env:
