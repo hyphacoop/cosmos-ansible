@@ -47,7 +47,7 @@ jobs:
     # needs: set-version-matrix
     strategy:
       matrix:
-        provider: ['v2.0.0', 'v2.1.0-provider-lsm', 'v2.4.0-lsm', 'v3.1.0', 'v3.2.0']
+        provider: ['v2.0.0', 'v2.1.0-provider-lsm', 'v2.4.0-lsm', 'v3.1.0', 'v3.2.0', 'v3.3.0']
         # ${{ fromJSON(needs.set-version-matrix.outputs.upgrade_versions) }}
       fail-fast: false
     # environment: major-upgrade-fresh-workflow
@@ -116,7 +116,7 @@ jobs:
       # Consumer chain variables
       DOWNTIME_BLOCKS: 100000
       RECIPIENT: cosmos1r5v5srda7xfth3hn2s26txvrcrntldjumt8mhl
-      HERMES_VERSION: v1.7.0
+      HERMES_VERSION: v1.7.3
       PROVIDER_V3: false
       CONSUMER_V120: false
       CONSUMER_V200: false
@@ -134,7 +134,8 @@ jobs:
       CONSUMER_CHAIN_V31_BINARY: consumerd_v3.1.0
       CONSUMER_CHAIN_V32_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-consumer-v3.2.0/interchain-security-cd-linux
       CONSUMER_CHAIN_V32_BINARY: consumerd_v3.2.0
-
+      CONSUMER_CHAIN_V33_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-consumer-v3.3.0/interchain-security-cd-linux
+      CONSUMER_CHAIN_V33_BINARY: consumerd_v3.3.0
     steps:
       # - name: provider-version
       #   run: echo ${{matrix.gaia_version}}
@@ -171,7 +172,7 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install toml-cli
       - name: Use legacy proposal command
-        if: ${{ (matrix.provider == 'v3.0.0' || matrix.provider == 'v3.1.0' ) || matrix.provider == 'v3.2.0'}}
+        if: ${{ (matrix.provider == 'v3.0.0' || matrix.provider == 'v3.1.0' ) || ( matrix.provider == 'v3.2.0' || matrix.provider == 'v3.3.0' )}}
         run: |
           echo "PROVIDER_V3=true" >> $GITHUB_ENV
 
@@ -506,6 +507,84 @@ jobs:
           channel_id=$($CHAIN_BINARY q ibc channel connections $connection_id -o json --home $HOME_1 | jq -r '.channels[] | select(.port_id=="transfer").channel_id')
           tests/ics_tests/test_consumer_ibc_transfer.sh $channel_id
 
+      - name: Initialize consumer chain with ICS v3.3.0
+        env:
+          CONSUMER_CHAIN_ID: five-v330
+          CONSUMER_HOME_1: /home/runner/.five_1
+          CONSUMER_HOME_2: /home/runner/.five_2
+          CONSUMER_HOME_3: /home/runner/.five_3
+          CONSUMER_SERVICE_1: five_1.service
+          CONSUMER_SERVICE_2: five_2.service
+          CONSUMER_SERVICE_3: five_3.service
+          CON1_API_PORT: 25501
+          CON2_API_PORT: 25502
+          CON3_API_PORT: 25503
+          CON1_GRPC_PORT: 26501
+          CON2_GRPC_PORT: 26502
+          CON3_GRPC_PORT: 26503
+          CON1_RPC_PORT: 27501
+          CON2_RPC_PORT: 27502
+          CON3_RPC_PORT: 27503
+          CON1_P2P_PORT: 28501
+          CON2_P2P_PORT: 28502
+          CON3_P2P_PORT: 28503
+          CON1_PPROF_PORT: 29501
+          CON2_PPROF_PORT: 29502
+          CON3_PPROF_PORT: 29503
+          DOWNTIME_BLOCKS: 100000
+        run: |
+          export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V33_BINARY
+          tests/major_fresh_upgrade/init_consumer.sh
+      - name: Prepare consumer chain five-v330
+        env:
+          CONSUMER_CHAIN_ID: five-v330
+          CONSUMER_HOME_1: /home/runner/.five_1
+          CONSUMER_HOME_2: /home/runner/.five_2
+          CONSUMER_HOME_3: /home/runner/.five_3
+          CONSUMER_SERVICE_1: five_1.service
+          CONSUMER_SERVICE_2: five_2.service
+          CONSUMER_SERVICE_3: five_3.service
+        run: |
+          export CONSUMER_V320=true
+          tests/ics_tests/prepare_consumer.sh
+      - name: Start consumer chain five-v330
+        env:
+          CONSUMER_CHAIN_ID: five-v330
+          CONSUMER_SERVICE_1: five_1.service
+          CONSUMER_SERVICE_2: five_2.service
+          CONSUMER_SERVICE_3: five_3.service
+        run: |
+          sudo systemctl enable $CONSUMER_SERVICE_1 --now
+          sleep 5
+          journalctl -u $CONSUMER_SERVICE_1
+      - name: _Consumer chain produces blocks> ICS v3.3.0
+        env:
+          CON1_RPC_PORT: 27501
+        run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT 5
+      - name: Establish CCV channel for five-v330
+        env:
+          CONSUMER_CHAIN_ID: five-v330
+        run: |
+          client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
+          hermes create connection --a-chain $CONSUMER_CHAIN_ID --a-client 07-tendermint-0 --b-client $client_id
+          hermes create channel --a-chain $CONSUMER_CHAIN_ID --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
+          sudo systemctl restart hermes
+          sleep 10
+      - name: _CCV channel verified> ICS v3.3.0
+        env:
+          CON1_RPC_PORT: 27501
+        run: tests/major_fresh_upgrade/test_ccv.sh
+      - name: _IBC transfer successful> ICS v3.3.0
+        env:
+          CONSUMER_CHAIN_ID: five-v330
+          CONSUMER_HOME_1: /home/runner/.five_1
+        run: |
+          export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V33_BINARY
+          client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
+          connection_id=$($CHAIN_BINARY q ibc connection connections -o json --home $HOME_1 | jq -r --arg client "$client_id" '.connections[] | select(.client_id==$client).id')
+          channel_id=$($CHAIN_BINARY q ibc channel connections $connection_id -o json --home $HOME_1 | jq -r '.channels[] | select(.port_id=="transfer").channel_id')
+          tests/ics_tests/test_consumer_ibc_transfer.sh $channel_id
+
       - name: _Final CCV channel check> ICS v1.2.0-multiden
         env:
           CON1_RPC_PORT: 27101
@@ -521,6 +600,10 @@ jobs:
       - name: _Final CCV channel check> ICS v3.2.0
         env:
           CON1_RPC_PORT: 27401
+        run: tests/major_fresh_upgrade/test_ccv.sh
+      - name: _Final CCV channel check> ICS v3.3.0
+        env:
+          CON1_RPC_PORT: 27501
         run: tests/major_fresh_upgrade/test_ccv.sh
 
   #     - name: _Soft opt-out test> Validator must be jailed
