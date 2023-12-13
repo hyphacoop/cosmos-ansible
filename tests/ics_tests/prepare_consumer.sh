@@ -71,7 +71,8 @@ fi
 
 if $CONSUMER_V330 ; then
     $CONSUMER_CHAIN_BINARY genesis transform ccv.json > ccv-330-1.json
-    cp ccv-330-1.json ccv.json
+    jq -r '.new_chain |= true' ccv-330-1.json > ccv-330-2.json
+    cp ccv-330-2.json ccv.json
 fi
 
 
