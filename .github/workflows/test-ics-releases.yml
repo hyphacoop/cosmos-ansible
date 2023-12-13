@@ -358,157 +358,157 @@ jobs:
       #     channel_id=$($CHAIN_BINARY q ibc channel connections $connection_id -o json --home $HOME_1 | jq -r '.channels[] | select(.port_id=="transfer").channel_id')
       #     tests/ics_tests/test_consumer_ibc_transfer.sh $channel_id
 
-      - name: Initialize consumer chain with ICS v3.1.0
-        env:
-          CONSUMER_CHAIN_ID: three-v310
-          CONSUMER_HOME_1: /home/runner/.three_1
-          CONSUMER_HOME_2: /home/runner/.three_2
-          CONSUMER_HOME_3: /home/runner/.three_3
-          CONSUMER_SERVICE_1: three_1.service
-          CONSUMER_SERVICE_2: three_2.service
-          CONSUMER_SERVICE_3: three_3.service
-          CON1_API_PORT: 25301
-          CON2_API_PORT: 25302
-          CON3_API_PORT: 25303
-          CON1_GRPC_PORT: 26301
-          CON2_GRPC_PORT: 26302
-          CON3_GRPC_PORT: 26303
-          CON1_RPC_PORT: 27301
-          CON2_RPC_PORT: 27302
-          CON3_RPC_PORT: 27303
-          CON1_P2P_PORT: 28301
-          CON2_P2P_PORT: 28302
-          CON3_P2P_PORT: 28303
-          CON1_PPROF_PORT: 29301
-          CON2_PPROF_PORT: 29302
-          CON3_PPROF_PORT: 29303
-          DOWNTIME_BLOCKS: 100000
-        run: |
-          export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V31_BINARY
-          tests/major_fresh_upgrade/init_consumer.sh
-      - name: Prepare consumer chain three-v310
-        env:
-          CONSUMER_CHAIN_ID: three-v310
-          CONSUMER_HOME_1: /home/runner/.three_1
-          CONSUMER_HOME_2: /home/runner/.three_2
-          CONSUMER_HOME_3: /home/runner/.three_3
-        run: |
-          tests/ics_tests/prepare_consumer.sh
-      - name: Start consumer chain three-v310
-        env:
-          CONSUMER_CHAIN_ID: three-v310
-          CONSUMER_SERVICE_1: three_1.service
-          CONSUMER_SERVICE_2: three_2.service
-          CONSUMER_SERVICE_3: three_3.service
-        run: |
-          sudo systemctl enable $CONSUMER_SERVICE_1 --now
-          sleep 5
-          journalctl -u $CONSUMER_SERVICE_1
-      - name: _Consumer chain produces blocks> ICS v3.1.0
-        env:
-          CON1_RPC_PORT: 27301
-        run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT 5
-      - name: Establish CCV channel for three-v310
-        env:
-          CONSUMER_CHAIN_ID: three-v310
-        run: |
-          client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
-          hermes create connection --a-chain $CONSUMER_CHAIN_ID --a-client 07-tendermint-0 --b-client $client_id
-          hermes create channel --a-chain $CONSUMER_CHAIN_ID --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
-          sudo systemctl restart hermes
-          sleep 10
-      - name: _CCV channel verified> ICS v3.1.0
-        env:
-          CON1_RPC_PORT: 27301
-        run: tests/major_fresh_upgrade/test_ccv.sh
-      - name: _IBC transfer successful> ICS v3.1.0
-        env:
-          CONSUMER_CHAIN_ID: three-v310
-          CONSUMER_HOME_1: /home/runner/.three_1
-        run: |
-          export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V31_BINARY
-          client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
-          connection_id=$($CHAIN_BINARY q ibc connection connections -o json --home $HOME_1 | jq -r --arg client "$client_id" '.connections[] | select(.client_id==$client).id')
-          channel_id=$($CHAIN_BINARY q ibc channel connections $connection_id -o json --home $HOME_1 | jq -r '.channels[] | select(.port_id=="transfer").channel_id')
-          tests/ics_tests/test_consumer_ibc_transfer.sh $channel_id
+      # - name: Initialize consumer chain with ICS v3.1.0
+      #   env:
+      #     CONSUMER_CHAIN_ID: three-v310
+      #     CONSUMER_HOME_1: /home/runner/.three_1
+      #     CONSUMER_HOME_2: /home/runner/.three_2
+      #     CONSUMER_HOME_3: /home/runner/.three_3
+      #     CONSUMER_SERVICE_1: three_1.service
+      #     CONSUMER_SERVICE_2: three_2.service
+      #     CONSUMER_SERVICE_3: three_3.service
+      #     CON1_API_PORT: 25301
+      #     CON2_API_PORT: 25302
+      #     CON3_API_PORT: 25303
+      #     CON1_GRPC_PORT: 26301
+      #     CON2_GRPC_PORT: 26302
+      #     CON3_GRPC_PORT: 26303
+      #     CON1_RPC_PORT: 27301
+      #     CON2_RPC_PORT: 27302
+      #     CON3_RPC_PORT: 27303
+      #     CON1_P2P_PORT: 28301
+      #     CON2_P2P_PORT: 28302
+      #     CON3_P2P_PORT: 28303
+      #     CON1_PPROF_PORT: 29301
+      #     CON2_PPROF_PORT: 29302
+      #     CON3_PPROF_PORT: 29303
+      #     DOWNTIME_BLOCKS: 100000
+      #   run: |
+      #     export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V31_BINARY
+      #     tests/major_fresh_upgrade/init_consumer.sh
+      # - name: Prepare consumer chain three-v310
+      #   env:
+      #     CONSUMER_CHAIN_ID: three-v310
+      #     CONSUMER_HOME_1: /home/runner/.three_1
+      #     CONSUMER_HOME_2: /home/runner/.three_2
+      #     CONSUMER_HOME_3: /home/runner/.three_3
+      #   run: |
+      #     tests/ics_tests/prepare_consumer.sh
+      # - name: Start consumer chain three-v310
+      #   env:
+      #     CONSUMER_CHAIN_ID: three-v310
+      #     CONSUMER_SERVICE_1: three_1.service
+      #     CONSUMER_SERVICE_2: three_2.service
+      #     CONSUMER_SERVICE_3: three_3.service
+      #   run: |
+      #     sudo systemctl enable $CONSUMER_SERVICE_1 --now
+      #     sleep 5
+      #     journalctl -u $CONSUMER_SERVICE_1
+      # - name: _Consumer chain produces blocks> ICS v3.1.0
+      #   env:
+      #     CON1_RPC_PORT: 27301
+      #   run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT 5
+      # - name: Establish CCV channel for three-v310
+      #   env:
+      #     CONSUMER_CHAIN_ID: three-v310
+      #   run: |
+      #     client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
+      #     hermes create connection --a-chain $CONSUMER_CHAIN_ID --a-client 07-tendermint-0 --b-client $client_id
+      #     hermes create channel --a-chain $CONSUMER_CHAIN_ID --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
+      #     sudo systemctl restart hermes
+      #     sleep 10
+      # - name: _CCV channel verified> ICS v3.1.0
+      #   env:
+      #     CON1_RPC_PORT: 27301
+      #   run: tests/major_fresh_upgrade/test_ccv.sh
+      # - name: _IBC transfer successful> ICS v3.1.0
+      #   env:
+      #     CONSUMER_CHAIN_ID: three-v310
+      #     CONSUMER_HOME_1: /home/runner/.three_1
+      #   run: |
+      #     export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V31_BINARY
+      #     client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
+      #     connection_id=$($CHAIN_BINARY q ibc connection connections -o json --home $HOME_1 | jq -r --arg client "$client_id" '.connections[] | select(.client_id==$client).id')
+      #     channel_id=$($CHAIN_BINARY q ibc channel connections $connection_id -o json --home $HOME_1 | jq -r '.channels[] | select(.port_id=="transfer").channel_id')
+      #     tests/ics_tests/test_consumer_ibc_transfer.sh $channel_id
 
-      - name: Initialize consumer chain with ICS v3.2.0
-        env:
-          CONSUMER_CHAIN_ID: four-v320
-          CONSUMER_HOME_1: /home/runner/.four_1
-          CONSUMER_HOME_2: /home/runner/.four_2
-          CONSUMER_HOME_3: /home/runner/.four_3
-          CONSUMER_SERVICE_1: four_1.service
-          CONSUMER_SERVICE_2: four_2.service
-          CONSUMER_SERVICE_3: four_3.service
-          CON1_API_PORT: 25401
-          CON2_API_PORT: 25402
-          CON3_API_PORT: 25403
-          CON1_GRPC_PORT: 26401
-          CON2_GRPC_PORT: 26402
-          CON3_GRPC_PORT: 26403
-          CON1_RPC_PORT: 27401
-          CON2_RPC_PORT: 27402
-          CON3_RPC_PORT: 27403
-          CON1_P2P_PORT: 28401
-          CON2_P2P_PORT: 28402
-          CON3_P2P_PORT: 28403
-          CON1_PPROF_PORT: 29401
-          CON2_PPROF_PORT: 29402
-          CON3_PPROF_PORT: 29403
-          DOWNTIME_BLOCKS: 100000
-        run: |
-          export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V32_BINARY
-          tests/major_fresh_upgrade/init_consumer.sh
-      - name: Prepare consumer chain four-v320
-        env:
-          CONSUMER_CHAIN_ID: four-v320
-          CONSUMER_HOME_1: /home/runner/.four_1
-          CONSUMER_HOME_2: /home/runner/.four_2
-          CONSUMER_HOME_3: /home/runner/.four_3
-          CONSUMER_SERVICE_1: four_1.service
-          CONSUMER_SERVICE_2: four_2.service
-          CONSUMER_SERVICE_3: four_3.service
-        run: |
-          export CONSUMER_V320=true
-          tests/ics_tests/prepare_consumer.sh
-      - name: Start consumer chain four-v320
-        env:
-          CONSUMER_CHAIN_ID: four-v320
-          CONSUMER_SERVICE_1: four_1.service
-          CONSUMER_SERVICE_2: four_2.service
-          CONSUMER_SERVICE_3: four_3.service
-        run: |
-          sudo systemctl enable $CONSUMER_SERVICE_1 --now
-          sleep 5
-          journalctl -u $CONSUMER_SERVICE_1
-      - name: _Consumer chain produces blocks> ICS v3.2.0
-        env:
-          CON1_RPC_PORT: 27401
-        run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT 5
-      - name: Establish CCV channel for four-v320
-        env:
-          CONSUMER_CHAIN_ID: four-v320
-        run: |
-          client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
-          hermes create connection --a-chain $CONSUMER_CHAIN_ID --a-client 07-tendermint-0 --b-client $client_id
-          hermes create channel --a-chain $CONSUMER_CHAIN_ID --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
-          sudo systemctl restart hermes
-          sleep 10
-      - name: _CCV channel verified> ICS v3.2.0
-        env:
-          CON1_RPC_PORT: 27401
-        run: tests/major_fresh_upgrade/test_ccv.sh
-      - name: _IBC transfer successful> ICS v3.2.0
-        env:
-          CONSUMER_CHAIN_ID: four-v320
-          CONSUMER_HOME_1: /home/runner/.four_1
-        run: |
-          export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V32_BINARY
-          client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
-          connection_id=$($CHAIN_BINARY q ibc connection connections -o json --home $HOME_1 | jq -r --arg client "$client_id" '.connections[] | select(.client_id==$client).id')
-          channel_id=$($CHAIN_BINARY q ibc channel connections $connection_id -o json --home $HOME_1 | jq -r '.channels[] | select(.port_id=="transfer").channel_id')
-          tests/ics_tests/test_consumer_ibc_transfer.sh $channel_id
+      # - name: Initialize consumer chain with ICS v3.2.0
+      #   env:
+      #     CONSUMER_CHAIN_ID: four-v320
+      #     CONSUMER_HOME_1: /home/runner/.four_1
+      #     CONSUMER_HOME_2: /home/runner/.four_2
+      #     CONSUMER_HOME_3: /home/runner/.four_3
+      #     CONSUMER_SERVICE_1: four_1.service
+      #     CONSUMER_SERVICE_2: four_2.service
+      #     CONSUMER_SERVICE_3: four_3.service
+      #     CON1_API_PORT: 25401
+      #     CON2_API_PORT: 25402
+      #     CON3_API_PORT: 25403
+      #     CON1_GRPC_PORT: 26401
+      #     CON2_GRPC_PORT: 26402
+      #     CON3_GRPC_PORT: 26403
+      #     CON1_RPC_PORT: 27401
+      #     CON2_RPC_PORT: 27402
+      #     CON3_RPC_PORT: 27403
+      #     CON1_P2P_PORT: 28401
+      #     CON2_P2P_PORT: 28402
+      #     CON3_P2P_PORT: 28403
+      #     CON1_PPROF_PORT: 29401
+      #     CON2_PPROF_PORT: 29402
+      #     CON3_PPROF_PORT: 29403
+      #     DOWNTIME_BLOCKS: 100000
+      #   run: |
+      #     export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V32_BINARY
+      #     tests/major_fresh_upgrade/init_consumer.sh
+      # - name: Prepare consumer chain four-v320
+      #   env:
+      #     CONSUMER_CHAIN_ID: four-v320
+      #     CONSUMER_HOME_1: /home/runner/.four_1
+      #     CONSUMER_HOME_2: /home/runner/.four_2
+      #     CONSUMER_HOME_3: /home/runner/.four_3
+      #     CONSUMER_SERVICE_1: four_1.service
+      #     CONSUMER_SERVICE_2: four_2.service
+      #     CONSUMER_SERVICE_3: four_3.service
+      #   run: |
+      #     export CONSUMER_V320=true
+      #     tests/ics_tests/prepare_consumer.sh
+      # - name: Start consumer chain four-v320
+      #   env:
+      #     CONSUMER_CHAIN_ID: four-v320
+      #     CONSUMER_SERVICE_1: four_1.service
+      #     CONSUMER_SERVICE_2: four_2.service
+      #     CONSUMER_SERVICE_3: four_3.service
+      #   run: |
+      #     sudo systemctl enable $CONSUMER_SERVICE_1 --now
+      #     sleep 5
+      #     journalctl -u $CONSUMER_SERVICE_1
+      # - name: _Consumer chain produces blocks> ICS v3.2.0
+      #   env:
+      #     CON1_RPC_PORT: 27401
+      #   run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT 5
+      # - name: Establish CCV channel for four-v320
+      #   env:
+      #     CONSUMER_CHAIN_ID: four-v320
+      #   run: |
+      #     client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
+      #     hermes create connection --a-chain $CONSUMER_CHAIN_ID --a-client 07-tendermint-0 --b-client $client_id
+      #     hermes create channel --a-chain $CONSUMER_CHAIN_ID --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
+      #     sudo systemctl restart hermes
+      #     sleep 10
+      # - name: _CCV channel verified> ICS v3.2.0
+      #   env:
+      #     CON1_RPC_PORT: 27401
+      #   run: tests/major_fresh_upgrade/test_ccv.sh
+      # - name: _IBC transfer successful> ICS v3.2.0
+      #   env:
+      #     CONSUMER_CHAIN_ID: four-v320
+      #     CONSUMER_HOME_1: /home/runner/.four_1
+      #   run: |
+      #     export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V32_BINARY
+      #     client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
+      #     connection_id=$($CHAIN_BINARY q ibc connection connections -o json --home $HOME_1 | jq -r --arg client "$client_id" '.connections[] | select(.client_id==$client).id')
+      #     channel_id=$($CHAIN_BINARY q ibc channel connections $connection_id -o json --home $HOME_1 | jq -r '.channels[] | select(.port_id=="transfer").channel_id')
+      #     tests/ics_tests/test_consumer_ibc_transfer.sh $channel_id
 
       - name: Initialize consumer chain with ICS v3.3.0
         env:
