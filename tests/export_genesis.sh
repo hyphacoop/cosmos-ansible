@@ -2,10 +2,10 @@
 set -e
 
 # cosmos next upgrade version name
-cosmos_upgrade_name="v14"
+cosmos_upgrade_name="v15"
 
 # cosmos current major version name
-export cosmos_current_name="v13"
+export cosmos_current_name="v14"
 
 # cosmos-genesis-tinkerer repo config
 gh_branch="main"
@@ -187,7 +187,7 @@ chain_gov_testing=true \
 priv_validator_key_file=examples/validator-keys/validator-40/priv_validator_key.json \
 node_key_file=examples/validator-keys/validator-40/node_key.json \
 chain_binary_source=release \
-chain_binary_release=https://github.com/hyphacoop/cosmos-builds/releases/download/gaiad-v13.0.2-snappy/gaiad-v13.0.2-snappy
+chain_binary_release=https://github.com/hyphacoop/cosmos-builds/releases/download/gaiad-v14.1.0-snappy/gaiad-v14.1.0-snappy
 genesis_file=~/cosmos-genesis-tinkerer/mainnet-genesis-tinkered/tinkered-genesis_${current_block_time}_${chain_version}_${current_block}.json.gz"
 
 echo "Waiting till gaiad is building blocks"
