@@ -69,15 +69,17 @@ if $CONSUMER_V200 ; then
     cp ccv-200-2.json ccv.json
 fi
 
+if $CONSUMER_V330 ; then
+    $CONSUMER_CHAIN_BINARY genesis transform ccv.json > ccv-330-1.json
+    cp ccv-330-1.json ccv.json
+fi
+
+
 jq '.' ccv.json
 
 echo "Patching the consumer genesis file..."
-
 jq -s '.[0].app_state.ccvconsumer = .[1] | .[0]' $CONSUMER_HOME_1/config/genesis.json ccv.json > consumer-genesis.json
 jq '.' consumer-genesis.json
-if $CONSUMER_V330 ; then
-    $CONSUMER_CHAIN_BINARY genesis transform consumer-genesis.json
-fi
 jq '.' consumer-genesis.json
 
 
