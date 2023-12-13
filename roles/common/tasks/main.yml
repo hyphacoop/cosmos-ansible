@@ -22,6 +22,9 @@
       - build-essential
       - haveged
       - python3-openssl
+      - python-is-python3
+      - python3-venv
+      - python3-pip
       - jq
       - rsync
 
@@ -32,20 +35,6 @@
       - curl
       - htop
       - mtr-tiny
-
-- name: Remove python3-pip apt package
-  ansible.builtin.apt:
-    name: python3-pip
-    state: absent
-
-- name: Download script to install pip3
-  get_url:
-    url: https://bootstrap.pypa.io/get-pip.py
-    dest: /tmp/get-pip.py
-    mode: '0644'
-
-- name: Install pip3 using downloaded script
-  shell: python3 /tmp/get-pip.py
 
 - name: Set timezone to America/Toronto
   timezone:

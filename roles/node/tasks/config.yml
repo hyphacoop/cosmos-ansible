@@ -462,6 +462,8 @@
   script: |
     copy_config_vars.py --chain_home=$(echo {{chain_home}}) \
       --config_file=$(echo {{chain_home}}/config/ansible_vars.json)
+  args:
+    executable: "{{ node_user_home }}/env/bin/python"
   become_user: "{{node_user}}"
 
 - name: delete generated config json
