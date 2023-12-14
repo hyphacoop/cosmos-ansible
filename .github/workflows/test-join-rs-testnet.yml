@@ -25,7 +25,7 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install ansible toml
       - name: Configure ansible.cfg
-        run: echo "transport = local" >> ansible.cfg
+        run: ansible_cfg=$(sed '/\[defaults\]/a transport = local' ansible.cfg); echo "$ansible_cfg" > ansible.cfg
       - name: Run playbook
         run: |
           chain_version=$(curl -s $RPC_ENDPOINT/abci_info? | jq -r '.result.response.version')
