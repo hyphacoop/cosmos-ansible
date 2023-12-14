@@ -34,6 +34,8 @@ jobs:
         run: |
           journalctl -u gaiad
           systemctl status gaiad
+      - name: Check if gaiad still syncing
+        run: tests/test_still_syncing.sh
       - name: Check blocks are being produced
         run: |
           chain_height=$(curl -s $RPC_ENDPOINT/block | jq -r '.result.block.header.height')
