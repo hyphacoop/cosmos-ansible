@@ -2,10 +2,10 @@
 set -e
 
 # cosmos next upgrade version name
-cosmos_upgrade_name="v14"
+cosmos_upgrade_name="v15"
 
 # cosmos current major version name
-export cosmos_current_name="v13"
+export cosmos_current_name="v14"
 
 # cosmos-genesis-tinkerer repo config
 gh_branch="main"
@@ -186,11 +186,12 @@ chain_version=$chain_version \
 chain_gov_testing=true \
 priv_validator_key_file=examples/validator-keys/validator-40/priv_validator_key.json \
 node_key_file=examples/validator-keys/validator-40/node_key.json \
-chain_binary_source=release
+chain_binary_source=release \
+chain_binary_release=https://github.com/hyphacoop/cosmos-builds/releases/download/gaiad-v14.1.0-snappy/gaiad-v14.1.0-snappy
 genesis_file=~/cosmos-genesis-tinkerer/mainnet-genesis-tinkered/tinkered-genesis_${current_block_time}_${chain_version}_${current_block}.json.gz"
 
 echo "Waiting till gaiad is building blocks"
-su gaia -c "tests/test_block_production.sh 127.0.0.1 26657 10 2100"
+su gaia -c "tests/test_block_production.sh 127.0.0.1 26657 50 2100"
 if [ $? -ne 0 ]
 then
     echo "gaiad failed to build blocks!"
@@ -207,7 +208,7 @@ if [ $build_block -eq 1 ]
 then
     echo "Get current height"
     current_block=$(curl -s 127.0.0.1:26657/block | jq -r .result.block.header.height)
-    upgrade_height=$(($current_block+20))
+    upgrade_height=$(($current_block+100))
 
     echo "Submitting the upgrade proposal"
     proposal="~/go/bin/gaiad --output json tx gov submit-proposal software-upgrade $cosmos_upgrade_name --from val --keyring-backend test --upgrade-height $upgrade_height --upgrade-info 'Test' --title gaia-upgrade --description 'test' --chain-id local-testnet --deposit 10uatom --fees 1000uatom --yes -b block"
