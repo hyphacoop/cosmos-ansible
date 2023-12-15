@@ -59,14 +59,6 @@
     name: mkswap
   when: enable_swap | default(false) | bool
 
-- name: Set up pip dependencies
-  pip:
-    state: latest
-    name:
-      - pyOpenSSL
-      - toml
-      - github3.py
-
 - name: Ensure user exists for chain
   user:
     name: "{{node_user}}"
@@ -74,6 +66,23 @@
     groups: adm
     shell: /bin/bash
     comment: User for chain and cosmovisor services
+
+- name: Init Python venv
+  shell: python -m venv {{ node_user_home }}/env
+  args:
+    creates: '{{ node_user_home }}/env/bin/activate'
+  become_user: '{{ node_user }}'
+
+- name: Set up pip dependencies
+  pip:
+    virtualenv: '{{ node_user_home }}/env'
+    virtualenv_python: python3
+    state: latest
+    name:
+      - pyOpenSSL
+      - toml
+      - github3.py
+  become_user: '{{ node_user }}'
 
 # Stop existing services
 - name: Populate service facts
