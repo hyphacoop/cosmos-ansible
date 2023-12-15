@@ -1,6 +1,6 @@
 #!/bin/bash
 
-submit_proposal_cmd="gaiad --home $HOME_1 tx provider submit-consumer-double-voting tests/major_stateful_upgrade/double-signed-evidence.json tests/major_stateful_upgrade/double-signed-ibc-header.json --from $MONIKER_1 --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM --chain-id $CHAIN_ID -y -b block"
+submit_proposal_cmd="gaiad --home $HOME_1 tx provider submit-consumer-double-voting tests/major_stateful_upgrade/double-signed-evidence.json tests/major_stateful_upgrade/double-signed-ibc-header.json --from $MONIKER_1 --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICES$DENOM --chain-id $CHAIN_ID -y -b block"
 
 echo "Running: $submit_proposal_cmd"
 $submit_proposal_cmd
