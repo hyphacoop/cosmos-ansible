@@ -6,7 +6,7 @@ all:
     provider:
       vars:
         node_user: provider
-        chain_version: v13.0.0
+        chain_version: v14.1.0
         moniker: rs-validator
         chain_id: test-provider
         chain_denom: uatom
