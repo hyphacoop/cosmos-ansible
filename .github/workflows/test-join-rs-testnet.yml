@@ -25,7 +25,7 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install ansible toml
       - name: Configure ansible.cfg
-        run: echo "transport = local" >> ansible.cfg
+        run: ansible_cfg=$(sed '/\[defaults\]/a transport = local' ansible.cfg); echo "$ansible_cfg" > ansible.cfg
       - name: Run playbook
         run: |
           chain_version=$(curl -s $RPC_ENDPOINT/abci_info? | jq -r '.result.response.version')
@@ -34,6 +34,12 @@ jobs:
         run: |
           journalctl -u gaiad
           systemctl status gaiad
+      - name: Wait for gaiad to start syncing
+        run: |
+          chain_height=$(curl -s $RPC_ENDPOINT/block | jq -r '.result.block.header.height')
+          tests/test_block_production.sh 127.0.0.1 26657 10
+      - name: Check if gaiad is still syncing
+        run: tests/test_still_syncing.sh 127.0.0.1 26657
       - name: Check blocks are being produced
         run: |
           chain_height=$(curl -s $RPC_ENDPOINT/block | jq -r '.result.block.header.height')
@@ -56,12 +62,19 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install ansible toml
       - name: Configure ansible.cfg
-        run: echo "transport = local" >> ansible.cfg
+        run: ansible_cfg=$(sed '/\[defaults\]/a transport = local' ansible.cfg); echo "$ansible_cfg" > ansible.cfg
       - name: Run playbook
         run: |
-          ansible-playbook node.yml -i examples/inventory-rs-testnet-pion-1.yml --extra-vars "target=local reboot=false chain_home={{ node_user_home }}/.neutrond node_user=runner enable_swap=true swap_size=16384 use_cosmovisor=false node_service_name=neutrond"
+          chain_version=$(curl -s $RPC_ENDPOINT/abci_info? | jq -r '.result.response.version')
+          ansible-playbook node.yml -i examples/inventory-rs-testnet-pion-1.yml --extra-vars "target=local reboot=false chain_home={{ node_user_home }}/.neutrond node_user=runner enable_swap=true swap_size=16384 use_cosmovisor=false node_service_name=neutrond chain_binary_release=https://github.com/neutron-org/neutron/releases/download/v$chain_version/neutrond-linux-amd64 chain_binary_source=release"
       - name: Check neutrond service
         run: systemctl status neutrond
+      - name: Wait for neutrond to start syncing
+        run: |
+          chain_height=$(curl -s $RPC_ENDPOINT/block | jq -r '.result.block.header.height')
+          tests/test_block_production.sh 127.0.0.1 26657 10
+      - name: Check if neutrond is still syncing
+        run: tests/test_still_syncing.sh 127.0.0.1 26657
       - name: Check blocks are being produced
         run: |
           chain_height=$(curl -s $RPC_ENDPOINT/block | jq -r '.result.block.header.height')

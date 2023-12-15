@@ -4,10 +4,10 @@ all:
   vars:
     ansible_user: root
     chain_repository: "https://github.com/neutron-org/neutron.git"
-    chain_version: v1.0.4
+    chain_version: v2.0.0
     go_version: '1.20'
     genesis_url: "https://github.com/cosmos/testnets/raw/master/replicated-security/pion-1/pion-1-genesis-with-ccv.json.gz"
-    chain_binary_release: https://github.com/neutron-org/neutron/releases/download/v1.0.4/neutrond-linux-amd64
+    chain_binary_release: https://github.com/neutron-org/neutron/releases/download/v2.0.0/neutrond-linux-amd64
     chain_binary_source: release
     chain_binary_name: neutrond
     chain_id: pion-1
@@ -22,13 +22,13 @@ all:
     chain_rpc_host: "rpc"
     chain_p2p_host: "p2p"
     chain_grpc_host: "grpc"
-    p2p_seeds: "e2c07e8e6e808fb36cca0fc580e31216772841df@p2p-palvus.pion-1.ntrn.tech:26656"
+    p2p_seeds: "0de4d730b5341d3a83721e1cbb5ce7772e26a400@p2p-palvus.pion-1.ntrn.tech:26656"
     reboot: true
   children:
     node:
       hosts:
         "{{ target }}":
           fast_sync: true
-          statesync_enabled: false
+          statesync_enabled: true
           statesync_rpc_servers: 'https://rpc.pion.rs-testnet.polypore.xyz:443,https://rpc.pion.rs-testnet.polypore.xyz:443'
           statesync_trust_period: 8h0m0s
