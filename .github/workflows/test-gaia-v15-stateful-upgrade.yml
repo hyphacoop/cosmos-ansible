@@ -8,7 +8,6 @@ on:
   schedule:
     # Once a day at 13:15
     - cron: '15 13 * * 1'
-  push:
 
 concurrency:
   group: self-hosted-runners
