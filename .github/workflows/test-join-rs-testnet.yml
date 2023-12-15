@@ -69,6 +69,12 @@ jobs:
           ansible-playbook node.yml -i examples/inventory-rs-testnet-pion-1.yml --extra-vars "target=local reboot=false chain_home={{ node_user_home }}/.neutrond node_user=runner enable_swap=true swap_size=16384 use_cosmovisor=false node_service_name=neutrond chain_binary_release=https://github.com/neutron-org/neutron/releases/download/v$chain_version/neutrond-linux-amd64 chain_binary_source=release"
       - name: Check neutrond service
         run: systemctl status neutrond
+      - name: Wait for neutrond to start syncing
+        run: |
+          chain_height=$(curl -s $RPC_ENDPOINT/block | jq -r '.result.block.header.height')
+          tests/test_block_production.sh 127.0.0.1 26657 10
+      - name: Check if neutrond is still syncing
+        run: tests/test_still_syncing.sh 127.0.0.1 26657
       - name: Check blocks are being produced
         run: |
           chain_height=$(curl -s $RPC_ENDPOINT/block | jq -r '.result.block.header.height')

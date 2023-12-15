@@ -22,7 +22,7 @@ all:
     chain_rpc_host: "rpc"
     chain_p2p_host: "p2p"
     chain_grpc_host: "grpc"
-    p2p_seeds: "5b0d2a70e449e1c32e6fdadf91f160f5b2fd542e@pion.rs-testnet.polypore.xyz:26656"
+    p2p_seeds: "0de4d730b5341d3a83721e1cbb5ce7772e26a400@p2p-palvus.pion-1.ntrn.tech:26656"
     reboot: true
   children:
     node:
