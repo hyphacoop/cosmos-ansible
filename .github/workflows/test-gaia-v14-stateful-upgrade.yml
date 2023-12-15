@@ -2,8 +2,8 @@
 
 name: Test Gaia Stateful Upgrade - v14
 on:
-  repository_dispatch:
-    types: [new_main_build]
+  # repository_dispatch:
+  #   types: [new_main_build]
   workflow_dispatch:
   # schedule:
   #   # Once a day at 13:15
