@@ -32,7 +32,7 @@ for name in release_names:
     if ' ' in components[2]:
         continue
     # Trim list to only releases from specified version onwards
-    if (int(components[0][1:]) == version_major and int(components[2].split('-')[0]) >= version_patch) or \
+    if (int(components[0][1:]) == version_major and ((int(components[1]) >= version_minor) and int(components[2].split('-')[0]) >= version_patch)) or \
         int(components[0][1:]) > version_major:
         if 'rc' in components[2]:
             rc_releases.append(name)
