@@ -27,7 +27,8 @@ for name in release_names:
     if ' ' in components[2]:
         continue
     # Trim list to only releases from specified version onwards
-    if (int(components[0][1:]) == version_major and int(components[2].split('-')[0]) >= version_patch) or \
+    if (int(components[0][1:]) == version_major and (int(components[1]) >= version_minor)) and \
+       (int(components[0][1:]) == version_major and (int(components[2].split('-')[0]) >= version_patch)) or \
         int(components[0][1:]) > version_major:
         if 'rc' in components[2]:
             rc_releases.append(name)
@@ -61,21 +62,21 @@ for version, upgrades in matrix.items():
         for upgrade in upgrades:
             if upgrade not in SKIP_TARGET_VERSIONS:
                 includes.append({'gaia_version': version, 'upgrade_version': upgrade, 'upgrade_mechanism': 'binary'})
-                includes.append({'gaia_version': version, 'upgrade_version': upgrade, 'upgrade_mechanism': 'cv_manual', 'cv_version': 'v1.5.0'})
-                includes.append({'gaia_version': version, 'upgrade_version': upgrade, 'upgrade_mechanism': 'cv_manual', 'cv_version': 'v1.4.0'})
-                includes.append({'gaia_version': version, 'upgrade_version': upgrade, 'upgrade_mechanism': 'cv_manual', 'cv_version': 'v1.3.0'})
-                includes.append({'gaia_version': version, 'upgrade_version': upgrade, 'upgrade_mechanism': 'cv_auto', 'cv_version': 'v1.5.0'})
-                includes.append({'gaia_version': version, 'upgrade_version': upgrade, 'upgrade_mechanism': 'cv_auto', 'cv_version': 'v1.4.0'})
-                includes.append({'gaia_version': version, 'upgrade_version': upgrade, 'upgrade_mechanism': 'cv_auto', 'cv_version': 'v1.3.0'})
+                # includes.append({'gaia_version': version, 'upgrade_version': upgrade, 'upgrade_mechanism': 'cv_manual', 'cv_version': 'v1.5.0'})
+                # includes.append({'gaia_version': version, 'upgrade_version': upgrade, 'upgrade_mechanism': 'cv_manual', 'cv_version': 'v1.4.0'})
+                # includes.append({'gaia_version': version, 'upgrade_version': upgrade, 'upgrade_mechanism': 'cv_manual', 'cv_version': 'v1.3.0'})
+                # includes.append({'gaia_version': version, 'upgrade_version': upgrade, 'upgrade_mechanism': 'cv_auto', 'cv_version': 'v1.5.0'})
+                # includes.append({'gaia_version': version, 'upgrade_version': upgrade, 'upgrade_mechanism': 'cv_auto', 'cv_version': 'v1.4.0'})
+                # includes.append({'gaia_version': version, 'upgrade_version': upgrade, 'upgrade_mechanism': 'cv_auto', 'cv_version': 'v1.3.0'})
 
     else: # Add main branch build
         includes.append({'gaia_version': version, 'upgrade_version': 'main', 'upgrade_mechanism': 'binary'})
-        includes.append({'gaia_version': version, 'upgrade_version': 'main', 'upgrade_mechanism': 'cv_manual', 'cv_version': 'v1.5.0'})
-        includes.append({'gaia_version': version, 'upgrade_version': 'main', 'upgrade_mechanism': 'cv_manual', 'cv_version': 'v1.4.0'})
-        includes.append({'gaia_version': version, 'upgrade_version': 'main', 'upgrade_mechanism': 'cv_manual', 'cv_version': 'v1.3.0'})
-        includes.append({'gaia_version': version, 'upgrade_version': 'main', 'upgrade_mechanism': 'cv_auto', 'cv_version': 'v1.5.0'})
-        includes.append({'gaia_version': version, 'upgrade_version': 'main', 'upgrade_mechanism': 'cv_auto', 'cv_version': 'v1.4.0'})
-        includes.append({'gaia_version': version, 'upgrade_version': 'main', 'upgrade_mechanism': 'cv_auto', 'cv_version': 'v1.3.0'})
+        # includes.append({'gaia_version': version, 'upgrade_version': 'main', 'upgrade_mechanism': 'cv_manual', 'cv_version': 'v1.5.0'})
+        # includes.append({'gaia_version': version, 'upgrade_version': 'main', 'upgrade_mechanism': 'cv_manual', 'cv_version': 'v1.4.0'})
+        # includes.append({'gaia_version': version, 'upgrade_version': 'main', 'upgrade_mechanism': 'cv_manual', 'cv_version': 'v1.3.0'})
+        # includes.append({'gaia_version': version, 'upgrade_version': 'main', 'upgrade_mechanism': 'cv_auto', 'cv_version': 'v1.5.0'})
+        # includes.append({'gaia_version': version, 'upgrade_version': 'main', 'upgrade_mechanism': 'cv_auto', 'cv_version': 'v1.4.0'})
+        # includes.append({'gaia_version': version, 'upgrade_version': 'main', 'upgrade_mechanism': 'cv_auto', 'cv_version': 'v1.3.0'})
 
 
 upgrade_json = json.dumps({'include': includes})
