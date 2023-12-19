@@ -66,10 +66,10 @@ jobs:
       CHAIN_BINARY: gaiad
       CHAIN_ID: testnet
       DENOM: uatom
-      BASE_FEES: 1500
+      BASE_FEES: 2000
       HIGH_FEES: 10000
       GAS: auto
-      GAS_ADJUSTMENT: 1.4
+      GAS_ADJUSTMENT: 1.2
       VOTING_PERIOD: 10s
       # Provider node variables
       HOME_1: /home/runner/.val1
@@ -122,7 +122,7 @@ jobs:
       # Consumer chain variables
       DOWNTIME_BLOCKS: 10000
       RECIPIENT: cosmos1r5v5srda7xfth3hn2s26txvrcrntldjumt8mhl
-      HERMES_VERSION: v1.7.0
+      HERMES_VERSION: v1.7.3
       ICS_120: false
       # Reference ICS chain variables
       CONSUMER_DENOM: ucon
