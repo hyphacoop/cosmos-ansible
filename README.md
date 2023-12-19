@@ -2,7 +2,7 @@
 
 [![Lint](https://github.com/hyphacoop/cosmos-ansible/actions/workflows/lint.yml/badge.svg?branch=main)](https://github.com/hyphacoop/cosmos-ansible/actions/workflows/lint.yml)
 [![Join RS Testnet](https://github.com/hyphacoop/cosmos-ansible/actions/workflows/test-join-rs-testnet.yml/badge.svg)](https://github.com/hyphacoop/cosmos-ansible/actions/workflows/test-join-rs-testnet.yml)
-[![v13 Upgrade Fresh State](https://github.com/hyphacoop/cosmos-ansible/actions/workflows/test-gaia-v13-fresh-upgrade.yml/badge.svg?branch=main)](https://github.com/hyphacoop/cosmos-ansible/actions/workflows/test-gaia-v13-fresh-upgrade.yml)
+[![Test Gaia Fresh State Upgrade - v15](https://github.com/hyphacoop/cosmos-ansible/actions/workflows/test-gaia-v15-fresh-upgrade.yml/badge.svg?branch=main)](https://github.com/hyphacoop/cosmos-ansible/actions/workflows/test-gaia-v15-fresh-upgrade.yml)
 
 ✨ An Ansible toolkit for Cosmos networks 💫
 
