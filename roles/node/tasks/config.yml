@@ -369,7 +369,7 @@
 - name: obtain trust height
   when: statesync_enabled and statesync_auto_populate
   script:
-    get_trust_height.sh {{ statesync_rpc_servers.split(',')[0] }} 2000
+    get_trust_height.sh {{ statesync_rpc_servers.split(',')[0] }}
   register: trust_height
 
 - name: obtain trust height block hash ID
