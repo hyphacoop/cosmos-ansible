@@ -55,9 +55,7 @@ jq '.' ccv.json
 if $CONSUMER_V120 ; then
     if [ $PROVIDER_VERSION == "v3.3.0-rc0" ]; then
         echo "Patching for provider v3.3.0-rc0"
-        wget https://github.com/hyphacoop/cosmos-builds/releases/download/ics-v3.3.0-transform/interchain-security-cd -q -O ics-cd-transform
-        chmod +x ics-cd-transform
-        ./ics-cd-transform genesis transform --to v2.x ccv.json > ccv-330.json
+        ics-cd-transform genesis transform --to v2.x ccv.json > ccv-330.json
         cp ccv-330.json ccv.json
     fi
 
@@ -72,9 +70,7 @@ fi
 if $CONSUMER_V200 ; then
     if [ $PROVIDER_VERSION == "v3.3.0-rc0" ]; then
         echo "Patching for provider v3.3.0-rc0"
-        wget https://github.com/hyphacoop/cosmos-builds/releases/download/ics-v3.3.0-transform/interchain-security-cd -q -O ics-cd-transform
-        chmod +x ics-cd-transform
-        ./ics-cd-transform genesis transform --to v2.x ccv.json > ccv-330.json
+        ics-cd-transform genesis transform --to v2.x ccv.json > ccv-330.json
         cp ccv-330.json ccv.json
     fi
     # For provider >= v3.0.0
@@ -83,12 +79,27 @@ if $CONSUMER_V200 ; then
     cp ccv-200-2.json ccv.json
 fi
 
+if $CONSUMER_V310 ; then
+    if [ $PROVIDER_VERSION == "v3.3.0-rc0" ]; then
+        echo "Patching for provider v3.3.0-rc0"
+        ics-cd-transform genesis transform --to v3.1.x ccv.json > ccv-330.json
+        cp ccv-330.json ccv.json
+    fi
+fi
+
+if $CONSUMER_V320 ; then
+    if [ $PROVIDER_VERSION == "v3.3.0-rc0" ]; then
+        echo "Patching for provider v3.3.0-rc0"
+        ics-cd-transform genesis transform --to v3.2.x ccv.json > ccv-330.json
+        cp ccv-330.json ccv.json
+    fi
+fi
+
 if $CONSUMER_V330 ; then
     $CONSUMER_CHAIN_BINARY genesis transform ccv.json > ccv-330-1.json
     jq -r '.new_chain |= true' ccv-330-1.json > ccv-330-2.json
     cp ccv-330-2.json ccv.json
 fi
-
 
 jq '.' ccv.json
 

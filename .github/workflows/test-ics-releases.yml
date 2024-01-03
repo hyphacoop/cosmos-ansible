@@ -201,6 +201,8 @@ jobs:
           wget $CONSUMER_CHAIN_V33_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_V33_BINARY -q
           chmod +x $HOME/go/bin/$CONSUMER_CHAIN_V33_BINARY
 
+          wget https://github.com/hyphacoop/cosmos-builds/releases/download/ics-v3.3.0-transform/interchain-security-cd -q -O $HOME/go/bin/ics-cd-transform
+          chmod +x $HOME/go/bin/ics-cd-transform
       - name: Initialize consumer chain with ICS v1.2.0-multiden
         env:
           CONSUMER_CHAIN_ID: one-v120
@@ -387,6 +389,7 @@ jobs:
           CONSUMER_HOME_3: /home/runner/.three_3
           PROVIDER_VERSION: ${{ matrix.provider }}
         run: |
+          export CONSUMER_V310=true
           tests/ics_tests/prepare_consumer.sh
       - name: Start consumer chain three-v310
         env:
