@@ -117,10 +117,11 @@ jobs:
       # Consumer chain variables
       DOWNTIME_BLOCKS: 100000
       RECIPIENT: cosmos1r5v5srda7xfth3hn2s26txvrcrntldjumt8mhl
-      HERMES_VERSION: v1.6.0
+      HERMES_VERSION: v1.7.3
       PROVIDER_V3: false
       CONSUMER_V120: false
       CONSUMER_V200: false
+      CONSUMER_V310: false
       CONSUMER_V320: false
       CONSUMER_V330: false
       # Reference ICS chain variables
