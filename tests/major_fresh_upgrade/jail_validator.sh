@@ -21,4 +21,5 @@ while true; do
     if [[ $counter -gt 10 ]]; then
         echo "Validator was not jailed."
         exit 1
+    fi
 done
