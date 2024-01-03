@@ -66,6 +66,7 @@ echo "** LIQUID STAKING PROVIDER HAPPY PATH> 2: DELEGATE VIA ICA **"
     message=$(jq -r --arg ADDRESS "$VALOPER_2" '.validator_address = $ADDRESS' delegate-happy-2.json)
     echo "Generating packet JSON..."
     $STRIDE_CHAIN_BINARY tx interchain-accounts host generate-packet-data "$message" > delegate_packet.json
+    jq '.' delegate_packet.json
     echo "Sending tx staking delegate to host chain..."
     tests/v12_upgrade/log_lsm_data.sh lsp-happy pre-ica-delegate-1 $ICA_ADDRESS $delegate
     submit_ibc_tx "tx interchain-accounts controller send-tx connection-0 delegate_packet.json --from $STRIDE_WALLET_1 --chain-id $STRIDE_CHAIN_ID --gas auto --fees $BASE_FEES$STRIDE_DENOM --gas-adjustment $GAS_ADJUSTMENT -y -o json" $STRIDE_CHAIN_BINARY $STRIDE_HOME_1
