@@ -42,15 +42,15 @@ echo "Creating script for gaia user"
 echo "#!/bin/bash
 echo \"cd ~/.gaia\"
 cd ~/.gaia
-echo \"Set URL\"
-URL=\$(curl -sL https://quicksync.io/cosmos.json|jq -r '.[] |select(.file==\"cosmoshub-4-pruned\")|.url')
-echo \"URL set to: \$URL\"
-echo \"Starting download\"
-aria2c -x5 \$URL
-echo \"Execting \$(basename \$URL)\"
-lz4 -d \$(basename \$URL) | tar xf -
-echo \"Removing \$(basename \$URL)\"
-rm \$(basename \$URL)
+# echo \"Set URL\"
+# URL=\$(curl -sL https://quicksync.io/cosmos.json|jq -r '.[] |select(.file==\"cosmoshub-4-pruned\")|.url')
+# echo \"URL set to: \$URL\"
+# echo \"Starting download\"
+# aria2c -x5 \$URL
+# echo \"Execting \$(basename \$URL)\"
+# lz4 -d \$(basename \$URL) | tar xf -
+# echo \"Removing \$(basename \$URL)\"
+# rm \$(basename \$URL)
 if [ ! -L cosmovisor/current ]
 then
     mkdir -p /home/gaia/.gaia/cosmovisor/upgrades/\$cosmos_current_name/bin
@@ -167,7 +167,7 @@ echo "Clone cosmos-ansible"
 git clone https://github.com/hyphacoop/cosmos-ansible.git
 cd cosmos-ansible
 git checkout $gh_ansible_branch
-echo "transport = local" >> ansible.cfg
+sed -i '/^\[defaults\]/s/$/\ntransport = local/' ansible.cfg
 
 echo "Configure cosmovisor service to not auto restart"
 sed -e '/RestartSec=3/d ; s/Restart=always/Restart=no/ ; s/DAEMON_RESTART_AFTER_UPGRADE=true/DAEMON_RESTART_AFTER_UPGRADE=false/' roles/node/templates/cosmovisor.service.j2 > cosmovisor.service.j2
