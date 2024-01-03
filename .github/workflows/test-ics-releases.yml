@@ -234,6 +234,7 @@ jobs:
           CONSUMER_HOME_1: /home/runner/.one_1
           CONSUMER_HOME_2: /home/runner/.one_2
           CONSUMER_HOME_3: /home/runner/.one_3
+          PROVIDER_VERSION: ${{ matrix.provider }}
         run: |
           export CONSUMER_V120=true
           tests/ics_tests/prepare_consumer.sh
@@ -309,6 +310,7 @@ jobs:
           CONSUMER_HOME_1: /home/runner/.two_1
           CONSUMER_HOME_2: /home/runner/.two_2
           CONSUMER_HOME_3: /home/runner/.two_3
+          PROVIDER_VERSION: ${{ matrix.provider }}
         run: |
           export CONSUMER_V200=true
           tests/ics_tests/prepare_consumer.sh
@@ -382,6 +384,7 @@ jobs:
           CONSUMER_HOME_1: /home/runner/.three_1
           CONSUMER_HOME_2: /home/runner/.three_2
           CONSUMER_HOME_3: /home/runner/.three_3
+          PROVIDER_VERSION: ${{ matrix.provider }}
         run: |
           tests/ics_tests/prepare_consumer.sh
       - name: Start consumer chain three-v310
@@ -537,6 +540,7 @@ jobs:
           CONSUMER_SERVICE_1: five_1.service
           CONSUMER_SERVICE_2: five_2.service
           CONSUMER_SERVICE_3: five_3.service
+          PROVIDER_VERSION: ${{ matrix.provider }}
         run: |
           export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V33_BINARY
           export CONSUMER_V330=true
