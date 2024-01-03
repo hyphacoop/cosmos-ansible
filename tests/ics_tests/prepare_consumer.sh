@@ -52,36 +52,43 @@ cp ccv-reward.json ccv.json
 
 jq '.' ccv.json
 
-if [ $PROVIDER_VERSION == "v3.3.0-rc0" ]; then
-    echo "Patching for provider v3.3.0-rc0"
-    wget https://github.com/hyphacoop/cosmos-builds/releases/download/ics-v3.3.0-transform/interchain-security-cd -q -O ics-cd-transform
-    chmod +x ics-cd-transform
-    ./ics-cd-transform genesis transform --to v3.3.x ccv.json > ccv-330.json
-    cp ccv-330.json ccv.json
-else
-    if $CONSUMER_V120 ; then
-        echo "Patching for ICS v1.2.0"
-        jq 'del(.preCCV)' ccv.json > ccv-120.json
-
-        # For provider >= v3.0.0
-        jq 'del(.provider_client_state.proof_specs[0].prehash_key_before_comparison)' ccv-120.json > ccv-120-1.json    
-        jq 'del(.provider_client_state.proof_specs[1].prehash_key_before_comparison)' ccv-120-1.json > ccv-120-2.json    
-        cp ccv-120-2.json ccv.json
+if $CONSUMER_V120 ; then
+    if [ $PROVIDER_VERSION == "v3.3.0-rc0" ]; then
+        echo "Patching for provider v3.3.0-rc0"
+        wget https://github.com/hyphacoop/cosmos-builds/releases/download/ics-v3.3.0-transform/interchain-security-cd -q -O ics-cd-transform
+        chmod +x ics-cd-transform
+        ./ics-cd-transform genesis transform --to v2.x ccv.json > ccv-330.json
+        cp ccv-330.json ccv.json
     fi
 
-    if $CONSUMER_V200 ; then
-        # For provider >= v3.0.0
-        jq 'del(.provider_client_state.proof_specs[0].prehash_key_before_comparison)' ccv.json > ccv-200-1.json    
-        jq 'del(.provider_client_state.proof_specs[1].prehash_key_before_comparison)' ccv-200-1.json > ccv-200-2.json    
-        cp ccv-200-2.json ccv.json
-    fi
-
-    if $CONSUMER_V330 ; then
-        $CONSUMER_CHAIN_BINARY genesis transform ccv.json > ccv-330-1.json
-        jq -r '.new_chain |= true' ccv-330-1.json > ccv-330-2.json
-        cp ccv-330-2.json ccv.json
-    fi
+    echo "Patching for ICS v1.2.0"
+    jq 'del(.preCCV)' ccv.json > ccv-120.json
+    # For provider >= v3.0.0
+    jq 'del(.provider_client_state.proof_specs[0].prehash_key_before_comparison)' ccv-120.json > ccv-120-1.json    
+    jq 'del(.provider_client_state.proof_specs[1].prehash_key_before_comparison)' ccv-120-1.json > ccv-120-2.json    
+    cp ccv-120-2.json ccv.json
 fi
+
+if $CONSUMER_V200 ; then
+    if [ $PROVIDER_VERSION == "v3.3.0-rc0" ]; then
+        echo "Patching for provider v3.3.0-rc0"
+        wget https://github.com/hyphacoop/cosmos-builds/releases/download/ics-v3.3.0-transform/interchain-security-cd -q -O ics-cd-transform
+        chmod +x ics-cd-transform
+        ./ics-cd-transform genesis transform --to v2.x ccv.json > ccv-330.json
+        cp ccv-330.json ccv.json
+    fi
+    # For provider >= v3.0.0
+    jq 'del(.provider_client_state.proof_specs[0].prehash_key_before_comparison)' ccv.json > ccv-200-1.json    
+    jq 'del(.provider_client_state.proof_specs[1].prehash_key_before_comparison)' ccv-200-1.json > ccv-200-2.json    
+    cp ccv-200-2.json ccv.json
+fi
+
+if $CONSUMER_V330 ; then
+    $CONSUMER_CHAIN_BINARY genesis transform ccv.json > ccv-330-1.json
+    jq -r '.new_chain |= true' ccv-330-1.json > ccv-330-2.json
+    cp ccv-330-2.json ccv.json
+fi
+
 
 jq '.' ccv.json
 
