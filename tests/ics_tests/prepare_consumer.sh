@@ -90,7 +90,7 @@ fi
 if $CONSUMER_V320 ; then
     if [ $PROVIDER_VERSION == "v3.3.0-rc0" ]; then
         echo "Patching for provider v3.3.0-rc0"
-        ics-cd-transform genesis transform --to v3.2.x ccv.json > ccv-330.json
+        ics-cd-transform genesis transform --to v2.x ccv.json > ccv-330.json
         cp ccv-330.json ccv.json
     fi
 fi
