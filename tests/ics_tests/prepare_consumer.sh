@@ -54,9 +54,9 @@ jq '.' ccv.json
 
 if [ $PROVIDER_VERSION == "v3.3.0-rc0" ]; then
     echo "Patching for provider v3.3.0-rc0"
-    wget https://github.com/hyphacoop/cosmos-builds/releases/download/ics-v3.3.0-transform/interchain-security-cd -O ics-cd-transform
+    wget https://github.com/hyphacoop/cosmos-builds/releases/download/ics-v3.3.0-transform/interchain-security-cd -q -O ics-cd-transform
     chmod +x ics-cd-transform
-    ics-cd-transform genesis transform -to v3.3.x ccv.json > ccv-330.json
+    ./ics-cd-transform genesis transform -to v3.3.x ccv.json > ccv-330.json
     cp ccv-330.json ccv.json
 else
     if $CONSUMER_V120 ; then
