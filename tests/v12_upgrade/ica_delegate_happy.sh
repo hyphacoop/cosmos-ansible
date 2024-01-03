@@ -64,7 +64,7 @@ echo "** LIQUID STAKING PROVIDER HAPPY PATH> 2: DELEGATE VIA ICA **"
     jq -r --arg ADDRESS "$ICA_ADDRESS" '.delegator_address = $ADDRESS' tests/v12_upgrade/msg-delegate.json > delegate-happy.json
     jq -r --arg AMOUNT "$delegate" '.amount.amount = $AMOUNT' delegate-happy.json > delegate-happy-2.json
     message=$(jq -r --arg ADDRESS "$VALOPER_2" '.validator_address = $ADDRESS' delegate-happy-2.json)
-    jq '.' $message
+    echo $message
     echo "Generating packet JSON..."
     $STRIDE_CHAIN_BINARY tx interchain-accounts host generate-packet-data "$message" > delegate_packet.json
     jq '.' delegate_packet.json
