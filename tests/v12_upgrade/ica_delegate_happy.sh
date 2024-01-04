@@ -3,7 +3,7 @@
 
 source tests/process_tx.sh
 
-delegate=10000000
+delegate=1000000
 bond_delegation=20000000
 
 $CHAIN_BINARY keys add lsp_happy_bonding --home $HOME_1
