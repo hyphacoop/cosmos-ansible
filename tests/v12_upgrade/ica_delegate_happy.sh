@@ -78,6 +78,7 @@ echo "** LIQUID STAKING PROVIDER HAPPY PATH> 2: DELEGATE VIA ICA **"
     sleep $(($COMMIT_TIMEOUT*8))
     tests/v12_upgrade/log_lsm_data.sh lsp-happy post-ica-delegate-1 $ICA_ADDRESS $delegate
     
+    journalctl -fu hermes | tail -n 100
     $CHAIN_BINARY q bank balances $ICA_ADDRESS --home $HOME_1
     $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
     post_delegation_tokens=$($CHAIN_BINARY q staking validator $VALOPER_2 -o json --home $HOME_1 | jq -r '.tokens')
