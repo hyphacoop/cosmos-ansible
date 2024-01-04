@@ -70,10 +70,10 @@ echo "** LIQUID STAKING PROVIDER HAPPY PATH> 2: DELEGATE VIA ICA **"
     jq '.' delegate_packet.json
     echo "Sending tx staking delegate to host chain..."
     tests/v12_upgrade/log_lsm_data.sh lsp-happy pre-ica-delegate-1 $ICA_ADDRESS $delegate
-    # submit_ibc_tx "tx interchain-accounts controller send-tx connection-0 delegate_packet.json --from $STRIDE_WALLET_1 --chain-id $STRIDE_CHAIN_ID --gas auto --fees $BASE_FEES$STRIDE_DENOM --gas-adjustment $GAS_ADJUSTMENT -y -o json" $STRIDE_CHAIN_BINARY $STRIDE_HOME_1
     $CHAIN_BINARY q bank balances $ICA_ADDRESS --home $HOME_1
 
-    strided tx interchain-accounts controller send-tx connection-0 delegate_packet.json --from $STRIDE_WALLET_1 --chain-id $STRIDE_CHAIN_ID --gas auto --fees $BASE_FEES$STRIDE_DENOM --gas-adjustment $GAS_ADJUSTMENT -y -o json --home $STRIDE_HOME_1
+    submit_ibc_tx "tx interchain-accounts controller send-tx connection-0 delegate_packet.json --from $STRIDE_WALLET_1 --chain-id $STRIDE_CHAIN_ID --gas auto --fees $BASE_FEES$STRIDE_DENOM --gas-adjustment $GAS_ADJUSTMENT -y -o json" $STRIDE_CHAIN_BINARY $STRIDE_HOME_1
+    #strided tx interchain-accounts controller send-tx connection-0 delegate_packet.json --from $STRIDE_WALLET_1 --chain-id $STRIDE_CHAIN_ID --gas auto --fees $BASE_FEES$STRIDE_DENOM --gas-adjustment $GAS_ADJUSTMENT -y -o json --home $STRIDE_HOME_1
     echo "Waiting for delegation to go on-chain..."
     sleep $(($COMMIT_TIMEOUT*8))
     tests/v12_upgrade/log_lsm_data.sh lsp-happy post-ica-delegate-1 $ICA_ADDRESS $delegate
