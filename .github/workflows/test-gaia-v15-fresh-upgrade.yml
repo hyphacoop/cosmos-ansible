@@ -610,7 +610,8 @@ jobs:
         env:
           BASE_FEES: 3000
           CONSUMER_FEES: 1000
-          IBC_CHANNEL: channel-9
+          # IBC_CHANNEL: channel-9
+          IBC_CHANNEL: channel-1
         run: tests/v12_upgrade/lsm_happy_path.sh
       - name: _lsm-failures-1
         run: tests/v12_upgrade/lsm_failures.sh
