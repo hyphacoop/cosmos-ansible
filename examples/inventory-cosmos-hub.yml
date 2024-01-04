@@ -23,6 +23,4 @@ all:
         "{{ target }}":
           fast_sync: true
           statesync_enabled: true
-          # statesync_rpc_servers: 'https://cosmos-rpc.polkachu.com:443,https://cosmos-rpc.polkachu.com:443'
-          statesync_rpc_servers: 'http://one.cosmos-mainnet.polypore.xyz:26657,http://one.cosmos-mainnet.polypore.xyz:26657'
-          p2p_persistent_peers: "6a40fcafbf98a8d0cae4437c76486a6cb88576dc@one.cosmos-mainnet.polypore.xyz:26656"
+          statesync_rpc_servers: 'https://cosmos-rpc.polkachu.com:443,https://cosmos-rpc.polkachu.com:443'

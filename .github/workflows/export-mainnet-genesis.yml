@@ -49,7 +49,7 @@ jobs:
         run: ansible-playbook gaia-mainnet-export.yml -i examples/inventory-exporting-genesis-do.yml --extra-vars "digitalocean_api_key=${{ secrets.DO_API_KEY }}"
 
       - name: Install Gaia and configure for mainnet
-        run: ansible-playbook node.yml -i examples/inventory-cosmos-hub.yml --extra-vars "target=mainnet-export chain_start=false chain_binary_source=release"
+        run: ansible-playbook node.yml -i examples/inventory-cosmos-hub.yml --extra-vars "target=mainnet-export chain_start=false chain_binary_source=release statesync_rpc_servers=${{ secrets.MAINNET_RPC_SERVERS }} p2p_persistent_peers=${{ secrets.MAINNET_PERSISTENT_PEERS }}"
 
       - name: Copy export_genesis.sh to VM
         run: |
