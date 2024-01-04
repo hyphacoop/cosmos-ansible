@@ -99,7 +99,7 @@ fi
 if $CONSUMER_V330 ; then
     echo "Patching for consumer v3.3.0..."
     if [ $PROVIDER_VERSION != "v3.3.0-rc0" ]; then
-        ics-transform-cd genesis transform ccv.json > ccv-330-1.json
+        ics-cd-transform genesis transform ccv.json > ccv-330-1.json
         cp ccv-330-1.json ccv.json
         # $CONSUMER_CHAIN_BINARY genesis transform ccv.json > ccv-330-1.json
         # cp ccv-330-1.json ccv.json
