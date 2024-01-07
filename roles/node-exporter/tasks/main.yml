@@ -19,6 +19,8 @@
     user: prometheus
     repo: node_exporter
     action: latest_release
+  vars:
+    ansible_python_interpreter: "{{ node_user_home }}/env/bin/python"
   register: node_exporter_latest
 
 - name: Download Node Exporter
@@ -56,6 +58,14 @@
     job: echo SIZE_FOLDER_GAIA{src=\"{{chain_home}}\"} $(du --max-depth=1 {{chain_home}} | tail -n 1 | awk '{print $1}') > /opt/node_exporter/textfiles/SIZE_FOLDER_GAIA.prom
     minute: "*/1"
     user: root
+
+- name: Install crontab for chain binary memory monitoring
+  cron:
+    name: monitoring-node-binary-memory-usage
+    job: pid=$(pidof {{ chain_binary_name }}) ; if [ ! -z "$pid" ] ; then ps -o rss= $(pidof {{ chain_binary_name }}) | awk '{printf "NODE_BINARY_MEMORY \%.0f\n", $1 / 1024 * 1024 *1024}' ; else echo "NODE_BINARY_MEMORY 0" ; fi > /opt/node_exporter/textfiles/NODE_BINARY_MEMORY.prom
+    minute: "*/1"
+    user: root
+  when: node_exporter_binary_memory | default(false) | bool
 
 - name: Install node_exporter systemd service
   template:
