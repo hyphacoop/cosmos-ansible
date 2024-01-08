@@ -54,8 +54,8 @@ jq '.' ccv.json
 
 if $CONSUMER_V120 ; then
     echo "Patching for ICS v1.2.0"
-    if [ $PROVIDER_VERSION == "v3.3.0-rc0" ]; then
-        echo "Patching for provider v3.3.0-rc0"
+    if [ $PROVIDER_VERSION == "v3.3.0-rc1" ]; then
+        echo "Patching for provider v3.3.0-rc1"
         ics-cd-transform genesis transform --to v2.x ccv.json > ccv-330.json
         cp ccv-330.json ccv.json
     else
@@ -68,8 +68,8 @@ if $CONSUMER_V120 ; then
 fi
 
 if $CONSUMER_V200 ; then
-    if [ $PROVIDER_VERSION == "v3.3.0-rc0" ]; then
-        echo "Patching for provider v3.3.0-rc0"
+    if [ $PROVIDER_VERSION == "v3.3.0-rc1" ]; then
+        echo "Patching for provider v3.3.0-rc1"
         ics-cd-transform genesis transform --to v2.x ccv.json > ccv-330.json
         cp ccv-330.json ccv.json
     else
@@ -80,8 +80,8 @@ if $CONSUMER_V200 ; then
 fi
 
 if $CONSUMER_V310 ; then
-    if [ $PROVIDER_VERSION == "v3.3.0-rc0" ]; then
-        echo "Patching for provider v3.3.0-rc0"
+    if [ $PROVIDER_VERSION == "v3.3.0-rc1" ]; then
+        echo "Patching for provider v3.3.0-rc1"
         ics-cd-transform genesis transform --to v3.1.x ccv.json > ccv-330.json
         cp ccv-330.json ccv.json
     fi
@@ -89,8 +89,8 @@ fi
 
 if $CONSUMER_V320 ; then
     echo "Patching for consumer v3.2.0..."
-    if [ $PROVIDER_VERSION == "v3.3.0-rc0" ]; then
-        echo "Patching for provider v3.3.0-rc0"
+    if [ $PROVIDER_VERSION == "v3.3.0-rc1" ]; then
+        echo "Patching for provider v3.3.0-rc1"
         ics-cd-transform genesis transform --to v3.2.x ccv.json > ccv-330.json
         cp ccv-330.json ccv.json
     fi
@@ -98,13 +98,13 @@ fi
 
 if $CONSUMER_V330 ; then
     echo "Patching for consumer v3.3.0..."
-    if [ $PROVIDER_VERSION != "v3.3.0-rc0" ]; then
+    if [ $PROVIDER_VERSION != "v3.3.0-rc1" ]; then
         # ics-cd-transform genesis transform ccv.json > ccv-330-1.json
         # cp ccv-330-1.json ccv.json
         $CONSUMER_CHAIN_BINARY genesis transform ccv.json > ccv-330-1.json
         cp ccv-330-1.json ccv.json
-        jq -r '.new_chain |= true' ccv-330-1.json > ccv-330-2.json
-        cp ccv-330-2.json ccv.json
+        # jq -r '.new_chain |= true' ccv-330-1.json > ccv-330-2.json
+        # cp ccv-330-2.json ccv.json
     fi
 fi
 
