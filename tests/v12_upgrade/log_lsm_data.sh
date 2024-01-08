@@ -26,4 +26,4 @@ balance=$(echo $acct_balances | jq -r '.balances[0].amount')$(echo $acct_balance
 del_shares=$(echo $acct_delegations | jq -r '.delegation_responses[0].delegation.shares')
 del_balance=$(echo $acct_delegations | jq -r '.delegation_responses[0].balance.amount')$(echo $acct_delegations | jq -r '.delegation_responses[0].balance.denom')
 
-echo "$flow,$action,$account,$amount,$balance,$del_shares,$del_balance,$val1_tokens,$val1_shares,$val1_bond_shares,$val1_liquid_shares,$val2_tokens,$val2_shares,$val2_bond_shares,$val2_liquid_shares" >> $LSM_LOG
+echo "$flow,$action,$account,$amount,$balance,$del_shares,$del_balance,$val1_tokens,$val1_shares,$val1_bond_shares,$val1_liquid_shares,$val2_tokens,$val2_shares,$val2_bond_shares,$val2_liquid_shares" >> lsm_log.csv

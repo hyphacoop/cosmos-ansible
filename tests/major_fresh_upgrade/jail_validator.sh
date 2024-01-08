@@ -17,7 +17,8 @@ while true; do
     elif [[ "$jailed_status" == "true" ]]; then
         echo "Validator $operator has been jailed."
         break
-    elif [[ $counter -gt 10 ]]; then
+    fi
+    if [[ $counter -gt 10 ]]; then
         echo "Validator was not jailed."
         exit 1
     fi
