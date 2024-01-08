@@ -7,13 +7,10 @@ on:
 jobs:
   test-consumer-launches:
     runs-on: ubuntu-22.04
-    # needs: set-version-matrix
     strategy:
       matrix:
         provider: ['v2.0.0', 'v2.1.0-provider-lsm', 'v2.4.0-lsm', 'v3.1.0', 'v3.2.0', 'v3.3.0-rc1']
-        # provider: ['v3.3.0-rc0']
       fail-fast: false
-    # environment: major-upgrade-fresh-workflow
     env:
       COMMIT_TIMEOUT: 3
       COSMOVISOR: false
