@@ -19,7 +19,8 @@ hermes keys add --chain two-v200 --mnemonic-file mnemonic.txt
 hermes keys add --chain three-v320 --mnemonic-file mnemonic.txt
 hermes keys add --chain four-v200 --mnemonic-file mnemonic.txt
 hermes keys add --chain five --mnemonic-file mnemonic.txt
-hermes keys add --chain six-v320 --mnemonic-file mnemonic.txt
+hermes keys add --chain six-v310 --mnemonic-file mnemonic.txt
+hermes keys add --chain seven-v320 --mnemonic-file mnemonic.txt
 
 echo "Creating service..."
 sudo touch /etc/systemd/system/hermes.service
