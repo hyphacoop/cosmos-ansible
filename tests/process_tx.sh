@@ -4,7 +4,6 @@ check_hash()
   # $2: binary
   # $3: home folder
   txhash=$1
-  $2 q tx $txhash -o json --home $3
   code=$($2 q tx $txhash -o json --home $3 | jq -r '.code')
   if [ $code -eq 0 ]
   then
