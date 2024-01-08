@@ -56,7 +56,6 @@ jobs:
       matrix:
         ${{ fromJSON(needs.set-version-matrix.outputs.upgrade_versions) }}
       fail-fast: false
-    environment: major-upgrade-fresh-workflow
     env:
       COMMIT_TIMEOUT: 3
       COSMOVISOR: false
