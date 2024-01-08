@@ -1,0 +1,19 @@
+{
+    "title": "Create a consumer chain",
+    "description": "Create the \"consumer\" consumer chain.",
+    "summary": "none",
+    "chain_id": "",
+    "initial_height": {
+        "revision_height": 1
+    },
+    "genesis_hash": "79054737030e8e4f15eeda0fe279427ad8932671377a3fc86e7af2da7ae2763b",
+    "binary_hash": "ec1848bd0018732f1ae771c2b0f857c5def9a5fb7736001d640e1da337b41d9e",
+    "spawn_time": "",
+    "blocks_per_distribution_transmission": 10,
+    "consumer_redistribution_fraction": "0.75",
+    "historical_entries": 10000,
+    "transfer_timeout_period": 1800000000000,
+    "ccv_timeout_period": 2419200000000000,
+    "unbonding_period": 1728000000000000,
+    "deposit": "10000000uatom"
+}
