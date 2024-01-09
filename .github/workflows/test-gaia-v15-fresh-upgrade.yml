@@ -507,6 +507,8 @@ jobs:
         run: |
           export CHAIN_BINARY_URL=https://github.com/cosmos/gaia/releases/download/$START_VERSION/gaiad-$START_VERSION-linux-amd64
           tests/major_fresh_upgrade/start_pfm_chain.sh
+          sleep 10
+          journalctl -u $PFM_SERVICE
 
       - name: Block production check
         env:
@@ -527,6 +529,8 @@ jobs:
         run: |
           export CHAIN_BINARY_URL=https://github.com/cosmos/gaia/releases/download/$START_VERSION/gaiad-$START_VERSION-linux-amd64
           tests/major_fresh_upgrade/start_pfm_chain.sh
+          sleep 10
+          journalctl -u $PFM_SERVICE
 
       - name: Block production check
         env:
