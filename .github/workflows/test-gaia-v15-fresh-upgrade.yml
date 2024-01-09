@@ -223,18 +223,18 @@ jobs:
           $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
       - name: Set up relayer
         run: tests/v15_upgrade/setup_relayer.sh
-      - name: Download consumer chain binaries
-        run: |
-          wget $CONSUMER_CHAIN_V12_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_V12_BINARY -q
-          chmod +x $HOME/go/bin/$CONSUMER_CHAIN_V12_BINARY
-          wget $CONSUMER_CHAIN_V2_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_V2_BINARY -q
-          chmod +x $HOME/go/bin/$CONSUMER_CHAIN_V2_BINARY
-          wget $CONSUMER_CHAIN_V310_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_V310_BINARY -q
-          chmod +x $HOME/go/bin/$CONSUMER_CHAIN_V310_BINARY
-          wget $CONSUMER_CHAIN_V320_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_V320_BINARY -q
-          chmod +x $HOME/go/bin/$CONSUMER_CHAIN_V320_BINARY
-          wget $CONSUMER_CHAIN_V330_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_V330_BINARY -q
-          chmod +x $HOME/go/bin/$CONSUMER_CHAIN_V330_BINARY
+      # - name: Download consumer chain binaries
+      #   run: |
+      #     wget $CONSUMER_CHAIN_V12_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_V12_BINARY -q
+      #     chmod +x $HOME/go/bin/$CONSUMER_CHAIN_V12_BINARY
+      #     wget $CONSUMER_CHAIN_V2_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_V2_BINARY -q
+      #     chmod +x $HOME/go/bin/$CONSUMER_CHAIN_V2_BINARY
+      #     wget $CONSUMER_CHAIN_V310_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_V310_BINARY -q
+      #     chmod +x $HOME/go/bin/$CONSUMER_CHAIN_V310_BINARY
+      #     wget $CONSUMER_CHAIN_V320_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_V320_BINARY -q
+      #     chmod +x $HOME/go/bin/$CONSUMER_CHAIN_V320_BINARY
+      #     wget $CONSUMER_CHAIN_V330_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_V330_BINARY -q
+      #     chmod +x $HOME/go/bin/$CONSUMER_CHAIN_V330_BINARY
       # - name: Initialize consumer chain with ICS v1.2.0-multiden
       #   env:
       #     CONSUMER_CHAIN_ID: one-v120
@@ -513,7 +513,7 @@ jobs:
       - name: Block production check
         env:
           PFM_RPC_PORT: 27011
-        run: tests/test_block_production.sh $PFM_RPC_PORT 5 # 5 blocks
+        run: tests/test_block_production.sh 127.0.0.1 $PFM_RPC_PORT 5 # 5 blocks
 
       - name: Start PFM chain 2
         env:
@@ -535,7 +535,7 @@ jobs:
       - name: Block production check
         env:
           PFM_RPC_PORT: 27012
-        run: tests/test_block_production.sh $PFM_RPC_PORT 5 # 5 blocks
+        run: tests/test_block_production.sh 127.0.0.1 $PFM_RPC_PORT 5 # 5 blocks
 
 
       # - name: Initialize consumer chain with ICS v2.0.0
