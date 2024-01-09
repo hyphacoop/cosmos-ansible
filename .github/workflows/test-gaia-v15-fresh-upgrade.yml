@@ -134,6 +134,8 @@ jobs:
       CONSUMER_CHAIN_V310_BINARY: consumerd_v3.1.0
       CONSUMER_CHAIN_V320_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-consumer-v3.2.0/interchain-security-cd-linux
       CONSUMER_CHAIN_V320_BINARY: consumerd_v3.2.0
+      CONSUMER_CHAIN_V330_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-consumer-v3.3.0/interchain-security-cd-linux
+      CONSUMER_CHAIN_V330_BINARY: consumerd_v3.3.0
       # Sovereign-ICS chain variables
       STRIDE_SOV_CHAIN_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/stride-v11.0.0/stride-v11.0.0-linux-amd64
       STRIDE_CON_CHAIN_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/stride-v12.1.0/stride-v12.1.0-linux-amd64
@@ -173,6 +175,7 @@ jobs:
           echo "$CONSUMER_CHAIN_V2_BINARY runs off $CONSUMER_CHAIN_V2_BINARY_URL"
           echo "$CONSUMER_CHAIN_V310_BINARY runs off $CONSUMER_CHAIN_V310_BINARY_URL"
           echo "$CONSUMER_CHAIN_V320_BINARY runs off $CONSUMER_CHAIN_V320_BINARY_URL"
+          echo "$CONSUMER_CHAIN_V330_BINARY runs off $CONSUMER_CHAIN_V330_BINARY_URL"
       - name: Update PATH
         run: |
           mkdir -p $HOME/go/bin
@@ -229,6 +232,8 @@ jobs:
           chmod +x $HOME/go/bin/$CONSUMER_CHAIN_V310_BINARY
           wget $CONSUMER_CHAIN_V320_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_V320_BINARY -q
           chmod +x $HOME/go/bin/$CONSUMER_CHAIN_V320_BINARY
+          wget $CONSUMER_CHAIN_V330_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_V330_BINARY -q
+          chmod +x $HOME/go/bin/$CONSUMER_CHAIN_V330_BINARY
       - name: Initialize consumer chain with ICS v1.2.0-multiden
         env:
           CONSUMER_CHAIN_ID: one-v120
@@ -777,12 +782,89 @@ jobs:
           sleep 10
       - name: _CCV channel verified> ICS v3.2.0 chain
         env:
-          CON1_RPC_PORT: 27601
+          CON1_RPC_PORT: 27701
         run: tests/major_fresh_upgrade/test_ccv.sh
       - name: _IBC transfer successful> ICS v3.2.0 chain
         env:
           CONSUMER_CHAIN_ID: seven-v320
           CONSUMER_HOME_1: /home/runner/.seven_1
+        run: |
+          export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V320_BINARY
+          client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
+          connection_id=$($CHAIN_BINARY q ibc connection connections -o json --home $HOME_1 | jq -r --arg client "$client_id" '.connections[] | select(.client_id==$client).id')
+          channel_id=$($CHAIN_BINARY q ibc channel connections $connection_id -o json --home $HOME_1 | jq -r '.channels[] | select(.port_id=="transfer").channel_id')
+          tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh $channel_id
+
+      - name: Initialize consumer chain with ICS v3.3.0
+        env:
+          CONSUMER_CHAIN_ID: eight-v330
+          CONSUMER_HOME_1: /home/runner/.eight_1
+          CONSUMER_HOME_2: /home/runner/.eight_2
+          CONSUMER_HOME_3: /home/runner/.eight_3
+          CONSUMER_SERVICE_1: eight_1.service
+          CONSUMER_SERVICE_2: eight_2.service
+          CONSUMER_SERVICE_3: eight_3.service
+          CON1_API_PORT: 25801
+          CON2_API_PORT: 25802
+          CON3_API_PORT: 25803
+          CON1_GRPC_PORT: 26801
+          CON2_GRPC_PORT: 26802
+          CON3_GRPC_PORT: 26803
+          CON1_RPC_PORT: 27801
+          CON2_RPC_PORT: 27802
+          CON3_RPC_PORT: 27803
+          CON1_P2P_PORT: 28801
+          CON2_P2P_PORT: 28802
+          CON3_P2P_PORT: 28803
+          CON1_PPROF_PORT: 29801
+          CON2_PPROF_PORT: 29802
+          CON3_PPROF_PORT: 29803
+          DOWNTIME_BLOCKS: 10
+        run: |
+          export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V330_BINARY
+          tests/major_fresh_upgrade/init_consumer.sh
+      - name: Prepare consumer chain eight-v330
+        env:
+          CONSUMER_CHAIN_ID: eight-v330
+          CONSUMER_HOME_1: /home/runner/.eight_1
+          CONSUMER_HOME_2: /home/runner/.eight_2
+          CONSUMER_HOME_3: /home/runner/.eight_3
+          CONSUMER_SERVICE_1: eight_1.service
+          CONSUMER_SERVICE_2: eight_2.service
+          CONSUMER_SERVICE_3: eight_3.service
+        run: |
+          tests/major_fresh_upgrade/prepare_consumer.sh
+      - name: Start consumer chain eight-v330
+        env:
+          CONSUMER_CHAIN_ID: seven-v330
+          CONSUMER_SERVICE_1: eight_1.service
+          CONSUMER_SERVICE_2: eight_2.service
+          CONSUMER_SERVICE_3: eight_3.service
+        run: |
+          sudo systemctl enable $CONSUMER_SERVICE_1 --now
+          sleep 5
+          journalctl -u $CONSUMER_SERVICE_1
+      - name: _Consumer chain produces blocks> ICS v3.3.0
+        env:
+          CON1_RPC_PORT: 27801
+        run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT 5
+      - name: Establish CCV channel for eight-v330
+        env:
+          CONSUMER_CHAIN_ID: eight-v330
+        run: |
+          client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
+          hermes create connection --a-chain $CONSUMER_CHAIN_ID --a-client 07-tendermint-0 --b-client $client_id
+          hermes create channel --a-chain $CONSUMER_CHAIN_ID --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
+          sudo systemctl restart hermes
+          sleep 10
+      - name: _CCV channel verified> ICS v3.3.0 chain
+        env:
+          CON1_RPC_PORT: 27801
+        run: tests/major_fresh_upgrade/test_ccv.sh
+      - name: _IBC transfer successful> ICS v3.3.0 chain
+        env:
+          CONSUMER_CHAIN_ID: eight-v330
+          CONSUMER_HOME_1: /home/runner/.eight_1
         run: |
           export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V310_BINARY
           client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
@@ -817,6 +899,10 @@ jobs:
       - name: _Final CCV channel check> ICS v3.2.0
         env:
           CON1_RPC_PORT: 27701
+        run: tests/major_fresh_upgrade/test_ccv.sh
+      - name: _Final CCV channel check> ICS v3.3.0
+        env:
+          CON1_RPC_PORT: 27801
         run: tests/major_fresh_upgrade/test_ccv.sh
 
       - name: _Soft opt-out test> Validator must be jailed
