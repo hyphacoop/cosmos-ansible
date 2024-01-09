@@ -1,10 +1,5 @@
 #!/bin/bash
-# 1. Set up a two-validator provider chain.
-
-# Install Gaia binary
-echo "Installing Gaia..."
-wget $CHAIN_BINARY_URL -O $HOME/go/bin/$CHAIN_BINARY -q
-chmod +x $HOME/go/bin/$CHAIN_BINARY
+# 1. Set up a one-validator chain for PFM tests
 
 # Printing Gaia binary checksum
 echo GAIA_CHECKSUM: $(sha256sum $HOME/go/bin/$CHAIN_BINARY)
@@ -70,10 +65,10 @@ sed -i -e "/minimum-gas-prices =/ s^= .*^= \"0.0025$DENOM\"^" $PFM_HOME/config/a
 toml set --toml-path $PFM_HOME/config/app.toml api.enable true
 
 # Set different ports for api
-toml set --toml-path $PFM_HOME/config/app.toml api.address "tcp://0.0.0.0:$VAL1_API_PORT"
+toml set --toml-path $PFM_HOME/config/app.toml api.address "tcp://0.0.0.0:$PFM_API_PORT"
 
 # Set different ports for grpc
-toml set --toml-path $PFM_HOME/config/app.toml grpc.address "0.0.0.0:$VAL1_GRPC_PORT"
+toml set --toml-path $PFM_HOME/config/app.toml grpc.address "0.0.0.0:$PFM_GRPC_PORT"
 
 # Turn off grpc web
 toml set --toml-path $PFM_HOME/config/app.toml grpc-web.enable false
@@ -83,13 +78,13 @@ toml set --toml-path $PFM_HOME/config/app.toml grpc-web.enable false
 # toml set --toml-path $PFM_HOME/config/config.toml log_level "debug"
 
 # Set different ports for rpc
-toml set --toml-path $PFM_HOME/config/config.toml rpc.laddr "tcp://0.0.0.0:$VAL1_RPC_PORT"
+toml set --toml-path $PFM_HOME/config/config.toml rpc.laddr "tcp://0.0.0.0:$PFM_RPC_PORT"
 
 # Set different ports for rpc pprof
-toml set --toml-path $PFM_HOME/config/config.toml rpc.pprof_laddr "localhost:$VAL1_PPROF_PORT"
+toml set --toml-path $PFM_HOME/config/config.toml rpc.pprof_laddr "localhost:$PFM_PPROF_PORT"
 
 # Set different ports for p2p
-toml set --toml-path $PFM_HOME/config/config.toml p2p.laddr "tcp://0.0.0.0:$VAL1_P2P_PORT"
+toml set --toml-path $PFM_HOME/config/config.toml p2p.laddr "tcp://0.0.0.0:$PFM_P2P_PORT"
 
 # Allow duplicate IPs in p2p
 toml set --toml-path $PFM_HOME/config/config.toml p2p.allow_duplicate_ip true
