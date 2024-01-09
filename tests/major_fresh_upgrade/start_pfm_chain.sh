@@ -8,7 +8,7 @@ echo GAIA_CHECKSUM: $(sha256sum $HOME/go/bin/$CHAIN_BINARY)
 echo "Initializing node home..."
 $CHAIN_BINARY config chain-id $PFM_CHAIN_ID --home $PFM_HOME
 $CHAIN_BINARY config keyring-backend test --home $PFM_HOME
-$CHAIN_BINARY config node tcp://localhost:$PFM_RPC_PORT --home $PFM
+$CHAIN_BINARY config node tcp://localhost:$PFM_RPC_PORT --home $PFM_HOME
 $CHAIN_BINARY init $MONIKER_1 --chain-id $PFM_CHAIN_ID --home $PFM_HOME
 
 # Create self-delegation accounts
