@@ -44,6 +44,12 @@ if $ICS_120 ; then
     cp ccv-120.json ccv.json
 fi
 
+if $ICS_330 ; then
+    echo "Patching for ICS v3.3.0"
+    $CONSUMER_CHAIN_BINARY genesis transform ccv.json > ccv-330-1.json
+    cp ccv-330-1.json ccv.json
+fi
+
 echo "Patching the consumer genesis file..."
 jq -s '.[0].app_state.ccvconsumer = .[1] | .[0]' $CONSUMER_HOME_1/config/genesis.json ccv.json > consumer-genesis.json
 cp consumer-genesis.json $CONSUMER_HOME_1/config/genesis.json
