@@ -539,6 +539,7 @@ jobs:
         run: |
           hermes create channel --new-client-connection --a-chain $CHAIN_ID --b-chain pfm1 --a-port transfer --b-port transfer --yes
           hermes create channel --new-client-connection --a-chain pfm1 --b-chain pfm2 --a-port transfer --b-port transfer --yes
+          systemctl restart hermes
 
       - name: _Test PFM transfers
         env:
