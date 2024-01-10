@@ -536,6 +536,8 @@ jobs:
         run: tests/test_block_production.sh 127.0.0.1 $PFM_RPC_PORT 5 # 5 blocks
 
       - name: Create transfer channels for PFM test
+        env:
+          PFM_HOME: /home/runner/.pfm2
         run: |
           hermes create channel --new-client-connection --a-chain $CHAIN_ID --b-chain pfm1 --a-port transfer --b-port transfer --yes
           hermes create channel --new-client-connection --a-chain pfm1 --b-chain pfm2 --a-port transfer --b-port transfer --yes
