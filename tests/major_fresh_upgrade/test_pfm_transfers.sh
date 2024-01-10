@@ -10,7 +10,7 @@ echo "Provider chain channel ID: $channel_provider"
 
 target_denom_a_c=ibc/$(echo -n transfer/channel-0/transfer/channel-0/uatom | shasum -a 256 | cut -d ' ' -f1 | tr '[a-z]' '[A-Z]')
 echo "Target denom provider->pfm2: $target_denom_a_c"
-target_denom_c_a=ibc/$(echo -n transfer/channel-1/transfer/$channel_provider/uatom | shasum -a 256 | cut -d ' ' -f1 | tr '[a-z]' '[A-Z]')
+target_denom_c_a=ibc/$(echo -n transfer/$channel_provider/transfer/channel-1/uatom | shasum -a 256 | cut -d ' ' -f1 | tr '[a-z]' '[A-Z]')
 echo "Target denom pfm2->provider: $target_denom_c_a"
 
 $CHAIN_BINARY tx ibc-transfer transfer transfer $channel_provider "pfm" --memo "{\"forward\": {\"receiver\": \"$WALLET_1\",\"port\": \"transfer\", \"channel\": \"channel-1\"}}" 1000000$DENOM --from $WALLET_1 --gas auto --gas-prices 0.005$DENOM --gas-adjustment $GAS_ADJUSTMENT -y --home $HOME_1
