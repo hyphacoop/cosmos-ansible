@@ -68,7 +68,7 @@ jobs:
       BASE_FEES: 2000
       HIGH_FEES: 10000
       GAS: auto
-      GAS_ADJUSTMENT: 1.2
+      GAS_ADJUSTMENT: 1.4
       VOTING_PERIOD: 10s
       # Provider node variables
       HOME_1: /home/runner/.val1
@@ -493,6 +493,65 @@ jobs:
           CON1_RPC_PORT: 27301
         run: tests/major_fresh_upgrade/test_ccv.sh
 
+      - name: Start PFM chain 1
+        env:
+          START_VERSION: ${{matrix.gaia_version}}
+          PFM_SERVICE: pfm_1.service
+          PFM_HOME: /home/runner/.pfm1
+          PFM_CHAIN_ID: pfm1
+          PFM_API_PORT: 25011
+          PFM_GRPC_PORT: 26011
+          PFM_RPC_PORT: 27011
+          PFM_P2P_PORT: 28011
+          PFM_PPROF_PORT: 29011
+        run: |
+          export CHAIN_BINARY_URL=https://github.com/cosmos/gaia/releases/download/$START_VERSION/gaiad-$START_VERSION-linux-amd64
+          tests/major_fresh_upgrade/start_pfm_chain.sh
+          sleep 5
+
+      - name: Block production check
+        env:
+          PFM_RPC_PORT: 27011
+        run: tests/test_block_production.sh 127.0.0.1 $PFM_RPC_PORT 5 # 5 blocks
+
+      - name: Start PFM chain 2
+        env:
+          START_VERSION: ${{matrix.gaia_version}}
+          PFM_SERVICE: pfm_2.service
+          PFM_HOME: /home/runner/.pfm2
+          PFM_CHAIN_ID: pfm2
+          PFM_API_PORT: 25012
+          PFM_GRPC_PORT: 26012
+          PFM_RPC_PORT: 27012
+          PFM_P2P_PORT: 28012
+          PFM_PPROF_PORT: 29012
+        run: |
+          export CHAIN_BINARY_URL=https://github.com/cosmos/gaia/releases/download/$START_VERSION/gaiad-$START_VERSION-linux-amd64
+          tests/major_fresh_upgrade/start_pfm_chain.sh
+          sleep 5
+
+      - name: Block production check
+        env:
+          PFM_RPC_PORT: 27012
+        run: tests/test_block_production.sh 127.0.0.1 $PFM_RPC_PORT 5 # 5 blocks
+
+      - name: Create transfer channels for PFM test
+        run: |
+          $CHAIN_BINARY q ibc connection connections --home /home/runner/.pfm1 -o json
+          $CHAIN_BINARY q ibc connection connections --home /home/runner/.pfm2 -o json
+          sudo systemctl stop hermes
+          hermes create channel --new-client-connection --a-chain $CHAIN_ID --b-chain pfm1 --a-port transfer --b-port transfer --yes
+          hermes create channel --new-client-connection --a-chain pfm1 --b-chain pfm2 --a-port transfer --b-port transfer --yes
+          sudo systemctl restart hermes
+          $CHAIN_BINARY q ibc connection connections --home /home/runner/.pfm1 -o json
+          $CHAIN_BINARY q ibc connection connections --home /home/runner/.pfm2 -o json
+
+      - name: _Test PFM transfers
+        env:
+          PFM_HOME: /home/runner/.pfm2
+        run: |
+          tests/major_fresh_upgrade/test_pfm_transfers.sh
+
       - name: Initialize consumer chain with ICS v2.0.0
         env:
           CONSUMER_CHAIN_ID: four-v200
@@ -619,7 +678,7 @@ jobs:
         env:
           BASE_FEES: 3000
           CONSUMER_FEES: 1000
-          IBC_CHANNEL: channel-9
+          IBC_CHANNEL: channel-10
         run: tests/v12_upgrade/lsm_happy_path.sh
       - name: _lsm-failures-1
         run: tests/v12_upgrade/lsm_failures.sh
