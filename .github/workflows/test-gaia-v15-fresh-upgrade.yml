@@ -539,10 +539,11 @@ jobs:
         run: |
           $CHAIN_BINARY q ibc connection connections --home /home/runner/.pfm1 -o json
           $CHAIN_BINARY q ibc connection connections --home /home/runner/.pfm2 -o json
+          sudo systemctl stop hermes
           hermes create channel --new-client-connection --a-chain $CHAIN_ID --b-chain pfm1 --a-port transfer --b-port transfer --yes
           hermes create channel --new-client-connection --a-chain pfm1 --b-chain pfm2 --a-port transfer --b-port transfer --yes
           sudo systemctl restart hermes
-          $CHAIN_BINARY q ibc connection connections --home /home/runner/.pfm1 -o json
+          $CHAIN_BINARY q ibc connection connections --home ho/me/runner/.pfm1 -o json
           $CHAIN_BINARY q ibc connection connections --home /home/runner/.pfm2 -o json
 
       - name: _Test PFM transfers
