@@ -17,13 +17,6 @@ $CHAIN_BINARY tx ibc-transfer transfer transfer $channel_provider "pfm" --memo "
 $CHAIN_BINARY tx ibc-transfer transfer transfer channel-0 "pfm" --memo "{\"forward\": {\"receiver\": \"$WALLET_1\",\"port\": \"transfer\", \"channel\": \"channel-0\"}}" 1000000$DENOM --from $WALLET_1 --gas auto --gas-prices 0.005$DENOM --gas-adjustment $GAS_ADJUSTMENT -y --home $PFM_HOME
 sleep 30
 
-$CHAIN_BINARY q bank balances $WALLET_1 --home $PFM_HOME
-$CHAIN_BINARY q bank balances $WALLET_1 --home $HOME_1
-
-$CHAIN_BINARY q ibc channel channels --home $HOME_1
-$CHAIN_BINARY q ibc channel channels --home /home/runner/.pfm1
-$CHAIN_BINARY q ibc channel channels --home /home/runner/.pfm2
-
 ibc_amount_a_c=$($CHAIN_BINARY q bank balances $WALLET_1 --home $PFM_HOME -o json | jq -r --arg DENOM "$target_denom_a_c" '.balances[] | select(.denom == $DENOM).amount')
 ibc_amount_c_a=$($CHAIN_BINARY q bank balances $WALLET_1 --home $HOME_1 -o json | jq -r --arg DENOM "$target_denom_c_a" '.balances[] | select(.denom == $DENOM).amount')
 echo "IBC amount provider -> pfm2: $ibc_amount_a_c"
