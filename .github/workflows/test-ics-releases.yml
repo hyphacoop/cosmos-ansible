@@ -3,7 +3,7 @@
 name: Test ICS Releases
 on:
   workflow_dispatch:
-  # push:
+  push:
 jobs:
   test-consumer-launches:
     runs-on: ubuntu-22.04
@@ -137,7 +137,7 @@ jobs:
         if: ${{ (matrix.provider == 'v4.0.0-rc0' )}}
         run: |
           echo "PROVIDER_V4=true" >> $GITHUB_ENV
-  
+
       - name: Start chain
         env:
           PROVIDER_VERSION: ${{ matrix.provider }}
