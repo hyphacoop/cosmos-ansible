@@ -104,6 +104,14 @@ if $CONSUMER_V330 ; then
     fi
 fi
 
+if $CONSUMER_V400 ; then
+    echo "Patching for consumer v4.0.0-rc0..."
+    if [ $PROVIDER_VERSION != "v4.0.0-rc0" ]; then
+        $CONSUMER_CHAIN_BINARY genesis transform ccv.json > ccv-400-1.json
+        cp ccv-400-1.json ccv.json
+    fi
+fi
+
 jq '.' ccv.json
 
 echo "Patching the consumer genesis file..."
