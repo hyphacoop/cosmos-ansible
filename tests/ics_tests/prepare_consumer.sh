@@ -9,6 +9,14 @@ if $PROVIDER_V3 ; then
     rm proposal-add-spawn.json
     echo "Submitting proposal..."
     proposal="$CHAIN_BINARY tx gov submit-legacy-proposal consumer-addition proposal-add-$CONSUMER_CHAIN_ID.json --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM --from $WALLET_2 --keyring-backend test --home $HOME_1 --chain-id $CHAIN_ID -y -o json"    
+elif $PROVIDER_V4 ; then
+    echo "Patching add template with spawn time..."
+    spawn_time=$(date -u --iso-8601=ns | sed s/+00:00/Z/ | sed s/,/./)
+    jq -r --arg SPAWNTIME "$spawn_time" '.spawn_time |= $SPAWNTIME' tests/ics_tests/legacy-proposal-add-template.json > proposal-add-spawn.json
+    sed "s%\"chain_id\": \"\"%\"chain_id\": \"$CONSUMER_CHAIN_ID\"%g" proposal-add-spawn.json > proposal-add-$CONSUMER_CHAIN_ID.json
+    rm proposal-add-spawn.json
+    echo "Submitting proposal..."
+    proposal="$CHAIN_BINARY tx gov submit-legacy-proposal consumer-addition proposal-add-$CONSUMER_CHAIN_ID.json --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM --from $WALLET_2 --keyring-backend test --home $HOME_1 --chain-id $CHAIN_ID -y -o json"    
 else
     echo "Patching add template with spawn time..."
     spawn_time=$(date -u --iso-8601=ns | sed s/+00:00/Z/ | sed s/,/./)
