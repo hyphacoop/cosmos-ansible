@@ -104,7 +104,7 @@ if $CONSUMER_V320 ; then
         cp ccv-330.json ccv.json
     elif [ $PROVIDER_VERSION == "v4.0.0-rc0 "]; then
         echo "Patching for provider v4.0.0-rc0"
-        ics-cd-transform genesis transform --to v4.x ccv.json > ccv-400.json
+        ics-cd-transform genesis transform --to v3.2.x ccv.json > ccv-400.json
         cp ccv-400.json ccv.json
     fi
 fi
@@ -113,7 +113,7 @@ if $CONSUMER_V330 ; then
     echo "Patching for consumer v3.3.0..."
     if [ $PROVIDER_VERSION == "v4.0.0-rc0 "]; then
         echo "Patching for provider v4.0.0-rc0"
-        ics-cd-transform genesis transform --to v4.x ccv.json > ccv-400.json
+        ics-cd-transform genesis transform --to v3.3.x ccv.json > ccv-400.json
         cp ccv-400.json ccv.json
     elif [ $PROVIDER_VERSION != "v3.3.0" ]; then
         $CONSUMER_CHAIN_BINARY genesis transform ccv.json > ccv-330-1.json
