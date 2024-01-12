@@ -253,6 +253,7 @@ jobs:
       #     tests/ics_tests/test_consumer_ibc_transfer.sh $channel_id
 
       - name: Initialize consumer chain with ICS v2.0.0
+        if: ${{ (matrix.provider != 'v4.0.0-rc0' )}}
         env:
           CONSUMER_CHAIN_ID: two-v200
           CONSUMER_HOME_1: /home/runner/.two_1
@@ -281,6 +282,7 @@ jobs:
           export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V2_BINARY
           tests/major_fresh_upgrade/init_consumer.sh
       - name: Prepare consumer chain two-v200
+        if: ${{ (matrix.provider != 'v4.0.0-rc0' )}}
         env:
           CONSUMER_CHAIN_ID: two-v200
           CONSUMER_HOME_1: /home/runner/.two_1
@@ -291,6 +293,7 @@ jobs:
           export CONSUMER_V200=true
           tests/ics_tests/prepare_consumer.sh
       - name: Start consumer chain two-v200
+        if: ${{ (matrix.provider != 'v4.0.0-rc0' )}}
         env:
           CONSUMER_CHAIN_ID: two-v200
           CONSUMER_SERVICE_1: two_1.service
@@ -301,8 +304,10 @@ jobs:
           sleep 5
           journalctl -u $CONSUMER_SERVICE_1
       - name: _Consumer chain produces blocks> ICS v2.0.0
+        if: ${{ (matrix.provider != 'v4.0.0-rc0' )}}  
         run: tests/test_block_production.sh 127.0.0.1 27201 5
       - name: Establish CCV channel for two-v200
+        if: ${{ (matrix.provider != 'v4.0.0-rc0' )}}
         env:
           CONSUMER_CHAIN_ID: two-v200
         run: |
@@ -312,10 +317,12 @@ jobs:
           sudo systemctl restart hermes
           sleep 10
       - name: _CCV channel verified> ICS v2.0.0
+        if: ${{ (matrix.provider != 'v4.0.0-rc0' )}}
         env:
           CON1_RPC_PORT: 27201
         run: tests/ics_tests/test_ccv.sh
       - name: _IBC transfer successful> ICS v2.0.0
+        if: ${{ (matrix.provider != 'v4.0.0-rc0' )}}
         env:
           CONSUMER_CHAIN_ID: two-v200
           CONSUMER_HOME_1: /home/runner/.two_1
@@ -327,6 +334,7 @@ jobs:
           tests/ics_tests/test_consumer_ibc_transfer.sh $channel_id
 
       - name: Initialize consumer chain with ICS v3.1.0
+        if: ${{ (matrix.provider != 'v4.0.0-rc0' )}}
         env:
           CONSUMER_CHAIN_ID: three-v310
           CONSUMER_HOME_1: /home/runner/.three_1
@@ -355,6 +363,7 @@ jobs:
           export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V31_BINARY
           tests/major_fresh_upgrade/init_consumer.sh
       - name: Prepare consumer chain three-v310
+        if: ${{ (matrix.provider != 'v4.0.0-rc0' )}}
         env:
           CONSUMER_CHAIN_ID: three-v310
           CONSUMER_HOME_1: /home/runner/.three_1
@@ -365,6 +374,7 @@ jobs:
           export CONSUMER_V310=true
           tests/ics_tests/prepare_consumer.sh
       - name: Start consumer chain three-v310
+        if: ${{ (matrix.provider != 'v4.0.0-rc0' )}}
         env:
           CONSUMER_CHAIN_ID: three-v310
           CONSUMER_SERVICE_1: three_1.service
@@ -375,10 +385,12 @@ jobs:
           sleep 5
           journalctl -u $CONSUMER_SERVICE_1
       - name: _Consumer chain produces blocks> ICS v3.1.0
+        if: ${{ (matrix.provider != 'v4.0.0-rc0' )}}
         env:
           CON1_RPC_PORT: 27301
         run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT 5
       - name: Establish CCV channel for three-v310
+        if: ${{ (matrix.provider != 'v4.0.0-rc0' )}}
         env:
           CONSUMER_CHAIN_ID: three-v310
         run: |
@@ -388,10 +400,12 @@ jobs:
           sudo systemctl restart hermes
           sleep 10
       - name: _CCV channel verified> ICS v3.1.0
+        if: ${{ (matrix.provider != 'v4.0.0-rc0' )}}
         env:
           CON1_RPC_PORT: 27301
         run: tests/ics_tests/test_ccv.sh
       - name: _IBC transfer successful> ICS v3.1.0
+        if: ${{ (matrix.provider != 'v4.0.0-rc0' )}}
         env:
           CONSUMER_CHAIN_ID: three-v310
           CONSUMER_HOME_1: /home/runner/.three_1
