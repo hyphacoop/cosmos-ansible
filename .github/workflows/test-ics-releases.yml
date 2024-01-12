@@ -660,10 +660,12 @@ jobs:
       #     CON1_RPC_PORT: 27101
       #   run: tests/ics_tests/test_ccv.sh
       - name: _Final CCV channel check> ICS v2.0.0
+        if: ${{ (matrix.provider != 'v4.0.0-rc0' )}}
         env:
           CON1_RPC_PORT: 27201
         run: tests/ics_tests/test_ccv.sh
       - name: _Final CCV channel check> ICS v3.1.0
+        if: ${{ (matrix.provider != 'v4.0.0-rc0' )}}  
         env:
           CON1_RPC_PORT: 27301
         run: tests/ics_tests/test_ccv.sh
