@@ -304,7 +304,7 @@ jobs:
           sleep 5
           journalctl -u $CONSUMER_SERVICE_1
       - name: _Consumer chain produces blocks> ICS v2.0.0
-        if: ${{ (matrix.provider != 'v4.0.0-rc0' )}}  
+        if: ${{ (matrix.provider != 'v4.0.0-rc0' )}}
         run: tests/test_block_production.sh 127.0.0.1 27201 5
       - name: Establish CCV channel for two-v200
         if: ${{ (matrix.provider != 'v4.0.0-rc0' )}}
@@ -665,7 +665,7 @@ jobs:
           CON1_RPC_PORT: 27201
         run: tests/ics_tests/test_ccv.sh
       - name: _Final CCV channel check> ICS v3.1.0
-        if: ${{ (matrix.provider != 'v4.0.0-rc0' )}}  
+        if: ${{ (matrix.provider != 'v4.0.0-rc0' )}}
         env:
           CON1_RPC_PORT: 27301
         run: tests/ics_tests/test_ccv.sh
