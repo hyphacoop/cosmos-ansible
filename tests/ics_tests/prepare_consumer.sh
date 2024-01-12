@@ -100,18 +100,18 @@ if $CONSUMER_V320 ; then
     echo "Patching for consumer v3.2.0..."
     if [ $PROVIDER_VERSION == "v3.3.0" ]; then
         echo "Patching for provider v3.3.0"
-        ics-cd-transform genesis transform --to v3.2.x ccv.json > ccv-330.json
-        cp ccv-330.json ccv.json
+        ics-cd-transform genesis transform --to v3.2.x ccv.json > ccv-320.json
+        cp ccv-320.json ccv.json
     elif [ $PROVIDER_VERSION == "v4.0.0-rc0" ]; then
         echo "Patching for provider v4.0.0-rc0"
-        ics-cd-transform genesis transform --to v3.2.x ccv.json > ccv-400.json
-        cp ccv-400.json ccv.json
+        ics-cd-transform genesis transform --to v3.2.x ccv.json > ccv-320.json
+        cp ccv-320.json ccv.json
     fi
 fi
 
 if $CONSUMER_V330 ; then
     echo "Patching for consumer v3.3.0..."
-    if [ $PROVIDER_VERSION == "v4.0.0-rc0 "]; then
+    if [ $PROVIDER_VERSION == "v4.0.0-rc0" ]; then
         echo "Patching for provider v4.0.0-rc0"
         ics-cd-transform genesis transform --to v3.3.x ccv.json > ccv-400.json
         cp ccv-400.json ccv.json
@@ -133,7 +133,6 @@ jq '.' ccv.json
 
 echo "Patching the consumer genesis file..."
 jq -s '.[0].app_state.ccvconsumer = .[1] | .[0]' $CONSUMER_HOME_1/config/genesis.json ccv.json > consumer-genesis.json
-jq '.' consumer-genesis.json
 jq '.' consumer-genesis.json
 
 
