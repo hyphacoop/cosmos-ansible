@@ -12,7 +12,7 @@ jq -r '.' proposal-add-$CONSUMER_CHAIN_ID.json
 cp proposal-add-$CONSUMER_CHAIN_ID.json ~/artifact/
 
 echo "Submitting proposal..."
-proposal="$CHAIN_BINARY tx gov submit-proposal consumer-addition proposal-add-$CONSUMER_CHAIN_ID.json --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM --from $WALLET_1 --keyring-backend test --home $HOME_1 --chain-id $CHAIN_ID -b block -y -o json"
+proposal="$CHAIN_BINARY tx gov submit-proposal consumer-addition proposal-add-$CONSUMER_CHAIN_ID.json --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM --from $WALLET_1 --keyring-backend test --home $HOME_1 --chain-id $CHAIN_ID -b sync -y -o json"
 echo $proposal
 gaiadout=$($proposal)
 echo "gaiad output:"
@@ -29,7 +29,7 @@ $CHAIN_BINARY q tx $txhash --home $HOME_1
 proposal_id=$($CHAIN_BINARY q tx $txhash --home $HOME_1 --output json | jq -r '.logs[].events[] | select(.type=="submit_proposal") | .attributes[] | select(.key=="proposal_id") | .value')
 
 echo "Voting on proposal $proposal_id..."
-$CHAIN_BINARY tx gov vote $proposal_id yes --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM --from $WALLET_1 --keyring-backend test --home $HOME_1 --chain-id $CHAIN_ID -b block -y
+$CHAIN_BINARY tx gov vote $proposal_id yes --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM --from $WALLET_1 --keyring-backend test --home $HOME_1 --chain-id $CHAIN_ID -b sync -y
 $CHAIN_BINARY q gov tally $proposal_id --home $HOME_1
 
 echo "Waiting for proposal to pass..."

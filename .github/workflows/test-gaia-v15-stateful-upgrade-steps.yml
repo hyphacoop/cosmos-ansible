@@ -169,7 +169,7 @@ jobs:
       - name: _PUPMOS is safe
         run: tests/major_stateful_upgrade/test_pupmos_slashing.sh
       - name: Send funds to wallet 4
-        run: $CHAIN_BINARY tx bank send $WALLET_1 $WALLET_4 10000000$DENOM --home $HOME_1 --from $MONIKER_1 --keyring-backend test --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM --chain-id $CHAIN_ID -y -b block
+        run: $CHAIN_BINARY tx bank send $WALLET_1 $WALLET_4 10000000$DENOM --home $HOME_1 --from $MONIKER_1 --keyring-backend test --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM --chain-id $CHAIN_ID -y -b sync
       - name: Set unbonding time via gov proposal
         run: tests/major_stateful_upgrade/set_unbonding-time.sh
       - name: Delegate to mainnet validator
