@@ -1,5 +1,6 @@
 #!/bin/bash
 # Prepare a consumer chain to be started
+$CHAIN_BINARY q gov params --home $HOME_1
 
 if $PROVIDER_V3 ; then
     echo "Patching add template with spawn time..."
