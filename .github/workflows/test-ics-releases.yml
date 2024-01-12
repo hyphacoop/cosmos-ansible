@@ -132,7 +132,7 @@ jobs:
       - name: Use legacy proposal command for v3
         if: ${{ (matrix.provider == 'v3.0.0' || matrix.provider == 'v3.1.0' ) || ( matrix.provider == 'v3.2.0' || matrix.provider == 'v3.3.0' )}}
         run: |
-          echo "PROVIDER_V4=true" >> $GITHUB_ENV
+          echo "PROVIDER_V3=true" >> $GITHUB_ENV
       - name: Use legacy proposal command for v4
         if: ${{ (matrix.provider == 'v4.0.0-rc0' )}}
         run: |
