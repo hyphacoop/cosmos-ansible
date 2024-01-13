@@ -6,13 +6,22 @@ set +e
 
 check_code()
 {
+  try=1
   txhash=$1
-  code=$($CHAIN_BINARY q tx $txhash -o json --home $HOME_1 | jq '.code')
-  if [ $code -ne 0 ]; then
-    echo "tx was unsuccessful."
-    $CHAIN_BINARY q tx $txhash -o json --home $HOME_1 | jq '.'
-    exit 1
-  fi
+  while [ $try -lt 5 ]
+    code=$($CHAIN_BINARY q tx $txhash -o json --home $HOME_1 | jq '.code')
+    if [ $code -ne 0 ]; then
+      echo "tx was unsuccessful. Try: $try"
+      let try=$try+1
+      sleep 5
+    else
+      echo "tx was successful"
+      exit 0
+    fi
+  done
+  echo "maximum query reached tx unsuccessful."
+  #$CHAIN_BINARY q tx $txhash -o json --home $HOME_1 | jq '.'
+  exit 1
 }
 
 echo "Sending funds with tx bank send..."
