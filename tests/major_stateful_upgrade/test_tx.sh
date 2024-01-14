@@ -12,7 +12,11 @@ check_code()
     code=$($CHAIN_BINARY q tx $txhash -o json --home $HOME_1 | jq '.code')
     echo "Code is: $code"
     if [ -z $code || $code -ne 0 ]; then
-      echo "tx was unsuccessful. Try: $try"
+      echo "code returned blank, tx was unsuccessful. Try: $try"
+      let try=$try+1
+      sleep 5
+    elif [ $code -ne 0 ]; then
+      echo "code returned not 0, tx was unsuccessful. Try: $try"
       let try=$try+1
       sleep 5
     else
