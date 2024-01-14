@@ -10,6 +10,7 @@ check_code()
   txhash=$1
   while [ $try -lt 5 ]; do
     code=$($CHAIN_BINARY q tx $txhash -o json --home $HOME_1 | jq '.code')
+    echo "$code" | jq -r '.'
     if [ $code -ne 0 ]; then
       echo "tx was unsuccessful. Try: $try"
       let try=$try+1
