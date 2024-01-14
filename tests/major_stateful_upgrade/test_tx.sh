@@ -19,9 +19,11 @@ check_code()
       break
     fi
   done
-  echo "maximum query reached tx unsuccessful."
-  #$CHAIN_BINARY q tx $txhash -o json --home $HOME_1 | jq '.'
-  exit 1
+  if [ $try -gt 4 ]; then
+    echo "maximum query reached tx unsuccessful."
+    #$CHAIN_BINARY q tx $txhash -o json --home $HOME_1 | jq '.'
+    exit 1
+  fi
 }
 
 echo "Sending funds with tx bank send..."
