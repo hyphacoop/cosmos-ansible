@@ -16,7 +16,6 @@ check_code()
       sleep 5
     else
       echo "tx was successful"
-      exit 0
     fi
   done
   echo "maximum query reached tx unsuccessful."
