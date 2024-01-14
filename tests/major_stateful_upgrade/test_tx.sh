@@ -14,11 +14,11 @@ check_code()
     if [ -z $code ]; then
       echo "code returned blank, tx was unsuccessful. Try: $try"
       let try=$try+1
-      sleep 5
+      sleep 20
     elif [ $code -ne 0 ]; then
       echo "code returned not 0, tx was unsuccessful. Try: $try"
       let try=$try+1
-      sleep 5
+      sleep 20
     else
       echo "tx was successful"
       break
