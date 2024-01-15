@@ -39,18 +39,6 @@ echo $MNEMONIC_5 | $CHAIN_BINARY keys add $MONIKER_5 --keyring-backend test --ho
 
 cat $HOME_1/config/genesis.json
 
-# Update genesis file with right denom
-echo "Setting denom to $DENOM..."
-jq -r --arg denom "$DENOM" '.app_state.crisis.constant_fee.denom |= $denom' $HOME_1/config/genesis.json > crisis.json
-if $PROVIDER_V3 ; then
-    jq -r --arg denom "$DENOM" '.app_state.gov.params.min_deposit[0].denom |= $denom' crisis.json > min_deposit.json
-else
-    jq -r --arg denom "$DENOM" '.app_state.gov.deposit_params.min_deposit[0].denom |= $denom' crisis.json > min_deposit.json
-fi
-jq -r --arg denom "$DENOM" '.app_state.mint.params.mint_denom |= $denom' min_deposit.json > mint.json
-jq -r --arg denom "$DENOM" '.app_state.staking.params.bond_denom |= $denom' mint.json > bond_denom.json
-jq -r --arg denom "$DENOM" '.app_state.provider.params.consumer_reward_denom_registration_fee.denom = $denom' bond_denom.json > reward_reg.json
-cp reward_reg.json $HOME_1/config/genesis.json
 
 # Add funds to accounts
 $CHAIN_BINARY add-genesis-account $MONIKER_1 $VAL_FUNDS$DENOM --home $HOME_1
@@ -79,11 +67,35 @@ $CHAIN_BINARY genesis gentx $MONIKER_3 $VAL3_STAKE$DENOM --pubkey "$($CHAIN_BINA
 $CHAIN_BINARY genesis collect-gentxs --home $HOME_1
 
 cat $HOME_1/config/genesis.json
-echo "Patching genesis file for fast governance..."
+
+echo "Patching crisis constant fee with denom $DENOM..."
+jq -r --arg denom "$DENOM" '.app_state.crisis.constant_fee.denom |= $denom' $HOME_1/config/genesis.json > crisis.json
 if $PROVIDER_V3 ; then
+    echo "Patching deposit denom (v3)..."
+    jq -r --arg denom "$DENOM" '.app_state.gov.params.min_deposit[0].denom |= $denom' crisis.json > min_deposit.json
+elif $PROVIDER_V4 ; then
+    echo "Patching deposit denom (v4)..."
+    jq -r --arg denom "$DENOM" '.app_state.gov.params.min_deposit[0].denom |= $denom' crisis.json > min_deposit.json
+else
+    echo "Patching deposit denom..."
+    jq -r --arg denom "$DENOM" '.app_state.gov.deposit_params.min_deposit[0].denom |= $denom' crisis.json > min_deposit.json
+fi
+jq -r --arg denom "$DENOM" '.app_state.mint.params.mint_denom |= $denom' min_deposit.json > mint.json
+jq -r --arg denom "$DENOM" '.app_state.staking.params.bond_denom |= $denom' mint.json > bond_denom.json
+jq -r --arg denom "$DENOM" '.app_state.provider.params.consumer_reward_denom_registration_fee.denom = $denom' bond_denom.json > reward_reg.json
+cp reward_reg.json $HOME_1/config/genesis.json
+
+
+if $PROVIDER_V3 ; then
+    echo "Patching genesis file for fast governance (v3)..."
+    jq -r ".app_state.gov.params.voting_period = \"$VOTING_PERIOD\"" $HOME_1/config/genesis.json  > voting-1.json
+    jq -r '.app_state.gov.params.min_deposit[0].amount = "1"' voting-1.json > voting-2.json
+elif $PROVIDER_V4 ; then
+    echo "Patching genesis file for fast governance (v4)..."
     jq -r ".app_state.gov.params.voting_period = \"$VOTING_PERIOD\"" $HOME_1/config/genesis.json  > voting-1.json
     jq -r '.app_state.gov.params.min_deposit[0].amount = "1"' voting-1.json > voting-2.json
 else
+    echo "Patching genesis file for fast governance..."
     jq -r ".app_state.gov.voting_params.voting_period = \"$VOTING_PERIOD\"" $HOME_1/config/genesis.json  > voting-1.json
     jq -r ".app_state.gov.deposit_params.min_deposit[0].amount = \"1\"" voting-1.json > voting-2.json
 fi

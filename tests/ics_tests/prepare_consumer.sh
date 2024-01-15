@@ -1,7 +1,16 @@
 #!/bin/bash
 # Prepare a consumer chain to be started
+$CHAIN_BINARY q gov params --home $HOME_1
 
 if $PROVIDER_V3 ; then
+    echo "Patching add template with spawn time..."
+    spawn_time=$(date -u --iso-8601=ns | sed s/+00:00/Z/ | sed s/,/./)
+    jq -r --arg SPAWNTIME "$spawn_time" '.spawn_time |= $SPAWNTIME' tests/ics_tests/legacy-proposal-add-template.json > proposal-add-spawn.json
+    sed "s%\"chain_id\": \"\"%\"chain_id\": \"$CONSUMER_CHAIN_ID\"%g" proposal-add-spawn.json > proposal-add-$CONSUMER_CHAIN_ID.json
+    rm proposal-add-spawn.json
+    echo "Submitting proposal..."
+    proposal="$CHAIN_BINARY tx gov submit-legacy-proposal consumer-addition proposal-add-$CONSUMER_CHAIN_ID.json --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM --from $WALLET_2 --keyring-backend test --home $HOME_1 --chain-id $CHAIN_ID -y -o json"    
+elif $PROVIDER_V4 ; then
     echo "Patching add template with spawn time..."
     spawn_time=$(date -u --iso-8601=ns | sed s/+00:00/Z/ | sed s/,/./)
     jq -r --arg SPAWNTIME "$spawn_time" '.spawn_time |= $SPAWNTIME' tests/ics_tests/legacy-proposal-add-template.json > proposal-add-spawn.json
@@ -91,16 +100,32 @@ if $CONSUMER_V320 ; then
     echo "Patching for consumer v3.2.0..."
     if [ $PROVIDER_VERSION == "v3.3.0" ]; then
         echo "Patching for provider v3.3.0"
-        ics-cd-transform genesis transform --to v3.2.x ccv.json > ccv-330.json
-        cp ccv-330.json ccv.json
+        ics-cd-transform genesis transform --to v3.2.x ccv.json > ccv-320.json
+        cp ccv-320.json ccv.json
+    elif [ $PROVIDER_VERSION == "v4.0.0-rc0" ]; then
+        echo "Patching for provider v4.0.0-rc0"
+        ics-cd-transform genesis transform --to v3.2.x ccv.json > ccv-320.json
+        cp ccv-320.json ccv.json
     fi
 fi
 
 if $CONSUMER_V330 ; then
     echo "Patching for consumer v3.3.0..."
-    if [ $PROVIDER_VERSION != "v3.3.0" ]; then
+    if [ $PROVIDER_VERSION == "v4.0.0-rc0" ]; then
+        echo "Patching for provider v4.0.0-rc0"
+        ics-cd-transform genesis transform --to v3.3.x ccv.json > ccv-400.json
+        cp ccv-400.json ccv.json
+    elif [ $PROVIDER_VERSION != "v3.3.0" ]; then
         $CONSUMER_CHAIN_BINARY genesis transform ccv.json > ccv-330-1.json
         cp ccv-330-1.json ccv.json
+    fi
+fi
+
+if $CONSUMER_V400 ; then
+    echo "Patching for consumer v4.0.0-rc0..."
+    if [ $PROVIDER_VERSION != "v4.0.0-rc0" ]; then
+        $CONSUMER_CHAIN_BINARY genesis transform ccv.json > ccv-400-1.json
+        cp ccv-400-1.json ccv.json
     fi
 fi
 
@@ -108,7 +133,6 @@ jq '.' ccv.json
 
 echo "Patching the consumer genesis file..."
 jq -s '.[0].app_state.ccvconsumer = .[1] | .[0]' $CONSUMER_HOME_1/config/genesis.json ccv.json > consumer-genesis.json
-jq '.' consumer-genesis.json
 jq '.' consumer-genesis.json
 
 
