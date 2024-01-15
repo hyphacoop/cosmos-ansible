@@ -7,10 +7,9 @@ TXHASH=$($submit_proposal_cmd | jq '.txhash' | tr -d '"')
 
 sleep 90
 echo "Transection TX hash is: $TXHASH"
-gaiad --home $HOME_1 tx $TXHASH
+gaiad --home $HOME_1 q tx $TXHASH
 
-exit 1
-echo "cmd exit code: $exit_code"
+exit 1 
 
 if [ $exit_code -eq 0 ]
 then
