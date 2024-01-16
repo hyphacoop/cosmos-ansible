@@ -218,11 +218,11 @@ jobs:
         run: $CHAIN_BINARY version --long
       - name: Block production check
         run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 5 # 5 blocks
-      # - name: Validators initial state
-      #   run: |
-      #     $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
-      # - name: Set up relayer
-      #   run: tests/v15_upgrade/setup_relayer.sh
+      - name: Validators initial state
+        run: |
+          $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
+      - name: Set up relayer
+        run: tests/v15_upgrade/setup_relayer.sh
       # - name: Download consumer chain binaries
       #   run: |
       #     wget $CONSUMER_CHAIN_V12_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_V12_BINARY -q
