@@ -89,9 +89,9 @@ cp $HOME_1/config/genesis.json $HOME_3/config/genesis.json
 echo "Patching config files..."
 # app.toml
 # minimum_gas_prices
-sed -i -e "/minimum-gas-prices =/ s^= .*^= \"0.0025$DENOM\"^" $HOME_1/config/app.toml
-sed -i -e "/minimum-gas-prices =/ s^= .*^= \"0.0025$DENOM\"^" $HOME_2/config/app.toml
-sed -i -e "/minimum-gas-prices =/ s^= .*^= \"0.0025$DENOM\"^" $HOME_3/config/app.toml
+sed -i -e "/minimum-gas-prices =/ s^= .*^= \"$GAS_PRICE$DENOM\"^" $HOME_1/config/app.toml
+sed -i -e "/minimum-gas-prices =/ s^= .*^= \"$GAS_PRICE$DENOM\"^" $HOME_2/config/app.toml
+sed -i -e "/minimum-gas-prices =/ s^= .*^= \"$GAS_PRICE$DENOM\"^" $HOME_3/config/app.toml
 
 # Enable API
 toml set --toml-path $HOME_1/config/app.toml api.enable true

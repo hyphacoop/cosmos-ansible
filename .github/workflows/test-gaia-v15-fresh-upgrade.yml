@@ -69,6 +69,7 @@ jobs:
       HIGH_FEES: 10000
       GAS: auto
       GAS_ADJUSTMENT: 1.4
+      GAS_PRICE: 0.005uatom
       VOTING_PERIOD: 10s
       # Provider node variables
       HOME_1: /home/runner/.val1
