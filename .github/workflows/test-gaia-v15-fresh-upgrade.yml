@@ -474,7 +474,7 @@ jobs:
       - name: _Transactions verified> bank send, delegate, and withdraw rewards
         env:
           BASE_FEES: 2000
-        run: tests/patch_upgrade/patch_test_tx.sh
+        run: tests/test_tx_fresh.sh
       # - name: _API endpoints check
       #   run: tests/test_endpoints_api.sh localhost $VAL1_API_PORT
       # - name: _RPC endpoints check
