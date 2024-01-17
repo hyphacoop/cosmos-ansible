@@ -455,26 +455,26 @@ jobs:
       #     channel_id=$($CHAIN_BINARY q ibc channel connections $connection_id -o json --home $HOME_1 | jq -r '.channels[] | select(.port_id=="transfer").channel_id')
       #     tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh $channel_id
 
-      # - name: Test software upgrade for published releases
-      #   if: ${{ matrix.upgrade_version != 'main' }}
-      #   env:
-      #     DOWNLOAD_URL: https://github.com/cosmos/gaia/releases/download/${{ matrix.upgrade_version }}/gaiad-${{ matrix.upgrade_version }}-linux-amd64
-      #   run: |
-      #     echo $DOWNLOAD_URL
-      #     tests/major_fresh_upgrade/software_upgrade.sh 127.0.0.1 $VAL1_RPC_PORT v15
-      # - name: Test software upgrade for main branch
-      #   if: ${{ matrix.upgrade_version == 'main' }}
-      #   env:
-      #     DOWNLOAD_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/gaiad-linux-main/gaiad-linux
-      #   run: |
-      #     tests/major_fresh_upgrade/software_upgrade.sh 127.0.0.1 $VAL1_RPC_PORT v15
+      - name: Test software upgrade for published releases
+        if: ${{ matrix.upgrade_version != 'main' }}
+        env:
+          DOWNLOAD_URL: https://github.com/cosmos/gaia/releases/download/${{ matrix.upgrade_version }}/gaiad-${{ matrix.upgrade_version }}-linux-amd64
+        run: |
+          echo $DOWNLOAD_URL
+          tests/major_fresh_upgrade/software_upgrade.sh 127.0.0.1 $VAL1_RPC_PORT v15
+      - name: Test software upgrade for main branch
+        if: ${{ matrix.upgrade_version == 'main' }}
+        env:
+          DOWNLOAD_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/gaiad-linux-main/gaiad-linux
+        run: |
+          tests/major_fresh_upgrade/software_upgrade.sh 127.0.0.1 $VAL1_RPC_PORT v15
 
-      # - name: _Blocks produced after upgrade
-      #   run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 5
-      # - name: _Transactions verified> bank send, delegate, and withdraw rewards
-      #   env:
-      #     BASE_FEES: 2000
-      #   run: tests/patch_upgrade/patch_test_tx.sh
+      - name: _Blocks produced after upgrade
+        run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 5
+      - name: _Transactions verified> bank send, delegate, and withdraw rewards
+        env:
+          BASE_FEES: 2000
+        run: tests/patch_upgrade/patch_test_tx.sh
       # - name: _API endpoints check
       #   run: tests/test_endpoints_api.sh localhost $VAL1_API_PORT
       # - name: _RPC endpoints check

@@ -39,13 +39,13 @@ echo "Proposal ID: $proposal_id"
 
 # Vote yes on the proposal
 echo "Submitting the \"yes\" vote to proposal $proposal_id..."
-vote="$CHAIN_BINARY tx gov vote $proposal_id yes --from $WALLET_1 --keyring-backend test --chain-id $CHAIN_ID --fees $BASE_FEES$DENOM -b block -y --home $HOME_1"
+vote="$CHAIN_BINARY tx gov vote $proposal_id yes --from $WALLET_1 --keyring-backend test --chain-id $CHAIN_ID --fees $BASE_FEES$DENOM -y --home $HOME_1"
 echo $vote
 $vote
 
 # Wait for the voting period to be over
 echo "Waiting for the voting period to end..."
-sleep 6
+sleep $VOTING_PERIOD
 
 echo "Upgrade proposal $proposal_id status:"
 $CHAIN_BINARY q gov proposal $proposal_id --output json --home $HOME_1 | jq '.status'
