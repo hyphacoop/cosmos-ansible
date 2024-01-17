@@ -25,11 +25,13 @@ echo "Upgrade block height set to $upgrade_height."
 
 # Auto download: Set the binary paths need for the proposal message
 upgrade_info="{\"binaries\":{\"linux/amd64\":\"$DOWNLOAD_URL\"}}"
-proposal="$CHAIN_BINARY --output json tx gov submit-proposal software-upgrade $upgrade_name --from $WALLET_1 --keyring-backend test --upgrade-height $upgrade_height --upgrade-info $upgrade_info --title gaia-upgrade --description 'test' --chain-id $CHAIN_ID --deposit $VAL_STAKE_STEP$DENOM --fees $BASE_FEES$DENOM --yes --home $HOME_1"
+proposal="$CHAIN_BINARY --output json tx gov submit-proposal software-upgrade $upgrade_name --from $WALLET_1 --keyring-backend test --upgrade-height $upgrade_height --upgrade-info $upgrade_info --title gaia-upgrade --description 'test' --chain-id $CHAIN_ID --deposit $VAL_STAKE_STEP$DENOM --gas auto --gas-prices $GAS_PRICE --gas-adjustment $GAS_ADJUSTMENT --yes --home $HOME_1"
 
 # Submit the proposal
 echo "Submitting the upgrade proposal."
 echo $proposal
+$proposal
+exit 1
 txhash=$($proposal | jq -r .txhash)
 sleep $(($COMMIT_TIMEOUT+4))
 
