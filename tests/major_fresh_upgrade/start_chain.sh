@@ -14,19 +14,16 @@ echo GAIA_CHECKSUM: $(sha256sum $HOME/go/bin/$CHAIN_BINARY)
 echo "Initializing node homes..."
 $CHAIN_BINARY config chain-id $CHAIN_ID --home $HOME_1
 $CHAIN_BINARY config keyring-backend test --home $HOME_1
-$CHAIN_BINARY config broadcast-mode block --home $HOME_1
 $CHAIN_BINARY config node tcp://localhost:$VAL1_RPC_PORT --home $HOME_1
 $CHAIN_BINARY init $MONIKER_1 --chain-id $CHAIN_ID --home $HOME_1
 
 $CHAIN_BINARY config chain-id $CHAIN_ID --home $HOME_2
 $CHAIN_BINARY config keyring-backend test --home $HOME_2
-$CHAIN_BINARY config broadcast-mode block --home $HOME_2
 $CHAIN_BINARY config node tcp://localhost:$VAL2_RPC_PORT --home $HOME_2
 $CHAIN_BINARY init $MONIKER_2 --chain-id $CHAIN_ID --home $HOME_2
 
 $CHAIN_BINARY config chain-id $CHAIN_ID --home $HOME_3
 $CHAIN_BINARY config keyring-backend test --home $HOME_3
-$CHAIN_BINARY config broadcast-mode block --home $HOME_3
 $CHAIN_BINARY config node tcp://localhost:$VAL3_RPC_PORT --home $HOME_3
 $CHAIN_BINARY init $MONIKER_3 --chain-id $CHAIN_ID --home $HOME_3
 
