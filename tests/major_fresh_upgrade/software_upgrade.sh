@@ -31,6 +31,7 @@ proposal="$CHAIN_BINARY --output json tx gov submit-proposal software-upgrade $u
 echo "Submitting the upgrade proposal."
 echo $proposal
 txhash=$($proposal | jq -r .txhash)
+sleep $COMMIT_TIMEOUT
 
 # Get proposal ID from txhash
 echo "Getting proposal ID from txhash..."
@@ -42,6 +43,7 @@ echo "Submitting the \"yes\" vote to proposal $proposal_id..."
 vote="$CHAIN_BINARY tx gov vote $proposal_id yes --from $WALLET_1 --keyring-backend test --chain-id $CHAIN_ID --fees $BASE_FEES$DENOM -y --home $HOME_1"
 echo $vote
 $vote
+sleep $COMMIT_TIMEOUT
 
 # Wait for the voting period to be over
 echo "Waiting for the voting period to end..."
