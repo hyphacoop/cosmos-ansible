@@ -473,7 +473,9 @@ jobs:
           tests/major_fresh_upgrade/software_upgrade.sh 127.0.0.1 $VAL1_RPC_PORT v15
 
       - name: _Blocks produced after upgrade
-        run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 5
+        run: |
+          journalctl -u $PROVIDER_SERVICE_1 | tail -n 100
+          tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 5
       - name: _Transactions verified> bank send, delegate, and withdraw rewards
         run: tests/test_tx_fresh.sh
       # - name: _API endpoints check
