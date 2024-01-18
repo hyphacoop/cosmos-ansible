@@ -483,7 +483,7 @@ jobs:
 
       - name: _Blocks produced after upgrade
         run: |
-          tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 5
+          tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 10
       - name: Flush "migration successful" lines
         run: |
           tests/v15_upgrade/flush_key_migration.sh
