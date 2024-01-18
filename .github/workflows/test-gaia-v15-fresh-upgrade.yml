@@ -336,7 +336,7 @@ jobs:
           DOWNTIME_BLOCKS: 100000
         run: |
           export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V310_BINARY
-          tests/major_fresh_upgrade/init_consumer.sh
+          tests/major_fresh_upgrade/init_consumer_assign_keys.sh
       - name: Prepare consumer chain three-v310
         env:
           CONSUMER_CHAIN_ID: three-v310
@@ -371,7 +371,7 @@ jobs:
       - name: _Pre-upgrade CCV channel verified> ICS v3.1.0 chain 1
         env:
           CON1_RPC_PORT: 27301
-        run: tests/major_fresh_upgrade/test_ccv.sh
+        run: tests/major_fresh_upgrade/test_ccv_key_assignment.sh
       - name: _Pre-upgrade IBC transfer successful> ICS v3.1.0 chain 1
         env:
           CONSUMER_CHAIN_ID: three-v310
@@ -496,11 +496,11 @@ jobs:
       - name: _CCV channel verified> ICS v2.0.0 chain 1
         env:
           CON1_RPC_PORT: 27201
-        run: tests/major_fresh_upgrade/test_ccv.sh
+        run: tests/major_fresh_upgrade/test_ccv_key_assignment.sh
       - name: _CCV channel verified> ICS v3.1.0 chain 1
         env:
           CON1_RPC_PORT: 27301
-        run: tests/major_fresh_upgrade/test_ccv.sh
+        run: tests/major_fresh_upgrade/test_ccv_key_assignment.sh
 
 
 
