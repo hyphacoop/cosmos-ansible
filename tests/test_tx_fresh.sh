@@ -23,7 +23,7 @@ echo $command
 TXHASH=$($command | jq -r '.txhash')
 echo "Tx hash: $TXHASH"
 sleep $(($COMMIT_TIMEOUT+2))
-# check_code $TXHASH
+check_code $TXHASH
 # sleep $COMMIT_TIMEOUT
 
 
