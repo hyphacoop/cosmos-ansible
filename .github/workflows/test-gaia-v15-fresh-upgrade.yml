@@ -68,7 +68,7 @@ jobs:
       BASE_FEES: 2000
       HIGH_FEES: 10000
       GAS: auto
-      GAS_ADJUSTMENT: 1.5
+      GAS_ADJUSTMENT: 2
       GAS_PRICE: 0.005
       VOTING_PERIOD: 10s
       # Provider node variables
