@@ -7,7 +7,7 @@ PROVIDER_CHANNEL=$1
 
 # Transfer provider token to consumer chain
 echo "Sending $DENOM to $CONSUMER_CHAIN_ID..."
-$CHAIN_BINARY --home $HOME_1 tx ibc-transfer transfer transfer $PROVIDER_CHANNEL $RECIPIENT 1000$DENOM --from $WALLET_1 --keyring-backend test --gas 500000 --fees 2000$DENOM -b block -y
+$CHAIN_BINARY --home $HOME_1 tx ibc-transfer transfer transfer $PROVIDER_CHANNEL $RECIPIENT 1000$DENOM --from $WALLET_1 --keyring-backend test --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y
 echo "Waiting for the transfer to reach the consumer chain..."
 sleep $(($COMMIT_TIMEOUT*5))
 DENOM_AMOUNT=$($CONSUMER_CHAIN_BINARY --home $CONSUMER_HOME_1 q bank balances $RECIPIENT -o json | jq -r '.balances | length')
