@@ -42,8 +42,9 @@ echo "Proposal ID: $proposal_id"
 echo "Submitting the \"yes\" vote to proposal $proposal_id..."
 vote="$CHAIN_BINARY tx gov vote $proposal_id yes --from $WALLET_1 --keyring-backend test --chain-id $CHAIN_ID --gas $GAS --gas-prices $GAS_PRICE --gas-adjustment $GAS_ADJUSTMENT -y --home $HOME_1"
 echo $vote
-$vote
+txhash=$($vote | jq -r .txhash)
 sleep $(($COMMIT_TIMEOUT+2))
+$CHAIN_BINARY q tx $txhash --home $HOME_1
 
 # Wait for the voting period to be over
 echo "Waiting for the voting period to end..."
