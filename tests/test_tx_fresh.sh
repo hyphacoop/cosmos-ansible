@@ -19,8 +19,8 @@ echo $command
 $command
 sleep $(($COMMIT_TIMEOUT+2))
 
-# TXHASH=$($CHAIN_BINARY tx bank send $WALLET_1 $WALLET_2 $VAL_STAKE_STEP$DENOM --home $HOME_1 --from $MONIKER_1 --keyring-backend test --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM --chain-id $CHAIN_ID -y -o json | jq -r '.txhash')
-# echo "Tx hash: $TXHASH"
+TXHASH=$($CHAIN_BINARY tx bank send $WALLET_1 $WALLET_2 $VAL_STAKE_STEP$DENOM --home $HOME_1 --from $MONIKER_1 --keyring-backend test --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM --chain-id $CHAIN_ID -y -o json | jq -r '.txhash')
+echo "Tx hash: $TXHASH"
 # check_code $TXHASH
 # sleep $COMMIT_TIMEOUT
 
