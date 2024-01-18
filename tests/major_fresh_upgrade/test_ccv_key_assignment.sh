@@ -8,6 +8,7 @@ CONSUMER_ADDRESS=$(jq -r '.address' $CONSUMER_HOME_1/config/priv_validator_key.j
 echo "Delegating additional stake to $MONIKER_1..."
 command="$CHAIN_BINARY --home $HOME_1 tx staking delegate $VALOPER_1 $VAL_STAKE_STEP$DENOM --from $MONIKER_1 --keyring-backend test --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y --chain-id $CHAIN_ID -o json"
 TXHASH=$($command | jq -r '.txhash')
+sleep $(($COMMIT_TIMEOUT+2))
 $CHAIN_BINARY q tx $TXHASH --home $HOME_1
 # Wait for consumer chain to get validator set update
 echo "Waiting for the validator set update to reach the consumer chain..."
