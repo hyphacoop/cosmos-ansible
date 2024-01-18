@@ -12,9 +12,9 @@ sleep $(($COMMIT_TIMEOUT+2))
 $CHAIN_BINARY q tx $TXHASH --home $HOME_1
 # Wait for consumer chain to get validator set update
 echo "Waiting for the validator set update to reach the consumer chain..."
-sleep $(($COMMIT_TIMEOUT*10))
-journalctl -u $PROVIDER_SERVICE_1 | tail -n 100
-journalctl -u hermes | tail -n 100
+sleep $(($COMMIT_TIMEOUT*8))
+journalctl -u $PROVIDER_SERVICE_1 | tail -n 200
+journalctl -u hermes | tail -n 200
 
 PROVIDER_ADDRESS=$(jq -r '.address' $HOME_1/config/priv_validator_key.json)
 PROVIDER_POWER=$(curl -s http://localhost:$VAL1_RPC_PORT/validators | jq -r '.result.validators[] | select(.address=="'$PROVIDER_ADDRESS'") | '.voting_power'')
