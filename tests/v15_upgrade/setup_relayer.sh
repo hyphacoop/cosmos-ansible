@@ -4,7 +4,7 @@
 if [ $RELAYER == "hermes" ]; then
 
     echo "Downloading Hermes..."
-    wget https://github.com/informalsystems/hermes/releases/download/$HERMES_VERSION/hermes-$HERMES_VERSION-x86_64-unknown-linux-gnu.tar.gz -O hermes-$HERMES_VERSION.tar.gz
+    wget -q https://github.com/informalsystems/hermes/releases/download/$HERMES_VERSION/hermes-$HERMES_VERSION-x86_64-unknown-linux-gnu.tar.gz -O hermes-$HERMES_VERSION.tar.gz
     tar -xzvf hermes-$HERMES_VERSION.tar.gz
     mkdir -p ~/.hermes
     cp hermes ~/.hermes/hermes
@@ -32,7 +32,7 @@ elif [ $RELAYER == "rly" ]; then
 
     echo "Downloading rly..."
     RLY_DOWNLOAD_URL="https://github.com/cosmos/relayer/releases/download/v${RLY_VERSION}/Cosmos.Relayer_${RLY_VERSION}_linux_amd64.tar.gz"
-    wget $RLY_DOWNLOAD_URL -O rly-v$RLY_VERSION.tar.gz
+    wget -q $RLY_DOWNLOAD_URL -O rly-v$RLY_VERSION.tar.gz
     tar -xzvf rly-v$RLY_VERSION.tar.gz
     mkdir -p ~/.relayer
     mv Cosmos*/rly ~/.relayer/rly
@@ -42,7 +42,7 @@ elif [ $RELAYER == "rly" ]; then
 
     echo "Adding chains to config..."
     # provider
-    rly chains add --file tests/v15-upgrade/rly-chain-template.json
+    rly chains add --file tests/v15_upgrade/rly-chain-template.json
 
     # three
     jq '.value."chain-id" = "three-v310"' tests/v15_upgrade/rly-chain-template.json > three-1.json
