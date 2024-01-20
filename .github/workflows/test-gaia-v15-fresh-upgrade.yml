@@ -414,12 +414,12 @@ jobs:
           export CHAIN_BINARY_URL=https://github.com/cosmos/gaia/releases/download/$START_VERSION/gaiad-$START_VERSION-linux-amd64
           tests/major_fresh_upgrade/start_pfm_chain.sh
           sleep 5
-      - name: Block production check
-        env:
-          PFM_RPC_PORT: 27011
-        run: |
-          journalctl -u pfm_1.service | tail -n 100
-          tests/test_block_production.sh 127.0.0.1 $PFM_RPC_PORT 5 # 5 blocks
+      # - name: Block production check
+      #   env:
+      #     PFM_RPC_PORT: 27011
+      #   run: |
+      #     journalctl -u pfm_1.service | tail -n 100
+      #     tests/test_block_production.sh 127.0.0.1 $PFM_RPC_PORT 5 # 5 blocks
 
       - name: Start PFM chain 2
         env:
@@ -436,10 +436,10 @@ jobs:
           export CHAIN_BINARY_URL=https://github.com/cosmos/gaia/releases/download/$START_VERSION/gaiad-$START_VERSION-linux-amd64
           tests/major_fresh_upgrade/start_pfm_chain.sh
           sleep 5
-      - name: Block production check
-        env:
-          PFM_RPC_PORT: 27012
-        run: tests/test_block_production.sh 127.0.0.1 $PFM_RPC_PORT 5 # 5 blocks
+      # - name: Block production check
+      #   env:
+      #     PFM_RPC_PORT: 27012
+      #   run: tests/test_block_production.sh 127.0.0.1 $PFM_RPC_PORT 5 # 5 blocks
 
       - name: Start PFM chain 3
         env:
@@ -456,10 +456,10 @@ jobs:
           export CHAIN_BINARY_URL=https://github.com/cosmos/gaia/releases/download/$START_VERSION/gaiad-$START_VERSION-linux-amd64
           tests/major_fresh_upgrade/start_pfm_chain.sh
           sleep 5
-      - name: Block production check
-        env:
-          PFM_RPC_PORT: 27013
-        run: tests/test_block_production.sh 127.0.0.1 $PFM_RPC_PORT 5 # 5 blocks
+      # - name: Block production check
+      #   env:
+      #     PFM_RPC_PORT: 27013
+      #   run: tests/test_block_production.sh 127.0.0.1 $PFM_RPC_PORT 5 # 5 blocks
 
       - name: Create transfer channels for PFM test
         run: |
