@@ -54,8 +54,8 @@ elif [ $RELAYER == "rly" ]; then
     cat ~/.relayer/config/config.yaml
 
     echo "Adding relayer keys..."
-    rly keys restore $CHAIN_ID default "$RELAYER_MNEMONIC"
-    rly keys restore three-v310 default "$RELAYER_MNEMONIC"
+    rly keys restore $CHAIN_ID default "$MNEMONIC_RELAYER"
+    rly keys restore three-v310 default "$MNEMONIC_RELAYER"
 fi
 
 echo "Creating service..."
