@@ -75,5 +75,5 @@ echo ""                                     | sudo tee /etc/systemd/system/$RELA
 echo "[Install]"                            | sudo tee /etc/systemd/system/$RELAYER.service -a
 echo "WantedBy=multi-user.target"           | sudo tee /etc/systemd/system/$RELAYER.service -a
 
-systemctl daemon-reload
-systemctl enable $RELAYER
+sudo systemctl daemon-reload
+sudo systemctl enable $RELAYER
