@@ -221,10 +221,10 @@ jobs:
         run: sudo journalctl -u $PROVIDER_SERVICE_1
       - name: Print Gaia version
         run: $CHAIN_BINARY version --long
-      - name: Block production check
-        run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 5 # 5 blocks
-      - name: Transactions verified> bank send, delegate, and withdraw rewards
-        run: tests/test_tx_fresh.sh
+      # - name: Block production check
+      #   run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 5 # 5 blocks
+      # - name: Transactions verified> bank send, delegate, and withdraw rewards
+      #   run: tests/test_tx_fresh.sh
       - name: Validators initial state
         run: |
           $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'

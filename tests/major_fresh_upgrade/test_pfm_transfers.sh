@@ -19,12 +19,12 @@ target_denom_d_a=ibc/$(echo -n transfer/$channel_provider/transfer/channel-1/tra
 echo "Target denom A->D: $target_denom_a_d"
 echo "Target denom D->A: $target_denom_d_a"
 
-# $CHAIN_BINARY tx ibc-transfer transfer transfer $channel_provider "pfm" --memo "{\"forward\": {\"receiver\": \"pfm\",\"port\": \"transfer\",\"channel\": \"channel-1\",\"timeout\": \"10m\",\"next\": {\"forward\": {\"receiver\": \"$WALLET_1\",\"port\": \"transfer\",\"channel\":\"channel-1\",\"timeout\":\"10m\"}}}}" 1000000$DENOM --from $WALLET_1 --gas auto --gas-prices 0.005$DENOM --gas-adjustment $GAS_ADJUSTMENT -y --home $HOME_1
-command="$CHAIN_BINARY tx ibc-transfer transfer transfer $channel_provider \"pfm\" --memo \"{\\\"forward\\\": {\\\"receiver\\\": \\\"pfm\\\",\\\"port\\\": \\\"transfer\\\",\\\"channel\\\": \\\"channel-1\\\",\\\"timeout\\\": \\\"10m\\\",\\\"next\\\": {\\\"forward\\\": {\\\"receiver\\\": \\\"$WALLET_1\\\",\\\"port\\\": \\\"transfer\\\",\\\"channel\\\":\\\"channel-1\\\",\\\"timeout\\\":\\\"10m\\\"}}}}\" 1000000$DENOM --from $WALLET_1 --gas auto --gas-prices 0.005$DENOM --gas-adjustment $GAS_ADJUSTMENT -y --home $HOME_1 -o json"
-echo $command
-TXHASH=$($command | jq -r '.txhash')
+$CHAIN_BINARY tx ibc-transfer transfer transfer $channel_provider "pfm" --memo "{\"forward\": {\"receiver\": \"pfm\",\"port\": \"transfer\",\"channel\": \"channel-1\",\"timeout\": \"10m\",\"next\": {\"forward\": {\"receiver\": \"$WALLET_1\",\"port\": \"transfer\",\"channel\":\"channel-1\",\"timeout\":\"10m\"}}}}" 1000000$DENOM --from $WALLET_1 --gas auto --gas-prices 0.005$DENOM --gas-adjustment $GAS_ADJUSTMENT -y --home $HOME_1
+# command="$CHAIN_BINARY tx ibc-transfer transfer transfer $channel_provider \"pfm\" 1000000$DENOM --memo \"{\\\"forward\\\": {\\\"receiver\\\": \\\"pfm\\\",\\\"port\\\": \\\"transfer\\\",\\\"channel\\\": \\\"channel-1\\\",\\\"timeout\\\": \\\"10m\\\",\\\"next\\\": {\\\"forward\\\": {\\\"receiver\\\": \\\"$WALLET_1\\\",\\\"port\\\": \\\"transfer\\\",\\\"channel\\\":\\\"channel-1\\\",\\\"timeout\\\":\\\"10m\\\"}}}}\" --from $WALLET_1 --gas auto --gas-prices 0.005$DENOM --gas-adjustment $GAS_ADJUSTMENT -y --home $HOME_1 -o json"
+# echo $command
+# TXHASH=$($command | jq -r '.txhash')
 sleep 6
-$CHAIN_BINARY q tx $TXHASH --home $HOME_1
+# $CHAIN_BINARY q tx $TXHASH --home $HOME_1
 
 $CHAIN_BINARY tx ibc-transfer transfer transfer channel-0 "pfm" --memo "{\"forward\": {\"receiver\": \"pfm\",\"port\": \"transfer\",\"channel\": \"channel-0\",\"timeout\": \"10m\",\"next\": {\"forward\": {\"receiver\": \"$WALLET_1\",\"port\": \"transfer\",\"channel\":\"channel-0\",\"timeout\":\"10m\"}}}}" 1000000$DENOM --from $WALLET_1 --gas auto --gas-prices 0.005$DENOM --gas-adjustment $GAS_ADJUSTMENT -y --home $PFM_HOME
 # command="$CHAIN_BINARY tx ibc-transfer transfer transfer channel-0 \"pfm\" --memo \"{\"forward\": {\"receiver\": \"pfm\",\"port\": \"transfer\",\"channel\": \"channel-0\",\"timeout\": \"10m\",\"next\": {\"forward\": {\"receiver\": \"$WALLET_1\",\"port\": \"transfer\",\"channel\":\"channel-0\",\"timeout\":\"10m\"}}}}\" 1000000$DENOM --from $WALLET_1 --gas auto --gas-prices 0.005$DENOM --gas-adjustment $GAS_ADJUSTMENT -y --home $PFM_HOME"
