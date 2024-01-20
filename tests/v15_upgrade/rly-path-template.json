@@ -1,0 +1,15 @@
+{
+
+    "src": {
+      "chain-id": "consumer",
+      "client-id": "07-tendermint-0"
+    },
+    "dst": {
+        "chain-id": "testnet",
+        "client-id": "07-tendermint-0"
+      },
+    "src-channel-filter": {
+      "rule": null,
+      "channel-list": []
+    }
+  }

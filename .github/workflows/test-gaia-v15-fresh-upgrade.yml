@@ -122,7 +122,6 @@ jobs:
       # Consumer chain variables
       DOWNTIME_BLOCKS: 10000
       RECIPIENT: cosmos1r5v5srda7xfth3hn2s26txvrcrntldjumt8mhl
-      HERMES_VERSION: v1.7.2
       ICS_120: false
       ICS_330: false
       # Reference ICS chain variables
@@ -160,6 +159,10 @@ jobs:
       STRIDE_P2P_2: 38002
       STRIDE_PPROF_1: 39001
       STRIDE_PPROF_2: 39002
+      # Relayer variables
+      RELAYER: rly
+      HERMES_VERSION: v1.7.2
+      RLY_VERSION: "2.4.2"
     steps:
       - name: start-version
         run: echo ${{matrix.gaia_version}}
@@ -224,7 +227,7 @@ jobs:
       - name: Validators initial state
         run: |
           $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
-      - name: Set up relayer
+      - name: Set up Hermes relayer
         run: tests/v15_upgrade/setup_relayer.sh
       - name: Download consumer chain binaries
         run: |
@@ -365,9 +368,19 @@ jobs:
           CONSUMER_CHAIN_ID: three-v310
         run: |
           client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
-          hermes create connection --a-chain $CONSUMER_CHAIN_ID --a-client 07-tendermint-0 --b-client $client_id
-          hermes create channel --a-chain $CONSUMER_CHAIN_ID --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
-          sudo systemctl restart hermes
+          if [ $RELAYER == "hermes" ]; then
+            echo "Creating channel with Hermes..."
+            hermes create connection --a-chain $CONSUMER_CHAIN_ID --a-client 07-tendermint-0 --b-client $client_id
+            hermes create channel --a-chain $CONSUMER_CHAIN_ID --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
+          elif [ $RELAYER == "rly" ]; then
+            echo "Creating channel with Go relayer..."
+            jq --arg CHAIN "$CONSUMER_CHAIN_ID" '.src."chain-id" = $CHAIN' rly-path-template.json > three-1.json
+            jq --arg CLIENT "$client_id" '.dst."client-id" = $CLIENT' three-1 > three-2.json
+            rly paths add testnet three-v310 three --file three-2.json
+            rly transact connection three
+            rly transact channel three --src-port consumer --dst-port provider --order ordered --version 1
+          fi  
+          sudo systemctl restart $RELAYER
           sleep 10
       - name: _Pre-upgrade CCV channel verified> ICS v3.1.0 chain 1
         env:
@@ -467,9 +480,9 @@ jobs:
       #   run: |
       #     tests/major_fresh_upgrade/test_pfm_transfers.sh
       
-      - name: Stop Hermes before the upgrade
+      - name: Stop relayer before the upgrade
         run: |
-          sudo systemctl stop hermes
+          sudo systemctl stop $RELAYER
 
       - name: Test software upgrade for published releases
         if: ${{ matrix.upgrade_version != 'main' }}
@@ -492,9 +505,9 @@ jobs:
         run: |
           tests/v15_upgrade/flush_key_migration.sh
 
-      - name: Start Hermes before the upgrade
+      - name: Restart relayer after the upgrade
         run: |
-          sudo systemctl start hermes
+          sudo systemctl start $RELAYER
 
       - name: _Transactions verified> bank send, delegate, and withdraw rewards
         run: tests/test_tx_fresh.sh
