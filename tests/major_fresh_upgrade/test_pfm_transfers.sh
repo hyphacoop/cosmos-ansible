@@ -1,7 +1,11 @@
 #!/bin/bash
 
 # Get channel from provider
-client_provider=$(hermes --json query clients --host-chain $CHAIN_ID | grep result | jq -r '.result[] | select(.chain_id=="pfm1").client_id')
+$CHAIN_BINARY q ibc client states --home $HOME_1
+
+
+# client_provider=$(hermes --json query clients --host-chain $CHAIN_ID | grep result | jq -r '.result[] | select(.chain_id=="pfm1").client_id')
+client_provider=$($CHAIN_BINARY q ibc client states --output json --home $HOME_1 | jq -r '.client_states[] | select(.client_state.chain_id == "pfm1").client_id')
 echo "Provider chain client ID: $client_provider"
 connection_provider=$($CHAIN_BINARY q ibc connection connections --home $HOME_1 -o json | jq -r --arg CLIENT "$client_provider" '.connections[] | select(.client_id==$CLIENT).id')
 echo "Provider chain connection ID: $connection_provider"
