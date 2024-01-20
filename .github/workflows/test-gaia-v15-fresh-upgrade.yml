@@ -475,9 +475,13 @@ jobs:
             sudo systemctl restart hermes
           elif [ $RELAYER == "rly" ]; then
             echo "Creating channel with Go relayer..."
+            echo "Path between testnet and pfm1"
             rly paths new testnet pfm1 pfm-path-1
+            echo "Path between pfm1 and pfm2"
             rly paths new pfm1 pfm2 pfm-path-2
+            echo "Path between pfm2 and pfm3"
             rly paths new pfm2 pfm3 pfm-path-3
+            echo "Channel between testnet and pfm1"
             rly transact channel pfm-path-1
             rly transact channel pfm-path-2
             rly transact channel pfm-path-3
