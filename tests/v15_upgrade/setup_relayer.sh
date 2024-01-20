@@ -51,6 +51,8 @@ elif [ $RELAYER == "rly" ]; then
     cat three-3.json
     rly chains add --file three-3.json
 
+    cat ~/.relayer/config/config.yaml
+
     echo "Adding relayer keys..."
     rly keys restore $CHAIN_ID default "$RELAYER_MNEMONIC"
     rly keys restore three-v310 default "$RELAYER_MNEMONIC"

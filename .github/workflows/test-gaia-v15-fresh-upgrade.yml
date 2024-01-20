@@ -375,7 +375,7 @@ jobs:
             hermes create channel --a-chain $CONSUMER_CHAIN_ID --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
           elif [ $RELAYER == "rly" ]; then
             echo "Creating channel with Go relayer..."
-            jq --arg CHAIN "$CONSUMER_CHAIN_ID" '.src."chain-id" = $CHAIN' rly-path-template.json > three-1.json
+            jq --arg CHAIN "$CONSUMER_CHAIN_ID" '.src."chain-id" = $CHAIN' tests/v15_upgrade/rly-path-template.json > three-1.json
             jq --arg CLIENT "$client_id" '.dst."client-id" = $CLIENT' three-1 > three-2.json
             rly paths add testnet three-v310 three --file three-2.json
             rly transact connection three
