@@ -42,14 +42,14 @@ elif [ $RELAYER == "rly" ]; then
 
     echo "Adding chains to config..."
     # provider
-    rly chains add --file tests/v15_upgrade/rly-chain-template.json
+    rly chains add --file tests/v15_upgrade/testnet.json
 
     # three
-    jq '.value."chain-id" = "three-v310"' tests/v15_upgrade/rly-chain-template.json > three-1.json
+    jq '.value."chain-id" = "three-v310"' tests/v15_upgrade/testnet.json > three-1.json
     jq '.value."rpc-addr" = "http://localhost:27301"' three-1.json > three-2.json
-    jq '.value."gas-prices" = "0.005ucon"' three-2.json > three-3.json
-    cat three-3.json
-    rly chains add --file three-3.json
+    jq '.value."gas-prices" = "0.005ucon"' three-2.json > three-v310.json
+    cat three-v310.json
+    rly chains add --file three-v310.json
 
     cat ~/.relayer/config/config.yaml
 
