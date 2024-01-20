@@ -51,11 +51,32 @@ elif [ $RELAYER == "rly" ]; then
     cat three-v310.json
     rly chains add --file three-v310.json
 
+    # pfm-1
+    jq '.value."chain-id" = "pfm1"' tests/v15_upgrade/testnet.json > p.json
+    jq '.value."rpc-addr" = "http://localhost:27011"' p.json > pf.json
+    jq '.value."gas-prices" = "0.005uatom"' pf.json > pfm1.json
+    rly chains add --file pfm1.json
+
+    # pfm-2
+    jq '.value."chain-id" = "pfm2"' tests/v15_upgrade/testnet.json > p.json
+    jq '.value."rpc-addr" = "http://localhost:27012"' p.json > pf.json
+    jq '.value."gas-prices" = "0.005uatom"' pf.json > pfm2.json
+    rly chains add --file pfm2.json
+
+    # pfm-3
+    jq '.value."chain-id" = "pfm3"' tests/v15_upgrade/testnet.json > p.json
+    jq '.value."rpc-addr" = "http://localhost:27013"' p.json > pf.json
+    jq '.value."gas-prices" = "0.005uatom"' pf.json > pfm3.json
+    rly chains add --file pfm3.json
+
     cat ~/.relayer/config/config.yaml
 
     echo "Adding relayer keys..."
     rly keys restore $CHAIN_ID default "$MNEMONIC_RELAYER"
     rly keys restore three-v310 default "$MNEMONIC_RELAYER"
+    rly keys restore pfm1 default "$MNEMONIC_RELAYER"
+    rly keys restore pfm2 default "$MNEMONIC_RELAYER"
+    rly keys restore pfm3 default "$MNEMONIC_RELAYER"
 fi
 
 echo "Creating service..."
