@@ -483,10 +483,12 @@ jobs:
             rly transact client testnet pfm1 pfm-path-1
             rly transact client pfm1 pfm2 pfm-path-2
             rly transact client pfm2 pfm3 pfm-path-3
+            sleep 5
             echo "Connections"
             rly transact connection pfm-path-1
             rly transact connection pfm-path-2
             rly transact connection pfm-path-3
+            sleep 5
             echo "Channels"
             rly transact channel pfm-path-1
             rly transact channel pfm-path-2
