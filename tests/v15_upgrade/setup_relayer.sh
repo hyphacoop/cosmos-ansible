@@ -46,8 +46,8 @@ elif [ $RELAYER == "rly" ]; then
 
     # three
     jq '.value."chain-id" = "three-v310"' tests/v15_upgrade/rly-chain-template.json > three-1.json
-    jq '.value."rpc-addr" = "http://localhost:27301"' three-1 > three-2.json
-    jq '.value."gas-prices" = "0.005ucon"' three-2 > three-3.json
+    jq '.value."rpc-addr" = "http://localhost:27301"' three-1.json > three-2.json
+    jq '.value."gas-prices" = "0.005ucon"' three-2.json > three-3.json
     cat three-3.json
     rly chains add --file three-3.json
 
