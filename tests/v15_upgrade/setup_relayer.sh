@@ -80,6 +80,7 @@ elif [ $RELAYER == "rly" ]; then
 
     echo "Adding relayer keys..."
     rly keys restore $CHAIN_ID default "$MNEMONIC_RELAYER"
+    rly keys restore two-v200 default "$MNEMONIC_RELAYER"
     rly keys restore three-v310 default "$MNEMONIC_RELAYER"
     rly keys restore pfm1 default "$MNEMONIC_RELAYER"
     rly keys restore pfm2 default "$MNEMONIC_RELAYER"
