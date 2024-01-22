@@ -17,7 +17,10 @@ echo "Preparing proposal with v47 command..."
     proposal="$CHAIN_BINARY tx gov submit-legacy-proposal consumer-addition proposal-add-$CONSUMER_CHAIN_ID.json --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --fees $GAS_PRICE$DENOM --from $WALLET_2 --keyring-backend test --home $HOME_1  --chain-id $CHAIN_ID -y -o json"
 fi
 echo $proposal
-txhash=$($proposal | jq -r .txhash)
+$($proposal) &> proposaloutput.txt
+cat proposaloutput.txt
+jq -r '.txhash' proposaloutput.txt
+# txhash=$($proposal | jq -r .txhash)
 # Wait for the proposal to go on chain
 sleep $(($COMMIT_TIMEOUT+2))
 

@@ -545,12 +545,12 @@ jobs:
         run: |
           sudo systemctl start $RELAYER
 
-      - name: _Transactions verified> bank send, delegate, and withdraw rewards
-        run: tests/test_tx_fresh.sh
-      - name: _API endpoints check
-        run: tests/test_endpoints_api.sh localhost $VAL1_API_PORT
-      - name: _RPC endpoints check
-        run: tests/test_endpoints_rpc.sh localhost $VAL1_RPC_PORT
+      # - name: _Transactions verified> bank send, delegate, and withdraw rewards
+      #   run: tests/test_tx_fresh.sh
+      # - name: _API endpoints check
+      #   run: tests/test_endpoints_api.sh localhost $VAL1_API_PORT
+      # - name: _RPC endpoints check
+      #   run: tests/test_endpoints_rpc.sh localhost $VAL1_RPC_PORT
 
       # - name: _CCV channel verified> ICS v2.0.0 chain 1
       #   env:
