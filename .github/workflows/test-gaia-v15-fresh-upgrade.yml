@@ -642,8 +642,9 @@ jobs:
           sleep 10
       - name: _CCV channel verified> ICS v2.0.0 chain 2
         env:
+          CONSUMER_HOME_1: /home/runner/.four_1
           CON1_RPC_PORT: 27401
-        run: tests/major_fresh_upgrade/test_ccv.sh
+        run: tests/major_fresh_upgrade/test_ccv_key_assignment.sh
       - name: _IBC transfer successful> ICS v2.0.0 chain 2
         env:
           CONSUMER_CHAIN_ID: four-v200
