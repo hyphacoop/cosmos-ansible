@@ -69,7 +69,7 @@ jobs:
       - name: Get current running gaiad version
         run: |
           # RUNNING_VERSION=$(curl -s https://rpc.provider-sentry-01.rs-testnet.polypore.xyz/abci_info | jq -r '.result.version')
-          RUNNING_VERSION="v11.0.0-rc0"
+          RUNNING_VERSION="v14.1.0"
           echo "Running gaiad version: $RUNNING_VERSION"
           echo "RUNNING_VERSION=$RUNNING_VERSION" >> $GITHUB_ENV
       - name: Download binary from cosmos/gaia repo
@@ -156,7 +156,7 @@ jobs:
         run: tests/test_block_production.sh 127.0.0.1 26657 50
       - name: Submit and vote on the upgrade proposal
         env:
-          UPGRADE_NAME: "v12"
+          UPGRADE_NAME: "v15"
         run: |
           echo "Restoring validator key"
           echo "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon art" | gaiad --output json keys add val --keyring-backend test --recover 2> ~/.gaia/validator.json
