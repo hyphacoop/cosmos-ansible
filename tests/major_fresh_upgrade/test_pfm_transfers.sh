@@ -1,22 +1,24 @@
 #!/bin/bash
 
 # Get channel from provider
-$CHAIN_BINARY q ibc client states --home $HOME_1
+# $CHAIN_BINARY q ibc client states --home $HOME_1
 
-if [ $RELAYER == "hermes" ]; then
-    hermes --json query clients --host-chain $CHAIN_ID | grep result | jq '.'
-    client_provider=$(hermes --json query clients --host-chain $CHAIN_ID | grep result | jq -r '.result[] | select(.chain_id=="pfm1").client_id')
-elif [ $RELAYER == "rly" ]; then
-    rly q clients $CHAIN_ID | jq '.'
-    client_provider=$(rly q clients $CHAIN_ID | | jq -r '.[] | select(.chain_id=="pfm1").client_id')
-fi
-client_provider=$($CHAIN_BINARY q ibc client states --output json --home $HOME_1 | jq -r '.client_states[] | select(.client_state.chain_id == "pfm1").client_id')
-echo "Provider chain client ID: $client_provider"
-connection_provider=$($CHAIN_BINARY q ibc connection connections --home $HOME_1 -o json | jq -r --arg CLIENT "$client_provider" '.connections[] | select(.client_id==$CLIENT).id')
-echo "Provider chain connection ID: $connection_provider"
-channel_provider=$($CHAIN_BINARY q ibc channel channels --home $HOME_1 -o json | jq -r --arg CONNECTION "$connection_provider" '.channels[] | select(.connection_hops[0]==$CONNECTION).channel_id')
+# if [ $RELAYER == "hermes" ]; then
+#     hermes --json query clients --host-chain $CHAIN_ID | grep result | jq '.'
+#     client_provider=$(hermes --json query clients --host-chain $CHAIN_ID | grep result | jq -r '.result[] | select(.chain_id=="pfm1").client_id')
+# elif [ $RELAYER == "rly" ]; then
+#     rly q clients $CHAIN_ID | jq '.'
+#     client_provider=$(rly q clients $CHAIN_ID | | jq -r '.[] | select(.chain_id=="pfm1").client_id')
+# fi
+# client_provider=$($CHAIN_BINARY q ibc client states --output json --home $HOME_1 | jq -r '.client_states[] | select(.client_state.chain_id == "pfm1").client_id')
+# echo "Provider chain client ID: $client_provider"
+# connection_provider=$($CHAIN_BINARY q ibc connection connections --home $HOME_1 -o json | jq -r --arg CLIENT "$client_provider" '.connections[] | select(.client_id==$CLIENT).id')
+# echo "Provider chain connection ID: $connection_provider"
+# channel_provider=$($CHAIN_BINARY q ibc channel channels --home $HOME_1 -o json | jq -r --arg CONNECTION "$connection_provider" '.channels[] | select(.connection_hops[0]==$CONNECTION).channel_id')
+
+channel_provider=$($CHAIN_BINARY q ibc channel end transfer channel-0 --home ~/.pfm1 --output json | jq -r '.channel.counterparty.channel_id'
+
 echo "Provider chain channel ID: $channel_provider"
-
 # provider -> channel-0 chain a -> channel-0 chain b -> channel-0 chain c
 target_denom_a_d=ibc/$(echo -n transfer/channel-0/transfer/channel-0/transfer/channel-0/uatom | shasum -a 256 | cut -d ' ' -f1 | tr '[a-z]' '[A-Z]')
 # chain c -> channel-1 chain b -> channel-1 chain a -> channel-X provider
