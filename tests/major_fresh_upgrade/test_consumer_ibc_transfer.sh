@@ -18,11 +18,14 @@ fi
 echo "Found at least two denoms in the consumer wallet."
 
 # Transfer consumer token to provider chain
+echo "Balances before:"
+$CHAIN_BINARY --home $HOME_1 q bank balances $WALLET_1 -o json
 DENOM_BEFORE=$($CHAIN_BINARY --home $HOME_1 q bank balances $WALLET_1 -o json | jq -r '.balances | length')
 echo "Sending $CONSUMER_DENOM to $CHAIN_ID..."
-$CONSUMER_CHAIN_BINARY --home $CONSUMER_HOME_1 tx ibc-transfer transfer transfer channel-1 $WALLET_1 1000$CONSUMER_DENOM --from $RECIPIENT --keyring-backend test -y --gas auto --gas-adjustment 1.2 --fees $CONSUMER_FEES$CONSUMER_DENOM
+$CONSUMER_CHAIN_BINARY --home $CONSUMER_HOME_1 tx ibc-transfer transfer transfer channel-1 $WALLET_1 1000$CONSUMER_DENOM --from $RECIPIENT --keyring-backend test --gas auto --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$CONSUMER_DENOM -y
 echo "Waiting for the transfer to reach the provider chain..."
 sleep $(($COMMIT_TIMEOUT*10))
+echo "Balances after:"
 $CHAIN_BINARY --home $HOME_1 q bank balances $WALLET_1 -o json
 DENOM_AFTER=$($CHAIN_BINARY --home $HOME_1 q bank balances $WALLET_1 -o json | jq -r '.balances | length')
 if [ $DENOM_BEFORE -eq $DENOM_AFTER ]; then
