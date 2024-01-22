@@ -71,6 +71,7 @@ jobs:
       GAS_ADJUSTMENT: 2
       GAS_PRICE: 0.005
       VOTING_PERIOD: 10s
+      COSMOS_SDK: v45
       # Provider node variables
       HOME_1: /home/runner/.val1
       HOME_2: /home/runner/.val2
@@ -594,6 +595,7 @@ jobs:
           tests/major_fresh_upgrade/init_consumer.sh
       - name: Prepare consumer chain four-v200
         env:
+          COSMOS_SDK: v47
           CONSUMER_CHAIN_ID: four-v200
           CONSUMER_HOME_1: /home/runner/.four_1
           CONSUMER_HOME_2: /home/runner/.four_2
