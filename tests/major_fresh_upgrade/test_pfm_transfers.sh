@@ -16,7 +16,7 @@
 # echo "Provider chain connection ID: $connection_provider"
 # channel_provider=$($CHAIN_BINARY q ibc channel channels --home $HOME_1 -o json | jq -r --arg CONNECTION "$connection_provider" '.channels[] | select(.connection_hops[0]==$CONNECTION).channel_id')
 
-channel_provider=$($CHAIN_BINARY q ibc channel end transfer channel-0 --home ~/.pfm1 --output json | jq -r '.channel.counterparty.channel_id'
+channel_provider=$($CHAIN_BINARY q ibc channel end transfer channel-0 --home ~/.pfm1 --output json | jq -r '.channel.counterparty.channel_id')
 
 echo "Provider chain channel ID: $channel_provider"
 # provider -> channel-0 chain a -> channel-0 chain b -> channel-0 chain c
