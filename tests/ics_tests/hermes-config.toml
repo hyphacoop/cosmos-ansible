@@ -121,7 +121,7 @@ rpc_addr = 'http://localhost:27601'
 grpc_addr = 'http://localhost:26601'
 event_source = { mode = 'push', url = 'ws://localhost:27601/websocket', batch_delay = '500ms' }
 rpc_timeout = '15s'
-account_prefix = 'cosmos'
+account_prefix = 'consumer'
 key_name = 'wallet'
 store_prefix = 'ibc'
 gas_price = { price = 0.0025, denom = 'ucon' }
