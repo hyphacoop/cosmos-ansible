@@ -3,7 +3,7 @@
 name: Test ICS Releases
 on:
   workflow_dispatch:
-  # push:
+  push:
 jobs:
   test-consumer-launches:
     runs-on: ubuntu-22.04
