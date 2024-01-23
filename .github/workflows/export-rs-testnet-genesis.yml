@@ -177,7 +177,7 @@ jobs:
       - name: Stop gaiad when reached upgrade height
         run: |
           current_block=0
-          echo "Upgrade height is: $env.upgrade_height"
+          echo "Upgrade height is: ${{ env.upgrade_height }}"
           while [ $current_block != ${{ env.upgrade_height }} ]
           do
             current_block=$(curl -s 127.0.0.1:26657/block | jq -r .result.block.header.height)
