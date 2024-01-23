@@ -596,7 +596,7 @@ jobs:
           DOWNTIME_BLOCKS: 100000
         run: |
           export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V2_BINARY
-          tests/major_fresh_upgrade/init_consumer.sh
+          tests/major_fresh_upgrade/init_consumer_assign_keys.sh
       - name: Prepare consumer chain four-v200
         env:
           COSMOS_SDK: v47
