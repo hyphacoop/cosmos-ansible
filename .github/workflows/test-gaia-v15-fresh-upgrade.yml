@@ -125,6 +125,7 @@ jobs:
       RECIPIENT: cosmos1r5v5srda7xfth3hn2s26txvrcrntldjumt8mhl
       ICS_120: false
       ICS_200: false
+      ICS_310: false
       ICS_330: false
       # Reference ICS chain variables
       CONSUMER_DENOM: ucon
@@ -774,6 +775,8 @@ jobs:
           CONSUMER_SERVICE_1: six_1.service
           CONSUMER_SERVICE_2: six_2.service
           CONSUMER_SERVICE_3: six_3.service
+          ICS_310: true
+          COSMOS_SDK: v47
         run: |
           tests/major_fresh_upgrade/prepare_consumer.sh
       - name: Start consumer chain six-v310

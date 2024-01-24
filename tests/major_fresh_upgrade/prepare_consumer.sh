@@ -57,6 +57,13 @@ if $ICS_200 ; then
     fi
 fi
 
+if $ICS_310 ; then
+    if [ $COSMOS_SDK == "v47" ]; then
+        $ICS_TRANSFORM_BINARY genesis transform --to v3.1.x ccv.json > ccv-transform.json
+        cp ccv-transform.json ccv.json
+    fi
+fi
+
 if $ICS_330 ; then
     echo "Patching for ICS v3.3.0"
     $CONSUMER_CHAIN_BINARY genesis transform ccv.json > ccv-330-1.json
