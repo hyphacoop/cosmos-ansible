@@ -732,6 +732,7 @@ jobs:
       #     path: lsm_log.csv
       - name: Add consumer chain with ICS v3.1.0
         env: 
+          COSMOS_SDK: v47
           CONSUMER_CHAIN_ID: six-v310
         run: |
           tests/major_fresh_upgrade/add_consumer.sh
