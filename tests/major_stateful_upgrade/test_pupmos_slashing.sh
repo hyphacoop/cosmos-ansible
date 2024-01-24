@@ -10,6 +10,27 @@ echo "Transection TX hash is: $TXHASH"
 gaiad --home $HOME_1 q tx $TXHASH
 
 exit 1 
+while [ $try -lt 5 ]; do
+    code=$($CHAIN_BINARY q tx $txhash -o json --home $HOME_1 | jq '.code')
+    echo "Code is: $code"
+    if [ -z $code ]; then
+        echo "code returned blank, tx was unsuccessful. Try: $try"
+        let try=$try+1
+        sleep 20
+    elif [ $code -ne 0 ]; then
+        echo "code returned not 0, tx was unsuccessful. Try: $try"
+        let try=$try+1
+        sleep 20
+    else
+        echo "tx was successful"
+        break
+    fi
+done
+if [ $try -gt 4 ]; then
+    echo "maximum query reached tx unsuccessful."
+    #$CHAIN_BINARY q tx $txhash -o json --home $HOME_1 | jq '.'
+    exit 1
+fi
 
 if [ $exit_code -eq 0 ]
 then

@@ -25,5 +25,5 @@ all:
           chain_create_validator: true
           chain_airdrop: true
           chain_airdrop_accounts:
-            - cosmos*
-            - cosmos*
+            - cosmos1r5v5srda7xfth3hn2s26txvrcrntldjumt8mhl
+            - cosmos1ay4dpm0kjmvtpug28vgw5w32yyjxa5sp97pjqq
