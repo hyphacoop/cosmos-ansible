@@ -65,6 +65,13 @@ elif [ $RELAYER == "rly" ]; then
     cat four-v200.json
     rly chains add --file four-v200.json
 
+    # six
+    jq '.value."chain-id" = "six-v310"' tests/v15_upgrade/testnet.json > six-1.json
+    jq '.value."rpc-addr" = "http://localhost:27401"' four-1.json > six-2.json
+    jq '.value."gas-prices" = "0.005ucon"' six-2.json > six-v310.json
+    cat six-v310.json
+    rly chains add --file six-v310.json
+
     # pfm-1
     jq '.value."chain-id" = "pfm1"' tests/v15_upgrade/testnet.json > p.json
     jq '.value."rpc-addr" = "http://localhost:27011"' p.json > pf.json
@@ -90,6 +97,7 @@ elif [ $RELAYER == "rly" ]; then
     rly keys restore two-v200 default "$MNEMONIC_RELAYER"
     rly keys restore three-v310 default "$MNEMONIC_RELAYER"
     rly keys restore four-v200 default "$MNEMONIC_RELAYER"
+    rly keys restore six-v310 default "$MNEMONIC_RELAYER"
     rly keys restore pfm1 default "$MNEMONIC_RELAYER"
     rly keys restore pfm2 default "$MNEMONIC_RELAYER"
     rly keys restore pfm3 default "$MNEMONIC_RELAYER"
