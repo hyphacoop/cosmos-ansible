@@ -330,7 +330,12 @@ jobs:
       #     connection_id=$($CHAIN_BINARY q ibc connection connections -o json --home $HOME_1 | jq -r --arg client "$client_id" '.connections[] | select(.client_id==$client).id')
       #     channel_id=$($CHAIN_BINARY q ibc channel connections $connection_id -o json --home $HOME_1 | jq -r '.channels[] | select(.port_id=="transfer").channel_id')
       #     tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh $channel_id
-
+      - name: Add consumer chain with ICS v3.1.0
+        env: 
+          COSMOS_SDK: v45
+          CONSUMER_CHAIN_ID: three-v310
+        run: |
+          tests/major_fresh_upgrade/add_consumer.sh
       - name: Initialize consumer chain with ICS v3.1.0
         env:
           CONSUMER_CHAIN_ID: three-v310
@@ -737,7 +742,6 @@ jobs:
           CONSUMER_CHAIN_ID: six-v310
         run: |
           tests/major_fresh_upgrade/add_consumer.sh
-
       - name: Initialize consumer chain with ICS v3.1.0
         env:
           CONSUMER_CHAIN_ID: six-v310
