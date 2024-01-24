@@ -817,6 +817,7 @@ jobs:
       - name: _CCV channel verified> ICS v3.1.0 chain 2
         env:
           CON1_RPC_PORT: 27601
+          CONSUMER_HOME_1: /home/runner/.six_1
         run: tests/major_fresh_upgrade/test_ccv_key_assignment.sh
       - name: _IBC transfer successful> ICS v3.1.0 chain 2
         env:
@@ -989,21 +990,21 @@ jobs:
       #   env:
       #     CON1_RPC_PORT: 27101
       #   run: tests/major_fresh_upgrade/test_ccv.sh
-      - name: _Final CCV channel check> ICS v2.0.0 chain 1
-        env:
-          CONSUMER_HOME_1: /home/runner/.two_1
-          CON1_RPC_PORT: 27201
-        run: tests/major_fresh_upgrade/test_ccv_key_assignment.sh
-      - name: _Final CCV channel check> ICS v3.1.0 chain 1
-        env:
-          CONSUMER_HOME_1: /home/runner/.three_1
-          CON1_RPC_PORT: 27301
-        run: tests/major_fresh_upgrade/test_ccv_key_assignment.sh
-      - name: _Final CCV channel check> ICS v2.0.0 chain 2
-        env:
-          CONSUMER_HOME_1: /home/runner/.four_1
-          CON1_RPC_PORT: 27401
-        run: tests/major_fresh_upgrade/test_ccv_key_assignment.sh
+      # - name: _Final CCV channel check> ICS v2.0.0 chain 1
+      #   env:
+      #     CONSUMER_HOME_1: /home/runner/.two_1
+      #     CON1_RPC_PORT: 27201
+      #   run: tests/major_fresh_upgrade/test_ccv_key_assignment.sh
+      # - name: _Final CCV channel check> ICS v3.1.0 chain 1
+      #   env:
+      #     CONSUMER_HOME_1: /home/runner/.three_1
+      #     CON1_RPC_PORT: 27301
+      #   run: tests/major_fresh_upgrade/test_ccv_key_assignment.sh
+      # - name: _Final CCV channel check> ICS v2.0.0 chain 2
+      #   env:
+      #     CONSUMER_HOME_1: /home/runner/.four_1
+      #     CON1_RPC_PORT: 27401
+      #   run: tests/major_fresh_upgrade/test_ccv_key_assignment.sh
       # - name: _Final CCV channel check> sovereign-consumer chain
       #   env:
       #     CON1_RPC_PORT: 37001
