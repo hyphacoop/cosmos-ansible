@@ -668,6 +668,11 @@ jobs:
           CONSUMER_HOME_1: /home/runner/.three_1
           CON1_RPC_PORT: 27301
         run: tests/major_fresh_upgrade/test_ccv_key_assignment.sh
+      - name: _CCV channel verified> ICS v3.3.0 chain 1
+        env:
+          CONSUMER_HOME_1: /home/runner/.four_1
+          CON1_RPC_PORT: 27401
+        run: tests/major_fresh_upgrade/test_ccv_key_assignment.sh
 
       # - name: Initialize consumer chain with ICS v2.0.0
       #   env:
@@ -1099,6 +1104,11 @@ jobs:
         env:
           CONSUMER_HOME_1: /home/runner/.three_1
           CON1_RPC_PORT: 27301
+        run: tests/major_fresh_upgrade/test_ccv_key_assignment.sh
+      - name: _Final CCV channel check> ICS v3.3.0 chain 1
+        env:
+          CONSUMER_HOME_1: /home/runner/.four_1
+          CON1_RPC_PORT: 27401
         run: tests/major_fresh_upgrade/test_ccv_key_assignment.sh
       # - name: _Final CCV channel check> ICS v2.0.0 chain 2
       #   env:
