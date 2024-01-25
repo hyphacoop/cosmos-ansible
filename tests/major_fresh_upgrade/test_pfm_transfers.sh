@@ -55,26 +55,3 @@ else
   echo "Chain A balance has not increased!"
   exit 1
 fi
-
-# $CHAIN_BINARY q bank balances $WALLET_1 --home $PFM_HOME
-# $CHAIN_BINARY q bank balances $WALLET_1 --home $HOME_1
-
-# ibc_amount_a_d=$($CHAIN_BINARY q bank balances $WALLET_1 --home $PFM_HOME -o json | jq -r --arg DENOM "$target_denom_a_d" '.balances[] | select(.denom == $DENOM).amount')
-# ibc_amount_d_a=$($CHAIN_BINARY q bank balances $WALLET_1 --home $HOME_1 -o json | jq -r --arg DENOM "$target_denom_d_a" '.balances[] | select(.denom == $DENOM).amount')
-# echo "IBC amount provider -> pfm2: $ibc_amount_a_d"
-# echo "IBC amount pfm2 -> provider: $ibc_amount_d_a"
-
-
-# if [ ! -z $ibc_amount_a_d ] ; then
-#     echo "PFM A->D: PASS"
-# else
-#     echo "PFM A->D: FAIL"
-#     exit 1
-# fi
-
-# if [ ! -z $ibc_amount_d_a ] ; then
-#     echo "PFM D->A: PASS"
-# else
-#     echo "PFM D->A: FAIL"
-#     exit 1
-# fi

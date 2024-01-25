@@ -51,7 +51,7 @@ txhash=$($command | jq -r .txhash)
 echo "Waiting for the transfer to reach the provider chain..."
 sleep $(($COMMIT_TIMEOUT*15))
 echo "tx hash: $txhash"
-$CHAIN_BINARY q tx $txhash --home $CONSUMER_HOME_1
+$CONSUMER_CHAIN_BINARY q tx $txhash --home $CONSUMER_HOME_1
 
 $CHAIN_BINARY --home $HOME_1 q bank balances $WALLET_1
 provider_end_balance=$($CHAIN_BINARY --home $HOME_1 q bank balances $WALLET_1 -o json | jq -r --arg DENOM "$provider_expected_denom" '.balances[] | select(.denom==$DENOM).amount')
