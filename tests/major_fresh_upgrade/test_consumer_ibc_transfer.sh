@@ -9,7 +9,6 @@ provider_expected_denom=ibc/$(echo -n transfer/$PROVIDER_CHANNEL/ucon | shasum -
 echo "expected denom in provider: $provider_expected_denom"
 echo "expected denom in consumer: $consumer_expected_denom"
 
-echo "Testing denom check..."
 $CONSUMER_CHAIN_BINARY --home $CONSUMER_HOME_1 q bank balances $RECIPIENT
 consumer_start_balance=$($CONSUMER_CHAIN_BINARY --home $CONSUMER_HOME_1 q bank balances $RECIPIENT -o json | jq -r --arg DENOM "$consumer_expected_denom" '.balances[] | select(.denom==$DENOM).amount')
 if [ -z "$consumer_start_balance" ]; then
@@ -38,15 +37,6 @@ else
   exit 1
 fi
 
-# DENOM_AMOUNT=$($CONSUMER_CHAIN_BINARY --home $CONSUMER_HOME_1 q bank balances $RECIPIENT -o json | jq -r '.balances | length')
-# if [ $DENOM_AMOUNT -lt 2 ]; then
-#     echo "Only one denom found in consumer wallet."
-#     journalctl -u $RELAYER | tail -n 100
-#     exit 1
-# fi
-# echo "Found at least two denoms in the consumer wallet."
-
-echo "Testing denom check..."
 $CHAIN_BINARY --home $HOME_1 q bank balances $WALLET_1
 provider_start_balance=$($CHAIN_BINARY --home $HOME_1 q bank balances $WALLET_1 -o json | jq -r --arg DENOM "$provider_expected_denom" '.balances[] | select(.denom==$DENOM).amount')
 if [ -z "$provider_start_balance" ]; then
@@ -55,8 +45,6 @@ fi
 echo "Provider starting balance in expected denom: $provider_start_balance"
 
 # Transfer consumer token to provider chain
-# echo "Balances before:"
-# $CHAIN_BINARY --home $HOME_1 q bank balances $WALLET_1 -o json
 DENOM_BEFORE=$($CHAIN_BINARY --home $HOME_1 q bank balances $WALLET_1 -o json | jq -r '.balances | length')
 echo "Sending $CONSUMER_DENOM to $CHAIN_ID..."
 command="$CONSUMER_CHAIN_BINARY --home $CONSUMER_HOME_1 tx ibc-transfer transfer transfer channel-1 $WALLET_1 1000$CONSUMER_DENOM --from $RECIPIENT --keyring-backend test --gas auto --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$CONSUMER_DENOM -y -o json"
@@ -65,11 +53,7 @@ echo "Waiting for the transfer to reach the provider chain..."
 sleep $(($COMMIT_TIMEOUT*15))
 echo "tx hash: $txhash"
 $CHAIN_BINARY q tx $txhash --home $CONSUMER_HOME_1
-echo "Balances after:"
-# $CHAIN_BINARY --home $HOME_1 q bank balances $WALLET_1 -o json
-# DENOM_AFTER=$($CHAIN_BINARY --home $HOME_1 q bank balances $WALLET_1 -o json | jq -r '.balances | length')
 
-echo "Testing denom check..."
 $CHAIN_BINARY --home $HOME_1 q bank balances $WALLET_1
 provider_end_balance=$($CHAIN_BINARY --home $HOME_1 q bank balances $WALLET_1 -o json | jq -r --arg DENOM "$provider_expected_denom" '.balances[] | select(.denom==$DENOM).amount')
 if [ -z "$provider_end_balance" ]; then
@@ -84,10 +68,3 @@ else
   echo "Provider balance has not increased!"
   exit 1
 fi
-
-if [ $DENOM_BEFORE -eq $DENOM_AFTER ]; then
-    echo "The number of unique denoms in the provider wallet did not change."
-    journalctl -u $RELAYER | tail -n 100
-    exit 1
-fi
-echo "The number of unique denoms in the provider wallet increase."
