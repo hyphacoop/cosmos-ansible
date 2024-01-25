@@ -364,6 +364,7 @@ jobs:
         run: |
           export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V310_BINARY
           tests/major_fresh_upgrade/init_consumer_assign_keys.sh
+          sleep 20
       - name: Prepare consumer chain three-v310
         env:
           CONSUMER_CHAIN_ID: three-v310
@@ -770,6 +771,7 @@ jobs:
         run: |
           export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V310_BINARY
           tests/major_fresh_upgrade/init_consumer_assign_keys.sh
+          sleep 20
       - name: Prepare consumer chain six-v310
         env:
           CONSUMER_CHAIN_ID: six-v310

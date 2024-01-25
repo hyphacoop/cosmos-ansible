@@ -35,6 +35,8 @@
 # sleep $VOTING_PERIOD
 #$CHAIN_BINARY q gov proposals --home $HOME_1
 
+$CHAIN_BINARY q provider list-consumer-chains --home $HOME_1
+
 echo "Collecting the CCV state..."
 $CHAIN_BINARY q provider consumer-genesis $CONSUMER_CHAIN_ID -o json --home $HOME_1 > ccv-pre.json
 jq '.params |= . + {"soft_opt_out_threshold": "0.10"}' ccv-pre.json > ccv-optout.json
