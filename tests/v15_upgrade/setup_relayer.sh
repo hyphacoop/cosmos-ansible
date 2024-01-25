@@ -45,11 +45,11 @@ elif [ $RELAYER == "rly" ]; then
     rly chains add --file tests/v15_upgrade/testnet.json
 
     # two
-    jq '.value."chain-id" = "two-v200"' tests/v15_upgrade/testnet.json > two-1.json
-    jq '.value."rpc-addr" = "http://localhost:27201"' two-1.json > two-2.json
-    jq '.value."gas-prices" = "0.005ucon"' two-2.json > two-v200.json
-    cat two-v200.json
-    rly chains add --file two-v200.json
+    # jq '.value."chain-id" = "two-v200"' tests/v15_upgrade/testnet.json > two-1.json
+    # jq '.value."rpc-addr" = "http://localhost:27201"' two-1.json > two-2.json
+    # jq '.value."gas-prices" = "0.005ucon"' two-2.json > two-v200.json
+    # cat two-v200.json
+    # rly chains add --file two-v200.json
 
     # three
     jq '.value."chain-id" = "three-v310"' tests/v15_upgrade/testnet.json > three-1.json
@@ -59,11 +59,11 @@ elif [ $RELAYER == "rly" ]; then
     rly chains add --file three-v310.json
 
     # four
-    jq '.value."chain-id" = "four-v200"' tests/v15_upgrade/testnet.json > four-1.json
+    jq '.value."chain-id" = "four-v330"' tests/v15_upgrade/testnet.json > four-1.json
     jq '.value."rpc-addr" = "http://localhost:27401"' four-1.json > four-2.json
-    jq '.value."gas-prices" = "0.005ucon"' four-2.json > four-v200.json
-    cat four-v200.json
-    rly chains add --file four-v200.json
+    jq '.value."gas-prices" = "0.005ucon"' four-2.json > four-v330.json
+    cat four-v330.json
+    rly chains add --file four-v330.json
 
     # six
     jq '.value."chain-id" = "six-v310"' tests/v15_upgrade/testnet.json > six-1.json
@@ -94,9 +94,9 @@ elif [ $RELAYER == "rly" ]; then
 
     echo "Adding relayer keys..."
     rly keys restore $CHAIN_ID default "$MNEMONIC_RELAYER"
-    rly keys restore two-v200 default "$MNEMONIC_RELAYER"
+    # rly keys restore two-v200 default "$MNEMONIC_RELAYER"
     rly keys restore three-v310 default "$MNEMONIC_RELAYER"
-    rly keys restore four-v200 default "$MNEMONIC_RELAYER"
+    rly keys restore four-v330 default "$MNEMONIC_RELAYER"
     rly keys restore six-v310 default "$MNEMONIC_RELAYER"
     rly keys restore pfm1 default "$MNEMONIC_RELAYER"
     rly keys restore pfm2 default "$MNEMONIC_RELAYER"

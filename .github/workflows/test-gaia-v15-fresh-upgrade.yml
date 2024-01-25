@@ -422,6 +422,99 @@ jobs:
           channel_id=$($CHAIN_BINARY q ibc channel connections $connection_id -o json --home $HOME_1 | jq -r '.channels[] | select(.port_id=="transfer").channel_id')
           tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh $channel_id
 
+      - name: Add consumer chain with ICS v3.3.0
+        env: 
+          COSMOS_SDK: v45
+          CONSUMER_CHAIN_ID: four-v330
+        run: |
+          tests/major_fresh_upgrade/add_consumer.sh
+      - name: Initialize consumer chain with ICS v3.3.0
+        env:
+          CONSUMER_CHAIN_ID: four-v330
+          CONSUMER_HOME_1: /home/runner/.four_1
+          CONSUMER_HOME_2: /home/runner/.four_2
+          CONSUMER_HOME_3: /home/runner/.four_3
+          CONSUMER_SERVICE_1: four_1.service
+          CONSUMER_SERVICE_2: four_2.service
+          CONSUMER_SERVICE_3: four_3.service
+          CON1_API_PORT: 25401
+          CON2_API_PORT: 25402
+          CON3_API_PORT: 25403
+          CON1_GRPC_PORT: 26401
+          CON2_GRPC_PORT: 26402
+          CON3_GRPC_PORT: 26403
+          CON1_RPC_PORT: 27401
+          CON2_RPC_PORT: 27402
+          CON3_RPC_PORT: 27403
+          CON1_P2P_PORT: 28401
+          CON2_P2P_PORT: 28402
+          CON3_P2P_PORT: 28403
+          CON1_PPROF_PORT: 29401
+          CON2_PPROF_PORT: 29402
+          CON3_PPROF_PORT: 29403
+          DOWNTIME_BLOCKS: 100000
+        run: |
+          export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V330_BINARY
+          tests/major_fresh_upgrade/init_consumer_assign_keys.sh
+          sleep 20
+      - name: Prepare consumer chain four-v330
+        env:
+          CONSUMER_CHAIN_ID: four-v330
+          CONSUMER_HOME_1: /home/runner/.four_1
+          CONSUMER_HOME_2: /home/runner/.four_2
+          CONSUMER_HOME_3: /home/runner/.four_3
+          ICS_330: true
+        run: |
+          tests/major_fresh_upgrade/prepare_consumer.sh
+      - name: Start consumer chain four-v330
+        env:
+          CONSUMER_CHAIN_ID: four-v330
+          CONSUMER_SERVICE_1: four_1.service
+          CONSUMER_SERVICE_2: four_2.service
+          CONSUMER_SERVICE_3: four_3.service
+        run: |
+          sudo systemctl enable $CONSUMER_SERVICE_1 --now
+          sleep 5
+          journalctl -u $CONSUMER_SERVICE_1
+      - name: _Pre-upgrade consumer chain produces blocks> ICS v3.3.0 chain 1
+        env:
+          CON1_RPC_PORT: 27401
+        run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT 5
+      - name: Establish CCV channel for four-v330
+        env:
+          CONSUMER_CHAIN_ID: four-v330
+        run: |
+          client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
+          if [ $RELAYER == "hermes" ]; then
+            echo "Creating channel with Hermes..."
+            hermes create connection --a-chain $CONSUMER_CHAIN_ID --a-client 07-tendermint-0 --b-client $client_id
+            hermes create channel --a-chain $CONSUMER_CHAIN_ID --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
+          elif [ $RELAYER == "rly" ]; then
+            echo "Creating channel with Go relayer..."
+            jq --arg CHAIN "$CONSUMER_CHAIN_ID" '.src."chain-id" = $CHAIN' tests/v15_upgrade/rly-path-template.json > four-1.json
+            jq --arg CLIENT "$client_id" '.dst."client-id" = $CLIENT' four-1.json > four-2.json
+            rly paths add $CHAIN_ID $CONSUMER_CHAIN_ID four --file four-2.json
+            rly transact connection four
+            rly transact channel four --src-port consumer --dst-port provider --order ordered --version 1
+          fi  
+          sudo systemctl restart $RELAYER
+          sleep 10
+      - name: _Pre-upgrade CCV channel verified> ICS v3.3.0 chain 1
+        env:
+          CONSUMER_HOME_1: /home/runner/.four_1
+          CON1_RPC_PORT: 27401
+        run: tests/major_fresh_upgrade/test_ccv_key_assignment.sh
+      - name: _Pre-upgrade IBC transfer successful> ICS v3.3.0 chain 1
+        env:
+          CONSUMER_CHAIN_ID: four-v330
+          CONSUMER_HOME_1: /home/runner/.four_1
+        run: |
+          export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V330_BINARY
+          client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
+          connection_id=$($CHAIN_BINARY q ibc connection connections -o json --home $HOME_1 | jq -r --arg client "$client_id" '.connections[] | select(.client_id==$client).id')
+          channel_id=$($CHAIN_BINARY q ibc channel connections $connection_id -o json --home $HOME_1 | jq -r '.channels[] | select(.port_id=="transfer").channel_id')
+          tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh $channel_id
+
       # - name: Start PFM chain 1
       #   env:
       #     START_VERSION: ${{matrix.gaia_version}}
