@@ -465,6 +465,7 @@ jobs:
           CONSUMER_HOME_3: /home/runner/.four_3
           ICS_330: true
         run: |
+          export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V330_BINARY
           tests/major_fresh_upgrade/prepare_consumer.sh
       - name: Start consumer chain four-v330
         env:
