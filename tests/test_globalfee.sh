@@ -8,7 +8,7 @@
 # set globalfee = 0.001uatom
 jq '.changes[0].value[0].amount = "0.001"' tests/major_fresh_upgrade/globalfee-params.json > globalfee-1.json
 tests/param_change.sh globalfee-1.json
-amount=$($CHAIN_BINARY q globalfee params -o json | jq -r --arg DENOM "$DENOM" '.minimum_gas_prices[] | select(.denom == $DENOM).amount')
+amount=$($CHAIN_BINARY q globalfee params -o json --home $HOME_1 | jq -r --arg DENOM "$DENOM" '.minimum_gas_prices[] | select(.denom == $DENOM).amount')
 echo "globalfee minimum_gas_prices: $amount$DENOM"
 
 # 1-1 tx < globalfee < node: FAIL
@@ -21,7 +21,7 @@ echo "globalfee minimum_gas_prices: $amount$DENOM"
 # globalfee = 0.009uatom
 jq '.changes[0].value[0].amount = "0.009"' tests/major_fresh_upgrade/globalfee-params.json > globalfee-1.json
 tests/param_change.sh globalfee-1.json
-amount=$($CHAIN_BINARY q globalfee params -o json | jq -r --arg DENOM "$DENOM" '.minimum_gas_prices[] | select(.denom == $DENOM).amount')
+amount=$($CHAIN_BINARY q globalfee params -o json --home $HOME_1 | jq -r --arg DENOM "$DENOM" '.minimum_gas_prices[] | select(.denom == $DENOM).amount')
 echo "globalfee minimum_gas_prices: $amount$DENOM"
 
 # 2-1 tx < node < globalfee: FAIL
@@ -32,6 +32,7 @@ echo "globalfee minimum_gas_prices: $amount$DENOM"
 
 # Finished, globalfee = node
 # set globalfee = 0.005uatom
+export GAS_PRICE=0.009
 tests/param_change.sh tests/major_fresh_upgrade/globalfee-params.json
-amount=$($CHAIN_BINARY q globalfee params -o json | jq -r --arg DENOM "$DENOM" '.minimum_gas_prices[] | select(.denom == $DENOM).amount')
+amount=$($CHAIN_BINARY q globalfee params -o json --home $HOME_1 | jq -r --arg DENOM "$DENOM" '.minimum_gas_prices[] | select(.denom == $DENOM).amount')
 echo "globalfee minimum_gas_prices: $amount$DENOM"
