@@ -23,7 +23,6 @@ echo "Waiting for the transfer to reach the consumer chain..."
 sleep $(($COMMIT_TIMEOUT*15))
 $CONSUMER_CHAIN_BINARY --home $CONSUMER_HOME_1 q bank balances $RECIPIENT
 
-echo "Testing denom check..."
 consumer_end_balance=$($CONSUMER_CHAIN_BINARY --home $CONSUMER_HOME_1 q bank balances $RECIPIENT -o json | jq -r --arg DENOM "$consumer_expected_denom" '.balances[] | select(.denom==$DENOM).amount')
 if [ -z "$consumer_end_balance" ]; then
   consumer_end_balance=0
