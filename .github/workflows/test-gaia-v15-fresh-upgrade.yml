@@ -1248,7 +1248,7 @@ jobs:
       #   env:
       #     CON1_RPC_PORT: 27701
       #   run: tests/major_fresh_upgrade/test_ccv.sh
-      - name: _Final CCV channel check> ICS v3.3.0
+      - name: _Final CCV channel check> ICS v3.3.0 chain 2
         env:
           CONSUMER_HOME_1: /home/runner/.eight_1
           CON1_RPC_PORT: 27801
