@@ -65,6 +65,13 @@ elif [ $RELAYER == "rly" ]; then
     cat four-v330.json
     rly chains add --file four-v330.json
 
+    # five
+    jq '.value."chain-id" = "five"' tests/v15_upgrade/testnet.json > five-1.json
+    jq '.value."rpc-addr" = "http://localhost:27401"' four-1.json > five-2.json
+    jq '.value."gas-prices" = "0.005ucon"' four-2.json > five.json
+    cat five.json
+    rly chains add --file five.json
+
     # six
     jq '.value."chain-id" = "six-v310"' tests/v15_upgrade/testnet.json > six-1.json
     jq '.value."rpc-addr" = "http://localhost:27601"' six-1.json > six-2.json
