@@ -16,21 +16,24 @@ GAS_PRICE=0.002
 command="$CHAIN_BINARY tx bank send $WALLET_1 $WALLET_1 1000$DENOM --from $WALLET_1 --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM --home $HOME_1 -o json -y"
 txhash=$($command | jq -r .txhash)
 sleep $(( $COMMIT_TIMEOUT*2 ))
-$CHAIN_BINARY q tx $txhash -o json --home $HOME_1 | jq '.'
+txcode=$($CHAIN_BINARY q tx $txhash -o json --home $HOME_1 | jq '.code')
+echo "tx result code: $txcode"
 
 # 1-2 globalfee < tx < node: FAIL
 GAS_PRICE=0.004
 command="$CHAIN_BINARY tx bank send $WALLET_1 $WALLET_1 1000$DENOM --from $WALLET_1 --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM --home $HOME_1 -o json -y"
 txhash=$($command | jq -r .txhash)
 sleep $(( $COMMIT_TIMEOUT*2 ))
-$CHAIN_BINARY q tx $txhash -o json --home $HOME_1 | jq '.'
+txcode=$($CHAIN_BINARY q tx $txhash -o json --home $HOME_1 | jq '.code')
+echo "tx result code: $txcode"
 
 # 1-3 - globalfee < node <= tx: PASS
 GAS_PRICE=0.005
 command="$CHAIN_BINARY tx bank send $WALLET_1 $WALLET_1 1000$DENOM --from $WALLET_1 --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM --home $HOME_1 -o json -y"
 txhash=$($command | jq -r .txhash)
 sleep $(( $COMMIT_TIMEOUT*2 ))
-$CHAIN_BINARY q tx $txhash -o json --home $HOME_1 | jq '.'
+txcode=$($CHAIN_BINARY q tx $txhash -o json --home $HOME_1 | jq '.code')
+echo "tx result code: $txcode"
 
 # 2. set node < globalfee
 # globalfee = 0.009uatom
