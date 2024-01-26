@@ -66,10 +66,12 @@ if $ICS_310 ; then
     fi
 fi
 
-if $ICS_330 ; then
-    echo "Patching for ICS v3.3.0"
-    $CONSUMER_CHAIN_BINARY genesis transform ccv.json > ccv-330-1.json
-    cp ccv-330-1.json ccv.json
+if [ "$CONSUMER_ICS" == "v3.3.0" ]; then
+    if [ "$PROVIDER_ICS" != "v3.3.0" ]; then
+        echo "Patching for ICS v3.3.0"
+        $CONSUMER_CHAIN_BINARY genesis transform ccv.json > ccv-330-1.json
+        cp ccv-330-1.json ccv.json
+    fi
 fi
 
 echo "Patching the consumer genesis file..."

@@ -7,7 +7,7 @@ on:
   schedule:
     - cron: '0 6,14 * * 1-6'
   workflow_dispatch:
-  push:
+  # push:
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -127,6 +127,8 @@ jobs:
       ICS_200: false
       ICS_310: false
       ICS_330: false
+      CONSUMER_ICS: v3.1.0
+      PROVIDER_ICS: v2.4.0
       # Reference ICS chain variables
       CONSUMER_DENOM: ucon
       CONSUMER_FEES: 500
@@ -471,6 +473,8 @@ jobs:
           CONSUMER_HOME_2: /home/runner/.four_2
           CONSUMER_HOME_3: /home/runner/.four_3
           ICS_330: true
+          CONSUMER_ICS: v3.3.0
+          PROVIDER_ICS: v2.4.0
         run: |
           export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V330_BINARY
           tests/major_fresh_upgrade/prepare_consumer.sh
@@ -1080,6 +1084,8 @@ jobs:
           CONSUMER_HOME_2: /home/runner/.eight_2
           CONSUMER_HOME_3: /home/runner/.eight_3
           ICS_330: true
+          CONSUMER_ICS: v3.3.0
+          PROVIDER_ICS: v3.3.0
         run: |
           export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V330_BINARY
           tests/major_fresh_upgrade/prepare_consumer.sh
@@ -1116,12 +1122,12 @@ jobs:
           fi
           sudo systemctl restart $RELAYER
           sleep 10
-      - name: _Pre-upgrade CCV channel verified> ICS v3.3.0 chain 2
+      - name: _CCV channel verified> ICS v3.3.0 chain 2
         env:
           CONSUMER_HOME_1: /home/runner/.eight_1
           CON1_RPC_PORT: 27801
         run: tests/major_fresh_upgrade/test_ccv_key_assignment.sh
-      - name: _Pre-upgrade IBC transfer successful> ICS v3.3.0 chain 2
+      - name: _IBC transfer successful> ICS v3.3.0 chain 2
         env:
           CONSUMER_CHAIN_ID: eight-v330
           CONSUMER_HOME_1: /home/runner/.eight_1
