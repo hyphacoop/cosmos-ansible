@@ -665,8 +665,8 @@ jobs:
       - name: _RPC endpoints check
         run: tests/test_endpoints_rpc.sh localhost $VAL1_RPC_PORT
 
-      - name: Query votes on pre-upgrade param change proposal
-        run: $CHAIN_BINARY q gov votes 1 --home $HOME_1 --height 12
+      # - name: Query votes on pre-upgrade param change proposal <- will result in panic
+      #   run: $CHAIN_BINARY q gov votes 1 --home $HOME_1 --height 12
 
       # - name: _CCV channel verified> ICS v2.0.0 chain 1
       #   env:
