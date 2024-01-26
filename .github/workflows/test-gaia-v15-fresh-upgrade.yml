@@ -527,6 +527,99 @@ jobs:
           channel_id=$($CHAIN_BINARY q ibc channel connections $connection_id -o json --home $HOME_1 | jq -r '.channels[] | select(.port_id=="transfer").channel_id')
           tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh $channel_id
 
+      - name: Start Stride chain
+        run: tests/major_fresh_upgrade/start_stride.sh
+      - name: Check Stride produces blocks
+        run: tests/test_block_production.sh 127.0.0.1 $STRIDE_RPC_1 5 # 5 blocks
+      - name: Add Stride consumer chain
+        env:
+          COSMOS_SDK: v45
+          CONSUMER_CHAIN_ID: five
+        run: |
+          tests/major_fresh_upgrade/add_consumer.sh
+      - name: Prepare Stride chain upgrade # saves $STRIDE_REV_HEIGHT environment variable
+        run: tests/major_fresh_upgrade/upgrade_stride.sh
+      - name: Re-launch Stride as a consumer chain
+        run: tests/major_fresh_upgrade/launch_stride_consumer.sh
+      - name: _Consumer chain produces blocks after changeover from sovereign
+        run: tests/test_block_production.sh 127.0.0.1 $STRIDE_RPC_1 5 # 5 blocks
+      - name: Establish CCV channel for five
+        env:
+          CONSUMER_CHAIN_ID: five
+        run: |
+          client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
+          if [ $RELAYER == "hermes" ]; then
+            echo "Creating channel with Hermes..."
+            hermes create connection --a-chain $CONSUMER_CHAIN_ID --a-client 07-tendermint-0 --b-client $client_id
+            hermes create channel --a-chain $CONSUMER_CHAIN_ID --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
+          elif [ $RELAYER == "rly" ]; then
+            echo "Creating channel with Go relayer..."
+            jq --arg CHAIN "$CONSUMER_CHAIN_ID" '.src."chain-id" = $CHAIN' tests/v15_upgrade/rly-path-template.json > five-1.json
+            jq --arg CLIENT "$client_id" '.dst."client-id" = $CLIENT' five-1.json > five-2.json
+            rly paths add $CHAIN_ID $CONSUMER_CHAIN_ID five --file five-2.json
+            rly transact connection five
+            rly transact channel five --src-port consumer --dst-port provider --order ordered --version 1
+          fi
+          sudo systemctl restart $RELAYER
+          sleep 10
+      - name: _CCV channel verified> sovereign-consumer chain
+        env:
+          CONSUMER_HOME_1: /home/runner/.stride1
+          CON1_RPC_PORT: 37001
+        run: tests/major_fresh_upgrade/test_ccv_key_assignment.sh
+      - name: _IBC transfer successful> sovereign-consumer chain
+        env:
+          CONSUMER_CHAIN_ID: five
+          CONSUMER_HOME_1: /home/runner/.stride1
+          CONSUMER_CHAIN_BINARY: strided
+          CONSUMER_DENOM: ustrd
+          CONSUMER_FEES: 1000
+          RECIPIENT: stride1r5v5srda7xfth3hn2s26txvrcrntldjucq88rn
+        run: |
+          client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
+          connection_id=$($CHAIN_BINARY q ibc connection connections -o json --home $HOME_1 | jq -r --arg client "$client_id" '.connections[] | select(.client_id==$client).id')
+          channel_id=$($CHAIN_BINARY q ibc channel connections $connection_id -o json --home $HOME_1 | jq -r '.channels[] | select(.port_id=="transfer").channel_id')
+          tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh $channel_id
+      - name: Register and fund ICA
+        run: tests/v12_upgrade/setup_ica.sh
+
+      - name: Set test LSM params
+        run: |
+          tests/param_change.sh tests/v12_upgrade/proposal-global-liquid-cap.json
+          tests/param_change.sh tests/v12_upgrade/proposal-validator-liquid-cap.json
+          tests/param_change.sh tests/v12_upgrade/proposal-validator-bond-factor.json
+      - name: Create LSM log file
+        run: |
+          touch lsm_log.csv
+          echo "user flow,action,account,amount,balance,del_shares,del_balance,val1_tokens,val1_shares,val1_bond_shares,val1_liquid_shares,val2_tokens,val2_shares,val2_bond_shares,val2_liquid_shares" >> lsm_log.csv
+      - name: lsm-happy-1
+        env:
+          BASE_FEES: 3000
+          CONSUMER_FEES: 1000
+          IBC_CHANNEL: channel-10
+        run: tests/v12_upgrade/lsm_happy_path.sh
+      - name: _lsm-failures-1
+        run: tests/v12_upgrade/lsm_failures.sh
+      - name: _lsm-complex-1
+        run: tests/v12_upgrade/lsm_complex.sh
+      - name: _lsm_accounting-1
+        env:
+          BASE_FEES: 2000
+          GAS_ADJUSTMENT: 2
+        run: tests/v12_upgrade/lsm_accounting.sh
+      - name: _lsm-lsp-happy-1
+        run: tests/v12_upgrade/ica_delegate_happy.sh
+      - name: _lsm-lsp-failures-1
+        run: tests/v12_upgrade/ica_delegate_failures.sh
+      - name: _lsm-lsp-accounting-1
+        run: tests/v12_upgrade/ica_delegate_accounting.sh
+      # - name: Save LSM log
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: lsm_log.csv
+      #     path: lsm_log.csv
+
+
       - name: Start PFM chain 1
         env:
           START_VERSION: ${{matrix.gaia_version}}
@@ -790,81 +883,6 @@ jobs:
       #     channel_id=$($CHAIN_BINARY q ibc channel connections $connection_id -o json --home $HOME_1 | jq -r '.channels[] | select(.port_id=="transfer").channel_id')
       #     echo "client: $client_id, connection: $connection_id, channel: $channel_id"
       #     tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh $channel_id
-
-      # - name: Start Stride chain
-      #   run: tests/major_fresh_upgrade/start_stride.sh
-      # - name: Check Stride produces blocks
-      #   run: tests/test_block_production.sh 127.0.0.1 $STRIDE_RPC_1 5 # 5 blocks
-      # - name: Prepare Stride chain upgrade # saves $STRIDE_REV_HEIGHT environment variable
-      #   run: tests/major_fresh_upgrade/upgrade_stride.sh
-      # - name: Re-launch Stride as a consumer chain
-      #   run: tests/major_fresh_upgrade/launch_stride_consumer.sh
-      # - name: _Consumer chain produces blocks after changeover from sovereign
-      #   run: tests/test_block_production.sh 127.0.0.1 $STRIDE_RPC_1 5 # 5 blocks
-      # - name: Establish CCV channel for five
-      #   env:
-      #     CONSUMER_CHAIN_ID: five
-      #   run: |
-      #     client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
-      #     hermes create connection --a-chain $CONSUMER_CHAIN_ID --a-client 07-tendermint-0 --b-client $client_id
-      #     hermes create channel --a-chain $CONSUMER_CHAIN_ID --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
-      #     sudo systemctl restart hermes
-      #     sleep 10
-      # - name: _CCV channel verified> sovereign-consumer chain
-      #   env:
-      #     CON1_RPC_PORT: 37001
-      #   run: tests/major_fresh_upgrade/test_ccv.sh
-      # - name: _IBC transfer successful> sovereign-consumer chain
-      #   env:
-      #     CONSUMER_CHAIN_ID: five
-      #     CONSUMER_HOME_1: /home/runner/.stride1
-      #     CONSUMER_CHAIN_BINARY: strided
-      #     CONSUMER_DENOM: ustrd
-      #     CONSUMER_FEES: 1000
-      #     RECIPIENT: stride1r5v5srda7xfth3hn2s26txvrcrntldjucq88rn
-      #   run: |
-      #     client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
-      #     connection_id=$($CHAIN_BINARY q ibc connection connections -o json --home $HOME_1 | jq -r --arg client "$client_id" '.connections[] | select(.client_id==$client).id')
-      #     channel_id=$($CHAIN_BINARY q ibc channel connections $connection_id -o json --home $HOME_1 | jq -r '.channels[] | select(.port_id=="transfer").channel_id')
-      #     tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh $channel_id
-      # - name: Register and fund ICA
-      #   run: tests/v12_upgrade/setup_ica.sh
-
-      # - name: Set test LSM params
-      #   run: |
-      #     tests/param_change.sh tests/v12_upgrade/proposal-global-liquid-cap.json
-      #     tests/param_change.sh tests/v12_upgrade/proposal-validator-liquid-cap.json
-      #     tests/param_change.sh tests/v12_upgrade/proposal-validator-bond-factor.json
-      # - name: Create LSM log file
-      #   run: |
-      #     touch lsm_log.csv
-      #     echo "user flow,action,account,amount,balance,del_shares,del_balance,val1_tokens,val1_shares,val1_bond_shares,val1_liquid_shares,val2_tokens,val2_shares,val2_bond_shares,val2_liquid_shares" >> lsm_log.csv
-      # - name: lsm-happy-1
-      #   env:
-      #     BASE_FEES: 3000
-      #     CONSUMER_FEES: 1000
-      #     IBC_CHANNEL: channel-10
-      #   run: tests/v12_upgrade/lsm_happy_path.sh
-      # - name: _lsm-failures-1
-      #   run: tests/v12_upgrade/lsm_failures.sh
-      # - name: _lsm-complex-1
-      #   run: tests/v12_upgrade/lsm_complex.sh
-      # - name: _lsm_accounting-1
-      #   env:
-      #     BASE_FEES: 2000
-      #     GAS_ADJUSTMENT: 2
-      #   run: tests/v12_upgrade/lsm_accounting.sh
-      # - name: _lsm-lsp-happy-1
-      #   run: tests/v12_upgrade/ica_delegate_happy.sh
-      # - name: _lsm-lsp-failures-1
-      #   run: tests/v12_upgrade/ica_delegate_failures.sh
-      # - name: _lsm-lsp-accounting-1
-      #   run: tests/v12_upgrade/ica_delegate_accounting.sh
-      # - name: Save LSM log
-      #   uses: actions/upload-artifact@v3
-      #   with:
-      #     name: lsm_log.csv
-      #     path: lsm_log.csv
 
       # - name: Add consumer chain with ICS v3.1.0
       #   env:
