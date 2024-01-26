@@ -7,7 +7,7 @@ on:
   schedule:
     - cron: '0 6,14 * * 1-6'
   workflow_dispatch:
-  # push:
+  push:
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -318,9 +318,9 @@ jobs:
       #       rly paths add testnet $CONSUMER_CHAIN_ID $CONSUMER_CHAIN_ID --file consumer-2.json
       #       rly transact connection $CONSUMER_CHAIN_ID
       #       rly transact channel $CONSUMER_CHAIN_ID --src-port consumer --dst-port provider --order ordered --version 1
-      #     fi  
+      #     fi
       #     sudo systemctl restart $RELAYER
-      #     sleep 10  
+      #     sleep 10
       # - name: _Pre-upgrade CCV channel verified> ICS v2.0.0 chain 1
       #   env:
       #     CON1_RPC_PORT: 27201
@@ -338,7 +338,7 @@ jobs:
       #     tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh $channel_id
 
       - name: Add consumer chain with ICS v3.1.0
-        env: 
+        env:
           COSMOS_SDK: v45
           CONSUMER_CHAIN_ID: three-v310
         run: |
@@ -410,7 +410,7 @@ jobs:
             rly paths add testnet three-v310 three --file three-2.json
             rly transact connection three
             rly transact channel three --src-port consumer --dst-port provider --order ordered --version 1
-          fi  
+          fi
           sudo systemctl restart $RELAYER
           sleep 10
       - name: _Pre-upgrade CCV channel verified> ICS v3.1.0 chain 1
@@ -430,7 +430,7 @@ jobs:
           tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh $channel_id
 
       - name: Add consumer chain with ICS v3.3.0
-        env: 
+        env:
           COSMOS_SDK: v45
           CONSUMER_CHAIN_ID: four-v330
         run: |
@@ -504,7 +504,7 @@ jobs:
             rly paths add $CHAIN_ID $CONSUMER_CHAIN_ID four --file four-2.json
             rly transact connection four
             rly transact channel four --src-port consumer --dst-port provider --order ordered --version 1
-          fi  
+          fi
           sudo systemctl restart $RELAYER
           sleep 10
       - name: _Pre-upgrade CCV channel verified> ICS v3.3.0 chain 1
@@ -628,7 +628,7 @@ jobs:
           PFM_HOME: /home/runner/.pfm3
         run: |
           tests/major_fresh_upgrade/test_pfm_transfers.sh
-      
+
       # - name: Stop relayer before the upgrade
       #   run: |
       #     sudo systemctl stop $RELAYER
@@ -767,7 +767,7 @@ jobs:
       #       rly paths add testnet four-v200 four --file four-2.json
       #       rly transact connection four
       #       rly transact channel four --src-port consumer --dst-port provider --order ordered --version 1
-      #     fi  
+      #     fi
       #     sudo systemctl restart $RELAYER
       #     sleep 10
       # - name: _CCV channel verified> ICS v2.0.0 chain 2
@@ -863,7 +863,7 @@ jobs:
       #     path: lsm_log.csv
 
       # - name: Add consumer chain with ICS v3.1.0
-      #   env: 
+      #   env:
       #     COSMOS_SDK: v47
       #     CONSUMER_CHAIN_ID: six-v310
       #   run: |
@@ -942,7 +942,7 @@ jobs:
       #         rly paths add $CHAIN_ID $CONSUMER_CHAIN_ID six --file six-2.json
       #         rly transact connection six
       #         rly transact channel six --src-port consumer --dst-port provider --order ordered --version 1
-      #       fi  
+      #       fi
       #       sudo systemctl restart $RELAYER
       #       sleep 10
       # - name: _CCV channel verified> ICS v3.1.0 chain 2
@@ -1039,7 +1039,7 @@ jobs:
       #     tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh $channel_id
 
       - name: Add consumer chain with ICS v3.3.0
-        env: 
+        env:
           COSMOS_SDK: v47
           CONSUMER_CHAIN_ID: eight-v330
         run: |
@@ -1113,7 +1113,7 @@ jobs:
             rly paths add $CHAIN_ID $CONSUMER_CHAIN_ID eight --file eight-2.json
             rly transact connection eight
             rly transact channel eight --src-port consumer --dst-port provider --order ordered --version 1
-          fi  
+          fi
           sudo systemctl restart $RELAYER
           sleep 10
       - name: _Pre-upgrade CCV channel verified> ICS v3.3.0 chain 2
@@ -1131,7 +1131,7 @@ jobs:
           connection_id=$($CHAIN_BINARY q ibc connection connections -o json --home $HOME_1 | jq -r --arg client "$client_id" '.connections[] | select(.client_id==$client).id')
           channel_id=$($CHAIN_BINARY q ibc channel connections $connection_id -o json --home $HOME_1 | jq -r '.channels[] | select(.port_id=="transfer").channel_id')
           tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh $channel_id
-      
+
       # - name: Initialize consumer chain with ICS v3.3.0
       #   env:
       #     CONSUMER_CHAIN_ID: eight-v330
