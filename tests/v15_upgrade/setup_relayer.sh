@@ -105,6 +105,7 @@ elif [ $RELAYER == "rly" ]; then
     rly keys restore three-v310 default "$MNEMONIC_RELAYER"
     rly keys restore four-v330 default "$MNEMONIC_RELAYER"
     rly keys restore six-v310 default "$MNEMONIC_RELAYER"
+    rly keys restore eight-v330 default "$MNEMONIC_RELAYER"
     rly keys restore pfm1 default "$MNEMONIC_RELAYER"
     rly keys restore pfm2 default "$MNEMONIC_RELAYER"
     rly keys restore pfm3 default "$MNEMONIC_RELAYER"
