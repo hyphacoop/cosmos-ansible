@@ -1,0 +1,17 @@
+{
+    "title": "Set globalfee minimum gas prices to 0.005uatom",
+    "description": "This will set the globalfee module minimum gas prices to 0.005uatom",
+    "deposit": "10000000uatom",
+    "changes": [
+        {
+            "subspace": "globalfee",
+            "key": "MinimumGasPricesParam",
+            "value": [
+                {
+                    "amount": "0.005",
+                    "denom": "uatom"
+                }
+            ]
+        }
+    ]
+}

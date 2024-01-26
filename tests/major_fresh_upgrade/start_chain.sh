@@ -14,19 +14,16 @@ echo GAIA_CHECKSUM: $(sha256sum $HOME/go/bin/$CHAIN_BINARY)
 echo "Initializing node homes..."
 $CHAIN_BINARY config chain-id $CHAIN_ID --home $HOME_1
 $CHAIN_BINARY config keyring-backend test --home $HOME_1
-$CHAIN_BINARY config broadcast-mode block --home $HOME_1
 $CHAIN_BINARY config node tcp://localhost:$VAL1_RPC_PORT --home $HOME_1
 $CHAIN_BINARY init $MONIKER_1 --chain-id $CHAIN_ID --home $HOME_1
 
 $CHAIN_BINARY config chain-id $CHAIN_ID --home $HOME_2
 $CHAIN_BINARY config keyring-backend test --home $HOME_2
-$CHAIN_BINARY config broadcast-mode block --home $HOME_2
 $CHAIN_BINARY config node tcp://localhost:$VAL2_RPC_PORT --home $HOME_2
 $CHAIN_BINARY init $MONIKER_2 --chain-id $CHAIN_ID --home $HOME_2
 
 $CHAIN_BINARY config chain-id $CHAIN_ID --home $HOME_3
 $CHAIN_BINARY config keyring-backend test --home $HOME_3
-$CHAIN_BINARY config broadcast-mode block --home $HOME_3
 $CHAIN_BINARY config node tcp://localhost:$VAL3_RPC_PORT --home $HOME_3
 $CHAIN_BINARY init $MONIKER_3 --chain-id $CHAIN_ID --home $HOME_3
 
@@ -92,9 +89,9 @@ cp $HOME_1/config/genesis.json $HOME_3/config/genesis.json
 echo "Patching config files..."
 # app.toml
 # minimum_gas_prices
-sed -i -e "/minimum-gas-prices =/ s^= .*^= \"0.0025$DENOM\"^" $HOME_1/config/app.toml
-sed -i -e "/minimum-gas-prices =/ s^= .*^= \"0.0025$DENOM\"^" $HOME_2/config/app.toml
-sed -i -e "/minimum-gas-prices =/ s^= .*^= \"0.0025$DENOM\"^" $HOME_3/config/app.toml
+sed -i -e "/minimum-gas-prices =/ s^= .*^= \"$GAS_PRICE$DENOM\"^" $HOME_1/config/app.toml
+sed -i -e "/minimum-gas-prices =/ s^= .*^= \"$GAS_PRICE$DENOM\"^" $HOME_2/config/app.toml
+sed -i -e "/minimum-gas-prices =/ s^= .*^= \"$GAS_PRICE$DENOM\"^" $HOME_3/config/app.toml
 
 # Enable API
 toml set --toml-path $HOME_1/config/app.toml api.enable true

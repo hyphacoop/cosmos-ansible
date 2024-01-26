@@ -59,7 +59,7 @@ cat $PFM_HOME/config/genesis.json
 echo "Patching config files..."
 # app.toml
 # minimum_gas_prices
-sed -i -e "/minimum-gas-prices =/ s^= .*^= \"0.0025$DENOM\"^" $PFM_HOME/config/app.toml
+sed -i -e "/minimum-gas-prices =/ s^= .*^= \"$GAS_PRICE$DENOM\"^" $PFM_HOME/config/app.toml
 
 # Enable API
 toml set --toml-path $PFM_HOME/config/app.toml api.enable true

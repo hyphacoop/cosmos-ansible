@@ -25,12 +25,13 @@ echo "Upgrade block height set to $upgrade_height."
 
 # Auto download: Set the binary paths need for the proposal message
 upgrade_info="{\"binaries\":{\"linux/amd64\":\"$DOWNLOAD_URL\"}}"
-proposal="$CHAIN_BINARY --output json tx gov submit-proposal software-upgrade $upgrade_name --from $WALLET_1 --keyring-backend test --upgrade-height $upgrade_height --upgrade-info $upgrade_info --title gaia-upgrade --description 'test' --chain-id $CHAIN_ID --deposit $VAL_STAKE_STEP$DENOM --fees $BASE_FEES$DENOM --yes --home $HOME_1"
+proposal="$CHAIN_BINARY --output json tx gov submit-proposal software-upgrade $upgrade_name --from $WALLET_1 --keyring-backend test --upgrade-height $upgrade_height --upgrade-info $upgrade_info --title gaia-upgrade --description 'test' --chain-id $CHAIN_ID --deposit $VAL_STAKE_STEP$DENOM --gas $GAS --gas-prices $GAS_PRICE$DENOM --gas-adjustment $GAS_ADJUSTMENT --yes --home $HOME_1"
 
 # Submit the proposal
 echo "Submitting the upgrade proposal."
 echo $proposal
 txhash=$($proposal | jq -r .txhash)
+sleep $(($COMMIT_TIMEOUT+2))
 
 # Get proposal ID from txhash
 echo "Getting proposal ID from txhash..."
@@ -39,13 +40,15 @@ echo "Proposal ID: $proposal_id"
 
 # Vote yes on the proposal
 echo "Submitting the \"yes\" vote to proposal $proposal_id..."
-vote="$CHAIN_BINARY tx gov vote $proposal_id yes --from $WALLET_1 --keyring-backend test --chain-id $CHAIN_ID --fees $BASE_FEES$DENOM -b block -y --home $HOME_1"
+vote="$CHAIN_BINARY tx gov vote $proposal_id yes --from $WALLET_1 --keyring-backend test --chain-id $CHAIN_ID --gas $GAS --gas-prices $GAS_PRICE$DENOM --gas-adjustment $GAS_ADJUSTMENT -y --home $HOME_1 -o json"
 echo $vote
-$vote
+txhash=$($vote | jq -r .txhash)
+sleep $(($COMMIT_TIMEOUT+2))
+$CHAIN_BINARY q tx $txhash --home $HOME_1
 
 # Wait for the voting period to be over
 echo "Waiting for the voting period to end..."
-sleep 6
+sleep $VOTING_PERIOD
 
 echo "Upgrade proposal $proposal_id status:"
 $CHAIN_BINARY q gov proposal $proposal_id --output json --home $HOME_1 | jq '.status'

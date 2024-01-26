@@ -24,11 +24,11 @@ echo "Submit key assignment tx..."
 CON1_PUBKEY=$($CONSUMER_CHAIN_BINARY tendermint show-validator --home $CONSUMER_HOME_1)
 CON2_PUBKEY=$($CONSUMER_CHAIN_BINARY tendermint show-validator --home $CONSUMER_HOME_2)
 CON3_PUBKEY=$($CONSUMER_CHAIN_BINARY tendermint show-validator --home $CONSUMER_HOME_3)
-$CHAIN_BINARY tx provider assign-consensus-key $CONSUMER_CHAIN_ID $CON1_PUBKEY --from $WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM --home $HOME_1 -y
+$CHAIN_BINARY tx provider assign-consensus-key $CONSUMER_CHAIN_ID $CON1_PUBKEY --from $WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM --home $HOME_1 -y
 sleep $COMMIT_TIMEOUT
-$CHAIN_BINARY tx provider assign-consensus-key $CONSUMER_CHAIN_ID $CON2_PUBKEY --from $WALLET_2 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM --home $HOME_1 -y
+$CHAIN_BINARY tx provider assign-consensus-key $CONSUMER_CHAIN_ID $CON2_PUBKEY --from $WALLET_2 --gas auto --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM --home $HOME_1 -y
 sleep $COMMIT_TIMEOUT
-$CHAIN_BINARY tx provider assign-consensus-key $CONSUMER_CHAIN_ID $CON3_PUBKEY --from $WALLET_3 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM --home $HOME_1 -y
+$CHAIN_BINARY tx provider assign-consensus-key $CONSUMER_CHAIN_ID $CON3_PUBKEY --from $WALLET_3 --gas auto --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM --home $HOME_1 -y
 sleep $COMMIT_TIMEOUT
 
 # Update genesis file with right denom

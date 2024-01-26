@@ -14,5 +14,6 @@
     "transfer_timeout_period": 1800000000000,
     "ccv_timeout_period": 2419200000000000,
     "unbonding_period": 1728000000000000,
-    "deposit": "10000000uatom"
+    "deposit": "10000000uatom",
+    "summary": "test chain"
 }

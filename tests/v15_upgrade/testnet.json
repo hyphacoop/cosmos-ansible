@@ -1,0 +1,16 @@
+{
+    "type": "cosmos",
+    "value": {
+      "key": "default",
+      "chain-id": "testnet",
+      "rpc-addr": "http://localhost:27001",
+      "account-prefix": "cosmos",
+      "keyring-backend": "test",
+      "gas-adjustment": 1.5,
+      "gas-prices": "0.005uatom",
+      "debug": true,
+      "timeout": "20s",
+      "output-format": "json",
+      "sign-mode": "direct"
+    }
+}
