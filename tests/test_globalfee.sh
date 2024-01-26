@@ -11,7 +11,7 @@ tests/param_change.sh globalfee-1.json
 amount=$($CHAIN_BINARY q globalfee params -o json --home $HOME_1 | jq -r --arg DENOM "$DENOM" '.minimum_gas_prices[] | select(.denom == $DENOM).amount')
 echo "globalfee minimum_gas_prices: $amount$DENOM"
 
-# 1-1 tx < globalfee < node: FAIL
+echo "1-1: tx < globalfee < node: FAIL"
 GAS_PRICE=0.002
 command="$CHAIN_BINARY tx bank send $WALLET_1 $WALLET_1 1000$DENOM --from $WALLET_1 --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM --home $HOME_1 -o json -y"
 txhash=$($command | jq -r .txhash)
@@ -22,9 +22,11 @@ echo "tx result code: $txcode"
 if [ $txcode == "0" ]; then
   echo "Tx successful: FAIL"
   exit 1
+else
+  echo "Tx unsuccessful: PASS"
 fi
 
-# 1-2 globalfee < tx < node: FAIL
+echo "1-2: globalfee < tx < node: FAIL"
 GAS_PRICE=0.004
 command="$CHAIN_BINARY tx bank send $WALLET_1 $WALLET_1 1000$DENOM --from $WALLET_1 --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM --home $HOME_1 -o json -y"
 txhash=$($command | jq -r .txhash)
@@ -35,9 +37,11 @@ echo "tx result code: $txcode"
 if [ $txcode == "0" ]; then
   echo "Tx successful: FAIL"
   exit 1
+else
+  echo "Tx unsuccessful: PASS"
 fi
 
-# 1-3 - globalfee < node <= tx: PASS
+echo "1-3: globalfee < node <= tx: PASS"
 GAS_PRICE=0.005
 command="$CHAIN_BINARY tx bank send $WALLET_1 $WALLET_1 1000$DENOM --from $WALLET_1 --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM --home $HOME_1 -o json -y"
 txhash=$($command | jq -r .txhash)
@@ -48,6 +52,8 @@ echo "tx result code: $txcode"
 if [ $txcode != "0" ]; then
   echo "Tx unsuccessful: FAIL"
   exit 1
+else
+  echo "Tx successful: PASS"
 fi
 
 # 2. set node < globalfee
