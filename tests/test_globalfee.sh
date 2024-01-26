@@ -5,21 +5,36 @@
 # Node gas prices are set to 0.005uatom.
 
 # 1. globalfee < node
-# set globalfee = 0.001uatom
-jq '.changes[0].value[0].amount = "0.001"' tests/major_fresh_upgrade/globalfee-params.json > globalfee-1.json
+# set globalfee = 0.002uatom
+jq '.changes[0].value[0].amount = "0.003"' tests/major_fresh_upgrade/globalfee-params.json > globalfee-1.json
 tests/param_change.sh globalfee-1.json
 amount=$($CHAIN_BINARY q globalfee params -o json --home $HOME_1 | jq -r --arg DENOM "$DENOM" '.minimum_gas_prices[] | select(.denom == $DENOM).amount')
 echo "globalfee minimum_gas_prices: $amount$DENOM"
 
 # 1-1 tx < globalfee < node: FAIL
+GAS_PRICE=0.002
+command="$CHAIN_BINARY tx bank send --home $HOME_1 -o json $WALLET_1 $WALLET_1 1000$DENOM --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y"
+txhash=$($vote | jq -r .txhash)
+sleep $(( $COMMIT_TIMEOUT*2 ))
+$CHAIN_BINARY q tx $txhash -o json | jq '.'
 
 # 1-2 globalfee < tx < node: FAIL
+GAS_PRICE=0.004
+command="$CHAIN_BINARY tx bank send --home $HOME_1 -o json $WALLET_1 $WALLET_1 1000$DENOM --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y"
+txhash=$($vote | jq -r .txhash)
+sleep $(( $COMMIT_TIMEOUT*2 ))
+$CHAIN_BINARY q tx $txhash -o json | jq '.'
 
-# 1-3 - globalfee < node < tx: PASS
+# 1-3 - globalfee < node <= tx: PASS
+GAS_PRICE=0.005
+command="$CHAIN_BINARY tx bank send --home $HOME_1 -o json $WALLET_1 $WALLET_1 1000$DENOM --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y"
+txhash=$($vote | jq -r .txhash)
+sleep $(( $COMMIT_TIMEOUT*2 ))
+$CHAIN_BINARY q tx $txhash -o json | jq '.'
 
 # 2. set node < globalfee
 # globalfee = 0.009uatom
-jq '.changes[0].value[0].amount = "0.009"' tests/major_fresh_upgrade/globalfee-params.json > globalfee-1.json
+jq '.changes[0].value[0].amount = "0.007"' tests/major_fresh_upgrade/globalfee-params.json > globalfee-1.json
 tests/param_change.sh globalfee-1.json
 amount=$($CHAIN_BINARY q globalfee params -o json --home $HOME_1 | jq -r --arg DENOM "$DENOM" '.minimum_gas_prices[] | select(.denom == $DENOM).amount')
 echo "globalfee minimum_gas_prices: $amount$DENOM"
