@@ -1159,6 +1159,10 @@ jobs:
       #     CON1_RPC_PORT: 27801
       #   run: tests/major_fresh_upgrade/test_ccv.sh
 
+      - name: Test globalfee module
+        run: |
+          tests/test_globalfee.sh
+
       # - name: _Soft opt-out test> Validator must be jailed
       #   run: tests/test_validator_jailed.sh $VALOPER_2 true
       # - name: _Soft opt-out test> Validator must not be jailed
