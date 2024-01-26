@@ -1160,6 +1160,8 @@ jobs:
       #   run: tests/major_fresh_upgrade/test_ccv.sh
 
       - name: Test globalfee module
+        env:
+          COSMOS_SDK: v47
         run: |
           tests/test_globalfee.sh
 
