@@ -19,7 +19,7 @@ sleep $(( $COMMIT_TIMEOUT*2 ))
 txcode=$($CHAIN_BINARY q tx $txhash -o json --home $HOME_1 | jq -r '.code')
 echo "tx result code: $txcode"
 
-if [ $txcode == "0" ]; then
+if [ "$txcode" -eq "0" ]; then
   echo "Tx successful: FAIL"
   exit 1
 else
@@ -34,7 +34,7 @@ sleep $(( $COMMIT_TIMEOUT*2 ))
 txcode=$($CHAIN_BINARY q tx $txhash -o json --home $HOME_1 | jq -r '.code')
 echo "tx result code: $txcode"
 
-if [ $txcode == "0" ]; then
+if [ "$txcode" -eq "0" ]; then
   echo "Tx successful: FAIL"
   exit 1
 else
@@ -49,7 +49,7 @@ sleep $(( $COMMIT_TIMEOUT*2 ))
 txcode=$($CHAIN_BINARY q tx $txhash -o json --home $HOME_1 | jq -r '.code')
 echo "tx result code: $txcode"
 
-if [ $txcode != "0" ]; then
+if [ "$txcode" -ne "0" ]; then
   echo "Tx unsuccessful: FAIL"
   exit 1
 else
@@ -72,7 +72,7 @@ sleep $(( $COMMIT_TIMEOUT*2 ))
 txcode=$($CHAIN_BINARY q tx $txhash -o json --home $HOME_1 | jq -r '.code')
 echo "tx result code: $txcode"
 
-if [ $txcode == "0" ]; then
+if [ "$txcode" -eq "0" ]; then
   echo "Tx successful: FAIL"
   exit 1
 else
@@ -87,7 +87,7 @@ sleep $(( $COMMIT_TIMEOUT*2 ))
 txcode=$($CHAIN_BINARY q tx $txhash -o json --home $HOME_1 | jq -r '.code')
 echo "tx result code: $txcode"
 
-if [ $txcode == "0" ]; then
+if [ "$txcode" -eq "0" ]; then
   echo "Tx successful: FAIL"
   exit 1
 else
@@ -102,7 +102,7 @@ sleep $(( $COMMIT_TIMEOUT*2 ))
 txcode=$($CHAIN_BINARY q tx $txhash -o json --home $HOME_1 | jq -r '.code')
 echo "tx result code: $txcode"
 
-if [ $txcode != "0" ]; then
+if [ "$txcode" -ne "0" ]; then
   echo "Tx unsuccessful: FAIL"
   exit 1
 else
