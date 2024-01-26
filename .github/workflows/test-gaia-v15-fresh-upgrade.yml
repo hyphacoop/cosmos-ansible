@@ -1038,6 +1038,100 @@ jobs:
       #     channel_id=$($CHAIN_BINARY q ibc channel connections $connection_id -o json --home $HOME_1 | jq -r '.channels[] | select(.port_id=="transfer").channel_id')
       #     tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh $channel_id
 
+      - name: Add consumer chain with ICS v3.3.0
+        env: 
+          COSMOS_SDK: v47
+          CONSUMER_CHAIN_ID: eight-v330
+        run: |
+          tests/major_fresh_upgrade/add_consumer.sh
+      - name: Initialize consumer chain with ICS v3.3.0
+        env:
+          CONSUMER_CHAIN_ID: eight-v330
+          CONSUMER_HOME_1: /home/runner/.eight_1
+          CONSUMER_HOME_2: /home/runner/.eight_2
+          CONSUMER_HOME_3: /home/runner/.eight_3
+          CONSUMER_SERVICE_1: eight_1.service
+          CONSUMER_SERVICE_2: eight_2.service
+          CONSUMER_SERVICE_3: eight_3.service
+          CON1_API_PORT: 25801
+          CON2_API_PORT: 25802
+          CON3_API_PORT: 25803
+          CON1_GRPC_PORT: 26801
+          CON2_GRPC_PORT: 26802
+          CON3_GRPC_PORT: 26803
+          CON1_RPC_PORT: 27801
+          CON2_RPC_PORT: 27802
+          CON3_RPC_PORT: 27803
+          CON1_P2P_PORT: 28801
+          CON2_P2P_PORT: 28802
+          CON3_P2P_PORT: 28803
+          CON1_PPROF_PORT: 29801
+          CON2_PPROF_PORT: 29802
+          CON3_PPROF_PORT: 29803
+          DOWNTIME_BLOCKS: 100000
+        run: |
+          export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V330_BINARY
+          tests/major_fresh_upgrade/init_consumer_assign_keys.sh
+          sleep 20
+      - name: Prepare consumer chain eight-v330
+        env:
+          CONSUMER_CHAIN_ID: eight-v330
+          CONSUMER_HOME_1: /home/runner/.eight_1
+          CONSUMER_HOME_2: /home/runner/.eight_2
+          CONSUMER_HOME_3: /home/runner/.eight_3
+          ICS_330: true
+        run: |
+          export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V330_BINARY
+          tests/major_fresh_upgrade/prepare_consumer.sh
+      - name: Start consumer chain eight-v330
+        env:
+          CONSUMER_CHAIN_ID: eight-v330
+          CONSUMER_SERVICE_1: eight_1.service
+          CONSUMER_SERVICE_2: eight_2.service
+          CONSUMER_SERVICE_3: eight_3.service
+        run: |
+          sudo systemctl enable $CONSUMER_SERVICE_1 --now
+          sleep 5
+          journalctl -u $CONSUMER_SERVICE_1
+      - name: _Consumer chain produces blocks> ICS v3.3.0 chain 2
+        env:
+          CON1_RPC_PORT: 27801
+        run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT 5
+      - name: Establish CCV channel for eight-v330
+        env:
+          CONSUMER_CHAIN_ID: eight-v330
+        run: |
+          client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
+          if [ $RELAYER == "hermes" ]; then
+            echo "Creating channel with Hermes..."
+            hermes create connection --a-chain $CONSUMER_CHAIN_ID --a-client 07-tendermint-0 --b-client $client_id
+            hermes create channel --a-chain $CONSUMER_CHAIN_ID --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
+          elif [ $RELAYER == "rly" ]; then
+            echo "Creating channel with Go relayer..."
+            jq --arg CHAIN "$CONSUMER_CHAIN_ID" '.src."chain-id" = $CHAIN' tests/v15_upgrade/rly-path-template.json > eight-1.json
+            jq --arg CLIENT "$client_id" '.dst."client-id" = $CLIENT' eight-1.json > eight-2.json
+            rly paths add $CHAIN_ID $CONSUMER_CHAIN_ID eight --file eight-2.json
+            rly transact connection eight
+            rly transact channel eight --src-port consumer --dst-port provider --order ordered --version 1
+          fi  
+          sudo systemctl restart $RELAYER
+          sleep 10
+      - name: _Pre-upgrade CCV channel verified> ICS v3.3.0 chain 2
+        env:
+          CONSUMER_HOME_1: /home/runner/.eight_1
+          CON1_RPC_PORT: 27801
+        run: tests/major_fresh_upgrade/test_ccv_key_assignment.sh
+      - name: _Pre-upgrade IBC transfer successful> ICS v3.3.0 chain 2
+        env:
+          CONSUMER_CHAIN_ID: eight-v330
+          CONSUMER_HOME_1: /home/runner/.eight_1
+        run: |
+          export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V330_BINARY
+          client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
+          connection_id=$($CHAIN_BINARY q ibc connection connections -o json --home $HOME_1 | jq -r --arg client "$client_id" '.connections[] | select(.client_id==$client).id')
+          channel_id=$($CHAIN_BINARY q ibc channel connections $connection_id -o json --home $HOME_1 | jq -r '.channels[] | select(.port_id=="transfer").channel_id')
+          tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh $channel_id
+      
       # - name: Initialize consumer chain with ICS v3.3.0
       #   env:
       #     CONSUMER_CHAIN_ID: eight-v330
@@ -1126,16 +1220,16 @@ jobs:
       #     CONSUMER_HOME_1: /home/runner/.two_1
       #     CON1_RPC_PORT: 27201
       #   run: tests/major_fresh_upgrade/test_ccv_key_assignment.sh
-      # - name: _Final CCV channel check> ICS v3.1.0 chain 1
-      #   env:
-      #     CONSUMER_HOME_1: /home/runner/.three_1
-      #     CON1_RPC_PORT: 27301
-      #   run: tests/major_fresh_upgrade/test_ccv_key_assignment.sh
-      # - name: _Final CCV channel check> ICS v3.3.0 chain 1
-      #   env:
-      #     CONSUMER_HOME_1: /home/runner/.four_1
-      #     CON1_RPC_PORT: 27401
-      #   run: tests/major_fresh_upgrade/test_ccv_key_assignment.sh
+      - name: _Final CCV channel check> ICS v3.1.0 chain 1
+        env:
+          CONSUMER_HOME_1: /home/runner/.three_1
+          CON1_RPC_PORT: 27301
+        run: tests/major_fresh_upgrade/test_ccv_key_assignment.sh
+      - name: _Final CCV channel check> ICS v3.3.0 chain 1
+        env:
+          CONSUMER_HOME_1: /home/runner/.four_1
+          CON1_RPC_PORT: 27401
+        run: tests/major_fresh_upgrade/test_ccv_key_assignment.sh
       # # - name: _Final CCV channel check> ICS v2.0.0 chain 2
       #   env:
       #     CONSUMER_HOME_1: /home/runner/.four_1
@@ -1154,10 +1248,11 @@ jobs:
       #   env:
       #     CON1_RPC_PORT: 27701
       #   run: tests/major_fresh_upgrade/test_ccv.sh
-      # - name: _Final CCV channel check> ICS v3.3.0
-      #   env:
-      #     CON1_RPC_PORT: 27801
-      #   run: tests/major_fresh_upgrade/test_ccv.sh
+      - name: _Final CCV channel check> ICS v3.3.0
+        env:
+          CONSUMER_HOME_1: /home/runner/.eight_1
+          CON1_RPC_PORT: 27801
+        run: tests/major_fresh_upgrade/test_ccv_key_assignment.sh
 
       - name: Test globalfee module
         env:
