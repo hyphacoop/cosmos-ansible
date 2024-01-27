@@ -539,7 +539,7 @@ jobs:
           tests/major_fresh_upgrade/add_consumer.sh
       - name: Prepare Stride chain upgrade # saves $STRIDE_REV_HEIGHT environment variable
         run: tests/major_fresh_upgrade/upgrade_stride.sh
-      - name: Re-launch Stride as a consumer chain
+      - name: Launch Stride consumer chain
         run: tests/major_fresh_upgrade/launch_stride_consumer.sh
       - name: _Consumer chain produces blocks after changeover from sovereign
         run: tests/test_block_production.sh 127.0.0.1 $STRIDE_RPC_1 5 # 5 blocks
