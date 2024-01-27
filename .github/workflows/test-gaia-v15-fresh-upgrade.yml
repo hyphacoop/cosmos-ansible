@@ -221,6 +221,9 @@ jobs:
       - name: Validators initial state
         run: |
           $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
+      - name: Create clawback vesting account
+        run: |
+          $CHAIN_BINARY tx vesting create-vesting-account cosmos145hytrc49m0hn6fphp8d5h4xspwkawcuzmx498 100000000000uatom 1770000000 --from $MONIKER_1 --chain-id $CHAIN_ID --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM
       - name: Set up relayer
         run: tests/v15_upgrade/setup_relayer.sh
       - name: Download consumer chain binaries
@@ -454,9 +457,6 @@ jobs:
           connection_id=$($CHAIN_BINARY q ibc connection connections -o json --home $HOME_1 | jq -r --arg client "$client_id" '.connections[] | select(.client_id==$client).id')
           channel_id=$($CHAIN_BINARY q ibc channel connections $connection_id -o json --home $HOME_1 | jq -r '.channels[] | select(.port_id=="transfer").channel_id')
           tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh $channel_id
-      - name: Create clawback vesting account
-        run: |
-          $CHAIN_BINARY tx vesting create-vesting-account cosmos145hytrc49m0hn6fphp8d5h4xspwkawcuzmx498 100000000000uatom 1770000000 --from validator --chain-id $CHAIN_ID --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM
 
       - name: Test software upgrade for published releases
         if: ${{ matrix.upgrade_version != 'main' }}
