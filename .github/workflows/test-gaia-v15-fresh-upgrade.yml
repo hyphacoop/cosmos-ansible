@@ -167,7 +167,7 @@ jobs:
       STRIDE_PPROF_1: 39001
       STRIDE_PPROF_2: 39002
       # Relayer variables
-      RELAYER: rly
+      RELAYER: hermes
       HERMES_VERSION: v1.7.2
       RLY_VERSION: "2.4.2"
     steps:
