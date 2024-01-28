@@ -531,14 +531,15 @@ jobs:
         run: tests/major_fresh_upgrade/start_stride.sh
       - name: Check Stride produces blocks
         run: tests/test_block_production.sh 127.0.0.1 $STRIDE_RPC_1 5 # 5 blocks
+      - name: Prepare Stride chain upgrade # saves $STRIDE_REV_HEIGHT environment variable
+        run: tests/major_fresh_upgrade/upgrade_stride.sh
       - name: Add Stride consumer chain
         env:
           COSMOS_SDK: v45
           CONSUMER_CHAIN_ID: five
+          STRIDE_HEIGHT_OFFSET: true
         run: |
           tests/major_fresh_upgrade/add_consumer.sh
-      - name: Prepare Stride chain upgrade # saves $STRIDE_REV_HEIGHT environment variable
-        run: tests/major_fresh_upgrade/upgrade_stride.sh
       - name: Launch Stride consumer chain
         run: tests/major_fresh_upgrade/launch_stride_consumer.sh
       - name: _Consumer chain produces blocks after changeover from sovereign
