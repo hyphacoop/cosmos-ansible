@@ -25,14 +25,14 @@ if [ "$post_upgrade_acc_type" != "/cosmos.auth.v1beta1.BaseAccount" ]; then
 fi
 
 # Get spendable balances 1
-spendable_balance1=$(gaiad --home $HOME_1 q bank spendable-balances cosmos145hytrc49m0hn6fphp8d5h4xspwkawcuzmx498)
+spendable_balance1=$(gaiad --home $HOME_1 q bank spendable-balances cosmos145hytrc49m0hn6fphp8d5h4xspwkawcuzmx498 -o json | jq -r '.balances[] | select(.denom == "uatom") | .amount')
 echo "Current spendable balance is: $spendable_balance1"
 
 # Wait for 5 blocks
 tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 5
 
 # Get spendable balances 2
-spendable_balance2=$(gaiad --home $HOME_1 q bank spendable-balances cosmos145hytrc49m0hn6fphp8d5h4xspwkawcuzmx498)
+spendable_balance2=$(gaiad --home $HOME_1 q bank spendable-balances cosmos145hytrc49m0hn6fphp8d5h4xspwkawcuzmx498 -o json | jq -r '.balances[] | select(.denom == "uatom") | .amount')
 echo "Current spendable balance is: $spendable_balance2"
 
 # Check if spendable balance matches
