@@ -172,7 +172,13 @@ echo "** HAPPY PATH> STEP 5: REDEEM TOKENS **"
     # tests/v12_upgrade/log_lsm_data.sh happy post-redeem-2 $happy_liquid_2 $bank_send_amount
 
     echo "Sending $ibc_denom tokens from STRIDE_WALLET_LIQUID to $CHAIN_ID chain for redeem operation..."
+    $CHAIN_BINARY q bank balances $happy_liquid_3 --home $HOME_1
     submit_ibc_tx "tx ibc-transfer transfer transfer channel-1 $happy_liquid_3 $ibc_transfer_amount$ibc_denom --from $STRIDE_WALLET_LIQUID -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $CONSUMER_FEES$STRIDE_DENOM -y" $STRIDE_CHAIN_BINARY $STRIDE_HOME_1
+    sleep 20
+    $CHAIN_BINARY q bank balances $happy_liquid_3 --home $HOME_1
+    echo "***RELAYER DATA***"
+    journalctl -u $RELAYER | tail -n 100
+    echo "***RELAYER DATA***"
     echo "Redeeming tokens from happy_liquid_3..."
     # tests/v12_upgrade/log_lsm_data.sh happy pre-redeem-3 $happy_liquid_3 $ibc_transfer_amount
     submit_tx "tx staking redeem-tokens $ibc_transfer_amount$tokenized_denom --from $happy_liquid_3 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y" $CHAIN_BINARY $HOME_1
