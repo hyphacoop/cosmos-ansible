@@ -10,7 +10,7 @@ $CHAIN_BINARY keys add lsp_happy_bonding --home $HOME_1
 lsp_happy_bonding=$($CHAIN_BINARY keys list --home $HOME_1 --output json | jq -r '.[] | select(.name=="lsp_happy_bonding").address')
 
 echo "Funding bonding account..."
-submit_tx "tx bank send $WALLET_1 $lsp_happy_bonding 100000000uatom --from $WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -o json -y" $CHAIN_BINARY $HOME_1
+submit_tx "tx bank send $WALLET_1 $lsp_happy_bonding 100000000uatom --from $WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -o json -y" $CHAIN_BINARY $HOME_1
 
 echo "** LIQUID STAKING PROVIDER HAPPY PATH> 1: DELEGATE AND BOND **"
     echo "Delegating and bonding with bonding_account..."
@@ -26,11 +26,11 @@ echo "** LIQUID STAKING PROVIDER HAPPY PATH> 1: DELEGATE AND BOND **"
     expected_shares=${expected_shares%.*}
 
     tests/v12_upgrade/log_lsm_data.sh accounting pre-delegate-1 $lsp_happy_bonding $bond_delegation
-    submit_tx "tx staking delegate $VALOPER_2 $bond_delegation$DENOM --from $lsp_happy_bonding -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+    submit_tx "tx staking delegate $VALOPER_2 $bond_delegation$DENOM --from $lsp_happy_bonding -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y" $CHAIN_BINARY $HOME_1
     tests/v12_upgrade/log_lsm_data.sh accounting post-delegate-1 $lsp_happy_bonding $bond_delegation
     $CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq '.'
     tests/v12_upgrade/log_lsm_data.sh accounting pre-bond-1 $lsp_happy_bonding -
-    submit_tx "tx staking validator-bond $VALOPER_2 --from $lsp_happy_bonding -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT -y --fees $BASE_FEES$DENOM" $CHAIN_BINARY $HOME_1
+    submit_tx "tx staking validator-bond $VALOPER_2 --from $lsp_happy_bonding -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT -y --gas-prices $GAS_PRICE$DENOM" $CHAIN_BINARY $HOME_1
     tests/v12_upgrade/log_lsm_data.sh accounting post-bond-1 $lsp_happy_bonding -
     $CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq '.'
 

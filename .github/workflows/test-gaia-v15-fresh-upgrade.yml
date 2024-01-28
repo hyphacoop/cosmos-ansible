@@ -166,6 +166,7 @@ jobs:
       STRIDE_P2P_2: 38002
       STRIDE_PPROF_1: 39001
       STRIDE_PPROF_2: 39002
+      CHANGEOVER_HEIGHT_OFFSET: false
       # Relayer variables
       RELAYER: hermes
       HERMES_VERSION: v1.7.4
@@ -537,7 +538,7 @@ jobs:
         env:
           COSMOS_SDK: v45
           CONSUMER_CHAIN_ID: five
-          STRIDE_HEIGHT_OFFSET: true
+          CHANGEOVER_HEIGHT_OFFSET: true
         run: |
           tests/major_fresh_upgrade/add_consumer.sh
       - name: Launch Stride consumer chain
