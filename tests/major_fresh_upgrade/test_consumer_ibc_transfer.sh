@@ -9,6 +9,8 @@ provider_expected_denom=ibc/$(echo -n transfer/$PROVIDER_CHANNEL/$CONSUMER_DENOM
 echo "expected denom in provider: $provider_expected_denom"
 echo "expected denom in consumer: $consumer_expected_denom"
 
+$CHAIN_BINARY q ibc channel channels --home $HOME_1 -o json | jq '.'
+
 $CONSUMER_CHAIN_BINARY --home $CONSUMER_HOME_1 q bank balances $RECIPIENT
 consumer_start_balance=$($CONSUMER_CHAIN_BINARY --home $CONSUMER_HOME_1 q bank balances $RECIPIENT -o json | jq -r --arg DENOM "$consumer_expected_denom" '.balances[] | select(.denom==$DENOM).amount')
 if [ -z "$consumer_start_balance" ]; then
