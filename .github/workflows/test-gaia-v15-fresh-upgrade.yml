@@ -457,7 +457,7 @@ jobs:
           connection_id=$($CHAIN_BINARY q ibc connection connections -o json --home $HOME_1 | jq -r --arg client "$client_id" '.connections[] | select(.client_id==$client).id')
           channel_id=$($CHAIN_BINARY q ibc channel connections $connection_id -o json --home $HOME_1 | jq -r '.channels[] | select(.port_id=="transfer").channel_id')
           tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh $channel_id
-      - name: Clawback funds before upgrade
+      - name: _Pre-upgrade clawback funds
         run: tests/major_fresh_upgrade/test_clawback_pre_upgrade.sh
       - name: Test software upgrade for published releases
         if: ${{ matrix.upgrade_version != 'main' }}

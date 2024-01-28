@@ -1,6 +1,6 @@
 #!/bin/bash
 
-acc_type=$(gaiad --home $HOME_1 q account cosmos145hytrc49m0hn6fphp8d5h4xspwkawcuzmx498 --height $post_upgrade_height -o json | jq -r '."@type"')
+acc_type=$(gaiad --home $HOME_1 q account cosmos145hytrc49m0hn6fphp8d5h4xspwkawcuzmx498 -o json | jq -r '."@type"')
 
 # Check if account type matches
 echo "Account type is: $acc_type"
