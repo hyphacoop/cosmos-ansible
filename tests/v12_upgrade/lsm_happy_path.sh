@@ -23,11 +23,11 @@ happy_liquid_3=$($CHAIN_BINARY keys list --home $HOME_1 --output json | jq -r '.
 happy_owner=$($CHAIN_BINARY keys list --home $HOME_1 --output json | jq -r '.[] | select(.name=="happy_owner").address')
 
 echo "Funding bonding and tokenizing accounts..."
-submit_tx "tx bank send $WALLET_1 $happy_bonding  200000000uatom --from $WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -o json -y" $CHAIN_BINARY $HOME_1
-submit_tx "tx bank send $WALLET_1 $happy_liquid_1 200000000uatom --from $WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -o json -y" $CHAIN_BINARY $HOME_1
-submit_tx "tx bank send $WALLET_1 $happy_liquid_2 200000000uatom --from $WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -o json -y" $CHAIN_BINARY $HOME_1
-submit_tx "tx bank send $WALLET_1 $happy_liquid_3 200000000uatom --from $WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -o json -y" $CHAIN_BINARY $HOME_1
-submit_tx "tx bank send $WALLET_1 $happy_owner 10000000uatom --from $WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -o json -y" $CHAIN_BINARY $HOME_1
+submit_tx "tx bank send $WALLET_1 $happy_bonding  200000000uatom --from $WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -o json -y" $CHAIN_BINARY $HOME_1
+submit_tx "tx bank send $WALLET_1 $happy_liquid_1 200000000uatom --from $WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -o json -y" $CHAIN_BINARY $HOME_1
+submit_tx "tx bank send $WALLET_1 $happy_liquid_2 200000000uatom --from $WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -o json -y" $CHAIN_BINARY $HOME_1
+submit_tx "tx bank send $WALLET_1 $happy_liquid_3 200000000uatom --from $WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -o json -y" $CHAIN_BINARY $HOME_1
+submit_tx "tx bank send $WALLET_1 $happy_owner 10000000uatom --from $WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -o json -y" $CHAIN_BINARY $HOME_1
 
 echo "** HAPPY PATH> STEP 1: VALIDATOR BOND **"
 
@@ -37,7 +37,7 @@ echo "** HAPPY PATH> STEP 1: VALIDATOR BOND **"
     echo "Delegating with happy_bonding..."
     # tests/v12_upgrade/log_lsm_data.sh happy pre-delegate-1 $happy_bonding $delegation
     $CHAIN_BINARY q staking validator cosmosvaloper1r5v5srda7xfth3hn2s26txvrcrntldju7lnwmv --home $HOME_1
-    submit_tx "tx staking delegate $VALOPER_1 $delegation$DENOM --from $happy_bonding -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+    submit_tx "tx staking delegate $VALOPER_1 $delegation$DENOM --from $happy_bonding -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y" $CHAIN_BINARY $HOME_1
     # tests/v12_upgrade/log_lsm_data.sh happy post-delegate-1 $happy_bonding $delegation
     $CHAIN_BINARY q staking validator cosmosvaloper1r5v5srda7xfth3hn2s26txvrcrntldju7lnwmv --home $HOME_1
 
@@ -52,7 +52,7 @@ echo "** HAPPY PATH> STEP 1: VALIDATOR BOND **"
     echo "Validator bond with happy_bonding..."
     # tests/v12_upgrade/log_lsm_data.sh happy pre-bond-1 $happy_bonding -
     $CHAIN_BINARY q staking validator cosmosvaloper1r5v5srda7xfth3hn2s26txvrcrntldju7lnwmv --home $HOME_1
-    submit_tx "tx staking validator-bond $VALOPER_1 --from $happy_bonding -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT -y --fees $BASE_FEES$DENOM" $CHAIN_BINARY $HOME_1
+    submit_tx "tx staking validator-bond $VALOPER_1 --from $happy_bonding -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT -y --gas-prices $GAS_PRICE$DENOM" $CHAIN_BINARY $HOME_1
     # tests/v12_upgrade/log_lsm_data.sh happy post-bond-1 $happy_bonding -
     $CHAIN_BINARY q staking validator cosmosvaloper1r5v5srda7xfth3hn2s26txvrcrntldju7lnwmv --home $HOME_1
 
@@ -71,7 +71,7 @@ echo "** HAPPY PATH> STEP 2: TOKENIZE **"
     echo "Delegating with $happy_liquid_1..."
     # tests/v12_upgrade/log_lsm_data.sh happy pre-delegate-2 $happy_liquid_1 $delegation
     $CHAIN_BINARY q staking validator cosmosvaloper1r5v5srda7xfth3hn2s26txvrcrntldju7lnwmv --home $HOME_1
-    submit_tx "tx staking delegate $VALOPER_1 $delegation$DENOM --from $happy_liquid_1 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+    submit_tx "tx staking delegate $VALOPER_1 $delegation$DENOM --from $happy_liquid_1 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y" $CHAIN_BINARY $HOME_1
     # tests/v12_upgrade/log_lsm_data.sh happy post-delegate-2 $happy_liquid_1 $delegation
     $CHAIN_BINARY q staking validator cosmosvaloper1r5v5srda7xfth3hn2s26txvrcrntldju7lnwmv --home $HOME_1
 
@@ -86,7 +86,7 @@ echo "** HAPPY PATH> STEP 2: TOKENIZE **"
     liquid_shares_pre_tokenize=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.liquid_shares')
     echo "Tokenizing shares with $happy_liquid_1..."
     # tests/v12_upgrade/log_lsm_data.sh happy pre-tokenize-1 $happy_liquid_1 $tokenize
-    submit_tx "tx staking tokenize-share $VALOPER_1 $tokenize$DENOM $happy_liquid_1 --from $happy_liquid_1 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+    submit_tx "tx staking tokenize-share $VALOPER_1 $tokenize$DENOM $happy_liquid_1 --from $happy_liquid_1 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y" $CHAIN_BINARY $HOME_1
     # tests/v12_upgrade/log_lsm_data.sh happy post-tokenize-1 $happy_liquid_1 $tokenize
 
     liquid_shares_post_tokenize=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.liquid_shares')
@@ -119,7 +119,7 @@ echo "** HAPPY PATH> STEP 3: TRANSFER OWNERSHIP **"
 
     echo "Transferring token ownership record to new_owner..."
     # tests/v12_upgrade/log_lsm_data.sh happy pre-transfer-1 $happy_owner -
-    submit_tx "tx staking transfer-tokenize-share-record $record_id $happy_owner --from $owner --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -o json -y" $CHAIN_BINARY $HOME_1
+    submit_tx "tx staking transfer-tokenize-share-record $record_id $happy_owner --from $owner --gas auto --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -o json -y" $CHAIN_BINARY $HOME_1
     # tests/v12_upgrade/log_lsm_data.sh happy post-transfer-1 $happy_owner -
     owner=$($CHAIN_BINARY q staking tokenize-share-record-by-denom $tokenized_denom --home $HOME_1 -o json | jq -r '.record.owner')
     echo "$owner owns record $record_id."
@@ -131,7 +131,7 @@ echo "** HAPPY PATH> STEP 3: TRANSFER OWNERSHIP **"
 
     echo "Transferring token ownership record back to happy_liquid_1..."
     # tests/v12_upgrade/log_lsm_data.sh happy pre-transfer-2 $owner -
-    submit_tx "tx staking transfer-tokenize-share-record $record_id $happy_liquid_1 --from $owner --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -o json -y" $CHAIN_BINARY $HOME_1
+    submit_tx "tx staking transfer-tokenize-share-record $record_id $happy_liquid_1 --from $owner --gas auto --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -o json -y" $CHAIN_BINARY $HOME_1
     # tests/v12_upgrade/log_lsm_data.sh happy post-transfer-2 $owner -
     owner=$($CHAIN_BINARY q staking tokenize-share-record-by-denom $tokenized_denom --home $HOME_1 -o json | jq -r '.record.owner')
     echo "$owner owns record $record_id."
@@ -147,10 +147,10 @@ echo "** HAPPY PATH> STEP 4: TRANSFER TOKENS  **"
     echo "happy_liquid_1 delegations: $happy_liquid_1_delegations_1"
 
     echo "Sending tokens from happy_liquid_1 to happy_liquid_2 via bank send..."
-    submit_tx "tx bank send $happy_liquid_1 $happy_liquid_2 $bank_send_amount$tokenized_denom --from $happy_liquid_1 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+    submit_tx "tx bank send $happy_liquid_1 $happy_liquid_2 $bank_send_amount$tokenized_denom --from $happy_liquid_1 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y" $CHAIN_BINARY $HOME_1
 
     echo "Sending tokens from happy_liquid_1 to STRIDE_WALLET_LIQUID via ibc transfer..."
-    submit_ibc_tx "tx ibc-transfer transfer transfer $IBC_CHANNEL $STRIDE_WALLET_LIQUID $ibc_transfer_amount$tokenized_denom --from $happy_liquid_1 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+    submit_ibc_tx "tx ibc-transfer transfer transfer $IBC_CHANNEL $STRIDE_WALLET_LIQUID $ibc_transfer_amount$tokenized_denom --from $happy_liquid_1 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y" $CHAIN_BINARY $HOME_1
     ibc_denom=ibc/$($STRIDE_CHAIN_BINARY q ibc-transfer denom-hash transfer/channel-1/$tokenized_denom --home $STRIDE_HOME_1 -o json | jq -r '.hash')
     ibc_balance=$($STRIDE_CHAIN_BINARY q bank balances $STRIDE_WALLET_LIQUID --home $STRIDE_HOME_1 -o json | jq -r --arg DENOM "$ibc_denom" '.balances[] | select(.denom==$DENOM).amount')
     echo "IBC-wrapped liquid token balance: $ibc_balance$ibc_denom"
@@ -163,19 +163,19 @@ echo "** HAPPY PATH> STEP 5: REDEEM TOKENS **"
     echo "Redeeming tokens from happy_liquid_1..."
     # tests/v12_upgrade/log_lsm_data.sh happy pre-redeem-1 $happy_liquid_1 $liquid_1_redeem
     $CHAIN_BINARY q bank balances $happy_liquid_1 --home $HOME_1 -o json | jq '.'
-    submit_tx "tx staking redeem-tokens $liquid_1_redeem$tokenized_denom --from $happy_liquid_1 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+    submit_tx "tx staking redeem-tokens $liquid_1_redeem$tokenized_denom --from $happy_liquid_1 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y" $CHAIN_BINARY $HOME_1
     # tests/v12_upgrade/log_lsm_data.sh happy post-redeem-1 $happy_liquid_1 $liquid_1_redeem
 
     echo "Redeeming tokens from happy_liquid_2..."
     # tests/v12_upgrade/log_lsm_data.sh happy pre-redeem-2 $happy_liquid_2 $bank_send_amount
-    submit_tx "tx staking redeem-tokens $bank_send_amount$tokenized_denom --from $happy_liquid_2 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+    submit_tx "tx staking redeem-tokens $bank_send_amount$tokenized_denom --from $happy_liquid_2 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y" $CHAIN_BINARY $HOME_1
     # tests/v12_upgrade/log_lsm_data.sh happy post-redeem-2 $happy_liquid_2 $bank_send_amount
 
     echo "Sending $ibc_denom tokens from STRIDE_WALLET_LIQUID to $CHAIN_ID chain for redeem operation..."
     submit_ibc_tx "tx ibc-transfer transfer transfer channel-1 $happy_liquid_3 $ibc_transfer_amount$ibc_denom --from $STRIDE_WALLET_LIQUID -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $CONSUMER_FEES$STRIDE_DENOM -y" $STRIDE_CHAIN_BINARY $STRIDE_HOME_1
     echo "Redeeming tokens from happy_liquid_3..."
     # tests/v12_upgrade/log_lsm_data.sh happy pre-redeem-3 $happy_liquid_3 $ibc_transfer_amount
-    submit_tx "tx staking redeem-tokens $ibc_transfer_amount$tokenized_denom --from $happy_liquid_3 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+    submit_tx "tx staking redeem-tokens $ibc_transfer_amount$tokenized_denom --from $happy_liquid_3 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y" $CHAIN_BINARY $HOME_1
     # tests/v12_upgrade/log_lsm_data.sh happy post-redeem-3 $happy_liquid_3 $ibc_transfer_amount
 
     happy_liquid_1_delegations_2=$($CHAIN_BINARY q staking delegations $happy_liquid_1 --home $HOME_1 -o json | jq -r --arg ADDRESS "$VALOPER_1" '.delegation_responses[] | select(.delegation.validator_address==$ADDRESS).delegation.shares')
@@ -227,7 +227,7 @@ echo "** HAPPY PATH> CLEANUP **"
 
     echo "Validator unbond from happy_bonding"
     # tests/v12_upgrade/log_lsm_data.sh happy pre-unbond-1 $happy_bonding $delegation
-    submit_tx "tx staking unbond $VALOPER_1 100000000$DENOM --from $happy_bonding -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT -y --fees $BASE_FEES$DENOM" $CHAIN_BINARY $HOME_1
+    submit_tx "tx staking unbond $VALOPER_1 100000000$DENOM --from $happy_bonding -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT -y --gas-prices $GAS_PRICE$DENOM" $CHAIN_BINARY $HOME_1
     # tests/v12_upgrade/log_lsm_data.sh happy post-unbond-1 $happy_bonding $delegation
 
     validator_bond_shares=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.validator_bond_shares')
@@ -239,15 +239,15 @@ echo "** HAPPY PATH> CLEANUP **"
 
     echo "Validator unbond from happy_liquid_1..."
     # tests/v12_upgrade/log_lsm_data.sh happy pre-unbond-2 $happy_liquid_1 $happy_liquid_1_delegation_balance
-    submit_tx "tx staking unbond $VALOPER_1 $happy_liquid_1_delegation_balance$DENOM --from $happy_liquid_1 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT -y --fees $BASE_FEES$DENOM" $CHAIN_BINARY $HOME_1
+    submit_tx "tx staking unbond $VALOPER_1 $happy_liquid_1_delegation_balance$DENOM --from $happy_liquid_1 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT -y --gas-prices $GAS_PRICE$DENOM" $CHAIN_BINARY $HOME_1
     # tests/v12_upgrade/log_lsm_data.sh happy post-unbond-2 $happy_liquid_1 70000000
 
     echo "Validator unbond from happy_liquid_2..."
     # tests/v12_upgrade/log_lsm_data.sh happy pre-unbond-3 $happy_liquid_2 $bank_send_amount
-    submit_tx "tx staking unbond $VALOPER_1 $bank_send_amount$DENOM --from $happy_liquid_2 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT -y --fees $BASE_FEES$DENOM" $CHAIN_BINARY $HOME_1
+    submit_tx "tx staking unbond $VALOPER_1 $bank_send_amount$DENOM --from $happy_liquid_2 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT -y --gas-prices $GAS_PRICE$DENOM" $CHAIN_BINARY $HOME_1
     # tests/v12_upgrade/log_lsm_data.sh happy post-unbond-3 $happy_liquid_2 $bank_send_amount
 
     echo "Validator unbond from happy_liquid_3..."
     # tests/v12_upgrade/log_lsm_data.sh happy pre-unbond-4 $happy_liquid_3 $ibc_transfer_amount
-    submit_tx "tx staking unbond $VALOPER_1 $ibc_transfer_amount$DENOM --from $happy_liquid_3 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT -y --fees $BASE_FEES$DENOM" $CHAIN_BINARY $HOME_1
+    submit_tx "tx staking unbond $VALOPER_1 $ibc_transfer_amount$DENOM --from $happy_liquid_3 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT -y --gas-prices $GAS_PRICE$DENOM" $CHAIN_BINARY $HOME_1
     # tests/v12_upgrade/log_lsm_data.sh happy post-unbond-4 $happy_liquid_3 $ibc_transfer_amount
