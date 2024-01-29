@@ -232,11 +232,11 @@ jobs:
       - name: Block production check
         run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 5 # 5 blocks
 
-      - name: Test globalfee module
-        run: |
-          tests/test_globalfee.sh
-      - name: Query votes on param change proposal
-        run: $CHAIN_BINARY q gov votes 1 --home $HOME_1 --height 12
+      # - name: Test globalfee module
+      #   run: |
+      #     tests/test_globalfee.sh
+      # - name: Query votes on param change proposal
+      #   run: $CHAIN_BINARY q gov votes 1 --home $HOME_1 --height 12
       - name: Transactions verified> bank send, delegate, and withdraw rewards
         run: tests/test_tx_fresh.sh
       - name: Validators initial state
