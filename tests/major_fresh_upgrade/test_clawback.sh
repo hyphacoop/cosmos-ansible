@@ -74,7 +74,7 @@ spendable_balance2_acc2=$(gaiad --home $HOME_1 q bank spendable-balances cosmos1
 echo "Current spendable balance is: $spendable_balance2_acc2"
 
 # Check if spendable balance matches
-if [ $spendable_balance1_acc2 -gt $spendable_balance2_acc2 ]; then
+if [ $spendable_balance1_acc2 -ne $spendable_balance2_acc2 ]; then
     echo "Spendable balance 1 is: $spendable_balance1_acc2 balance 2 is: $spendable_balance2_acc2"
 else
     echo "Spendable unchanged, spendable balance 1 is: $spendable_balance1_acc2 balance 2 is: $spendable_balance2_acc2"

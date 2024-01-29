@@ -223,8 +223,8 @@ jobs:
           $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
       - name: Create clawback vesting accounts
         run: |
-          $CHAIN_BINARY tx vesting create-vesting-account cosmos145hytrc49m0hn6fphp8d5h4xspwkawcuzmx498 1000000uatom 1770000000 --from $WALLET_1 --chain-id $CHAIN_ID --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y --home $HOME_1
-          $CHAIN_BINARY tx vesting create-vesting-account cosmos1n7qdtcnagfvs8p4t537c5yn2dylw2e7l7a2htm 1000000uatom 1770000000 --from $WALLET_1 --chain-id $CHAIN_ID --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y --home $HOME_1
+          $CHAIN_BINARY tx vesting create-vesting-account cosmos145hytrc49m0hn6fphp8d5h4xspwkawcuzmx498 10000000uatom 1770000000 --from $WALLET_1 --chain-id $CHAIN_ID --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y --home $HOME_1
+          $CHAIN_BINARY tx vesting create-vesting-account cosmos1n7qdtcnagfvs8p4t537c5yn2dylw2e7l7a2htm 10000000uatom 1770000000 --from $WALLET_1 --chain-id $CHAIN_ID --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y --home $HOME_1
       - name: Set up relayer
         run: tests/v15_upgrade/setup_relayer.sh
       - name: Download consumer chain binaries
