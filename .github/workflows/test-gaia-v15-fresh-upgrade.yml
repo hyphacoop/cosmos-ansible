@@ -691,7 +691,7 @@ jobs:
       - name: Register and fund ICA
         env:
           ICA_CHAIN_HOME: /home/runner/.five_1
-        run: tests/v12_upgrade/setup_ica.sh
+        run: tests/v15_upgrade/setup_ica.sh
 
       - name: Set test LSM params
         run: |
