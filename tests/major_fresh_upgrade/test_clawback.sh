@@ -82,11 +82,19 @@ else
 fi
 
 # Check bank balances
+echo "Spendable balances acc 1"
 echo "Before upgrade"
 gaiad --home $HOME_1 q bank spendable-balances cosmos145hytrc49m0hn6fphp8d5h4xspwkawcuzmx498 --height $pre_upgrade_height
 
 echo "After upgrade"
 gaiad --home $HOME_1 q bank spendable-balances cosmos145hytrc49m0hn6fphp8d5h4xspwkawcuzmx498 --height $post_upgrade_height
+
+echo "Spendable balances acc 2"
+echo "Before upgrade"
+gaiad --home $HOME_1 q bank spendable-balances cosmos1n7qdtcnagfvs8p4t537c5yn2dylw2e7l7a2htm --height $pre_upgrade_height
+
+echo "After upgrade"
+gaiad --home $HOME_1 q bank spendable-balances cosmos1n7qdtcnagfvs8p4t537c5yn2dylw2e7l7a2htm --height $post_upgrade_height
 
 # Check community pool
 echo "Before upgrade"
