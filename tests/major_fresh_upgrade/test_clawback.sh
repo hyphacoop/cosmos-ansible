@@ -63,8 +63,8 @@ fi
 # Check spendable balances for cosmos1n7qdtcnagfvs8p4t537c5yn2dylw2e7l7a2htm is incresing
 echo "Check spendable balances for cosmos1n7qdtcnagfvs8p4t537c5yn2dylw2e7l7a2htm is incresing"
 # Get spendable balances 1
-spendable_balance1_acc=$(gaiad --home $HOME_1 q bank spendable-balances cosmos1n7qdtcnagfvs8p4t537c5yn2dylw2e7l7a2htm -o json | jq -r '.balances[] | select(.denom == "uatom") | .amount')
-echo "Current spendable balance is: $spendable_balance1_acc"
+spendable_balance1_acc2=$(gaiad --home $HOME_1 q bank spendable-balances cosmos1n7qdtcnagfvs8p4t537c5yn2dylw2e7l7a2htm -o json | jq -r '.balances[] | select(.denom == "uatom") | .amount')
+echo "Current spendable balance is: $spendable_balance1_acc2"
 
 # Wait for 5 blocks
 tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 5
