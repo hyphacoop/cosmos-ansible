@@ -713,21 +713,21 @@ jobs:
           connection_id=$($CHAIN_BINARY q ibc connection connections -o json --home $HOME_1 | jq -r --arg client "$client_id" '.connections[] | select(.client_id==$client).id')
           export IBC_CHANNEL=$($CHAIN_BINARY q ibc channel connections $connection_id -o json --home $HOME_1 | jq -r '.channels[] | select(.port_id=="transfer").channel_id')
           tests/v15_upgrade/lsm_happy_path.sh
-      # - name: _lsm-failures-1
-      #   run: tests/v12_upgrade/lsm_failures.sh
-      # - name: _lsm-complex-1
-      #   run: tests/v12_upgrade/lsm_complex.sh
-      # - name: _lsm_accounting-1
-      #   env:
-      #     BASE_FEES: 2000
-      #     GAS_ADJUSTMENT: 2
-      #   run: tests/v12_upgrade/lsm_accounting.sh
-      # - name: _lsm-lsp-happy-1
-      #   run: tests/v12_upgrade/ica_delegate_happy.sh
-      # - name: _lsm-lsp-failures-1
-      #   run: tests/v12_upgrade/ica_delegate_failures.sh
-      # - name: _lsm-lsp-accounting-1
-      #   run: tests/v12_upgrade/ica_delegate_accounting.sh
+      - name: _lsm-failures-1
+        run: tests/v12_upgrade/lsm_failures.sh
+      - name: _lsm-complex-1
+        run: tests/v12_upgrade/lsm_complex.sh
+      - name: _lsm_accounting-1
+        env:
+          BASE_FEES: 2000
+          GAS_ADJUSTMENT: 2
+        run: tests/v12_upgrade/lsm_accounting.sh
+      - name: _lsm-lsp-happy-1
+        run: tests/v12_upgrade/ica_delegate_happy.sh
+      - name: _lsm-lsp-failures-1
+        run: tests/v12_upgrade/ica_delegate_failures.sh
+      - name: _lsm-lsp-accounting-1
+        run: tests/v12_upgrade/ica_delegate_accounting.sh
       # - name: Save LSM log
       #   uses: actions/upload-artifact@v3
       #   with:
