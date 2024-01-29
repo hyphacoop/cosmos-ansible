@@ -32,7 +32,9 @@ $CHAIN_BINARY tx provider assign-consensus-key $CONSUMER_CHAIN_ID $CON3_PUBKEY -
 sleep $COMMIT_TIMEOUT
 
 # Update genesis file with right denom
-sed -i s%stake%$CONSUMER_DENOM%g $CONSUMER_HOME_1/config/genesis.json
+# sed -i s%stake%$CONSUMER_DENOM%g $CONSUMER_HOME_1/config/genesis.json
+jq '.app_state.crisis.constant_fee.denom = "ucon"' $CONSUMER_HOME_1/config/genesis.json > genesis-1.json
+mv genesis-1.json $CONSUMER_HOME_1/config/genesis.json
 
 # Set slashing to $DOWNTIME_BLOCKS
 jq -r --arg SLASH "$DOWNTIME_BLOCKS" '.app_state.slashing.params.signed_blocks_window |= $SLASH' $CONSUMER_HOME_1/config/genesis.json > consumer-slashing.json
