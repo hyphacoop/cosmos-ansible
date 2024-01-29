@@ -67,7 +67,7 @@ elif [ $RELAYER == "rly" ]; then
 
     # five - Stride
     jq '.value."chain-id" = "five"' tests/v15_upgrade/testnet.json > five-1.json
-    jq '.value."rpc-addr" = "http://localhost:37001"' five-1.json > five-2.json
+    jq '.value."rpc-addr" = "http://localhost:27501"' five-1.json > five-2.json
     jq '.value."account-prefix" = "stride"' five-2.json > five-3.json
     jq '.value."gas-prices" = "0.0025ustrd"' five-3.json > five.json
     cat five.json

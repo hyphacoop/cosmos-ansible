@@ -50,6 +50,21 @@ $CONSUMER_CHAIN_BINARY add-genesis-account $MONIKER_RELAYER $VAL_FUNDS$CONSUMER_
 $CONSUMER_CHAIN_BINARY genesis add-genesis-account $MONIKER_1 $VAL_FUNDS$CONSUMER_DENOM --home $CONSUMER_HOME_1
 $CONSUMER_CHAIN_BINARY genesis add-genesis-account $MONIKER_RELAYER $VAL_FUNDS$CONSUMER_DENOM --home $CONSUMER_HOME_1
 
+# Update genesis file with right denom
+if [ "$CONSUMER_CHAIN_BINARY" == "strided" ]; then
+    echo "Patching genesis file for Stride denom..."
+    jq '.app_state.crisis.constant_fee.denom = "ustrd"' $CONSUMER_HOME_1/config/genesis.json > stride-genesis-1.json
+    jq '.app_state.gov.params.min_deposit[0].denom = "ustrd"' stride-genesis-1.json > stride-genesis-2.json
+    jq '.app_state.mint.params.mint_denom = "ustrd"' stride-genesis-2.json > stride-genesis-3.json
+    jq '.app_state.staking.params.bond_denom = "ustrd"' stride-genesis-3.json > stride-genesis-4.json
+
+    echo "Patching genesis file for Stride fast governance..."
+    jq '(.app_state.epochs.epochs[] | select(.identifier=="day") ).duration = "120s"' stride-genesis-4.json  > stride-genesis-5.json
+    jq '(.app_state.epochs.epochs[] | select(.identifier=="stride_epoch") ).duration = "120s"' stride-genesis-5.json  > stride-genesis-6.json
+    jq '.app_state.gov.voting_params.voting_period = "30s"' stride-genesis-6.json  > stride-genesis-7.json
+    jq '.app_state.gov.params.voting_period = "30s"' stride-genesis-7.json  > stride-genesis-8.json
+fi
+
 echo "Patching config files..."
 # app.toml
 # minimum_gas_prices

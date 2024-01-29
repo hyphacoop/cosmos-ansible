@@ -99,9 +99,9 @@ type = "CosmosSdk"
 
 [[chains]]
 id = 'five'
-rpc_addr = 'http://localhost:37001'
-grpc_addr = 'http://localhost:36001'
-event_source = { mode = 'push', url = 'ws://localhost:37001/websocket', batch_delay = '500ms' }
+rpc_addr = 'http://localhost:27501'
+grpc_addr = 'http://localhost:26501'
+event_source = { mode = 'push', url = 'ws://localhost:27501/websocket', batch_delay = '500ms' }
 rpc_timeout = '15s'
 account_prefix = 'stride'
 key_name = 'wallet'
