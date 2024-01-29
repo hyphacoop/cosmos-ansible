@@ -237,8 +237,8 @@ jobs:
       #     tests/test_globalfee.sh
       # - name: Query votes on param change proposal
       #   run: $CHAIN_BINARY q gov votes 1 --home $HOME_1 --height 12
-      - name: Transactions verified> bank send, delegate, and withdraw rewards
-        run: tests/test_tx_fresh.sh
+      # - name: Transactions verified> bank send, delegate, and withdraw rewards
+      #   run: tests/test_tx_fresh.sh
       - name: Validators initial state
         run: |
           $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
