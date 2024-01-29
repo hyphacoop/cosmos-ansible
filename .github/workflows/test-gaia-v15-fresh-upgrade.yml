@@ -257,7 +257,7 @@ jobs:
           wget $CONSUMER_CHAIN_V330_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_V330_BINARY -q
           chmod +x $HOME/go/bin/$CONSUMER_CHAIN_V330_BINARY
           wget $STRIDE_V18_BINARY_URL -O $HOME/go/bin/$STRIDE_BINARY -q
-          chmod +x $HOME/go/bin/$STRIDE_BINARY
+          chmod +x $HOME/go/bin/$STRIDE_CHAIN_BINARY
           wget $ICS_TRANSFORM_BINARY_URL -O $HOME/go/bin/$ICS_TRANSFORM_BINARY -q
           chmod +x $HOME/go/bin/$ICS_TRANSFORM_BINARY
 
@@ -469,7 +469,7 @@ jobs:
           CON3_PPROF_PORT: 29503
           DOWNTIME_BLOCKS: 100000
         run: |
-          export CONSUMER_CHAIN_BINARY=$STRIDE_BINARY
+          export CONSUMER_CHAIN_BINARY=$STRIDE_CHAIN_BINARY
           tests/major_fresh_upgrade/init_consumer_assign_keys.sh
           sleep 20
       - name: Prepare consumer chain five
@@ -481,7 +481,7 @@ jobs:
           CONSUMER_ICS: v3.2.0
           PROVIDER_ICS: v2.4.0
         run: |
-          export CONSUMER_CHAIN_BINARY=$STRIDE_BINARY
+          export CONSUMER_CHAIN_BINARY=$STRIDE_CHAIN_BINARY
           tests/major_fresh_upgrade/prepare_consumer.sh
       - name: Start consumer chain five
         env:
@@ -529,7 +529,7 @@ jobs:
           CONSUMER_DENOM: ustrd
           RECIPIENT: stride1r5v5srda7xfth3hn2s26txvrcrntldjucq88rn
         run: |
-          export CONSUMER_CHAIN_BINARY=$STRIDE_BINARY
+          export CONSUMER_CHAIN_BINARY=$STRIDE_CHAIN_BINARY
           client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
           connection_id=$($CHAIN_BINARY q ibc connection connections -o json --home $HOME_1 | jq -r --arg client "$client_id" '.connections[] | select(.client_id==$client).id')
           channel_id=$($CHAIN_BINARY q ibc channel connections $connection_id -o json --home $HOME_1 | jq -r '.channels[] | select(.port_id=="transfer").channel_id')
