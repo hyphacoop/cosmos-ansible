@@ -46,7 +46,7 @@ fi
 echo "Provider starting balance in expected denom: $provider_start_balance"
 
 # Transfer consumer token to provider chain
-$CHAIN_BINARY q ibc channel channels --home $STRIDE_HOME_1 -o json | jq '.'
+$CHAIN_BINARY q ibc channel channels --home $CONSUMER_HOME_1 -o json | jq '.'
 $CHAIN_BINARY q tendermint-validator-set --home $HOME_1
 $CHAIN_BINARY q tendermint-validator-set --home $CONSUMER_HOME_1
 DENOM_BEFORE=$($CHAIN_BINARY --home $HOME_1 q bank balances $WALLET_1 -o json | jq -r '.balances | length')
