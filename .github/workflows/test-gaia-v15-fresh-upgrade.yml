@@ -725,7 +725,7 @@ jobs:
       - name: _lsm-lsp-happy-1
         env:
           STRIDE_HOME_1: /home/runner/.five_1
-        run: tests/v12_upgrade/ica_delegate_happy.sh
+        run: tests/v15_upgrade/ica_delegate_happy.sh
       - name: _lsm-lsp-failures-1
         env:
           STRIDE_HOME_1: /home/runner/.five_1
