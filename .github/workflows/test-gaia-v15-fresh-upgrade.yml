@@ -486,9 +486,9 @@ jobs:
       - name: Start consumer chain five
         env:
           CONSUMER_CHAIN_ID: five
-          CONSUMER_SERVICE_1: five.service
-          CONSUMER_SERVICE_2: five.service
-          CONSUMER_SERVICE_3: five.service
+          CONSUMER_SERVICE_1: five_1.service
+          CONSUMER_SERVICE_2: five_2.service
+          CONSUMER_SERVICE_3: five_3.service
         run: |
           sudo systemctl enable $CONSUMER_SERVICE_1 --now
           sleep 5
