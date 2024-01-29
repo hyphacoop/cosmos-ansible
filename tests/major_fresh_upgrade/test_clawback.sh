@@ -49,3 +49,10 @@ gaiad --home $HOME_1 q bank spendable-balances cosmos145hytrc49m0hn6fphp8d5h4xsp
 
 echo "After upgrade"
 gaiad --home $HOME_1 q bank spendable-balances cosmos145hytrc49m0hn6fphp8d5h4xspwkawcuzmx498 --height $post_upgrade_height
+
+# Check community pool
+echo "Before upgrade"
+gaiad  --home $HOME_1 q distribution community-pool --height $pre_upgrade_height
+
+echo "Before upgrade"
+gaiad  --home $HOME_1 q distribution community-pool --height $post_upgrade_height
