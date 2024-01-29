@@ -244,6 +244,7 @@ jobs:
       - name: Validators initial state
         run: |
           $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'
+          $CHAIN_BINARY q ica host params -o json --home $HOME_1 | jq '.'
       - name: Set up relayer
         run: tests/v15_upgrade/setup_relayer.sh
       - name: Download consumer chain binaries
