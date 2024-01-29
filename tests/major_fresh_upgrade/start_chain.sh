@@ -80,7 +80,7 @@ jq -r '.app_state.interchainaccounts.host_genesis_state.params.allow_messages[0]
 mv ica_host.json $HOME_1/config/genesis.json
 # pd
 
-cat $HOME_1/config/genesis.json
+jq '.app_state.interchainaccounts' $HOME_1/config/genesis.json
 
 echo "Copying genesis file to other nodes..."
 cp $HOME_1/config/genesis.json $HOME_2/config/genesis.json 
