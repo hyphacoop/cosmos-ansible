@@ -165,12 +165,12 @@ echo "** HAPPY PATH> STEP 5: REDEEM TOKENS **"
     $CHAIN_BINARY q bank balances $happy_liquid_1 --home $HOME_1 -o json | jq '.'
     submit_tx "tx staking redeem-tokens $liquid_1_redeem$tokenized_denom --from $happy_liquid_1 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y" $CHAIN_BINARY $HOME_1
     # tests/v12_upgrade/log_lsm_data.sh happy post-redeem-1 $happy_liquid_1 $liquid_1_redeem
-    sleep $(($COMMIT_TIMEOUT*10)
+    sleep $(($COMMIT_TIMEOUT*10))
     echo "Redeeming tokens from happy_liquid_2..."
     # tests/v12_upgrade/log_lsm_data.sh happy pre-redeem-2 $happy_liquid_2 $bank_send_amount
     submit_tx "tx staking redeem-tokens $bank_send_amount$tokenized_denom --from $happy_liquid_2 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y" $CHAIN_BINARY $HOME_1
     # tests/v12_upgrade/log_lsm_data.sh happy post-redeem-2 $happy_liquid_2 $bank_send_amount
-    sleep $(($COMMIT_TIMEOUT*10)
+    sleep $(($COMMIT_TIMEOUT*10))
 
     echo "Sending $ibc_denom tokens from STRIDE_WALLET_LIQUID to $CHAIN_ID chain for redeem operation..."
     $CHAIN_BINARY q bank balances $happy_liquid_3 --home $HOME_1
