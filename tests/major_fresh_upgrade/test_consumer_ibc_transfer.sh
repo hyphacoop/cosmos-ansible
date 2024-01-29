@@ -62,7 +62,7 @@ if [ -z "$provider_end_balance" ]; then
   provider_end_balance=0
 fi
 echo "Provider ending balance in expected denom: $provider_end_balance"
-journal -u $RELAYER | tail -n 100
+journalctl -u $RELAYER | tail -n 100
 
 
 if [ $provider_end_balance -gt $provider_start_balance ]; then
