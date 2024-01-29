@@ -689,6 +689,8 @@ jobs:
       #     tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh $channel_id
 
       - name: Register and fund ICA
+        env:
+          ICA_CHAIN_HOME: /home/runner/.five_1
         run: tests/v12_upgrade/setup_ica.sh
 
       - name: Set test LSM params
