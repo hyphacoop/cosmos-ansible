@@ -42,3 +42,10 @@ if [ $spendable_balance1 -ne $spendable_balance2 ]; then
 else
     echo "Spendable balance unchanged as expected, spendable balance 1 is: $spendable_balance1 balance 2 is: $spendable_balance2"
 fi
+
+# Check bank balances
+echo "Before upgrade"
+gaiad --home $HOME_1 q bank spendable-balances cosmos145hytrc49m0hn6fphp8d5h4xspwkawcuzmx498 --height $pre_upgrade_height
+
+echo "After upgrade"
+gaiad --home $HOME_1 q bank spendable-balances cosmos145hytrc49m0hn6fphp8d5h4xspwkawcuzmx498 --height $post_upgrade_height
