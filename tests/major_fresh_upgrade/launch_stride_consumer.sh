@@ -45,4 +45,4 @@ cp consumer-genesis.json $STRIDE_HOME_2/config/ccv.json
 
 echo "Starting the consumer chain..."
 sudo systemctl enable $STRIDE_SERVICE_1 --now
-# sudo systemctl enable $STRIDE_SERVICE_2 --now
+sudo systemctl enable $STRIDE_SERVICE_2 --now

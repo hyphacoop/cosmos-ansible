@@ -46,12 +46,13 @@ fi
 echo "Provider starting balance in expected denom: $provider_start_balance"
 
 # Transfer consumer token to provider chain
+$CHAIN_BINARY q ibc channel channels --home $STRIDE_HOME_1 -o json | jq '.'
 DENOM_BEFORE=$($CHAIN_BINARY --home $HOME_1 q bank balances $WALLET_1 -o json | jq -r '.balances | length')
 echo "Sending $CONSUMER_DENOM to $CHAIN_ID..."
 command="$CONSUMER_CHAIN_BINARY --home $CONSUMER_HOME_1 tx ibc-transfer transfer transfer channel-1 $WALLET_1 1000$CONSUMER_DENOM --from $RECIPIENT --keyring-backend test --gas auto --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$CONSUMER_DENOM -y -o json"
 txhash=$($command | jq -r .txhash)
 echo "Waiting for the transfer to reach the provider chain..."
-sleep $(($COMMIT_TIMEOUT*15))
+sleep $(($COMMIT_TIMEOUT*20))
 echo "tx hash: $txhash"
 $CONSUMER_CHAIN_BINARY q tx $txhash --home $CONSUMER_HOME_1
 
@@ -61,6 +62,7 @@ if [ -z "$provider_end_balance" ]; then
   provider_end_balance=0
 fi
 echo "Provider ending balance in expected denom: $provider_end_balance"
+journal -u $RELAYER | tail -n 100
 
 
 if [ $provider_end_balance -gt $provider_start_balance ]; then
