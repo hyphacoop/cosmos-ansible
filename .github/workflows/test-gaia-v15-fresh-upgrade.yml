@@ -256,7 +256,7 @@ jobs:
           chmod +x $HOME/go/bin/$CONSUMER_CHAIN_V320_BINARY
           wget $CONSUMER_CHAIN_V330_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_V330_BINARY -q
           chmod +x $HOME/go/bin/$CONSUMER_CHAIN_V330_BINARY
-          wget $STRIDE_V18_BINARY_URL -O $HOME/go/bin/$STRIDE_BINARY -q
+          wget $STRIDE_V18_BINARY_URL -O $HOME/go/bin/$STRIDE_CHAIN_BINARY -q
           chmod +x $HOME/go/bin/$STRIDE_CHAIN_BINARY
           wget $ICS_TRANSFORM_BINARY_URL -O $HOME/go/bin/$ICS_TRANSFORM_BINARY -q
           chmod +x $HOME/go/bin/$ICS_TRANSFORM_BINARY
