@@ -181,8 +181,8 @@ echo "** HAPPY PATH> STEP 5: REDEEM TOKENS **"
     journalctl -u $RELAYER | tail -n 100
     echo "***RELAYER DATA***"
     echo "Redeeming tokens from happy_liquid_3..."
-    $CHAIN_BINARY q tendermint-validator-set --home $HOME_1 -o json | jq '.'
-    $CHAIN_BINARY q tendermint-validator-set --home $STRIDE_HOME_1 -o json | jq '.'
+    $CHAIN_BINARY q tendermint-validator-set --home $HOME_1
+    $CHAIN_BINARY q tendermint-validator-set --home $STRIDE_HOME_1
     # tests/v12_upgrade/log_lsm_data.sh happy pre-redeem-3 $happy_liquid_3 $ibc_transfer_amount
     submit_tx "tx staking redeem-tokens $ibc_transfer_amount$tokenized_denom --from $happy_liquid_3 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y" $CHAIN_BINARY $HOME_1
     # tests/v12_upgrade/log_lsm_data.sh happy post-redeem-3 $happy_liquid_3 $ibc_transfer_amount
