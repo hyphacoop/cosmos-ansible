@@ -57,7 +57,7 @@ jobs:
         ${{ fromJSON(needs.set-version-matrix.outputs.upgrade_versions) }}
       fail-fast: false
     env:
-      COMMIT_TIMEOUT: 3
+      COMMIT_TIMEOUT: 4
       COSMOVISOR: false
       COSMOVISOR_VERSION: ${{ matrix.cv_version }}
       UPGRADE_MECHANISM: ${{ matrix.upgrade_mechanism }}
