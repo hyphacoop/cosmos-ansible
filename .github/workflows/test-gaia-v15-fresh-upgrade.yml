@@ -705,6 +705,7 @@ jobs:
           BASE_FEES: 3000
           CONSUMER_FEES: 1000
           CONSUMER_CHAIN_ID: five
+          STRIDE_HOME_1: /home/runner/.five_1
         run: |
           client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
           connection_id=$($CHAIN_BINARY q ibc connection connections -o json --home $HOME_1 | jq -r --arg client "$client_id" '.connections[] | select(.client_id==$client).id')
