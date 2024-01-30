@@ -169,7 +169,7 @@ jobs:
       STRIDE_PPROF_2: 39002
       CHANGEOVER_HEIGHT_OFFSET: false
       # Relayer variables
-      RELAYER: hermes
+      RELAYER: rly
       HERMES_VERSION: v1.7.4
       RLY_VERSION: "2.4.2"
     steps:
