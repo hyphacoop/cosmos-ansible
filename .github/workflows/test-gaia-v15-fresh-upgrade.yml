@@ -855,9 +855,9 @@ jobs:
       #   run: |
       #     tests/major_fresh_upgrade/test_pfm_transfers.sh
 
-      # - name: Stop relayer before the upgrade
-      #   run: |
-      #     sudo systemctl stop $RELAYER
+      - name: Stop relayer before the upgrade
+        run: |
+          sudo systemctl stop $RELAYER
 
       # - name: lsm-happy-2
       #   env:
@@ -886,6 +886,10 @@ jobs:
         run: |
           tests/major_fresh_upgrade/software_upgrade.sh 127.0.0.1 $VAL1_RPC_PORT v15
 
+      - name: Restart relayer after the upgrade
+        run: |
+          sudo systemctl start $RELAYER
+
       - name: _Blocks produced after upgrade
         run: |
           tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 10
@@ -894,9 +898,6 @@ jobs:
           $CHAIN_BINARY keys list --home $HOME_1 --output json
           # tests/v15_upgrade/flush_key_migration.sh
 
-      - name: Restart relayer after the upgrade
-        run: |
-          sudo systemctl start $RELAYER
 
       # - name: _Transactions verified> bank send, delegate, and withdraw rewards
       #   run: tests/test_tx_fresh.sh
