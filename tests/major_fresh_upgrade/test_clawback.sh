@@ -103,6 +103,6 @@ echo "Community pool balance before upgrade: $pre_upgrade_cp"
 post_upgrade_cp=$(gaiad  --home $HOME_1 q distribution community-pool --height $post_upgrade_height -o json | jq -r '.pool[] | select(.denom == "uatom") | .amount')
 echo "Community pool balance after upgrade: $post_upgrade_cp"
 
-let cp_diff=$post_upgrade_cp-$pre_upgrade_cp
+cp_diff=$(echo "$post_upgrade_cp-$pre_upgrade_cp" | bc)
 
 echo "Community pool differences: $cp_diff"
