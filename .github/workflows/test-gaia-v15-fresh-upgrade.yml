@@ -694,6 +694,10 @@ jobs:
           ICA_CHAIN_HOME: /home/runner/.five_1
         run: tests/v15_upgrade/setup_ica.sh
 
+      - name: Set up happy path LSM accounts
+        run: |
+          tests/v15_upgrade/lsm_account_setup.sh
+
       - name: Set test LSM params
         run: |
           tests/param_change.sh tests/v12_upgrade/proposal-global-liquid-cap.json
@@ -709,6 +713,7 @@ jobs:
           CONSUMER_FEES: 1000
           CONSUMER_CHAIN_ID: five
           STRIDE_HOME_1: /home/runner/.five_1
+          VALOPER_TOKENIZATION: 1
         run: |
           client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
           connection_id=$($CHAIN_BINARY q ibc connection connections -o json --home $HOME_1 | jq -r --arg client "$client_id" '.connections[] | select(.client_id==$client).id')
@@ -859,6 +864,7 @@ jobs:
           CONSUMER_FEES: 1000
           CONSUMER_CHAIN_ID: five
           STRIDE_HOME_1: /home/runner/.five_1
+          VALOPER_TOKENIZATION: 2
         run: |
           client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
           connection_id=$($CHAIN_BINARY q ibc connection connections -o json --home $HOME_1 | jq -r --arg client "$client_id" '.connections[] | select(.client_id==$client).id')
@@ -903,6 +909,7 @@ jobs:
           CONSUMER_FEES: 1000
           CONSUMER_CHAIN_ID: five
           STRIDE_HOME_1: /home/runner/.five_1
+          VALOPER_TOKENIZATION: 3
         run: |
           client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
           connection_id=$($CHAIN_BINARY q ibc connection connections -o json --home $HOME_1 | jq -r --arg client "$client_id" '.connections[] | select(.client_id==$client).id')
