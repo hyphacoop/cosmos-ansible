@@ -97,8 +97,12 @@ echo "After upgrade"
 gaiad --home $HOME_1 q bank spendable-balances cosmos1n7qdtcnagfvs8p4t537c5yn2dylw2e7l7a2htm --height $post_upgrade_height
 
 # Check community pool
-echo "Before upgrade"
-gaiad  --home $HOME_1 q distribution community-pool --height $pre_upgrade_height
+pre_upgrade_cp=$(gaiad  --home $HOME_1 q distribution community-pool --height $pre_upgrade_height -o json | jq -r '.pool[] | select(.denom == "uatom") | .amount')
+echo "Community pool balance before upgrade: $pre_upgrade_cp"
 
-echo "After upgrade"
-gaiad  --home $HOME_1 q distribution community-pool --height $post_upgrade_height
+post_upgrade_cp=$(gaiad  --home $HOME_1 q distribution community-pool --height $post_upgrade_height -o json | jq -r '.pool[] | select(.denom == "uatom") | .amount')
+echo "Community pool balance after upgrade: $post_upgrade_cp"
+
+let cp_diff=$post_upgrade_cp-$pre_upgrade_cp
+
+echo "Community pool differences: $cp_diff"
