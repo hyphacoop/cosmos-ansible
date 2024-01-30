@@ -13,7 +13,7 @@ happy_liquid_2=$($CHAIN_BINARY keys list --home $HOME_1 --output json | jq -r '.
 happy_liquid_3=$($CHAIN_BINARY keys list --home $HOME_1 --output json | jq -r '.[] | select(.name=="happy_liquid_3").address')
 happy_owner=$($CHAIN_BINARY keys list --home $HOME_1 --output json | jq -r '.[] | select(.name=="happy_owner").address')
 
-$CHAIN_BINARY tx bank send $happy_bonding $happy_bonding 1$DENOM --home $HOME_1 --from happy_bonding --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y -o json
+$CHAIN_BINARY tx bank send $happy_bonding $happy_bonding 1$DENOM --home $HOME_1 --from $happy_bonding --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y -o json
 $CHAIN_BINARY tx bank send $happy_liquid_1 $happy_liquid_1 1$DENOM --home $HOME_1 --from $happy_liquid_1 --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y -o json
 $CHAIN_BINARY tx bank send $happy_liquid_2 $happy_liquid_2 1$DENOM --home $HOME_1 --from $happy_liquid_2 --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y -o json
 $CHAIN_BINARY tx bank send $happy_liquid_3 $happy_liquid_3 1$DENOM --home $HOME_1 --from $happy_liquid_3 --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y -o json
