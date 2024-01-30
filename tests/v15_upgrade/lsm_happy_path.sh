@@ -15,7 +15,7 @@ tokenized_denom=$VALOPER_1/$VALOPER_TOKENIZATION
 # $CHAIN_BINARY keys add happy_liquid_3 --home $HOME_1
 # $CHAIN_BINARY keys add happy_owner --home $HOME_1
 
-$CHAIN_BINARY keys list --home $HOME_1 --output json
+$CHAIN_BINARY keys list --home $HOME_1 --output json | jq '.'
 
 happy_bonding=$($CHAIN_BINARY keys list --home $HOME_1 --output json | jq -r '.[] | select(.name=="happy_bonding").address')
 happy_liquid_1=$($CHAIN_BINARY keys list --home $HOME_1 --output json | jq -r '.[] | select(.name=="happy_liquid_1").address')
