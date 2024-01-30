@@ -6,11 +6,11 @@ source tests/process_tx.sh
 delegate=20000000
 bond_delegation=20000000
 
-$CHAIN_BINARY keys add lsp_happy_bonding --home $HOME_1
-lsp_happy_bonding=$($CHAIN_BINARY keys list --home $HOME_1 --output json | jq -r '.[] | select(.name=="lsp_happy_bonding").address')
+$CHAIN_BINARY keys add lsp_happy_bonding_$LSP_COUNT --home $HOME_1
+lsp_happy_bonding=$($CHAIN_BINARY keys list --home $HOME_1 --output json | jq -r --arg LSP "lsp_happy_bonding_$LSP_COUNT" '.[] | select(.name==$LSP).address')
 
 echo "Funding bonding account..."
-submit_tx "tx bank send $WALLET_1 $lsp_happy_bonding 100000000uatom --from $WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -o json -y" $CHAIN_BINARY $HOME_1
+submit_tx "tx bank send $WALLET_1 $lsp_happy_bonding 50000000uatom --from $WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -o json -y" $CHAIN_BINARY $HOME_1
 
 echo "** LIQUID STAKING PROVIDER HAPPY PATH> 1: DELEGATE AND BOND **"
     echo "Delegating and bonding with bonding_account..."

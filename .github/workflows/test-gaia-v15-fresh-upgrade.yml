@@ -728,10 +728,11 @@ jobs:
       #     BASE_FEES: 2000
       #     GAS_ADJUSTMENT: 2
       #   run: tests/v12_upgrade/lsm_accounting.sh
-      # - name: _lsm-lsp-happy-1
-      #   env:
-      #     STRIDE_HOME_1: /home/runner/.five_1
-      #   run: tests/v15_upgrade/ica_delegate_happy.sh
+      - name: _lsm-lsp-happy-1
+        env:
+          STRIDE_HOME_1: /home/runner/.five_1
+          LSP_COUNT: 1
+        run: tests/v15_upgrade/ica_delegate_happy.sh
       # - name: _lsm-lsp-failures-1
       #   env:
       #     STRIDE_HOME_1: /home/runner/.five_1
@@ -890,7 +891,8 @@ jobs:
           tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 10
       - name: Flush "migration successful" lines
         run: |
-          tests/v15_upgrade/flush_key_migration.sh
+          $CHAIN_BINARY keys list --home $HOME_1 --output json
+          # tests/v15_upgrade/flush_key_migration.sh
 
       - name: Restart relayer after the upgrade
         run: |
@@ -903,7 +905,7 @@ jobs:
       # - name: _RPC endpoints check
       #   run: tests/test_endpoints_rpc.sh localhost $VAL1_RPC_PORT
 
-      - name: lsm-happy-3
+      - name: lsm-happy-2
         env:
           BASE_FEES: 3000
           CONSUMER_FEES: 1000
@@ -915,7 +917,11 @@ jobs:
           connection_id=$($CHAIN_BINARY q ibc connection connections -o json --home $HOME_1 | jq -r --arg client "$client_id" '.connections[] | select(.client_id==$client).id')
           export IBC_CHANNEL=$($CHAIN_BINARY q ibc channel connections $connection_id -o json --home $HOME_1 | jq -r '.channels[] | select(.port_id=="transfer").channel_id')
           tests/v15_upgrade/lsm_happy_path.sh
-
+      - name: _lsm-lsp-happy-2
+        env:
+          STRIDE_HOME_1: /home/runner/.five_1
+          LSP_COUNT: 2
+        run: tests/v15_upgrade/ica_delegate_happy.sh
       # - name: Query votes on pre-upgrade param change proposal <- will result in panic
       #   run: $CHAIN_BINARY q gov votes 1 --home $HOME_1 --height 12
 
