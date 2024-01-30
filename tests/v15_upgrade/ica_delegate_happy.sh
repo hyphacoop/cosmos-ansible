@@ -71,7 +71,7 @@ echo "** LIQUID STAKING PROVIDER HAPPY PATH> 2: DELEGATE VIA ICA **"
     cat delegate-happy-3.json
     echo "Generating packet JSON..."
     # $STRIDE_CHAIN_BINARY tx interchain-accounts host generate-packet-data "$(cat delegate-happy-3.json)" --encoding proto3json > delegate_packet.json # Stride v18
-    $STRIDE_CHAIN_BINARY tx interchain-accounts host generate-packet-data "$(cat delegate-happy-3.json)" > delegate_packet.json # Stride v18
+    $STRIDE_CHAIN_BINARY tx interchain-accounts host generate-packet-data "$(cat delegate-happy-3.json)" > delegate_packet.json # Stride v12
     echo "Sending tx staking delegate to host chain..."
     tests/v12_upgrade/log_lsm_data.sh lsp-happy pre-ica-delegate-1 $ICA_ADDRESS $delegate
     

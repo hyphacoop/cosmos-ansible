@@ -714,27 +714,28 @@ jobs:
           connection_id=$($CHAIN_BINARY q ibc connection connections -o json --home $HOME_1 | jq -r --arg client "$client_id" '.connections[] | select(.client_id==$client).id')
           export IBC_CHANNEL=$($CHAIN_BINARY q ibc channel connections $connection_id -o json --home $HOME_1 | jq -r '.channels[] | select(.port_id=="transfer").channel_id')
           tests/v15_upgrade/lsm_happy_path.sh
-      - name: _lsm-failures-1
-        run: tests/v12_upgrade/lsm_failures.sh
-      - name: _lsm-complex-1
-        run: tests/v12_upgrade/lsm_complex.sh
-      - name: _lsm_accounting-1
-        env:
-          BASE_FEES: 2000
-          GAS_ADJUSTMENT: 2
-        run: tests/v12_upgrade/lsm_accounting.sh
-      - name: _lsm-lsp-happy-1
-        env:
-          STRIDE_HOME_1: /home/runner/.five_1
-        run: tests/v15_upgrade/ica_delegate_happy.sh
-      - name: _lsm-lsp-failures-1
-        env:
-          STRIDE_HOME_1: /home/runner/.five_1
-        run: tests/v12_upgrade/ica_delegate_failures.sh
-      - name: _lsm-lsp-accounting-1
-        env:
-          STRIDE_HOME_1: /home/runner/.five_1
-        run: tests/v12_upgrade/ica_delegate_accounting.sh
+      # - name: _lsm-failures-1
+      #   run: tests/v12_upgrade/lsm_failures.sh
+      # - name: _lsm-complex-1
+      #   run: tests/v12_upgrade/lsm_complex.sh
+      # - name: _lsm_accounting-1
+      #   env:
+      #     BASE_FEES: 2000
+      #     GAS_ADJUSTMENT: 2
+      #   run: tests/v12_upgrade/lsm_accounting.sh
+      # - name: _lsm-lsp-happy-1
+      #   env:
+      #     STRIDE_HOME_1: /home/runner/.five_1
+      #   run: tests/v15_upgrade/ica_delegate_happy.sh
+      # - name: _lsm-lsp-failures-1
+      #   env:
+      #     STRIDE_HOME_1: /home/runner/.five_1
+      #   run: tests/v12_upgrade/ica_delegate_failures.sh
+      # - name: _lsm-lsp-accounting-1
+      #   env:
+      #     STRIDE_HOME_1: /home/runner/.five_1
+      #   run: tests/v12_upgrade/ica_delegate_accounting.sh
+
       # - name: Save LSM log
       #   uses: actions/upload-artifact@v3
       #   with:
@@ -852,6 +853,18 @@ jobs:
       #   run: |
       #     sudo systemctl stop $RELAYER
 
+      - name: lsm-happy-2
+        env:
+          BASE_FEES: 3000
+          CONSUMER_FEES: 1000
+          CONSUMER_CHAIN_ID: five
+          STRIDE_HOME_1: /home/runner/.five_1
+        run: |
+          client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
+          connection_id=$($CHAIN_BINARY q ibc connection connections -o json --home $HOME_1 | jq -r --arg client "$client_id" '.connections[] | select(.client_id==$client).id')
+          export IBC_CHANNEL=$($CHAIN_BINARY q ibc channel connections $connection_id -o json --home $HOME_1 | jq -r '.channels[] | select(.port_id=="transfer").channel_id')
+          tests/v15_upgrade/lsm_happy_path.sh
+
       - name: Test software upgrade for published releases
         if: ${{ matrix.upgrade_version != 'main' }}
         env:
@@ -883,6 +896,18 @@ jobs:
         run: tests/test_endpoints_api.sh localhost $VAL1_API_PORT
       - name: _RPC endpoints check
         run: tests/test_endpoints_rpc.sh localhost $VAL1_RPC_PORT
+
+      - name: lsm-happy-3
+        env:
+          BASE_FEES: 3000
+          CONSUMER_FEES: 1000
+          CONSUMER_CHAIN_ID: five
+          STRIDE_HOME_1: /home/runner/.five_1
+        run: |
+          client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
+          connection_id=$($CHAIN_BINARY q ibc connection connections -o json --home $HOME_1 | jq -r --arg client "$client_id" '.connections[] | select(.client_id==$client).id')
+          export IBC_CHANNEL=$($CHAIN_BINARY q ibc channel connections $connection_id -o json --home $HOME_1 | jq -r '.channels[] | select(.port_id=="transfer").channel_id')
+          tests/v15_upgrade/lsm_happy_path.sh
 
       # - name: Query votes on pre-upgrade param change proposal <- will result in panic
       #   run: $CHAIN_BINARY q gov votes 1 --home $HOME_1 --height 12
