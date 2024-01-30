@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 # Get upgrade height
 upgrade_height=$(gaiad --home $HOME_1 q upgrade applied v15 -o json | jq -r '.header.height')
 
