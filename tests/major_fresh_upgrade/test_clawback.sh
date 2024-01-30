@@ -106,3 +106,11 @@ echo "Community pool balance after upgrade: $post_upgrade_cp"
 cp_diff=$(echo "$post_upgrade_cp-$pre_upgrade_cp" | bc)
 
 echo "Community pool differences: $cp_diff"
+
+if [ $post_upgrade_cp -lt 100000000 ]
+then
+    echo "Community pool balance is less than 100000000uatom, funds did not returned from wallet"
+    exit 7
+else
+    echo "Community pool balance is more than 100000000uatom, funds have been returned"
+fi
