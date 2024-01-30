@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # Run a tx bank send with each of the keys in the keyring
+$CHAIN_BINARY keys list --home $HOME_1 --output json
 
 $CHAIN_BINARY tx bank send $WALLET_1 $WALLET_1 1$DENOM --home $HOME_1 --from $WALLET_1 --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y -o json
 $CHAIN_BINARY tx bank send $WALLET_2 $WALLET_2 1$DENOM --home $HOME_1 --from $WALLET_2 --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y -o json
