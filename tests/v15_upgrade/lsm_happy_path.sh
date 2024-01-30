@@ -153,6 +153,8 @@ echo "** HAPPY PATH> STEP 4: TRANSFER TOKENS  **"
 
     echo "Sending tokens from happy_liquid_1 to STRIDE_WALLET_LIQUID via ibc transfer..."
     submit_ibc_tx "tx ibc-transfer transfer transfer $IBC_CHANNEL $STRIDE_WALLET_LIQUID $ibc_transfer_amount$tokenized_denom --from $happy_liquid_1 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y" $CHAIN_BINARY $HOME_1
+    sleep $(($COMMIT_TIMEOUT*10))
+    $STRIDE_CHAIN_BINARY q bank balances $STRIDE_WALLET_LIQUID --home $STRIDE_HOME_1 -o json | jq '.'
     ibc_denom=ibc/$($STRIDE_CHAIN_BINARY q ibc-transfer denom-hash transfer/channel-1/$tokenized_denom --home $STRIDE_HOME_1 -o json | jq -r '.hash')
     ibc_balance=$($STRIDE_CHAIN_BINARY q bank balances $STRIDE_WALLET_LIQUID --home $STRIDE_HOME_1 -o json | jq -r --arg DENOM "$ibc_denom" '.balances[] | select(.denom==$DENOM).amount')
     echo "IBC-wrapped liquid token balance: $ibc_balance$ibc_denom"
