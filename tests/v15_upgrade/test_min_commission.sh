@@ -4,7 +4,7 @@
 MCVAL_HOME_1=/home/runner/.mcval1
 MCVAL_HOME_2=/home/runner/.mcval1
 MCVAL_SERVICE_1=mcval1.service
-MCVAL_SERVICE_1=mcval2.service
+MCVAL_SERVICE_2=mcval2.service
 
 if $UPGRADED_V15 ; then
     echo "Validator with a min commission of <5% prior to the upgrade no has a 5% min commission"
