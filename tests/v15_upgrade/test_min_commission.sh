@@ -13,7 +13,7 @@ else
     $CHAIN_BINARY tx bank send $WALLET_1 $mc_val 10000000$DENOM --home $HOME_1 --from $WALLET_1 --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y -o json
     sudo systemctl stop $PROVIDER_SERVICE_1
     cp -r $HOME_1 $MCVAL_HOME
-    sudo systemctl start $PROVIDER_SERVICE_2
+    sudo systemctl start $PROVIDER_SERVICE_1
     $CHAIN_BINARY init dummy --home /home/runner/.dummykeys
     cp /home/runner/.dummykeys/config/priv_validator_key.json $MCVAL_HOME/config/priv_validator_key.json
     cp /home/runner/.dummykeys/config/node_key.json $MCVAL_HOME/config/node_key.json
