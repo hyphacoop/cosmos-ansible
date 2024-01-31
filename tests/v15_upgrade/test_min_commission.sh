@@ -7,7 +7,17 @@ MCVAL_SERVICE_1=mcval1.service
 MCVAL_SERVICE_1=mcval2.service
 
 if $UPGRADED_V15 ; then
+    echo "Validator with a min commission of <5% prior to the upgrade no has a 5% min commission"
+    mc_val1=$($CHAIN_BINARY keys list --home $MCVAL_HOME_1 --output json | jq -r '.[] | select(.name=="mc_val1").address')
+    bytes_address=$($CHAIN_BINARY keys parse $mc_val1 --output json | jq -r '.bytes')
+    echo "Bytes address: $bytes_address"
+    cosmosvaloper=$($CHAIN_BINARY keys parse $bytes_address --output json | jq -r '.formats[2]')
+    $CHAIN_BINARY q staking validators --home $HOME_1 -o json | jq -r '.validators[].commission.commission_rates.rate'
+    mcval1_commission=$($CHAIN_BINARY q staking validators --home $HOME_1 -o json | jq -r --arg ADDR "$cosmosvaloper" '.validators[] | select(.operator_address==$ADDR).commission.commission_rates.rate')
+    echo "mcval1_commission = $mcval1_commission"
+    
     echo "Validator cannot be created with a minimum commission of less than the set by the param (5% for v15)"
+
     $CHAIN_BINARY q staking validators --home $HOME_1 -o json | jq '.'
     $CHAIN_BINARY q staking validators --home $HOME_1 -o json | jq -r '.validators[].commission.commission_rates.rate'
 
@@ -109,9 +119,11 @@ else
     sleep $(( $COMMIT_TIMEOUT*2 ))
 
     $CHAIN_BINARY q staking validators --home $MCVAL_HOME_1 -o json | jq '.'
-    bytes_address=$($CHAIN_BINARY keys parse $mc_val --output json | jq -r '.bytes')
+    bytes_address=$($CHAIN_BINARY keys parse $mc_val1 --output json | jq -r '.bytes')
     echo "Bytes address: $bytes_address"
-    cosmosvaloper=$($CHAIN_BINARY keys parse $bytes_address --output json | jq '.')
+    cosmosvaloper=$($CHAIN_BINARY keys parse $bytes_address --output json | jq -r '.formats[2]')
     $CHAIN_BINARY q staking validators --home $HOME_1 -o json | jq -r '.validators[].commission.commission_rates.rate'
+    mcval1_commission=$($CHAIN_BINARY q staking validators --home $HOME_1 -o json | jq -r --arg ADDR "$cosmosvaloper" '.validators[] | select(.operator_address==$ADDR).commission.commission_rates.rate')
+    echo "mcval1_commission = $mcval1_commission"
     # commission=$($CHAIN_BINARY q staking validators --home $MCVAL_HOME_1 -o json | jq '.')
 fi
