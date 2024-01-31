@@ -1849,7 +1849,7 @@ jobs:
           chmod +x $HOME/go/bin/$CONSUMER_CHAIN_V320_BINARY
           wget $CONSUMER_CHAIN_V330_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_V330_BINARY -q
           chmod +x $HOME/go/bin/$CONSUMER_CHAIN_V330_BINARY
-          wget $STRIDE_CON_CHAIN_BINARY_URL -O $HOME/go/bin/$STRIDE_CHAIN_BINARY -q
+          wget $STRIDE_V18_BINARY_URL -O $HOME/go/bin/$STRIDE_CHAIN_BINARY -q
           chmod +x $HOME/go/bin/$STRIDE_CHAIN_BINARY
           wget $ICS_TRANSFORM_BINARY_URL -O $HOME/go/bin/$ICS_TRANSFORM_BINARY -q
           chmod +x $HOME/go/bin/$ICS_TRANSFORM_BINARY
@@ -1860,7 +1860,7 @@ jobs:
           echo "$CONSUMER_CHAIN_V310_BINARY runs off $CONSUMER_CHAIN_V310_BINARY_URL"
           echo "$CONSUMER_CHAIN_V320_BINARY runs off $CONSUMER_CHAIN_V320_BINARY_URL"
           echo "$CONSUMER_CHAIN_V330_BINARY runs off $CONSUMER_CHAIN_V330_BINARY_URL"
-          echo "$STRIDE_BINARY runs off $STRIDE_CON_CHAIN_BINARY_URL"
+          echo "$STRIDE_BINARY runs off $STRIDE_V18_BINARY_URL"
       - name: Start chain
         env:
           START_VERSION: ${{matrix.gaia_version}}

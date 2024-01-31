@@ -9,10 +9,7 @@ else
     echo "Validator can be created with a commission of 0%"
     MCVAL_HOME=/home/runner/.mcval1
     MCVAL_SERVICE=mcval1.service
-
-    $CHAIN_BINARY keys add mc_val1 --home $HOME_1
-    mc_val=$($CHAIN_BINARY keys list --home $HOME_1 --output json | jq -r '.[] | select(.name=="mc_val1").address')
-    $CHAIN_BINARY tx bank send $WALLET_1 $mc_val 10000000$DENOM --home $HOME_1 --from $WALLET_1 --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y -o json
+    
     sudo systemctl stop $PROVIDER_SERVICE_1
     cp -r $HOME_1 $MCVAL_HOME
     sudo systemctl start $PROVIDER_SERVICE_1
@@ -25,8 +22,10 @@ else
     toml set --toml-path $MCVAL_HOME/config/config.toml rpc.laddr "tcp://0.0.0.0:27111"
     toml set --toml-path $MCVAL_HOME/config/config.toml rpc.pprof_laddr "localhost:29111"
     toml set --toml-path $MCVAL_HOME/config/config.toml p2p.laddr "tcp://0.0.0.0:28111"
-    # $CHAIN_BINARY start --home $MCVAL_HOME
 
+    $CHAIN_BINARY keys add mc_val1 --home $MCVAL_HOME
+    mc_val=$($CHAIN_BINARY keys list --home $MCVAL_HOME --output json | jq -r '.[] | select(.name=="mc_val1").address')
+    
     sudo touch /etc/systemd/system/$MCVAL_SERVICE
     echo "[Unit]"                               | sudo tee /etc/systemd/system/$MCVAL_SERVICE
     echo "Description=Gaia service"             | sudo tee /etc/systemd/system/$MCVAL_SERVICE -a
@@ -44,8 +43,11 @@ else
     sudo systemctl enable $MCVAL_SERVICE
     sudo systemctl start $MCVAL_SERVICE
     sleep 20
+
     journalctl -u $MCVAL_SERVICE | tail
 
+    $CHAIN_BINARY tx bank send $WALLET_1 $mc_val 10000000$DENOM --home $HOME_1 --from $WALLET_1 --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y -o json
+    sleep $(( $COMMIT_TIMEOUT*2 ))
     $CHAIN_BINARY \
     tx staking create-validator \
     --amount 1000000$DENOM \
