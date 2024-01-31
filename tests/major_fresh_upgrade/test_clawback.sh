@@ -120,8 +120,8 @@ fi
 
 # get the block time of the tx for the vesting account
 vesting_txhash=$(echo $TX_VESTING_ACC_TX_JSON | jq -r .txhash)
-vesting_height=$(gaiad q tx $vesting_txhash -o json | jq -r '.height')
-vesting_block_time=$(gaiad q block $vesting_height | jq -r '.block.header.time')
+vesting_height=$(gaiad --home $HOME_1 q tx $vesting_txhash -o json | jq -r '.height')
+vesting_block_time=$(gaiad --home $HOME_1 q block $vesting_height | jq -r '.block.header.time')
 vesting_epoch=$(date -d "$vesting_block_time" +%s)
 
 # Calucate vesting amount
