@@ -375,7 +375,7 @@ jobs:
       STRIDE_PPROF_2: 39002
       CHANGEOVER_HEIGHT_OFFSET: false
       # Relayer variables
-      RELAYER: hermes
+      # RELAYER: hermes
       HERMES_VERSION: v1.7.4
       RLY_VERSION: "2.4.2"
     steps:
@@ -419,7 +419,12 @@ jobs:
           go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@$COSMOVISOR_VERSION
           echo "COSMOVISOR=true" >> $GITHUB_ENV
           echo "$HOME_1/cosmovisor/current/bin" >> $GITHUB_PATH
-
+      - name: Select Hermes
+        if: ${{ matrix.relayer == 'hermes' }}
+        run: echo "RELAYER=hermes" >> $GITHUB_ENV
+      - name: Select Go Relayer
+        if: ${{ matrix.relayer == 'rly' }}
+        run: echo "RELAYER=rly" >> $GITHUB_ENV
       - name: Set up relayer
         run: tests/v15_upgrade/setup_relayer.sh
       - name: Download consumer chain binaries
