@@ -1667,6 +1667,20 @@ jobs:
         run: |
           tests/major_fresh_upgrade/test_pfm_transfers.sh
 
+  _full-set:
+    runs-on: ubuntu-22.04
+    needs:
+      - set-version-matrix
+      - _01-upgrade
+      - _02-globalfee
+    strategy:
+      matrix:
+        ${{ fromJSON(needs.set-version-matrix.outputs.upgrade_versions) }}
+      fail-fast: false
+    steps:
+      - name: start-version
+        run: echo ${{matrix.gaia_version}}
+  
   # test-upgrade:
   #   runs-on: ubuntu-22.04
   #   needs: set-version-matrix
