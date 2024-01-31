@@ -1673,6 +1673,7 @@ jobs:
       - set-version-matrix
       - _01-upgrade
       - _02-globalfee
+      - _03-v310-consumer-launches
     strategy:
       matrix:
         ${{ fromJSON(needs.set-version-matrix.outputs.upgrade_versions) }}
