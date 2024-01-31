@@ -88,7 +88,7 @@ else
 
     journalctl -u $MCVAL_SERVICE_1 | tail
 
-    $CHAIN_BINARY tx bank send $WALLET_1 $mc_val 10000000$DENOM --home $HOME_1 --from $WALLET_1 --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y -o json
+    $CHAIN_BINARY tx bank send $WALLET_1 $mc_val1 10000000$DENOM --home $HOME_1 --from $WALLET_1 --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y -o json
     sleep $(( $COMMIT_TIMEOUT*2 ))
     $CHAIN_BINARY \
     tx staking create-validator \
