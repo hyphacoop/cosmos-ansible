@@ -4,8 +4,9 @@
 
 if $UPGRADED_V15 ; then
     echo "Validator cannot be created with a minimum commission of less than the set by the param (5% for v15)"
+    $CHAIN_BINARY q staking validators --home $MCVAL_HOME -o json | jq '.'
 else
-    # Validator can be created with a min commission of 0%
+    echo "Validator can be created with a commission of 0%"
     MCVAL_HOME=/home/runner/.mcval1
     MCVAL_SERVICE=mcval1.service
     $CHAIN_BINARY keys add mc_val1 --home $HOME_1
@@ -42,5 +43,27 @@ else
     sudo systemctl enable $MCVAL_SERVICE
     sudo systemctl start $MCVAL_SERVICE
     sleep 20
-    journalctl -u $MCVAL_SERVICE
+    journalctl -u $MCVAL_SERVICE | tail
+
+    $CHAIN_BINARY \
+    tx staking create-validator \
+    --amount 1000000$DENOM \
+    --pubkey $($CHAIN_BINARY tendermint show-validator --home $MCVAL_HOME) \
+    --moniker "mcval1" \
+    --chain-id $CHAIN_ID \
+    --commission-rate "0.0" \
+    --commission-max-rate "0.20" \
+    --commission-max-change-rate "0.01" \
+    --gas $GAS \
+    --gas-adjustment $GAS_ADJUSTMENT \
+    --gas-prices $GAS_PRICE$DENOM \
+    --from mcval_1 \
+    --home $MCVAL_HOME \
+    -y
+
+    sleep $(( $COMMIT_TIMEOUT*2 ))
+
+    $CHAIN_BINARY q staking validators --home $MCVAL_HOME -o json | jq '.'
+    $CHAIN_BINARY keys parse $mc_vaL --output json | jq '.'
+
 fi
