@@ -106,7 +106,7 @@ echo "Community pool balance before upgrade: $pre_upgrade_cp"
 post_upgrade_cp=$(gaiad  --home $HOME_1 q distribution community-pool --height $post_upgrade_height -o json | jq -r '.pool[] | select(.denom == "uatom") | .amount')
 echo "Community pool balance after upgrade: $post_upgrade_cp"
 
-cp_diff=$(echo "$post_upgrade_cp-$pre_upgrade_cp" | bc)
+cp_diff=$(echo "$post_upgrade_cp-$pre_upgrade_cp" | bc -l)
 
 echo "Community pool differences: $cp_diff"
 
@@ -123,8 +123,23 @@ vesting_txhash=$(echo $TX_VESTING_ACC_TX_JSON | jq -r .txhash)
 vesting_height=$(gaiad --home $HOME_1 q tx $vesting_txhash -o json | jq -r '.height')
 vesting_block_time=$(gaiad --home $HOME_1 q block $vesting_height | jq -r '.block.header.time')
 vesting_epoch=$(date -d "$vesting_block_time" +%s)
-
-# Calucate vesting amount
 upgrade_epoch=$(date -d "$upgrade_time" +%s)
+
 echo "Vesting account started at: $vesting_block_time epoch: $vesting_epoch"
 echo "upgrade time: $upgrade_time epoch: $upgrade_epoch"
+
+# Calculate vesting duration
+vesting_duration=$(echo "$1770000000-$vesting_epoch" | bc -l)
+echo "Total vesting duration: $vesting_duration"
+
+# Calculate elapsed vesting
+vesting_elapsed=$(echo "$upgrade_epoch-$vesting_epoch" | bc -l)
+echo "Elapsed vesting: $vesting_elapsed"
+
+# Calucate vesting amount
+vesting_div=$(echo "vesting_elapsed/vesting_duration" | bc -l)
+vested=$(echo "100000000*$vesting_div")
+echo "Vested amount: $vested"
+
+unvested=$(echo "100000000-$vested" | bc -l)
+echo "Unvested amount: $unvested"
