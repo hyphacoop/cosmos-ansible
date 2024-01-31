@@ -4,7 +4,7 @@
 
 if $UPGRADED_V15 ; then
     echo "Validator cannot be created with a minimum commission of less than the set by the param (5% for v15)"
-    $CHAIN_BINARY q staking validators --home $MCVAL_HOME -o json | jq '.'
+    $CHAIN_BINARY q staking validators --home $HOME_1 -o json | jq '.'
 else
     echo "Validator can be created with a commission of 0%"
     MCVAL_HOME=/home/runner/.mcval1
@@ -67,6 +67,9 @@ else
     sleep $(( $COMMIT_TIMEOUT*2 ))
 
     $CHAIN_BINARY q staking validators --home $MCVAL_HOME -o json | jq '.'
-    $CHAIN_BINARY keys parse $mc_val --output json | jq '.'
-
+    bytes_address=$($CHAIN_BINARY keys parse $mc_val --output json | jq '.bytes')
+    echo "Bytes address: $bytes_address"
+    cosmosvaloper=$($CHAIN_BINARY keys parse $bytes_address --output json | jq '.')
+    $CHAIN_BINARY q staking validators --home $HOME_1 -o json | jq '.validators[].commission.commission.commission_rates.rate'
+    # commission=$($CHAIN_BINARY q staking validators --home $MCVAL_HOME -o json | jq '.')
 fi
