@@ -2,8 +2,9 @@
 
 set -e
 
-# Get upgrade height
+# Get upgrade height and time
 upgrade_height=$(gaiad --home $HOME_1 q upgrade applied v15 -o json | jq -r '.header.height')
+upgrade_time=$(gaiad --home $HOME_1 q upgrade applied v15 -o json | jq -r '.header.time')
 
 # Set heights
 let pre_upgrade_height=$upgrade_height-1
@@ -116,3 +117,14 @@ then
 else
     echo "Community pool balance is more than 100000000uatom, funds have been returned"
 fi
+
+# get the block time of the tx for the vesting account
+vesting_txhash=$(echo $TX_VESTING_ACC_TX_JSON | jq -r .txhash)
+vesting_height=$(gaiad q tx $vesting_txhash -o json | jq -r '.height')
+vesting_block_time=$(gaiad q block $vesting_height | jq -r '.block.header.time')
+vesting_epoch=$(date -d "$vesting_block_time" +%s)
+
+# Calucate vesting amount
+upgrade_epoch=$(date -d "$upgrade_time" +%s)
+echo "Vesting account started at: $vesting_block_time epoch: $vesting_epoch"
+echo "upgrade time: $upgrade_time epoch: $upgrade_epoch"
