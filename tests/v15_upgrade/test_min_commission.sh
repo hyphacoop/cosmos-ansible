@@ -2,7 +2,7 @@
 
 # Try creating a validator with a minimum commision of less than 5% before and after the upgrade
 MCVAL_HOME_1=/home/runner/.mcval1
-MCVAL_HOME_2=/home/runner/.mcval1
+MCVAL_HOME_2=/home/runner/.mcval2
 MCVAL_SERVICE_1=mcval1.service
 MCVAL_SERVICE_2=mcval2.service
 
