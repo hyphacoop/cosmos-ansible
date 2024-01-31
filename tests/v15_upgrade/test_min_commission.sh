@@ -9,6 +9,7 @@ else
     echo "Validator can be created with a commission of 0%"
     MCVAL_HOME=/home/runner/.mcval1
     MCVAL_SERVICE=mcval1.service
+
     $CHAIN_BINARY keys add mc_val1 --home $HOME_1
     mc_val=$($CHAIN_BINARY keys list --home $HOME_1 --output json | jq -r '.[] | select(.name=="mc_val1").address')
     $CHAIN_BINARY tx bank send $WALLET_1 $mc_val 10000000$DENOM --home $HOME_1 --from $WALLET_1 --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y -o json
@@ -49,7 +50,7 @@ else
     tx staking create-validator \
     --amount 1000000$DENOM \
     --pubkey $($CHAIN_BINARY tendermint show-validator --home $MCVAL_HOME) \
-    --moniker "mcval1" \
+    --moniker "mc_val1" \
     --chain-id $CHAIN_ID \
     --commission-rate "0.0" \
     --commission-max-rate "0.20" \
@@ -57,13 +58,13 @@ else
     --gas $GAS \
     --gas-adjustment $GAS_ADJUSTMENT \
     --gas-prices $GAS_PRICE$DENOM \
-    --from mcval_1 \
+    --from $mc_val \
     --home $MCVAL_HOME \
     -y
 
     sleep $(( $COMMIT_TIMEOUT*2 ))
 
     $CHAIN_BINARY q staking validators --home $MCVAL_HOME -o json | jq '.'
-    $CHAIN_BINARY keys parse $mc_vaL --output json | jq '.'
+    $CHAIN_BINARY keys parse $mc_val --output json | jq '.'
 
 fi
