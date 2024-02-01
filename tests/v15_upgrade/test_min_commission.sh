@@ -54,9 +54,9 @@ if $UPGRADED_V15 ; then
     sudo systemctl daemon-reload
     sudo systemctl enable $MCVAL_SERVICE_2
     sudo systemctl start $MCVAL_SERVICE_2
-    sleep 40
+    sleep 20
 
-    journalctl -u $MCVAL_SERVICE_2 | tail -n 20
+    journalctl -u $MCVAL_SERVICE_2 | tail -n 40
 
 else
     echo "Validator can be created with a commission of 0%"
