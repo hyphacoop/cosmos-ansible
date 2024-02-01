@@ -73,7 +73,7 @@ if $UPGRADED_V15 ; then
     --gas-adjustment $GAS_ADJUSTMENT \
     --gas-prices $GAS_PRICE$DENOM \
     --from $mc_val2 \
-    --home $MCVAL_HOME_1 \
+    --home $MCVAL_HOME_2 \
     -y -o json | jq '.'
 
     sleep $(( $COMMIT_TIMEOUT*2 ))
