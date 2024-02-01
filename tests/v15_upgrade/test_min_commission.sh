@@ -128,7 +128,7 @@ if $UPGRADED_V15 ; then
     
     echo $create_val_response
     validator_entry=$($CHAIN_BINARY q staking validators --home $HOME_1 -o json | jq -r --arg ADDR "$cosmosvaloper2" '.validators[] | select(.operator_address==$ADDR)')
-    commision=$(echo $validator_entry | jq -r '.commission.commission_rates.rate')
+    commission=$(echo $validator_entry | jq -r '.commission.commission_rates.rate')
     echo "Validator entry: $validator_entry"
     echo "commission: $commission"
     if [ -z "$validator_entry" ]; then
