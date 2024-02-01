@@ -5,7 +5,7 @@
 if $UPGRADED_V15 ; then
    voter1=$($CHAIN_BINARY keys list --home $HOME_1 --output json | jq -r '.[] | select(.name=="voter1").address')
    
-   output=$($CHAIN_BINARY tx gov submit-proposal --title="Test Proposal" --description="Test Proposal" \
+   output=$($CHAIN_BINARY tx gov submit-legacy-proposal --title="Test Proposal" --description="Test Proposal" \
     --type="Text" \
     --from $WALLET_1 --home $HOME_1 \
     --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM \
