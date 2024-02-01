@@ -24,6 +24,8 @@ if $UPGRADED_V15 ; then
         echo "PASS: Validator creation with insufficient outputs: $fail_line"
     fi
 
+    sleep $(($COMMIT_TIMEOUT+2))
+
     $CHAIN_BINARY tx gov submit-legacy-proposal --title="Test Proposal" --description="Test Proposal" \
     --type="Text" \
     --from $WALLET_1 --home $HOME_1 \
@@ -58,4 +60,5 @@ else
     else
        echo "FAIL: code 0 was not received."
     fi
+    sleep $(($COMMIT_TIMEOUT+2))
 fi
