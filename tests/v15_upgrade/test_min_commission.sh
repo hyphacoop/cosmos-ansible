@@ -84,9 +84,11 @@ if $UPGRADED_V15 ; then
     -y)
 
     echo $create_val_response
-    fail_line=$(echo $create_val_response | grep "cannot")
+    fail_line=$(echo $create_val_response | grep cannot)
+    echo "Fail line: $fail_line"
     if [ -z "$fail_line" ]; then
         echo "FAIL: Validator creation did not output error with min commission = 0."
+        exit 1
     else
         echo "Validator creation with min commission = 0 outputs: $fail_line"
     fi
@@ -124,9 +126,9 @@ if $UPGRADED_V15 ; then
     
     echo $create_val_response
     validator_entry=$($CHAIN_BINARY q staking validators --home $HOME_1 -o json | jq -r --arg ADDR "$cosmosvaloper2" '.validators[] | select(.operator_address==$ADDR)')
-    echo $validator_entry
     commision=$(echo $validator_entry | jq -r '.commission.commission_rates.rate')
     echo "Validator entry: $validator_entry"
+    echo "commission: $commission"
     if [ -z "$validator_entry" ]; then
         echo "FAIL: Validator mcval2 was not created with min commission = 0.05."
         exit 1
