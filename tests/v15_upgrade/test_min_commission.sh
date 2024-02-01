@@ -67,7 +67,9 @@ if $UPGRADED_V15 ; then
 
     $CHAIN_BINARY tx bank send $WALLET_1 $mc_val2 10000000$DENOM --home $HOME_1 --from $WALLET_1 --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y -o json
     sleep $(( $COMMIT_TIMEOUT*2 ))
-    create_val_response=$($CHAIN_BINARY \
+    
+    touch val_response.log
+    $CHAIN_BINARY \
     tx staking create-validator \
     --amount 1000000$DENOM \
     --pubkey $($CHAIN_BINARY tendermint show-validator --home $MCVAL_HOME_2) \
@@ -81,10 +83,10 @@ if $UPGRADED_V15 ; then
     --gas-prices $GAS_PRICE$DENOM \
     --from $mc_val2 \
     --home $MCVAL_HOME_2 \
-    -y)
+    -y >>val_response.log 2>&1 
 
-    echo "Create val response: $create_val_response"
-    fail_line=$(echo $create_val_response | grep cannot)
+    echo "Create val response: $(cat val_response.log)"
+    fail_line=$(cat val_response.log | grep cannot)
     echo "Fail line: $fail_line"
     if [[ -z "$fail_line" ]]; then
         echo "FAIL: Validator creation did not output error with min commission = 0."
