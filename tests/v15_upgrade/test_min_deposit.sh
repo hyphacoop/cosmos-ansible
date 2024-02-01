@@ -16,12 +16,12 @@ if $UPGRADED_V15 ; then
     $CHAIN_BINARY tx gov submit-proposal --title="Test Proposal" --description="Test Proposal" \
     --type="Text" \
     --from $WALLET_1 --home $HOME_1 \
-    --gas $GAS --gas_adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM \
+    --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM \
     --deposit="1000$DENOM" -Y
 else
     $CHAIN_BINARY tx gov submit-proposal --title="Test Proposal" --description="Test Proposal" \
     --type="Text" \
     --from $WALLET_1 --home $HOME_1 \
-    --gas $GAS --gas_adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM \
+    --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM \
     --deposit="1000$DENOM" -Y
 fi
