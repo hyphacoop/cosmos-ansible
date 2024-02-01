@@ -176,7 +176,7 @@ else
     mcval1_commission=$($CHAIN_BINARY q staking validators --home $HOME_1 -o json | jq -r --arg ADDR "$cosmosvaloper" '.validators[] | select(.operator_address==$ADDR).commission.commission_rates.rate')
     echo "mcval1_commission = $mcval1_commission"
     zero_comm=$(echo "$mcval1_commission" | bc -l )
-    if [[ "$mcval1_commission" == "0" ]]; then
+    if [[ "$zero_comm" == "0" ]]; then
         echo "mcval1 commission is zero."
     fi
     # commission=$($CHAIN_BINARY q staking validators --home $MCVAL_HOME_1 -o json | jq '.')
