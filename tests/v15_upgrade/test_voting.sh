@@ -25,9 +25,11 @@ else
     sleep $(($COMMIT_TIMEOUT+2))
 
    txhash=$(echo $output | jq -r '.txhash')
-   $CHAIN_BINARY q tx $txhash --home $HOME_1 -o json | jq '.'
+   proposal_id=$($CHAIN_BINARY --output json q tx $txhash --home $HOME_1 | jq -r '.logs[].events[] | select(.type=="submit_proposal") | .attributes[] | select(.key=="proposal_id") | .value')
+   echo "Proposal ID: $proposal_id"
 
    echo "TEST: Vote from an account with no delegations."
-
+   $CHAIN_BINARY tx gov vote $proposal_id yes --from $voter1 --home $HOME_1 --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y -o json | jq '.'
+   sleep $(($COMMIT_TIMEOUT+2))
 
 fi
