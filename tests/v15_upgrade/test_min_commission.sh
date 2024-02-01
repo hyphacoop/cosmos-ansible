@@ -137,6 +137,7 @@ if $UPGRADED_V15 ; then
         echo "mcval2 commission is 0.05."
     else
         echo "FAIL: mcval2 commission is not set to 0.05."
+        exit 1
     fi
 
 else
