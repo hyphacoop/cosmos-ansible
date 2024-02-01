@@ -139,7 +139,7 @@ vesting_elapsed=$(echo "$upgrade_epoch-$vesting_epoch" | bc -l)
 echo "Elapsed vesting: $vesting_elapsed"
 
 # Calucate vesting amount
-vesting_div=$(echo "vesting_elapsed/vesting_duration" | bc -l)
+vesting_div=$(echo "$vesting_elapsed/$vesting_duration" | bc -l)
 vested=$(echo "100000000*$vesting_div")
 echo "Vested amount: $vested"
 
