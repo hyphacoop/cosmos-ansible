@@ -8,7 +8,14 @@ MCVAL_SERVICE_2=mcval2.service
 
 if $UPGRADED_V15 ; then
     echo "TEST: staking module has a min_commission_rate param set to 5% now."
-    $CHAIN_BINARY q staking params --home $HOME_1 -o json | jq '.'
+    rate=$($CHAIN_BINARY q staking params --home $HOME_1 -o json | jq -r '.min_commission_rate')
+    zero_diff=$(echo "$rate - 0.05" | bc -l )
+    if [[ "$zero_diff" == "0" ]]; then
+        echo "PASS: min_commission_rate is 0.05."
+    else
+        echo "FAIL:min_commission_rate is not set to 0.05."
+        exit 1
+    fi
 
     echo "TEST: Validator with a min commission of <5% prior to the upgrade no has a 5% min commission after the upgrade"
     $CHAIN_BINARY keys list --home $MCVAL_HOME_1 --output json
@@ -19,7 +26,7 @@ if $UPGRADED_V15 ; then
     
     zero_diff=$(echo "$mcval1_commission - 0.05" | bc -l )
     if [[ "$zero_diff" == "0" ]]; then
-        echo "mcval1 commission is now 0.05."
+        echo "PASS: mcval1 commission is now 0.05."
     else
         echo "FAIL: mcval1 commission was not set to 0.05."
     fi
@@ -87,7 +94,7 @@ if $UPGRADED_V15 ; then
         echo "FAIL: Validator creation did not output error with min commission = 0."
         exit 1
     else
-        echo "Validator creation with min commission = 0 outputs: $fail_line"
+        echo "PASS: Validator creation with min commission = 0 outputs: $fail_line"
     fi
 
     bytes_address2=$($CHAIN_BINARY keys parse $mc_val2 --output json | jq -r '.bytes')
@@ -127,7 +134,7 @@ if $UPGRADED_V15 ; then
 
     zero_diff=$(echo "$commission - 0.05" | bc -l )
     if [[ "$zero_diff" == "0" ]]; then
-        echo "mcval2 commission is 0.05."
+        echo "PASS: mcval2 commission is 0.05."
     else
         echo "FAIL: mcval2 commission is not set to 0.05."
         exit 1
@@ -196,7 +203,7 @@ else
     mcval1_commission=$($CHAIN_BINARY q staking validators --home $HOME_1 -o json | jq -r --arg ADDR "$cosmosvaloper" '.validators[] | select(.operator_address==$ADDR).commission.commission_rates.rate')
     zero_comm=$(echo "$mcval1_commission" | bc -l )
     if [[ "$zero_comm" == "0" ]]; then
-        echo "mcval1 commission is zero."
+        echo "PASS: mcval1 commission is zero."
     else
         echo "FAIL: mcval1 commmision is non-zero."
         exit 1
