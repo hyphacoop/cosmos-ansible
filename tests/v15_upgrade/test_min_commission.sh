@@ -56,7 +56,27 @@ if $UPGRADED_V15 ; then
     sudo systemctl start $MCVAL_SERVICE_2
     sleep 20
 
-    journalctl -u $MCVAL_SERVICE_2 | tail -n 40
+    journalctl -u $MCVAL_SERVICE_2 | tail
+
+    $CHAIN_BINARY tx bank send $WALLET_1 $mc_val2 10000000$DENOM --home $HOME_1 --from $WALLET_1 --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y -o json
+    sleep $(( $COMMIT_TIMEOUT*2 ))
+    $CHAIN_BINARY \
+    tx staking create-validator \
+    --amount 1000000$DENOM \
+    --pubkey $($CHAIN_BINARY tendermint show-validator --home $MCVAL_HOME_2) \
+    --moniker "mc_val2" \
+    --chain-id $CHAIN_ID \
+    --commission-rate "0.0" \
+    --commission-max-rate "0.20" \
+    --commission-max-change-rate "0.01" \
+    --gas $GAS \
+    --gas-adjustment $GAS_ADJUSTMENT \
+    --gas-prices $GAS_PRICE$DENOM \
+    --from $mc_val2 \
+    --home $MCVAL_HOME_1 \
+    -y -o json | jq '.'
+
+    sleep $(( $COMMIT_TIMEOUT*2 ))
 
 else
     echo "Validator can be created with a commission of 0%"
