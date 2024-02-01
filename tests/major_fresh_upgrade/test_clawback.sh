@@ -120,7 +120,9 @@ fi
 
 # get the block time of the tx for the vesting account
 vesting_txhash=$(echo $TX_VESTING_ACC_TX_JSON | jq -r .txhash)
+echo "Vesting  account create txhash: $vesting_txhash"
 vesting_height=$(gaiad --home $HOME_1 q tx $vesting_txhash -o json | jq -r '.height')
+echo "Vesting height: $vesting_height"
 vesting_block_time=$(gaiad --home $HOME_1 q block $vesting_height | jq -r '.block.header.time')
 vesting_epoch=$(date -d "$vesting_block_time" +%s)
 upgrade_epoch=$(date -d "$upgrade_time" +%s)
@@ -129,7 +131,7 @@ echo "Vesting account started at: $vesting_block_time epoch: $vesting_epoch"
 echo "upgrade time: $upgrade_time epoch: $upgrade_epoch"
 
 # Calculate vesting duration
-vesting_duration=$(echo "$1770000000-$vesting_epoch" | bc -l)
+vesting_duration=$(echo "1770000000-$vesting_epoch" | bc -l)
 echo "Total vesting duration: $vesting_duration"
 
 # Calculate elapsed vesting
