@@ -18,6 +18,8 @@ if $UPGRADED_V15 ; then
     zero_diff=$(echo "$mcval1_commission - 0.05" | bc -l )
     if [[ "$zero_diff" == "0" ]]; then
         echo "mcval1 commission is now 0.05."
+    else
+        echo "FAIL: mcval1 commission was not set to 0.05."
     fi
 
     echo "Validator cannot be created with a minimum commission of less than the set by the param (5% for v15)"
@@ -82,14 +84,25 @@ if $UPGRADED_V15 ; then
     -y)
 
     echo $create_val_response
-    echo $create_val_response | grep cannot
+    fail_line=$(echo $create_val_response | grep "cannot")
+    if [ -z "$fail_line" ]; then
+        echo "FAIL: Validator creation did not output error with min commission = 0."
+    else
+        echo "Validator creation with min commission = 0 outputs: $fail_line"
+    fi
 
     sleep $(( $COMMIT_TIMEOUT*2 ))
 
     bytes_address2=$($CHAIN_BINARY keys parse $mc_val2 --output json | jq -r '.bytes')
     cosmosvaloper2=$($CHAIN_BINARY keys parse $bytes_address2 --output json | jq -r '.formats[2]')
     validator_entry=$($CHAIN_BINARY q staking validators --home $HOME_1 -o json | jq -r --arg ADDR "$cosmosvaloper2" '.validators[] | select(.operator_address==$ADDR)')
+    commision=$(echo -n $validator_entry | jq -r '.commission.commission_rates.rate')
     echo "Validator entry: $validator_entry"
+    if [ -n "$validator_entry" ]; then
+        echo "FAIL: Validator mcval2 was not created with min commission = 0.05."
+        echo "Commission: $commission"
+        exit 1
+    fi
 
     create_val_response=$($CHAIN_BINARY \
     tx staking create-validator \
@@ -97,7 +110,7 @@ if $UPGRADED_V15 ; then
     --pubkey $($CHAIN_BINARY tendermint show-validator --home $MCVAL_HOME_2) \
     --moniker "mc_val2" \
     --chain-id $CHAIN_ID \
-    --commission-rate "0.06" \
+    --commission-rate "0.05" \
     --commission-max-rate "0.20" \
     --commission-max-change-rate "0.01" \
     --gas $GAS \
@@ -111,7 +124,19 @@ if $UPGRADED_V15 ; then
     
     echo $create_val_response
     validator_entry=$($CHAIN_BINARY q staking validators --home $HOME_1 -o json | jq -r --arg ADDR "$cosmosvaloper2" '.validators[] | select(.operator_address==$ADDR)')
+    commision=$(echo -n $validator_entry | jq -r '.commission.commission_rates.rate')
     echo "Validator entry: $validator_entry"
+    if [ -z "$validator_entry" ]; then
+        echo "FAIL: Validator mcval2 was not created with min commission = 0.05."
+        exit 1
+    fi
+
+    zero_diff=$(echo "$commission - 0.05" | bc -l )
+    if [[ "$zero_diff" == "0" ]]; then
+        echo "mcval1 commission is now 0.05."
+    else
+        echo "FAIL: mcval1 commission was not set to 0.05."
+    fi
 
 else
     echo "Validator can be created with a commission of 0%"
@@ -183,6 +208,9 @@ else
     zero_comm=$(echo "$mcval1_commission" | bc -l )
     if [[ "$zero_comm" == "0" ]]; then
         echo "mcval1 commission is zero."
+    else
+        echo "FAIL: mcval1 commmision is non-zero."
+        exit 1
     fi
     # commission=$($CHAIN_BINARY q staking validators --home $MCVAL_HOME_1 -o json | jq '.')
 fi
