@@ -7,13 +7,15 @@ MCVAL_SERVICE_1=mcval1.service
 MCVAL_SERVICE_2=mcval2.service
 
 if $UPGRADED_V15 ; then
-    echo "Validator with a min commission of <5% prior to the upgrade no has a 5% min commission"
+    echo "TEST: staking module has a min_commission_rate param set to 5% now."
+    $CHAIN_BINARY q staking params --home $HOME_1 -o json | jq '.'
+
+    echo "TEST: Validator with a min commission of <5% prior to the upgrade no has a 5% min commission after the upgrade"
     $CHAIN_BINARY keys list --home $MCVAL_HOME_1 --output json
     mc_val1=$($CHAIN_BINARY keys list --home $MCVAL_HOME_1 --output json | jq -r '.[] | select(.name=="mc_val1").address')
     bytes_address1=$($CHAIN_BINARY keys parse $mc_val1 --output json | jq -r '.bytes')
     cosmosvaloper1=$($CHAIN_BINARY keys parse $bytes_address1 --output json | jq -r '.formats[2]')
     mcval1_commission=$($CHAIN_BINARY q staking validators --home $HOME_1 -o json | jq -r --arg ADDR "$cosmosvaloper1" '.validators[] | select(.operator_address==$ADDR).commission.commission_rates.rate')
-    echo "mcval1_commission = $mcval1_commission"
     
     zero_diff=$(echo "$mcval1_commission - 0.05" | bc -l )
     if [[ "$zero_diff" == "0" ]]; then
@@ -22,11 +24,7 @@ if $UPGRADED_V15 ; then
         echo "FAIL: mcval1 commission was not set to 0.05."
     fi
 
-    echo "Validator cannot be created with a minimum commission of less than the set by the param (5% for v15)"
-
-    $CHAIN_BINARY q staking validators --home $HOME_1 -o json | jq '.'
-    $CHAIN_BINARY q staking validators --home $HOME_1 -o json | jq -r '.validators[].commission.commission_rates.rate'
-
+    echo "TEST: Validator cannot be created with a minimum commission of less than the set by the param (5% for v15)"
     sudo systemctl stop $PROVIDER_SERVICE_1
     cp -r $HOME_1 $MCVAL_HOME_2
     sudo systemctl start $PROVIDER_SERVICE_1
@@ -63,8 +61,6 @@ if $UPGRADED_V15 ; then
     sudo systemctl start $MCVAL_SERVICE_2
     sleep 20
 
-    journalctl -u $MCVAL_SERVICE_2 | tail
-
     $CHAIN_BINARY tx bank send $WALLET_1 $mc_val2 10000000$DENOM --home $HOME_1 --from $WALLET_1 --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y -o json
     sleep $(( $COMMIT_TIMEOUT*2 ))
     
@@ -85,7 +81,6 @@ if $UPGRADED_V15 ; then
     --home $MCVAL_HOME_2 \
     -y >>val_response.log 2>&1 
 
-    echo "Create val response: $(cat val_response.log)"
     fail_line=$(cat val_response.log | grep cannot)
     echo "Fail line: $fail_line"
     if [[ -z "$fail_line" ]]; then
@@ -95,20 +90,17 @@ if $UPGRADED_V15 ; then
         echo "Validator creation with min commission = 0 outputs: $fail_line"
     fi
 
-    sleep $(( $COMMIT_TIMEOUT*2 ))
-
     bytes_address2=$($CHAIN_BINARY keys parse $mc_val2 --output json | jq -r '.bytes')
     cosmosvaloper2=$($CHAIN_BINARY keys parse $bytes_address2 --output json | jq -r '.formats[2]')
     validator_entry=$($CHAIN_BINARY q staking validators --home $HOME_1 -o json | jq -r --arg ADDR "$cosmosvaloper2" '.validators[] | select(.operator_address==$ADDR)')
     commision=$(echo -n $validator_entry | jq -r '.commission.commission_rates.rate')
-    echo "Validator entry: $validator_entry"
     if [[ -n "$validator_entry" ]]; then
         echo "FAIL: Validator mcval2 was not created with min commission = 0.05."
         echo "Commission: $commission"
         exit 1
     fi
 
-    create_val_response=$($CHAIN_BINARY \
+    $CHAIN_BINARY \
     tx staking create-validator \
     --amount 1000000$DENOM \
     --pubkey $($CHAIN_BINARY tendermint show-validator --home $MCVAL_HOME_2) \
@@ -122,22 +114,18 @@ if $UPGRADED_V15 ; then
     --gas-prices $GAS_PRICE$DENOM \
     --from $mc_val2 \
     --home $MCVAL_HOME_2 \
-    -y)
+    -y
 
     sleep $(( $COMMIT_TIMEOUT*2 ))
     
-    echo $create_val_response
     validator_entry=$($CHAIN_BINARY q staking validators --home $HOME_1 -o json | jq -r --arg ADDR "$cosmosvaloper2" '.validators[] | select(.operator_address==$ADDR)')
     commission=$(echo $validator_entry | jq -r '.commission.commission_rates.rate')
-    echo "Validator entry: $validator_entry"
-    echo "commission: $commission"
     if [ -z "$validator_entry" ]; then
         echo "FAIL: Validator mcval2 was not created with min commission = 0.05."
         exit 1
     fi
 
     zero_diff=$(echo "$commission - 0.05" | bc -l )
-    echo "mcval2 commission: $commission, difference: $zero_diff"
     if [[ "$zero_diff" == "0" ]]; then
         echo "mcval2 commission is 0.05."
     else
@@ -183,8 +171,6 @@ else
     sudo systemctl start $MCVAL_SERVICE_1
     sleep 20
 
-    # journalctl -u $MCVAL_SERVICE_1 | tail
-
     $CHAIN_BINARY tx bank send $WALLET_1 $mc_val1 10000000$DENOM --home $HOME_1 --from $WALLET_1 --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y -o json
     sleep $(( $COMMIT_TIMEOUT*2 ))
     $CHAIN_BINARY \
@@ -205,13 +191,9 @@ else
 
     sleep $(( $COMMIT_TIMEOUT*2 ))
 
-    # $CHAIN_BINARY q staking validators --home $MCVAL_HOME_1 -o json | jq '.'
     bytes_address=$($CHAIN_BINARY keys parse $mc_val1 --output json | jq -r '.bytes')
-    echo "Bytes address: $bytes_address"
     cosmosvaloper=$($CHAIN_BINARY keys parse $bytes_address --output json | jq -r '.formats[2]')
-    # $CHAIN_BINARY q staking validators --home $HOME_1 -o json | jq -r '.validators[].commission.commission_rates.rate'
     mcval1_commission=$($CHAIN_BINARY q staking validators --home $HOME_1 -o json | jq -r --arg ADDR "$cosmosvaloper" '.validators[] | select(.operator_address==$ADDR).commission.commission_rates.rate')
-    echo "mcval1_commission = $mcval1_commission"
     zero_comm=$(echo "$mcval1_commission" | bc -l )
     if [[ "$zero_comm" == "0" ]]; then
         echo "mcval1 commission is zero."
@@ -219,5 +201,4 @@ else
         echo "FAIL: mcval1 commmision is non-zero."
         exit 1
     fi
-    # commission=$($CHAIN_BINARY q staking validators --home $MCVAL_HOME_1 -o json | jq '.')
 fi
