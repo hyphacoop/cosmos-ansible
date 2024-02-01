@@ -2479,7 +2479,7 @@ jobs:
   #       run: |
   #         $CHAIN_BINARY keys list --home $HOME_1
 
-  #     - name: Minimum deposit test
+  #     - name: _Minimum deposit test
   #       env:
   #         UPGRADED_V15: true
   #       run: |
@@ -2690,7 +2690,7 @@ jobs:
         run: |
           $CHAIN_BINARY keys list --home $HOME_1
 
-      - name: Minimum deposit test
+      - name: _Voting test
         env:
           UPGRADED_V15: true
         run: |
