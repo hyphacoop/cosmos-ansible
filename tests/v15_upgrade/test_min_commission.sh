@@ -124,7 +124,8 @@ if $UPGRADED_V15 ; then
     
     echo $create_val_response
     validator_entry=$($CHAIN_BINARY q staking validators --home $HOME_1 -o json | jq -r --arg ADDR "$cosmosvaloper2" '.validators[] | select(.operator_address==$ADDR)')
-    commision=$(echo -n $validator_entry | jq -r '.commission.commission_rates.rate' $validator_entry)
+    echo $validator_entry
+    commision=$(echo $validator_entry | jq -r '.commission.commission_rates.rate'
     echo "Validator entry: $validator_entry"
     if [ -z "$validator_entry" ]; then
         echo "FAIL: Validator mcval2 was not created with min commission = 0.05."
@@ -132,7 +133,7 @@ if $UPGRADED_V15 ; then
     fi
 
     zero_diff=$(echo "$commission - 0.05" | bc -l )
-    echo "mcval2 commission: $commission, differenct: $zero_diff"
+    echo "mcval2 commission: $commission, difference: $zero_diff"
     if [[ "$zero_diff" == "0" ]]; then
         echo "mcval2 commission is 0.05."
     else
