@@ -2263,7 +2263,7 @@ jobs:
       - name: Flush "migration successful" lines
         run: |
           $CHAIN_BINARY keys list --home $HOME_1
-        
+
       - name: Test minimum commission
         env:
           UPGRADED_V15: true
@@ -2284,7 +2284,7 @@ jobs:
   #   steps:
   #     - name: start-version
   #       run: echo ${{matrix.gaia_version}}
-  
+
   # test-upgrade:
   #   runs-on: ubuntu-22.04
   #   needs: set-version-matrix
