@@ -2273,7 +2273,7 @@ jobs:
       - name: Flush "migration successful" lines
         run: |
           $CHAIN_BINARY keys list --home $HOME_1
-
+        
       - name: Test minimum commission
         env:
           UPGRADED_V15: true

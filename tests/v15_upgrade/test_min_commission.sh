@@ -8,7 +8,7 @@ MCVAL_SERVICE_2=mcval2.service
 
 if $UPGRADED_V15 ; then
     echo "Validator with a min commission of <5% prior to the upgrade no has a 5% min commission"
-    $CHAIN_BINARY keys list --home $MCVAL_HOME_1 --output json | jq -r '.'
+    $CHAIN_BINARY keys list --home $MCVAL_HOME_1 --output json
     mc_val1=$($CHAIN_BINARY keys list --home $MCVAL_HOME_1 --output json | jq -r '.[] | select(.name=="mc_val1").address')
     echo "mcval1 address: $mc_val1"
     bytes_address=$($CHAIN_BINARY keys parse $mc_val1 --output json | jq -r '.bytes')
