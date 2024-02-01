@@ -10,6 +10,10 @@ echo "TEST: proposal submission deposit must be at least 10% of the minimum depo
 params=$($CHAIN_BINARY q gov params --home $HOME_1 -o json | jq -r '.')
 echo $params
 
+tests/param_change.sh tests/v15_upgrade/proposal-10atom-deposit.json
+params=$($CHAIN_BINARY q gov params --home $HOME_1 -o json | jq -r '.')
+echo $params
+
 echo "Submitting proposal with < 10% of minimum deposit"
 
 if $UPGRADED_V15 ; then
@@ -17,11 +21,11 @@ if $UPGRADED_V15 ; then
     --type="Text" \
     --from $WALLET_1 --home $HOME_1 \
     --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM \
-    --deposit="1000$DENOM" -Y
+    --deposit="1000$DENOM" -y
 else
     $CHAIN_BINARY tx gov submit-proposal --title="Test Proposal" --description="Test Proposal" \
     --type="Text" \
     --from $WALLET_1 --home $HOME_1 \
     --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM \
-    --deposit="1000$DENOM" -Y
+    --deposit="1000$DENOM" -y
 fi

@@ -1,0 +1,12 @@
+{
+    "title": "Minimum deposit -> 10ATOM",
+    "description": "This will set the minimum deposit to 10ATOM",
+    "deposit": "1uatom",
+    "changes": [
+        {
+            "subspace": "gov",
+            "key": "depositparams",
+            "value": { "min_deposit": [ { "denom": "uatom", "amount": "10000000" } ], "max_deposit_period": "172800000000000" } 
+        }
+    ]
+}
