@@ -24,9 +24,10 @@ else
     fi
     sleep $(($COMMIT_TIMEOUT+2))
 
-   echo "TEST: Vote from an account with no delegations."
-   txhash=$(echo $output | jq '.txhash')
-   
+   txhash=$(echo $output | jq -r '.txhash')
    $CHAIN_BINARY q tx $txhash --home $HOME_1 -o json | jq '.'
+
+   echo "TEST: Vote from an account with no delegations."
+
 
 fi
