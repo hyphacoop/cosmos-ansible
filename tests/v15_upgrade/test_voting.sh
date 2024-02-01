@@ -48,7 +48,7 @@ if $UPGRADED_V15 ; then
    echo "TEST: Vote from an account with 1uatom in delegations."
    $CHAIN_BINARY tx gov vote $proposal_id yes --from $voter1 --home $HOME_1 --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y -o json
    sleep $(($COMMIT_TIMEOUT+2))
-   sleep $(($VOTING_PERIOD))
+   sleep $VOTING_PERIOD
 
 else
    $CHAIN_BINARY keys add voter1 --home $HOME_1
