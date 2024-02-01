@@ -28,7 +28,7 @@ if $UPGRADED_V15 ; then
     cp /home/runner/.dummykeys/config/priv_validator_key.json $MCVAL_HOME_2/config/priv_validator_key.json
     cp /home/runner/.dummykeys/config/node_key.json $MCVAL_HOME_2/config/node_key.json
     rm -rf /home/runner/.dummykeys
-    $CHAIN_BINARY tendermint unsafe-reset-all --home $MCVAL_HOME_2
+    echo '{"height": "0","round": 0,"step": 0,"signature":"","signbytes":""}' > $MCVAL_HOME_2/data/priv_validator_state.json
     toml set --toml-path $MCVAL_HOME_2/config/app.toml api.address "tcp://0.0.0.0:25112"
     toml set --toml-path $MCVAL_HOME_2/config/app.toml grpc.address "0.0.0.0:26112"
     toml set --toml-path $MCVAL_HOME_2/config/config.toml rpc.laddr "tcp://0.0.0.0:27112"
