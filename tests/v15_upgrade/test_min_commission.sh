@@ -83,10 +83,10 @@ if $UPGRADED_V15 ; then
     --home $MCVAL_HOME_2 \
     -y)
 
-    echo $create_val_response
+    echo "Create val response: $create_val_response"
     fail_line=$(echo $create_val_response | grep cannot)
     echo "Fail line: $fail_line"
-    if [ -z "$fail_line" ]; then
+    if [[ -z "$fail_line" ]]; then
         echo "FAIL: Validator creation did not output error with min commission = 0."
         exit 1
     else
@@ -100,7 +100,7 @@ if $UPGRADED_V15 ; then
     validator_entry=$($CHAIN_BINARY q staking validators --home $HOME_1 -o json | jq -r --arg ADDR "$cosmosvaloper2" '.validators[] | select(.operator_address==$ADDR)')
     commision=$(echo -n $validator_entry | jq -r '.commission.commission_rates.rate')
     echo "Validator entry: $validator_entry"
-    if [ -n "$validator_entry" ]; then
+    if [[ -n "$validator_entry" ]]; then
         echo "FAIL: Validator mcval2 was not created with min commission = 0.05."
         echo "Commission: $commission"
         exit 1
@@ -144,7 +144,7 @@ if $UPGRADED_V15 ; then
     fi
 
 else
-    echo "Validator can be created with a commission of 0%"
+    echo "Validator can be created with a commission of 0% before the upgrade"
     
     sudo systemctl stop $PROVIDER_SERVICE_1
     cp -r $HOME_1 $MCVAL_HOME_1
@@ -181,7 +181,7 @@ else
     sudo systemctl start $MCVAL_SERVICE_1
     sleep 20
 
-    journalctl -u $MCVAL_SERVICE_1 | tail
+    # journalctl -u $MCVAL_SERVICE_1 | tail
 
     $CHAIN_BINARY tx bank send $WALLET_1 $mc_val1 10000000$DENOM --home $HOME_1 --from $WALLET_1 --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y -o json
     sleep $(( $COMMIT_TIMEOUT*2 ))
