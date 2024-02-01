@@ -28,7 +28,7 @@ if $UPGRADED_V15 ; then
     --type="Text" \
     --from $WALLET_1 --home $HOME_1 \
     --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM \
-    --deposit="1000000$DENOM" -y -o json)
+    --deposit="1000000$DENOM" -y -o json | jq -r '.code')
 
     if [[ "$code" == "0" ]]; then
        echo "PASS: code 0 was received."
