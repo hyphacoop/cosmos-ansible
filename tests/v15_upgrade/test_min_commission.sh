@@ -23,6 +23,7 @@ if $UPGRADED_V15 ; then
     sudo systemctl stop $PROVIDER_SERVICE_1
     cp -r $HOME_1 $MCVAL_HOME_2
     sudo systemctl start $PROVIDER_SERVICE_1
+    $CHAIN_BINARY version
     $CHAIN_BINARY init dummy --home /home/runner/.dummykeys
     cp /home/runner/.dummykeys/config/priv_validator_key.json $MCVAL_HOME_2/config/priv_validator_key.json
     cp /home/runner/.dummykeys/config/node_key.json $MCVAL_HOME_2/config/node_key.json
@@ -53,7 +54,7 @@ if $UPGRADED_V15 ; then
     sudo systemctl daemon-reload
     sudo systemctl enable $MCVAL_SERVICE_2
     sudo systemctl start $MCVAL_SERVICE_2
-    sleep 20
+    sleep 40
 
     journalctl -u $MCVAL_SERVICE_2 | tail -n 20
 
