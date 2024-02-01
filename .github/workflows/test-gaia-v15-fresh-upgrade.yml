@@ -49,1556 +49,1556 @@ jobs:
     outputs:
       upgrade_versions: ${{ steps.generate-upgrade.outputs.upgrade_versions }}
 
-  # _01-upgrade:
-  #   runs-on: ubuntu-22.04
-  #   needs: set-version-matrix
-  #   strategy:
-  #     matrix:
-  #       ${{ fromJSON(needs.set-version-matrix.outputs.upgrade_versions) }}
-  #     fail-fast: false
-  #   env:
-  #     COMMIT_TIMEOUT: 3
-  #     COSMOVISOR: false
-  #     COSMOVISOR_VERSION: ${{ matrix.cv_version }}
-  #     UPGRADE_MECHANISM: ${{ matrix.upgrade_mechanism }}
-  #     # Provider chain variables
-  #     CHAIN_BINARY: gaiad
-  #     CHAIN_ID: testnet
-  #     DENOM: uatom
-  #     BASE_FEES: 2000
-  #     HIGH_FEES: 10000
-  #     GAS: auto
-  #     GAS_ADJUSTMENT: 2
-  #     GAS_PRICE: 0.005
-  #     VOTING_PERIOD: 10s
-  #     COSMOS_SDK: v45
-  #     # Provider node variables
-  #     HOME_1: /home/runner/.val1
-  #     HOME_2: /home/runner/.val2
-  #     HOME_3: /home/runner/.val3
-  #     PROVIDER_SERVICE_1: gaia1.service
-  #     PROVIDER_SERVICE_2: gaia2.service
-  #     PROVIDER_SERVICE_3: gaia3.service
-  #     MNEMONIC_1: abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon art
-  #     MNEMONIC_2: abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon garage
-  #     MNEMONIC_3: abandon cash abandon cash abandon cash abandon cash abandon cash abandon cash abandon cash abandon cash abandon cash abandon cash abandon cash abandon earth
-  #     MNEMONIC_RELAYER: abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon success
-  #     MNEMONIC_4: abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon success
-  #     MNEMONIC_5: abandon fame abandon fame abandon fame abandon fame abandon fame abandon fame abandon fame abandon fame abandon fame abandon fame abandon fame abandon claim
-  #     MONIKER_1: val1
-  #     MONIKER_2: val2
-  #     MONIKER_3: val3
-  #     MONIKER_RELAYER: relayer
-  #     MONIKER_4: relayer
-  #     MONIKER_5: wallet5
-  #     VALOPER_1: cosmosvaloper1r5v5srda7xfth3hn2s26txvrcrntldju7lnwmv
-  #     VALOPER_2: cosmosvaloper1ay4dpm0kjmvtpug28vgw5w32yyjxa5spq248vn
-  #     VALOPER_3: cosmosvaloper1v8zgdpzqfazvk6fgwhqqhzx0hfannrajukgdkc
-  #     WALLET_1: cosmos1r5v5srda7xfth3hn2s26txvrcrntldjumt8mhl
-  #     WALLET_2: cosmos1ay4dpm0kjmvtpug28vgw5w32yyjxa5sp97pjqq
-  #     WALLET_3: cosmos1v8zgdpzqfazvk6fgwhqqhzx0hfannrajezuc6t
-  #     WALLET_4: cosmos1ty2qlurqsxj6sgs378hxmzyxh0ds8ukc70w844
-  #     WALLET_RELAYER: cosmos1ty2qlurqsxj6sgs378hxmzyxh0ds8ukc70w844
-  #     VAL1_STAKE: 800000000
-  #     VAL2_STAKE: 200000000
-  #     VAL3_STAKE: 10000000
-  #     VAL_FUNDS: 11000000000
-  #     VAL_STAKE: 1000000000
-  #     VAL_STAKE_STEP: 1000000
-  #     VAL1_API_PORT: 25001
-  #     VAL2_API_PORT: 25002
-  #     VAL3_API_PORT: 25003
-  #     VAL1_GRPC_PORT: 26001
-  #     VAL2_GRPC_PORT: 26002
-  #     VAL3_GRPC_PORT: 26003
-  #     VAL1_RPC_PORT: 27001
-  #     VAL2_RPC_PORT: 27002
-  #     VAL3_RPC_PORT: 27003
-  #     VAL1_P2P_PORT: 28001
-  #     VAL2_P2P_PORT: 28002
-  #     VAL3_P2P_PORT: 28003
-  #     VAL1_PPROF_PORT: 29001
-  #     VAL2_PPROF_PORT: 29002
-  #     VAL3_PPROF_PORT: 29003
-  #     # Consumer chain variables
-  #     DOWNTIME_BLOCKS: 10000
-  #     RECIPIENT: cosmos1r5v5srda7xfth3hn2s26txvrcrntldjumt8mhl
-  #     ICS_120: false
-  #     ICS_200: false
-  #     ICS_310: false
-  #     ICS_330: false
-  #     CONSUMER_ICS: v3.1.0
-  #     PROVIDER_ICS: v2.4.0
-  #     # Reference ICS chain variables
-  #     CONSUMER_DENOM: ucon
-  #     CONSUMER_FEES: 500
-  #     CONSUMER_CHAIN_V12_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-v1.2.0-multiden/interchain-security-cd-linux
-  #     CONSUMER_CHAIN_V12_BINARY: consumerd_v1.2.0
-  #     CONSUMER_CHAIN_V2_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-v2.0.0/interchain-security-cd-linux
-  #     CONSUMER_CHAIN_V2_BINARY: consumerd_v2.0.0
-  #     CONSUMER_CHAIN_V310_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-v3.1.0/interchain-security-cd-linux
-  #     CONSUMER_CHAIN_V310_BINARY: consumerd_v3.1.0
-  #     CONSUMER_CHAIN_V320_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-consumer-v3.2.0/interchain-security-cd-linux
-  #     CONSUMER_CHAIN_V320_BINARY: consumerd_v3.2.0
-  #     CONSUMER_CHAIN_V330_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-consumer-v3.3.0/interchain-security-cd-linux
-  #     CONSUMER_CHAIN_V330_BINARY: consumerd_v3.3.0
-  #     STRIDE_V18_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/stride-consumer-v18.0.0/strided-consumer-linux
-  #     ICS_TRANSFORM_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-v3.3.0-transform/interchain-security-cd
-  #     ICS_TRANSFORM_BINARY: cd-transform
-  #     # Sovereign-ICS chain variables
-  #     STRIDE_SOV_CHAIN_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/stride-v11.0.0/stride-v11.0.0-linux-amd64
-  #     STRIDE_CON_CHAIN_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/stride-v12.1.0/stride-v12.1.0-linux-amd64
-  #     STRIDE_CHAIN_BINARY: strided
-  #     STRIDE_CHAIN_ID: five
-  #     STRIDE_DENOM: ustrd
-  #     STRIDE_HOME_1: /home/runner/.stride1
-  #     STRIDE_HOME_2: /home/runner/.stride2
-  #     STRIDE_SERVICE_1: stride1.service
-  #     STRIDE_SERVICE_2: stride2.service
-  #     STRIDE_WALLET_1: stride1r5v5srda7xfth3hn2s26txvrcrntldjucq88rn
-  #     STRIDE_WALLET_LIQUID: stride17n3vkvg6lwf98p3kanlhlyjk6zkrfla9zrhma6
-  #     STRIDE_API_1: 35001
-  #     STRIDE_API_2: 35002
-  #     STRIDE_GRPC_1: 36001
-  #     STRIDE_GRPC_2: 36002
-  #     STRIDE_RPC_1: 37001
-  #     STRIDE_RPC_2: 37002
-  #     STRIDE_P2P_1: 38001
-  #     STRIDE_P2P_2: 38002
-  #     STRIDE_PPROF_1: 39001
-  #     STRIDE_PPROF_2: 39002
-  #     CHANGEOVER_HEIGHT_OFFSET: false
-  #     # Relayer variables
-  #     RELAYER: hermes
-  #     HERMES_VERSION: v1.7.4
-  #     RLY_VERSION: "2.4.2"
-  #   steps:
-  #     - name: start-version
-  #       run: echo ${{matrix.gaia_version}}
-  #     - name: target-version
-  #       run: echo ${{matrix.upgrade_version}}
-  #     - name: target-commit
-  #       if: ${{ matrix.upgrade_version == 'main' }}
-  #       run: |
-  #         BUILD_TAG=gaiad-linux-${{matrix.upgrade_version}}
-  #         TARGET_COMMIT=$(curl -s -L -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" https://api.github.com/repos/hyphacoop/cosmos-builds/releases/tags/$BUILD_TAG | jq -r '.name')
-  #         echo TARGET_COMMIT: $TARGET_COMMIT
-  #     - name: Update PATH
-  #       run: |
-  #         mkdir -p $HOME/go/bin
-  #         echo "$HOME/go/bin" >> $GITHUB_PATH
-  #         echo "$HOME/.hermes" >> $GITHUB_PATH
-  #         echo "$HOME/.relayer" >> $GITHUB_PATH
-  #     - name: Bypass the grub-efi-amd64-signed package
-  #       run: sudo apt-mark hold grub-efi-amd64-signed
-  #     - name: Check out repository code
-  #       uses: actions/checkout@v3
-  #     - name: Set up Python
-  #       uses: actions/setup-python@v3
-  #       with:
-  #         python-version: '3.10'
-  #     - name: Install dependencies
-  #       run: |
-  #         python -m pip install --upgrade pip
-  #         python -m pip install toml-cli
-  #     - name: Install Cosmovisor > v1.3.0
-  #       if: ${{ (matrix.upgrade_mechanism == 'cv_manual' || matrix.upgrade_mechanism == 'cv_auto') && matrix.cv_version != 'v1.3.0' }}
-  #       run: |
-  #         go install cosmossdk.io/tools/cosmovisor/cmd/cosmovisor@$COSMOVISOR_VERSION
-  #         echo "COSMOVISOR=true" >> $GITHUB_ENV
-  #         echo "$HOME_1/cosmovisor/current/bin" >> $GITHUB_PATH
-  #     - name: Install Cosmovisor v1.3.0
-  #       if: ${{ (matrix.upgrade_mechanism == 'cv_manual' || matrix.upgrade_mechanism == 'cv_auto') && matrix.cv_version == 'v1.3.0' }}
-  #       run: |
-  #         go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@$COSMOVISOR_VERSION
-  #         echo "COSMOVISOR=true" >> $GITHUB_ENV
-  #         echo "$HOME_1/cosmovisor/current/bin" >> $GITHUB_PATH
-  #     - name: Start chain
-  #       env:
-  #         START_VERSION: ${{matrix.gaia_version}}
-  #       run: |
-  #         export CHAIN_BINARY_URL=https://github.com/cosmos/gaia/releases/download/$START_VERSION/gaiad-$START_VERSION-linux-amd64
-  #         tests/major_fresh_upgrade/start_chain.sh
-  #     - name: Check Gaia log
-  #       run: sudo journalctl -u $PROVIDER_SERVICE_1
-  #     - name: Print Gaia version
-  #       run: $CHAIN_BINARY version --long
-  #     - name: Block production check
-  #       run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 5 # 5 blocks
+  _01-upgrade:
+    runs-on: ubuntu-22.04
+    needs: set-version-matrix
+    strategy:
+      matrix:
+        ${{ fromJSON(needs.set-version-matrix.outputs.upgrade_versions) }}
+      fail-fast: false
+    env:
+      COMMIT_TIMEOUT: 3
+      COSMOVISOR: false
+      COSMOVISOR_VERSION: ${{ matrix.cv_version }}
+      UPGRADE_MECHANISM: ${{ matrix.upgrade_mechanism }}
+      # Provider chain variables
+      CHAIN_BINARY: gaiad
+      CHAIN_ID: testnet
+      DENOM: uatom
+      BASE_FEES: 2000
+      HIGH_FEES: 10000
+      GAS: auto
+      GAS_ADJUSTMENT: 2
+      GAS_PRICE: 0.005
+      VOTING_PERIOD: 10s
+      COSMOS_SDK: v45
+      # Provider node variables
+      HOME_1: /home/runner/.val1
+      HOME_2: /home/runner/.val2
+      HOME_3: /home/runner/.val3
+      PROVIDER_SERVICE_1: gaia1.service
+      PROVIDER_SERVICE_2: gaia2.service
+      PROVIDER_SERVICE_3: gaia3.service
+      MNEMONIC_1: abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon art
+      MNEMONIC_2: abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon garage
+      MNEMONIC_3: abandon cash abandon cash abandon cash abandon cash abandon cash abandon cash abandon cash abandon cash abandon cash abandon cash abandon cash abandon earth
+      MNEMONIC_RELAYER: abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon success
+      MNEMONIC_4: abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon success
+      MNEMONIC_5: abandon fame abandon fame abandon fame abandon fame abandon fame abandon fame abandon fame abandon fame abandon fame abandon fame abandon fame abandon claim
+      MONIKER_1: val1
+      MONIKER_2: val2
+      MONIKER_3: val3
+      MONIKER_RELAYER: relayer
+      MONIKER_4: relayer
+      MONIKER_5: wallet5
+      VALOPER_1: cosmosvaloper1r5v5srda7xfth3hn2s26txvrcrntldju7lnwmv
+      VALOPER_2: cosmosvaloper1ay4dpm0kjmvtpug28vgw5w32yyjxa5spq248vn
+      VALOPER_3: cosmosvaloper1v8zgdpzqfazvk6fgwhqqhzx0hfannrajukgdkc
+      WALLET_1: cosmos1r5v5srda7xfth3hn2s26txvrcrntldjumt8mhl
+      WALLET_2: cosmos1ay4dpm0kjmvtpug28vgw5w32yyjxa5sp97pjqq
+      WALLET_3: cosmos1v8zgdpzqfazvk6fgwhqqhzx0hfannrajezuc6t
+      WALLET_4: cosmos1ty2qlurqsxj6sgs378hxmzyxh0ds8ukc70w844
+      WALLET_RELAYER: cosmos1ty2qlurqsxj6sgs378hxmzyxh0ds8ukc70w844
+      VAL1_STAKE: 800000000
+      VAL2_STAKE: 200000000
+      VAL3_STAKE: 10000000
+      VAL_FUNDS: 11000000000
+      VAL_STAKE: 1000000000
+      VAL_STAKE_STEP: 1000000
+      VAL1_API_PORT: 25001
+      VAL2_API_PORT: 25002
+      VAL3_API_PORT: 25003
+      VAL1_GRPC_PORT: 26001
+      VAL2_GRPC_PORT: 26002
+      VAL3_GRPC_PORT: 26003
+      VAL1_RPC_PORT: 27001
+      VAL2_RPC_PORT: 27002
+      VAL3_RPC_PORT: 27003
+      VAL1_P2P_PORT: 28001
+      VAL2_P2P_PORT: 28002
+      VAL3_P2P_PORT: 28003
+      VAL1_PPROF_PORT: 29001
+      VAL2_PPROF_PORT: 29002
+      VAL3_PPROF_PORT: 29003
+      # Consumer chain variables
+      DOWNTIME_BLOCKS: 10000
+      RECIPIENT: cosmos1r5v5srda7xfth3hn2s26txvrcrntldjumt8mhl
+      ICS_120: false
+      ICS_200: false
+      ICS_310: false
+      ICS_330: false
+      CONSUMER_ICS: v3.1.0
+      PROVIDER_ICS: v2.4.0
+      # Reference ICS chain variables
+      CONSUMER_DENOM: ucon
+      CONSUMER_FEES: 500
+      CONSUMER_CHAIN_V12_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-v1.2.0-multiden/interchain-security-cd-linux
+      CONSUMER_CHAIN_V12_BINARY: consumerd_v1.2.0
+      CONSUMER_CHAIN_V2_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-v2.0.0/interchain-security-cd-linux
+      CONSUMER_CHAIN_V2_BINARY: consumerd_v2.0.0
+      CONSUMER_CHAIN_V310_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-v3.1.0/interchain-security-cd-linux
+      CONSUMER_CHAIN_V310_BINARY: consumerd_v3.1.0
+      CONSUMER_CHAIN_V320_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-consumer-v3.2.0/interchain-security-cd-linux
+      CONSUMER_CHAIN_V320_BINARY: consumerd_v3.2.0
+      CONSUMER_CHAIN_V330_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-consumer-v3.3.0/interchain-security-cd-linux
+      CONSUMER_CHAIN_V330_BINARY: consumerd_v3.3.0
+      STRIDE_V18_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/stride-consumer-v18.0.0/strided-consumer-linux
+      ICS_TRANSFORM_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-v3.3.0-transform/interchain-security-cd
+      ICS_TRANSFORM_BINARY: cd-transform
+      # Sovereign-ICS chain variables
+      STRIDE_SOV_CHAIN_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/stride-v11.0.0/stride-v11.0.0-linux-amd64
+      STRIDE_CON_CHAIN_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/stride-v12.1.0/stride-v12.1.0-linux-amd64
+      STRIDE_CHAIN_BINARY: strided
+      STRIDE_CHAIN_ID: five
+      STRIDE_DENOM: ustrd
+      STRIDE_HOME_1: /home/runner/.stride1
+      STRIDE_HOME_2: /home/runner/.stride2
+      STRIDE_SERVICE_1: stride1.service
+      STRIDE_SERVICE_2: stride2.service
+      STRIDE_WALLET_1: stride1r5v5srda7xfth3hn2s26txvrcrntldjucq88rn
+      STRIDE_WALLET_LIQUID: stride17n3vkvg6lwf98p3kanlhlyjk6zkrfla9zrhma6
+      STRIDE_API_1: 35001
+      STRIDE_API_2: 35002
+      STRIDE_GRPC_1: 36001
+      STRIDE_GRPC_2: 36002
+      STRIDE_RPC_1: 37001
+      STRIDE_RPC_2: 37002
+      STRIDE_P2P_1: 38001
+      STRIDE_P2P_2: 38002
+      STRIDE_PPROF_1: 39001
+      STRIDE_PPROF_2: 39002
+      CHANGEOVER_HEIGHT_OFFSET: false
+      # Relayer variables
+      RELAYER: hermes
+      HERMES_VERSION: v1.7.4
+      RLY_VERSION: "2.4.2"
+    steps:
+      - name: start-version
+        run: echo ${{matrix.gaia_version}}
+      - name: target-version
+        run: echo ${{matrix.upgrade_version}}
+      - name: target-commit
+        if: ${{ matrix.upgrade_version == 'main' }}
+        run: |
+          BUILD_TAG=gaiad-linux-${{matrix.upgrade_version}}
+          TARGET_COMMIT=$(curl -s -L -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" https://api.github.com/repos/hyphacoop/cosmos-builds/releases/tags/$BUILD_TAG | jq -r '.name')
+          echo TARGET_COMMIT: $TARGET_COMMIT
+      - name: Update PATH
+        run: |
+          mkdir -p $HOME/go/bin
+          echo "$HOME/go/bin" >> $GITHUB_PATH
+          echo "$HOME/.hermes" >> $GITHUB_PATH
+          echo "$HOME/.relayer" >> $GITHUB_PATH
+      - name: Bypass the grub-efi-amd64-signed package
+        run: sudo apt-mark hold grub-efi-amd64-signed
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.10'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install toml-cli
+      - name: Install Cosmovisor > v1.3.0
+        if: ${{ (matrix.upgrade_mechanism == 'cv_manual' || matrix.upgrade_mechanism == 'cv_auto') && matrix.cv_version != 'v1.3.0' }}
+        run: |
+          go install cosmossdk.io/tools/cosmovisor/cmd/cosmovisor@$COSMOVISOR_VERSION
+          echo "COSMOVISOR=true" >> $GITHUB_ENV
+          echo "$HOME_1/cosmovisor/current/bin" >> $GITHUB_PATH
+      - name: Install Cosmovisor v1.3.0
+        if: ${{ (matrix.upgrade_mechanism == 'cv_manual' || matrix.upgrade_mechanism == 'cv_auto') && matrix.cv_version == 'v1.3.0' }}
+        run: |
+          go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@$COSMOVISOR_VERSION
+          echo "COSMOVISOR=true" >> $GITHUB_ENV
+          echo "$HOME_1/cosmovisor/current/bin" >> $GITHUB_PATH
+      - name: Start chain
+        env:
+          START_VERSION: ${{matrix.gaia_version}}
+        run: |
+          export CHAIN_BINARY_URL=https://github.com/cosmos/gaia/releases/download/$START_VERSION/gaiad-$START_VERSION-linux-amd64
+          tests/major_fresh_upgrade/start_chain.sh
+      - name: Check Gaia log
+        run: sudo journalctl -u $PROVIDER_SERVICE_1
+      - name: Print Gaia version
+        run: $CHAIN_BINARY version --long
+      - name: Block production check
+        run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 5 # 5 blocks
 
-  #     - name: Test software upgrade for published releases
-  #       if: ${{ matrix.upgrade_version != 'main' }}
-  #       env:
-  #         DOWNLOAD_URL: https://github.com/cosmos/gaia/releases/download/${{ matrix.upgrade_version }}/gaiad-${{ matrix.upgrade_version }}-linux-amd64
-  #       run: |
-  #         echo $DOWNLOAD_URL
-  #         tests/major_fresh_upgrade/software_upgrade.sh 127.0.0.1 $VAL1_RPC_PORT v15
-  #     - name: Test software upgrade for main branch
-  #       if: ${{ matrix.upgrade_version == 'main' }}
-  #       env:
-  #         DOWNLOAD_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/gaiad-linux-main/gaiad-linux
-  #       run: |
-  #         tests/major_fresh_upgrade/software_upgrade.sh 127.0.0.1 $VAL1_RPC_PORT v15
+      - name: Test software upgrade for published releases
+        if: ${{ matrix.upgrade_version != 'main' }}
+        env:
+          DOWNLOAD_URL: https://github.com/cosmos/gaia/releases/download/${{ matrix.upgrade_version }}/gaiad-${{ matrix.upgrade_version }}-linux-amd64
+        run: |
+          echo $DOWNLOAD_URL
+          tests/major_fresh_upgrade/software_upgrade.sh 127.0.0.1 $VAL1_RPC_PORT v15
+      - name: Test software upgrade for main branch
+        if: ${{ matrix.upgrade_version == 'main' }}
+        env:
+          DOWNLOAD_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/gaiad-linux-main/gaiad-linux
+        run: |
+          tests/major_fresh_upgrade/software_upgrade.sh 127.0.0.1 $VAL1_RPC_PORT v15
 
-  #     - name: _Blocks produced after upgrade
-  #       run: |
-  #         tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 10
+      - name: _Blocks produced after upgrade
+        run: |
+          tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 10
 
-  #     - name: Flush "migration successful" lines
-  #       run: |
-  #         $CHAIN_BINARY keys list --home $HOME_1
+      - name: Flush "migration successful" lines
+        run: |
+          $CHAIN_BINARY keys list --home $HOME_1
 
-  #     - name: _Transactions verified> bank send, delegate, and withdraw rewards
-  #       run: tests/test_tx_fresh.sh
-  #     - name: _API endpoints check
-  #       run: tests/test_endpoints_api.sh localhost $VAL1_API_PORT
-  #     - name: _RPC endpoints check
-  #       run: tests/test_endpoints_rpc.sh localhost $VAL1_RPC_PORT
+      - name: _Transactions verified> bank send, delegate, and withdraw rewards
+        run: tests/test_tx_fresh.sh
+      - name: _API endpoints check
+        run: tests/test_endpoints_api.sh localhost $VAL1_API_PORT
+      - name: _RPC endpoints check
+        run: tests/test_endpoints_rpc.sh localhost $VAL1_RPC_PORT
 
-  # _02-globalfee:
-  #   runs-on: ubuntu-22.04
-  #   needs: set-version-matrix
-  #   strategy:
-  #     matrix:
-  #       ${{ fromJSON(needs.set-version-matrix.outputs.upgrade_versions) }}
-  #     fail-fast: false
-  #   env:
-  #     COMMIT_TIMEOUT: 3
-  #     COSMOVISOR: false
-  #     COSMOVISOR_VERSION: ${{ matrix.cv_version }}
-  #     UPGRADE_MECHANISM: ${{ matrix.upgrade_mechanism }}
-  #     # Provider chain variables
-  #     CHAIN_BINARY: gaiad
-  #     CHAIN_ID: testnet
-  #     DENOM: uatom
-  #     BASE_FEES: 2000
-  #     HIGH_FEES: 10000
-  #     GAS: auto
-  #     GAS_ADJUSTMENT: 2
-  #     GAS_PRICE: 0.005
-  #     VOTING_PERIOD: 10s
-  #     COSMOS_SDK: v45
-  #     # Provider node variables
-  #     HOME_1: /home/runner/.val1
-  #     HOME_2: /home/runner/.val2
-  #     HOME_3: /home/runner/.val3
-  #     PROVIDER_SERVICE_1: gaia1.service
-  #     PROVIDER_SERVICE_2: gaia2.service
-  #     PROVIDER_SERVICE_3: gaia3.service
-  #     MNEMONIC_1: abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon art
-  #     MNEMONIC_2: abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon garage
-  #     MNEMONIC_3: abandon cash abandon cash abandon cash abandon cash abandon cash abandon cash abandon cash abandon cash abandon cash abandon cash abandon cash abandon earth
-  #     MNEMONIC_RELAYER: abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon success
-  #     MNEMONIC_4: abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon success
-  #     MNEMONIC_5: abandon fame abandon fame abandon fame abandon fame abandon fame abandon fame abandon fame abandon fame abandon fame abandon fame abandon fame abandon claim
-  #     MONIKER_1: val1
-  #     MONIKER_2: val2
-  #     MONIKER_3: val3
-  #     MONIKER_RELAYER: relayer
-  #     MONIKER_4: relayer
-  #     MONIKER_5: wallet5
-  #     VALOPER_1: cosmosvaloper1r5v5srda7xfth3hn2s26txvrcrntldju7lnwmv
-  #     VALOPER_2: cosmosvaloper1ay4dpm0kjmvtpug28vgw5w32yyjxa5spq248vn
-  #     VALOPER_3: cosmosvaloper1v8zgdpzqfazvk6fgwhqqhzx0hfannrajukgdkc
-  #     WALLET_1: cosmos1r5v5srda7xfth3hn2s26txvrcrntldjumt8mhl
-  #     WALLET_2: cosmos1ay4dpm0kjmvtpug28vgw5w32yyjxa5sp97pjqq
-  #     WALLET_3: cosmos1v8zgdpzqfazvk6fgwhqqhzx0hfannrajezuc6t
-  #     WALLET_4: cosmos1ty2qlurqsxj6sgs378hxmzyxh0ds8ukc70w844
-  #     WALLET_RELAYER: cosmos1ty2qlurqsxj6sgs378hxmzyxh0ds8ukc70w844
-  #     VAL1_STAKE: 800000000
-  #     VAL2_STAKE: 200000000
-  #     VAL3_STAKE: 10000000
-  #     VAL_FUNDS: 11000000000
-  #     VAL_STAKE: 1000000000
-  #     VAL_STAKE_STEP: 1000000
-  #     VAL1_API_PORT: 25001
-  #     VAL2_API_PORT: 25002
-  #     VAL3_API_PORT: 25003
-  #     VAL1_GRPC_PORT: 26001
-  #     VAL2_GRPC_PORT: 26002
-  #     VAL3_GRPC_PORT: 26003
-  #     VAL1_RPC_PORT: 27001
-  #     VAL2_RPC_PORT: 27002
-  #     VAL3_RPC_PORT: 27003
-  #     VAL1_P2P_PORT: 28001
-  #     VAL2_P2P_PORT: 28002
-  #     VAL3_P2P_PORT: 28003
-  #     VAL1_PPROF_PORT: 29001
-  #     VAL2_PPROF_PORT: 29002
-  #     VAL3_PPROF_PORT: 29003
-  #     # Consumer chain variables
-  #     DOWNTIME_BLOCKS: 10000
-  #     RECIPIENT: cosmos1r5v5srda7xfth3hn2s26txvrcrntldjumt8mhl
-  #     ICS_120: false
-  #     ICS_200: false
-  #     ICS_310: false
-  #     ICS_330: false
-  #     CONSUMER_ICS: v3.1.0
-  #     PROVIDER_ICS: v2.4.0
-  #     # Reference ICS chain variables
-  #     CONSUMER_DENOM: ucon
-  #     CONSUMER_FEES: 500
-  #     CONSUMER_CHAIN_V12_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-v1.2.0-multiden/interchain-security-cd-linux
-  #     CONSUMER_CHAIN_V12_BINARY: consumerd_v1.2.0
-  #     CONSUMER_CHAIN_V2_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-v2.0.0/interchain-security-cd-linux
-  #     CONSUMER_CHAIN_V2_BINARY: consumerd_v2.0.0
-  #     CONSUMER_CHAIN_V310_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-v3.1.0/interchain-security-cd-linux
-  #     CONSUMER_CHAIN_V310_BINARY: consumerd_v3.1.0
-  #     CONSUMER_CHAIN_V320_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-consumer-v3.2.0/interchain-security-cd-linux
-  #     CONSUMER_CHAIN_V320_BINARY: consumerd_v3.2.0
-  #     CONSUMER_CHAIN_V330_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-consumer-v3.3.0/interchain-security-cd-linux
-  #     CONSUMER_CHAIN_V330_BINARY: consumerd_v3.3.0
-  #     STRIDE_V18_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/stride-consumer-v18.0.0/strided-consumer-linux
-  #     ICS_TRANSFORM_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-v3.3.0-transform/interchain-security-cd
-  #     ICS_TRANSFORM_BINARY: cd-transform
-  #     # Sovereign-ICS chain variables
-  #     STRIDE_SOV_CHAIN_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/stride-v11.0.0/stride-v11.0.0-linux-amd64
-  #     STRIDE_CON_CHAIN_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/stride-v12.1.0/stride-v12.1.0-linux-amd64
-  #     STRIDE_CHAIN_BINARY: strided
-  #     STRIDE_CHAIN_ID: five
-  #     STRIDE_DENOM: ustrd
-  #     STRIDE_HOME_1: /home/runner/.stride1
-  #     STRIDE_HOME_2: /home/runner/.stride2
-  #     STRIDE_SERVICE_1: stride1.service
-  #     STRIDE_SERVICE_2: stride2.service
-  #     STRIDE_WALLET_1: stride1r5v5srda7xfth3hn2s26txvrcrntldjucq88rn
-  #     STRIDE_WALLET_LIQUID: stride17n3vkvg6lwf98p3kanlhlyjk6zkrfla9zrhma6
-  #     STRIDE_API_1: 35001
-  #     STRIDE_API_2: 35002
-  #     STRIDE_GRPC_1: 36001
-  #     STRIDE_GRPC_2: 36002
-  #     STRIDE_RPC_1: 37001
-  #     STRIDE_RPC_2: 37002
-  #     STRIDE_P2P_1: 38001
-  #     STRIDE_P2P_2: 38002
-  #     STRIDE_PPROF_1: 39001
-  #     STRIDE_PPROF_2: 39002
-  #     CHANGEOVER_HEIGHT_OFFSET: false
-  #     # Relayer variables
-  #     RELAYER: hermes
-  #     HERMES_VERSION: v1.7.4
-  #     RLY_VERSION: "2.4.2"
-  #   steps:
-  #     - name: start-version
-  #       run: echo ${{matrix.gaia_version}}
-  #     - name: target-version
-  #       run: echo ${{matrix.upgrade_version}}
-  #     - name: target-commit
-  #       if: ${{ matrix.upgrade_version == 'main' }}
-  #       run: |
-  #         BUILD_TAG=gaiad-linux-${{matrix.upgrade_version}}
-  #         TARGET_COMMIT=$(curl -s -L -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" https://api.github.com/repos/hyphacoop/cosmos-builds/releases/tags/$BUILD_TAG | jq -r '.name')
-  #         echo TARGET_COMMIT: $TARGET_COMMIT
-  #     - name: Update PATH
-  #       run: |
-  #         mkdir -p $HOME/go/bin
-  #         echo "$HOME/go/bin" >> $GITHUB_PATH
-  #         echo "$HOME/.hermes" >> $GITHUB_PATH
-  #         echo "$HOME/.relayer" >> $GITHUB_PATH
-  #     - name: Bypass the grub-efi-amd64-signed package
-  #       run: sudo apt-mark hold grub-efi-amd64-signed
-  #     - name: Check out repository code
-  #       uses: actions/checkout@v3
-  #     - name: Set up Python
-  #       uses: actions/setup-python@v3
-  #       with:
-  #         python-version: '3.10'
-  #     - name: Install dependencies
-  #       run: |
-  #         python -m pip install --upgrade pip
-  #         python -m pip install toml-cli
-  #     - name: Install Cosmovisor > v1.3.0
-  #       if: ${{ (matrix.upgrade_mechanism == 'cv_manual' || matrix.upgrade_mechanism == 'cv_auto') && matrix.cv_version != 'v1.3.0' }}
-  #       run: |
-  #         go install cosmossdk.io/tools/cosmovisor/cmd/cosmovisor@$COSMOVISOR_VERSION
-  #         echo "COSMOVISOR=true" >> $GITHUB_ENV
-  #         echo "$HOME_1/cosmovisor/current/bin" >> $GITHUB_PATH
-  #     - name: Install Cosmovisor v1.3.0
-  #       if: ${{ (matrix.upgrade_mechanism == 'cv_manual' || matrix.upgrade_mechanism == 'cv_auto') && matrix.cv_version == 'v1.3.0' }}
-  #       run: |
-  #         go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@$COSMOVISOR_VERSION
-  #         echo "COSMOVISOR=true" >> $GITHUB_ENV
-  #         echo "$HOME_1/cosmovisor/current/bin" >> $GITHUB_PATH
-  #     - name: Start chain
-  #       env:
-  #         START_VERSION: ${{matrix.gaia_version}}
-  #       run: |
-  #         export CHAIN_BINARY_URL=https://github.com/cosmos/gaia/releases/download/$START_VERSION/gaiad-$START_VERSION-linux-amd64
-  #         tests/major_fresh_upgrade/start_chain.sh
-  #     - name: Check Gaia log
-  #       run: sudo journalctl -u $PROVIDER_SERVICE_1
-  #     - name: Print Gaia version
-  #       run: $CHAIN_BINARY version --long
-  #     - name: Block production check
-  #       run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 5 # 5 blocks
+  _02-globalfee:
+    runs-on: ubuntu-22.04
+    needs: set-version-matrix
+    strategy:
+      matrix:
+        ${{ fromJSON(needs.set-version-matrix.outputs.upgrade_versions) }}
+      fail-fast: false
+    env:
+      COMMIT_TIMEOUT: 3
+      COSMOVISOR: false
+      COSMOVISOR_VERSION: ${{ matrix.cv_version }}
+      UPGRADE_MECHANISM: ${{ matrix.upgrade_mechanism }}
+      # Provider chain variables
+      CHAIN_BINARY: gaiad
+      CHAIN_ID: testnet
+      DENOM: uatom
+      BASE_FEES: 2000
+      HIGH_FEES: 10000
+      GAS: auto
+      GAS_ADJUSTMENT: 2
+      GAS_PRICE: 0.005
+      VOTING_PERIOD: 10s
+      COSMOS_SDK: v45
+      # Provider node variables
+      HOME_1: /home/runner/.val1
+      HOME_2: /home/runner/.val2
+      HOME_3: /home/runner/.val3
+      PROVIDER_SERVICE_1: gaia1.service
+      PROVIDER_SERVICE_2: gaia2.service
+      PROVIDER_SERVICE_3: gaia3.service
+      MNEMONIC_1: abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon art
+      MNEMONIC_2: abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon garage
+      MNEMONIC_3: abandon cash abandon cash abandon cash abandon cash abandon cash abandon cash abandon cash abandon cash abandon cash abandon cash abandon cash abandon earth
+      MNEMONIC_RELAYER: abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon success
+      MNEMONIC_4: abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon success
+      MNEMONIC_5: abandon fame abandon fame abandon fame abandon fame abandon fame abandon fame abandon fame abandon fame abandon fame abandon fame abandon fame abandon claim
+      MONIKER_1: val1
+      MONIKER_2: val2
+      MONIKER_3: val3
+      MONIKER_RELAYER: relayer
+      MONIKER_4: relayer
+      MONIKER_5: wallet5
+      VALOPER_1: cosmosvaloper1r5v5srda7xfth3hn2s26txvrcrntldju7lnwmv
+      VALOPER_2: cosmosvaloper1ay4dpm0kjmvtpug28vgw5w32yyjxa5spq248vn
+      VALOPER_3: cosmosvaloper1v8zgdpzqfazvk6fgwhqqhzx0hfannrajukgdkc
+      WALLET_1: cosmos1r5v5srda7xfth3hn2s26txvrcrntldjumt8mhl
+      WALLET_2: cosmos1ay4dpm0kjmvtpug28vgw5w32yyjxa5sp97pjqq
+      WALLET_3: cosmos1v8zgdpzqfazvk6fgwhqqhzx0hfannrajezuc6t
+      WALLET_4: cosmos1ty2qlurqsxj6sgs378hxmzyxh0ds8ukc70w844
+      WALLET_RELAYER: cosmos1ty2qlurqsxj6sgs378hxmzyxh0ds8ukc70w844
+      VAL1_STAKE: 800000000
+      VAL2_STAKE: 200000000
+      VAL3_STAKE: 10000000
+      VAL_FUNDS: 11000000000
+      VAL_STAKE: 1000000000
+      VAL_STAKE_STEP: 1000000
+      VAL1_API_PORT: 25001
+      VAL2_API_PORT: 25002
+      VAL3_API_PORT: 25003
+      VAL1_GRPC_PORT: 26001
+      VAL2_GRPC_PORT: 26002
+      VAL3_GRPC_PORT: 26003
+      VAL1_RPC_PORT: 27001
+      VAL2_RPC_PORT: 27002
+      VAL3_RPC_PORT: 27003
+      VAL1_P2P_PORT: 28001
+      VAL2_P2P_PORT: 28002
+      VAL3_P2P_PORT: 28003
+      VAL1_PPROF_PORT: 29001
+      VAL2_PPROF_PORT: 29002
+      VAL3_PPROF_PORT: 29003
+      # Consumer chain variables
+      DOWNTIME_BLOCKS: 10000
+      RECIPIENT: cosmos1r5v5srda7xfth3hn2s26txvrcrntldjumt8mhl
+      ICS_120: false
+      ICS_200: false
+      ICS_310: false
+      ICS_330: false
+      CONSUMER_ICS: v3.1.0
+      PROVIDER_ICS: v2.4.0
+      # Reference ICS chain variables
+      CONSUMER_DENOM: ucon
+      CONSUMER_FEES: 500
+      CONSUMER_CHAIN_V12_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-v1.2.0-multiden/interchain-security-cd-linux
+      CONSUMER_CHAIN_V12_BINARY: consumerd_v1.2.0
+      CONSUMER_CHAIN_V2_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-v2.0.0/interchain-security-cd-linux
+      CONSUMER_CHAIN_V2_BINARY: consumerd_v2.0.0
+      CONSUMER_CHAIN_V310_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-v3.1.0/interchain-security-cd-linux
+      CONSUMER_CHAIN_V310_BINARY: consumerd_v3.1.0
+      CONSUMER_CHAIN_V320_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-consumer-v3.2.0/interchain-security-cd-linux
+      CONSUMER_CHAIN_V320_BINARY: consumerd_v3.2.0
+      CONSUMER_CHAIN_V330_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-consumer-v3.3.0/interchain-security-cd-linux
+      CONSUMER_CHAIN_V330_BINARY: consumerd_v3.3.0
+      STRIDE_V18_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/stride-consumer-v18.0.0/strided-consumer-linux
+      ICS_TRANSFORM_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-v3.3.0-transform/interchain-security-cd
+      ICS_TRANSFORM_BINARY: cd-transform
+      # Sovereign-ICS chain variables
+      STRIDE_SOV_CHAIN_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/stride-v11.0.0/stride-v11.0.0-linux-amd64
+      STRIDE_CON_CHAIN_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/stride-v12.1.0/stride-v12.1.0-linux-amd64
+      STRIDE_CHAIN_BINARY: strided
+      STRIDE_CHAIN_ID: five
+      STRIDE_DENOM: ustrd
+      STRIDE_HOME_1: /home/runner/.stride1
+      STRIDE_HOME_2: /home/runner/.stride2
+      STRIDE_SERVICE_1: stride1.service
+      STRIDE_SERVICE_2: stride2.service
+      STRIDE_WALLET_1: stride1r5v5srda7xfth3hn2s26txvrcrntldjucq88rn
+      STRIDE_WALLET_LIQUID: stride17n3vkvg6lwf98p3kanlhlyjk6zkrfla9zrhma6
+      STRIDE_API_1: 35001
+      STRIDE_API_2: 35002
+      STRIDE_GRPC_1: 36001
+      STRIDE_GRPC_2: 36002
+      STRIDE_RPC_1: 37001
+      STRIDE_RPC_2: 37002
+      STRIDE_P2P_1: 38001
+      STRIDE_P2P_2: 38002
+      STRIDE_PPROF_1: 39001
+      STRIDE_PPROF_2: 39002
+      CHANGEOVER_HEIGHT_OFFSET: false
+      # Relayer variables
+      RELAYER: hermes
+      HERMES_VERSION: v1.7.4
+      RLY_VERSION: "2.4.2"
+    steps:
+      - name: start-version
+        run: echo ${{matrix.gaia_version}}
+      - name: target-version
+        run: echo ${{matrix.upgrade_version}}
+      - name: target-commit
+        if: ${{ matrix.upgrade_version == 'main' }}
+        run: |
+          BUILD_TAG=gaiad-linux-${{matrix.upgrade_version}}
+          TARGET_COMMIT=$(curl -s -L -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" https://api.github.com/repos/hyphacoop/cosmos-builds/releases/tags/$BUILD_TAG | jq -r '.name')
+          echo TARGET_COMMIT: $TARGET_COMMIT
+      - name: Update PATH
+        run: |
+          mkdir -p $HOME/go/bin
+          echo "$HOME/go/bin" >> $GITHUB_PATH
+          echo "$HOME/.hermes" >> $GITHUB_PATH
+          echo "$HOME/.relayer" >> $GITHUB_PATH
+      - name: Bypass the grub-efi-amd64-signed package
+        run: sudo apt-mark hold grub-efi-amd64-signed
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.10'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install toml-cli
+      - name: Install Cosmovisor > v1.3.0
+        if: ${{ (matrix.upgrade_mechanism == 'cv_manual' || matrix.upgrade_mechanism == 'cv_auto') && matrix.cv_version != 'v1.3.0' }}
+        run: |
+          go install cosmossdk.io/tools/cosmovisor/cmd/cosmovisor@$COSMOVISOR_VERSION
+          echo "COSMOVISOR=true" >> $GITHUB_ENV
+          echo "$HOME_1/cosmovisor/current/bin" >> $GITHUB_PATH
+      - name: Install Cosmovisor v1.3.0
+        if: ${{ (matrix.upgrade_mechanism == 'cv_manual' || matrix.upgrade_mechanism == 'cv_auto') && matrix.cv_version == 'v1.3.0' }}
+        run: |
+          go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@$COSMOVISOR_VERSION
+          echo "COSMOVISOR=true" >> $GITHUB_ENV
+          echo "$HOME_1/cosmovisor/current/bin" >> $GITHUB_PATH
+      - name: Start chain
+        env:
+          START_VERSION: ${{matrix.gaia_version}}
+        run: |
+          export CHAIN_BINARY_URL=https://github.com/cosmos/gaia/releases/download/$START_VERSION/gaiad-$START_VERSION-linux-amd64
+          tests/major_fresh_upgrade/start_chain.sh
+      - name: Check Gaia log
+        run: sudo journalctl -u $PROVIDER_SERVICE_1
+      - name: Print Gaia version
+        run: $CHAIN_BINARY version --long
+      - name: Block production check
+        run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 5 # 5 blocks
 
-  #     - name: Test globalfee module
-  #       run: |
-  #         tests/test_globalfee.sh
+      - name: Test globalfee module
+        run: |
+          tests/test_globalfee.sh
 
-  #     - name: Test software upgrade for published releases
-  #       if: ${{ matrix.upgrade_version != 'main' }}
-  #       env:
-  #         DOWNLOAD_URL: https://github.com/cosmos/gaia/releases/download/${{ matrix.upgrade_version }}/gaiad-${{ matrix.upgrade_version }}-linux-amd64
-  #       run: |
-  #         echo $DOWNLOAD_URL
-  #         tests/major_fresh_upgrade/software_upgrade.sh 127.0.0.1 $VAL1_RPC_PORT v15
-  #     - name: Test software upgrade for main branch
-  #       if: ${{ matrix.upgrade_version == 'main' }}
-  #       env:
-  #         DOWNLOAD_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/gaiad-linux-main/gaiad-linux
-  #       run: |
-  #         tests/major_fresh_upgrade/software_upgrade.sh 127.0.0.1 $VAL1_RPC_PORT v15
+      - name: Test software upgrade for published releases
+        if: ${{ matrix.upgrade_version != 'main' }}
+        env:
+          DOWNLOAD_URL: https://github.com/cosmos/gaia/releases/download/${{ matrix.upgrade_version }}/gaiad-${{ matrix.upgrade_version }}-linux-amd64
+        run: |
+          echo $DOWNLOAD_URL
+          tests/major_fresh_upgrade/software_upgrade.sh 127.0.0.1 $VAL1_RPC_PORT v15
+      - name: Test software upgrade for main branch
+        if: ${{ matrix.upgrade_version == 'main' }}
+        env:
+          DOWNLOAD_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/gaiad-linux-main/gaiad-linux
+        run: |
+          tests/major_fresh_upgrade/software_upgrade.sh 127.0.0.1 $VAL1_RPC_PORT v15
 
-  #     - name: _Blocks produced after upgrade
-  #       run: |
-  #         tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 10
+      - name: _Blocks produced after upgrade
+        run: |
+          tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 10
 
-  #     - name: Flush "migration successful" lines
-  #       run: |
-  #         $CHAIN_BINARY keys list --home $HOME_1
+      - name: Flush "migration successful" lines
+        run: |
+          $CHAIN_BINARY keys list --home $HOME_1
 
-  #     - name: _Transactions verified> bank send, delegate, and withdraw rewards
-  #       run: tests/test_tx_fresh.sh
-  #     - name: _API endpoints check
-  #       run: tests/test_endpoints_api.sh localhost $VAL1_API_PORT
-  #     - name: _RPC endpoints check
-  #       run: tests/test_endpoints_rpc.sh localhost $VAL1_RPC_PORT       
+      - name: _Transactions verified> bank send, delegate, and withdraw rewards
+        run: tests/test_tx_fresh.sh
+      - name: _API endpoints check
+        run: tests/test_endpoints_api.sh localhost $VAL1_API_PORT
+      - name: _RPC endpoints check
+        run: tests/test_endpoints_rpc.sh localhost $VAL1_RPC_PORT       
 
-  #     - name: Test globalfee module
-  #       env:
-  #         COSMOS_SDK: v47
-  #       run: |
-  #         tests/test_globalfee.sh
+      - name: Test globalfee module
+        env:
+          COSMOS_SDK: v47
+        run: |
+          tests/test_globalfee.sh
 
-  # _03-v310-consumer-launches:
-  #   runs-on: ubuntu-22.04
-  #   needs: set-version-matrix
-  #   strategy:
-  #     matrix:
-  #       ${{ fromJSON(needs.set-version-matrix.outputs.upgrade_versions) }}
-  #     fail-fast: false
-  #   env:
-  #     COMMIT_TIMEOUT: 3
-  #     COSMOVISOR: false
-  #     COSMOVISOR_VERSION: ${{ matrix.cv_version }}
-  #     UPGRADE_MECHANISM: ${{ matrix.upgrade_mechanism }}
-  #     # Provider chain variables
-  #     CHAIN_BINARY: gaiad
-  #     CHAIN_ID: testnet
-  #     DENOM: uatom
-  #     BASE_FEES: 2000
-  #     HIGH_FEES: 10000
-  #     GAS: auto
-  #     GAS_ADJUSTMENT: 2
-  #     GAS_PRICE: 0.005
-  #     VOTING_PERIOD: 10s
-  #     COSMOS_SDK: v45
-  #     # Provider node variables
-  #     HOME_1: /home/runner/.val1
-  #     HOME_2: /home/runner/.val2
-  #     HOME_3: /home/runner/.val3
-  #     PROVIDER_SERVICE_1: gaia1.service
-  #     PROVIDER_SERVICE_2: gaia2.service
-  #     PROVIDER_SERVICE_3: gaia3.service
-  #     MNEMONIC_1: abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon art
-  #     MNEMONIC_2: abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon garage
-  #     MNEMONIC_3: abandon cash abandon cash abandon cash abandon cash abandon cash abandon cash abandon cash abandon cash abandon cash abandon cash abandon cash abandon earth
-  #     MNEMONIC_RELAYER: abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon success
-  #     MNEMONIC_4: abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon success
-  #     MNEMONIC_5: abandon fame abandon fame abandon fame abandon fame abandon fame abandon fame abandon fame abandon fame abandon fame abandon fame abandon fame abandon claim
-  #     MONIKER_1: val1
-  #     MONIKER_2: val2
-  #     MONIKER_3: val3
-  #     MONIKER_RELAYER: relayer
-  #     MONIKER_4: relayer
-  #     MONIKER_5: wallet5
-  #     VALOPER_1: cosmosvaloper1r5v5srda7xfth3hn2s26txvrcrntldju7lnwmv
-  #     VALOPER_2: cosmosvaloper1ay4dpm0kjmvtpug28vgw5w32yyjxa5spq248vn
-  #     VALOPER_3: cosmosvaloper1v8zgdpzqfazvk6fgwhqqhzx0hfannrajukgdkc
-  #     WALLET_1: cosmos1r5v5srda7xfth3hn2s26txvrcrntldjumt8mhl
-  #     WALLET_2: cosmos1ay4dpm0kjmvtpug28vgw5w32yyjxa5sp97pjqq
-  #     WALLET_3: cosmos1v8zgdpzqfazvk6fgwhqqhzx0hfannrajezuc6t
-  #     WALLET_4: cosmos1ty2qlurqsxj6sgs378hxmzyxh0ds8ukc70w844
-  #     WALLET_RELAYER: cosmos1ty2qlurqsxj6sgs378hxmzyxh0ds8ukc70w844
-  #     VAL1_STAKE: 800000000
-  #     VAL2_STAKE: 200000000
-  #     VAL3_STAKE: 10000000
-  #     VAL_FUNDS: 11000000000
-  #     VAL_STAKE: 1000000000
-  #     VAL_STAKE_STEP: 1000000
-  #     VAL1_API_PORT: 25001
-  #     VAL2_API_PORT: 25002
-  #     VAL3_API_PORT: 25003
-  #     VAL1_GRPC_PORT: 26001
-  #     VAL2_GRPC_PORT: 26002
-  #     VAL3_GRPC_PORT: 26003
-  #     VAL1_RPC_PORT: 27001
-  #     VAL2_RPC_PORT: 27002
-  #     VAL3_RPC_PORT: 27003
-  #     VAL1_P2P_PORT: 28001
-  #     VAL2_P2P_PORT: 28002
-  #     VAL3_P2P_PORT: 28003
-  #     VAL1_PPROF_PORT: 29001
-  #     VAL2_PPROF_PORT: 29002
-  #     VAL3_PPROF_PORT: 29003
-  #     # Consumer chain variables
-  #     DOWNTIME_BLOCKS: 10000
-  #     RECIPIENT: cosmos1r5v5srda7xfth3hn2s26txvrcrntldjumt8mhl
-  #     ICS_120: false
-  #     ICS_200: false
-  #     ICS_310: false
-  #     ICS_330: false
-  #     CONSUMER_ICS: v3.1.0
-  #     PROVIDER_ICS: v2.4.0
-  #     # Reference ICS chain variables
-  #     CONSUMER_DENOM: ucon
-  #     CONSUMER_FEES: 500
-  #     CONSUMER_CHAIN_V12_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-v1.2.0-multiden/interchain-security-cd-linux
-  #     CONSUMER_CHAIN_V12_BINARY: consumerd_v1.2.0
-  #     CONSUMER_CHAIN_V2_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-v2.0.0/interchain-security-cd-linux
-  #     CONSUMER_CHAIN_V2_BINARY: consumerd_v2.0.0
-  #     CONSUMER_CHAIN_V310_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-v3.1.0/interchain-security-cd-linux
-  #     CONSUMER_CHAIN_V310_BINARY: consumerd_v3.1.0
-  #     CONSUMER_CHAIN_V320_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-consumer-v3.2.0/interchain-security-cd-linux
-  #     CONSUMER_CHAIN_V320_BINARY: consumerd_v3.2.0
-  #     CONSUMER_CHAIN_V330_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-consumer-v3.3.0/interchain-security-cd-linux
-  #     CONSUMER_CHAIN_V330_BINARY: consumerd_v3.3.0
-  #     STRIDE_V18_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/stride-consumer-v18.0.0/strided-consumer-linux
-  #     ICS_TRANSFORM_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-v3.3.0-transform/interchain-security-cd
-  #     ICS_TRANSFORM_BINARY: cd-transform
-  #     # Sovereign-ICS chain variables
-  #     STRIDE_SOV_CHAIN_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/stride-v11.0.0/stride-v11.0.0-linux-amd64
-  #     STRIDE_CON_CHAIN_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/stride-v12.1.0/stride-v12.1.0-linux-amd64
-  #     STRIDE_CHAIN_BINARY: strided
-  #     STRIDE_CHAIN_ID: five
-  #     STRIDE_DENOM: ustrd
-  #     STRIDE_HOME_1: /home/runner/.stride1
-  #     STRIDE_HOME_2: /home/runner/.stride2
-  #     STRIDE_SERVICE_1: stride1.service
-  #     STRIDE_SERVICE_2: stride2.service
-  #     STRIDE_WALLET_1: stride1r5v5srda7xfth3hn2s26txvrcrntldjucq88rn
-  #     STRIDE_WALLET_LIQUID: stride17n3vkvg6lwf98p3kanlhlyjk6zkrfla9zrhma6
-  #     STRIDE_API_1: 35001
-  #     STRIDE_API_2: 35002
-  #     STRIDE_GRPC_1: 36001
-  #     STRIDE_GRPC_2: 36002
-  #     STRIDE_RPC_1: 37001
-  #     STRIDE_RPC_2: 37002
-  #     STRIDE_P2P_1: 38001
-  #     STRIDE_P2P_2: 38002
-  #     STRIDE_PPROF_1: 39001
-  #     STRIDE_PPROF_2: 39002
-  #     CHANGEOVER_HEIGHT_OFFSET: false
-  #     # Relayer variables
-  #     # RELAYER: hermes
-  #     HERMES_VERSION: v1.7.4
-  #     RLY_VERSION: "2.4.2"
-  #   steps:
-  #     - name: start-version
-  #       run: echo ${{matrix.gaia_version}}
-  #     - name: target-version
-  #       run: echo ${{matrix.upgrade_version}}
-  #     - name: target-commit
-  #       if: ${{ matrix.upgrade_version == 'main' }}
-  #       run: |
-  #         BUILD_TAG=gaiad-linux-${{matrix.upgrade_version}}
-  #         TARGET_COMMIT=$(curl -s -L -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" https://api.github.com/repos/hyphacoop/cosmos-builds/releases/tags/$BUILD_TAG | jq -r '.name')
-  #         echo TARGET_COMMIT: $TARGET_COMMIT
-  #     - name: Update PATH
-  #       run: |
-  #         mkdir -p $HOME/go/bin
-  #         echo "$HOME/go/bin" >> $GITHUB_PATH
-  #         echo "$HOME/.hermes" >> $GITHUB_PATH
-  #         echo "$HOME/.relayer" >> $GITHUB_PATH
-  #     - name: Bypass the grub-efi-amd64-signed package
-  #       run: sudo apt-mark hold grub-efi-amd64-signed
-  #     - name: Check out repository code
-  #       uses: actions/checkout@v3
-  #     - name: Set up Python
-  #       uses: actions/setup-python@v3
-  #       with:
-  #         python-version: '3.10'
-  #     - name: Install dependencies
-  #       run: |
-  #         python -m pip install --upgrade pip
-  #         python -m pip install toml-cli
-  #     - name: Install Cosmovisor > v1.3.0
-  #       if: ${{ (matrix.upgrade_mechanism == 'cv_manual' || matrix.upgrade_mechanism == 'cv_auto') && matrix.cv_version != 'v1.3.0' }}
-  #       run: |
-  #         go install cosmossdk.io/tools/cosmovisor/cmd/cosmovisor@$COSMOVISOR_VERSION
-  #         echo "COSMOVISOR=true" >> $GITHUB_ENV
-  #         echo "$HOME_1/cosmovisor/current/bin" >> $GITHUB_PATH
-  #     - name: Install Cosmovisor v1.3.0
-  #       if: ${{ (matrix.upgrade_mechanism == 'cv_manual' || matrix.upgrade_mechanism == 'cv_auto') && matrix.cv_version == 'v1.3.0' }}
-  #       run: |
-  #         go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@$COSMOVISOR_VERSION
-  #         echo "COSMOVISOR=true" >> $GITHUB_ENV
-  #         echo "$HOME_1/cosmovisor/current/bin" >> $GITHUB_PATH
-  #     - name: Select Hermes
-  #       if: ${{ matrix.relayer == 'hermes' }}
-  #       run: echo "RELAYER=hermes" >> $GITHUB_ENV
-  #     - name: Select Go Relayer
-  #       if: ${{ matrix.relayer == 'rly' }}
-  #       run: echo "RELAYER=rly" >> $GITHUB_ENV
-  #     - name: Set up relayer
-  #       run: tests/v15_upgrade/setup_relayer.sh
-  #     - name: Download consumer chain binaries
-  #       run: |
-  #         wget $CONSUMER_CHAIN_V2_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_V2_BINARY -q
-  #         chmod +x $HOME/go/bin/$CONSUMER_CHAIN_V2_BINARY
-  #         wget $CONSUMER_CHAIN_V310_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_V310_BINARY -q
-  #         chmod +x $HOME/go/bin/$CONSUMER_CHAIN_V310_BINARY
-  #         wget $CONSUMER_CHAIN_V320_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_V320_BINARY -q
-  #         chmod +x $HOME/go/bin/$CONSUMER_CHAIN_V320_BINARY
-  #         wget $CONSUMER_CHAIN_V330_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_V330_BINARY -q
-  #         chmod +x $HOME/go/bin/$CONSUMER_CHAIN_V330_BINARY
-  #         wget $STRIDE_CON_CHAIN_BINARY_URL -O $HOME/go/bin/$STRIDE_CHAIN_BINARY -q
-  #         chmod +x $HOME/go/bin/$STRIDE_CHAIN_BINARY
-  #         wget $ICS_TRANSFORM_BINARY_URL -O $HOME/go/bin/$ICS_TRANSFORM_BINARY -q
-  #         chmod +x $HOME/go/bin/$ICS_TRANSFORM_BINARY
-  #     - name: Consumer chain binary URLs
-  #       run: |
-  #         echo "$CONSUMER_CHAIN_V12_BINARY runs off $CONSUMER_CHAIN_V12_BINARY_URL"
-  #         echo "$CONSUMER_CHAIN_V2_BINARY runs off $CONSUMER_CHAIN_V2_BINARY_URL"
-  #         echo "$CONSUMER_CHAIN_V310_BINARY runs off $CONSUMER_CHAIN_V310_BINARY_URL"
-  #         echo "$CONSUMER_CHAIN_V320_BINARY runs off $CONSUMER_CHAIN_V320_BINARY_URL"
-  #         echo "$CONSUMER_CHAIN_V330_BINARY runs off $CONSUMER_CHAIN_V330_BINARY_URL"
-  #         echo "$STRIDE_BINARY runs off $STRIDE_CON_CHAIN_BINARY_URL"
-  #     - name: Start chain
-  #       env:
-  #         START_VERSION: ${{matrix.gaia_version}}
-  #       run: |
-  #         export CHAIN_BINARY_URL=https://github.com/cosmos/gaia/releases/download/$START_VERSION/gaiad-$START_VERSION-linux-amd64
-  #         tests/major_fresh_upgrade/start_chain.sh
-  #     - name: Check Gaia log
-  #       run: sudo journalctl -u $PROVIDER_SERVICE_1
-  #     - name: Print Gaia version
-  #       run: $CHAIN_BINARY version --long
-  #     - name: Block production check
-  #       run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 5 # 5 blocks
+  _03-v310-consumer-launches:
+    runs-on: ubuntu-22.04
+    needs: set-version-matrix
+    strategy:
+      matrix:
+        ${{ fromJSON(needs.set-version-matrix.outputs.upgrade_versions) }}
+      fail-fast: false
+    env:
+      COMMIT_TIMEOUT: 3
+      COSMOVISOR: false
+      COSMOVISOR_VERSION: ${{ matrix.cv_version }}
+      UPGRADE_MECHANISM: ${{ matrix.upgrade_mechanism }}
+      # Provider chain variables
+      CHAIN_BINARY: gaiad
+      CHAIN_ID: testnet
+      DENOM: uatom
+      BASE_FEES: 2000
+      HIGH_FEES: 10000
+      GAS: auto
+      GAS_ADJUSTMENT: 2
+      GAS_PRICE: 0.005
+      VOTING_PERIOD: 10s
+      COSMOS_SDK: v45
+      # Provider node variables
+      HOME_1: /home/runner/.val1
+      HOME_2: /home/runner/.val2
+      HOME_3: /home/runner/.val3
+      PROVIDER_SERVICE_1: gaia1.service
+      PROVIDER_SERVICE_2: gaia2.service
+      PROVIDER_SERVICE_3: gaia3.service
+      MNEMONIC_1: abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon art
+      MNEMONIC_2: abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon garage
+      MNEMONIC_3: abandon cash abandon cash abandon cash abandon cash abandon cash abandon cash abandon cash abandon cash abandon cash abandon cash abandon cash abandon earth
+      MNEMONIC_RELAYER: abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon success
+      MNEMONIC_4: abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon success
+      MNEMONIC_5: abandon fame abandon fame abandon fame abandon fame abandon fame abandon fame abandon fame abandon fame abandon fame abandon fame abandon fame abandon claim
+      MONIKER_1: val1
+      MONIKER_2: val2
+      MONIKER_3: val3
+      MONIKER_RELAYER: relayer
+      MONIKER_4: relayer
+      MONIKER_5: wallet5
+      VALOPER_1: cosmosvaloper1r5v5srda7xfth3hn2s26txvrcrntldju7lnwmv
+      VALOPER_2: cosmosvaloper1ay4dpm0kjmvtpug28vgw5w32yyjxa5spq248vn
+      VALOPER_3: cosmosvaloper1v8zgdpzqfazvk6fgwhqqhzx0hfannrajukgdkc
+      WALLET_1: cosmos1r5v5srda7xfth3hn2s26txvrcrntldjumt8mhl
+      WALLET_2: cosmos1ay4dpm0kjmvtpug28vgw5w32yyjxa5sp97pjqq
+      WALLET_3: cosmos1v8zgdpzqfazvk6fgwhqqhzx0hfannrajezuc6t
+      WALLET_4: cosmos1ty2qlurqsxj6sgs378hxmzyxh0ds8ukc70w844
+      WALLET_RELAYER: cosmos1ty2qlurqsxj6sgs378hxmzyxh0ds8ukc70w844
+      VAL1_STAKE: 800000000
+      VAL2_STAKE: 200000000
+      VAL3_STAKE: 10000000
+      VAL_FUNDS: 11000000000
+      VAL_STAKE: 1000000000
+      VAL_STAKE_STEP: 1000000
+      VAL1_API_PORT: 25001
+      VAL2_API_PORT: 25002
+      VAL3_API_PORT: 25003
+      VAL1_GRPC_PORT: 26001
+      VAL2_GRPC_PORT: 26002
+      VAL3_GRPC_PORT: 26003
+      VAL1_RPC_PORT: 27001
+      VAL2_RPC_PORT: 27002
+      VAL3_RPC_PORT: 27003
+      VAL1_P2P_PORT: 28001
+      VAL2_P2P_PORT: 28002
+      VAL3_P2P_PORT: 28003
+      VAL1_PPROF_PORT: 29001
+      VAL2_PPROF_PORT: 29002
+      VAL3_PPROF_PORT: 29003
+      # Consumer chain variables
+      DOWNTIME_BLOCKS: 10000
+      RECIPIENT: cosmos1r5v5srda7xfth3hn2s26txvrcrntldjumt8mhl
+      ICS_120: false
+      ICS_200: false
+      ICS_310: false
+      ICS_330: false
+      CONSUMER_ICS: v3.1.0
+      PROVIDER_ICS: v2.4.0
+      # Reference ICS chain variables
+      CONSUMER_DENOM: ucon
+      CONSUMER_FEES: 500
+      CONSUMER_CHAIN_V12_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-v1.2.0-multiden/interchain-security-cd-linux
+      CONSUMER_CHAIN_V12_BINARY: consumerd_v1.2.0
+      CONSUMER_CHAIN_V2_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-v2.0.0/interchain-security-cd-linux
+      CONSUMER_CHAIN_V2_BINARY: consumerd_v2.0.0
+      CONSUMER_CHAIN_V310_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-v3.1.0/interchain-security-cd-linux
+      CONSUMER_CHAIN_V310_BINARY: consumerd_v3.1.0
+      CONSUMER_CHAIN_V320_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-consumer-v3.2.0/interchain-security-cd-linux
+      CONSUMER_CHAIN_V320_BINARY: consumerd_v3.2.0
+      CONSUMER_CHAIN_V330_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-consumer-v3.3.0/interchain-security-cd-linux
+      CONSUMER_CHAIN_V330_BINARY: consumerd_v3.3.0
+      STRIDE_V18_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/stride-consumer-v18.0.0/strided-consumer-linux
+      ICS_TRANSFORM_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-v3.3.0-transform/interchain-security-cd
+      ICS_TRANSFORM_BINARY: cd-transform
+      # Sovereign-ICS chain variables
+      STRIDE_SOV_CHAIN_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/stride-v11.0.0/stride-v11.0.0-linux-amd64
+      STRIDE_CON_CHAIN_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/stride-v12.1.0/stride-v12.1.0-linux-amd64
+      STRIDE_CHAIN_BINARY: strided
+      STRIDE_CHAIN_ID: five
+      STRIDE_DENOM: ustrd
+      STRIDE_HOME_1: /home/runner/.stride1
+      STRIDE_HOME_2: /home/runner/.stride2
+      STRIDE_SERVICE_1: stride1.service
+      STRIDE_SERVICE_2: stride2.service
+      STRIDE_WALLET_1: stride1r5v5srda7xfth3hn2s26txvrcrntldjucq88rn
+      STRIDE_WALLET_LIQUID: stride17n3vkvg6lwf98p3kanlhlyjk6zkrfla9zrhma6
+      STRIDE_API_1: 35001
+      STRIDE_API_2: 35002
+      STRIDE_GRPC_1: 36001
+      STRIDE_GRPC_2: 36002
+      STRIDE_RPC_1: 37001
+      STRIDE_RPC_2: 37002
+      STRIDE_P2P_1: 38001
+      STRIDE_P2P_2: 38002
+      STRIDE_PPROF_1: 39001
+      STRIDE_PPROF_2: 39002
+      CHANGEOVER_HEIGHT_OFFSET: false
+      # Relayer variables
+      # RELAYER: hermes
+      HERMES_VERSION: v1.7.4
+      RLY_VERSION: "2.4.2"
+    steps:
+      - name: start-version
+        run: echo ${{matrix.gaia_version}}
+      - name: target-version
+        run: echo ${{matrix.upgrade_version}}
+      - name: target-commit
+        if: ${{ matrix.upgrade_version == 'main' }}
+        run: |
+          BUILD_TAG=gaiad-linux-${{matrix.upgrade_version}}
+          TARGET_COMMIT=$(curl -s -L -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" https://api.github.com/repos/hyphacoop/cosmos-builds/releases/tags/$BUILD_TAG | jq -r '.name')
+          echo TARGET_COMMIT: $TARGET_COMMIT
+      - name: Update PATH
+        run: |
+          mkdir -p $HOME/go/bin
+          echo "$HOME/go/bin" >> $GITHUB_PATH
+          echo "$HOME/.hermes" >> $GITHUB_PATH
+          echo "$HOME/.relayer" >> $GITHUB_PATH
+      - name: Bypass the grub-efi-amd64-signed package
+        run: sudo apt-mark hold grub-efi-amd64-signed
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.10'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install toml-cli
+      - name: Install Cosmovisor > v1.3.0
+        if: ${{ (matrix.upgrade_mechanism == 'cv_manual' || matrix.upgrade_mechanism == 'cv_auto') && matrix.cv_version != 'v1.3.0' }}
+        run: |
+          go install cosmossdk.io/tools/cosmovisor/cmd/cosmovisor@$COSMOVISOR_VERSION
+          echo "COSMOVISOR=true" >> $GITHUB_ENV
+          echo "$HOME_1/cosmovisor/current/bin" >> $GITHUB_PATH
+      - name: Install Cosmovisor v1.3.0
+        if: ${{ (matrix.upgrade_mechanism == 'cv_manual' || matrix.upgrade_mechanism == 'cv_auto') && matrix.cv_version == 'v1.3.0' }}
+        run: |
+          go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@$COSMOVISOR_VERSION
+          echo "COSMOVISOR=true" >> $GITHUB_ENV
+          echo "$HOME_1/cosmovisor/current/bin" >> $GITHUB_PATH
+      - name: Select Hermes
+        if: ${{ matrix.relayer == 'hermes' }}
+        run: echo "RELAYER=hermes" >> $GITHUB_ENV
+      - name: Select Go Relayer
+        if: ${{ matrix.relayer == 'rly' }}
+        run: echo "RELAYER=rly" >> $GITHUB_ENV
+      - name: Set up relayer
+        run: tests/v15_upgrade/setup_relayer.sh
+      - name: Download consumer chain binaries
+        run: |
+          wget $CONSUMER_CHAIN_V2_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_V2_BINARY -q
+          chmod +x $HOME/go/bin/$CONSUMER_CHAIN_V2_BINARY
+          wget $CONSUMER_CHAIN_V310_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_V310_BINARY -q
+          chmod +x $HOME/go/bin/$CONSUMER_CHAIN_V310_BINARY
+          wget $CONSUMER_CHAIN_V320_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_V320_BINARY -q
+          chmod +x $HOME/go/bin/$CONSUMER_CHAIN_V320_BINARY
+          wget $CONSUMER_CHAIN_V330_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_V330_BINARY -q
+          chmod +x $HOME/go/bin/$CONSUMER_CHAIN_V330_BINARY
+          wget $STRIDE_CON_CHAIN_BINARY_URL -O $HOME/go/bin/$STRIDE_CHAIN_BINARY -q
+          chmod +x $HOME/go/bin/$STRIDE_CHAIN_BINARY
+          wget $ICS_TRANSFORM_BINARY_URL -O $HOME/go/bin/$ICS_TRANSFORM_BINARY -q
+          chmod +x $HOME/go/bin/$ICS_TRANSFORM_BINARY
+      - name: Consumer chain binary URLs
+        run: |
+          echo "$CONSUMER_CHAIN_V12_BINARY runs off $CONSUMER_CHAIN_V12_BINARY_URL"
+          echo "$CONSUMER_CHAIN_V2_BINARY runs off $CONSUMER_CHAIN_V2_BINARY_URL"
+          echo "$CONSUMER_CHAIN_V310_BINARY runs off $CONSUMER_CHAIN_V310_BINARY_URL"
+          echo "$CONSUMER_CHAIN_V320_BINARY runs off $CONSUMER_CHAIN_V320_BINARY_URL"
+          echo "$CONSUMER_CHAIN_V330_BINARY runs off $CONSUMER_CHAIN_V330_BINARY_URL"
+          echo "$STRIDE_BINARY runs off $STRIDE_CON_CHAIN_BINARY_URL"
+      - name: Start chain
+        env:
+          START_VERSION: ${{matrix.gaia_version}}
+        run: |
+          export CHAIN_BINARY_URL=https://github.com/cosmos/gaia/releases/download/$START_VERSION/gaiad-$START_VERSION-linux-amd64
+          tests/major_fresh_upgrade/start_chain.sh
+      - name: Check Gaia log
+        run: sudo journalctl -u $PROVIDER_SERVICE_1
+      - name: Print Gaia version
+        run: $CHAIN_BINARY version --long
+      - name: Block production check
+        run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 5 # 5 blocks
 
-  #     - name: Add consumer chain with ICS v3.1.0
-  #       env:
-  #         COSMOS_SDK: v45
-  #         CONSUMER_CHAIN_ID: three-v310
-  #       run: |
-  #         tests/major_fresh_upgrade/add_consumer.sh
-  #     - name: Initialize consumer chain with ICS v3.1.0
-  #       env:
-  #         CONSUMER_CHAIN_ID: three-v310
-  #         CONSUMER_HOME_1: /home/runner/.three_1
-  #         CONSUMER_HOME_2: /home/runner/.three_2
-  #         CONSUMER_HOME_3: /home/runner/.three_3
-  #         CONSUMER_SERVICE_1: three_1.service
-  #         CONSUMER_SERVICE_2: three_2.service
-  #         CONSUMER_SERVICE_3: three_3.service
-  #         CON1_API_PORT: 25301
-  #         CON2_API_PORT: 25302
-  #         CON3_API_PORT: 25303
-  #         CON1_GRPC_PORT: 26301
-  #         CON2_GRPC_PORT: 26302
-  #         CON3_GRPC_PORT: 26303
-  #         CON1_RPC_PORT: 27301
-  #         CON2_RPC_PORT: 27302
-  #         CON3_RPC_PORT: 27303
-  #         CON1_P2P_PORT: 28301
-  #         CON2_P2P_PORT: 28302
-  #         CON3_P2P_PORT: 28303
-  #         CON1_PPROF_PORT: 29301
-  #         CON2_PPROF_PORT: 29302
-  #         CON3_PPROF_PORT: 29303
-  #         DOWNTIME_BLOCKS: 100000
-  #       run: |
-  #         export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V310_BINARY
-  #         tests/major_fresh_upgrade/init_consumer_assign_keys.sh
-  #         sleep 20
-  #     - name: Prepare consumer chain three-v310
-  #       env:
-  #         CONSUMER_CHAIN_ID: three-v310
-  #         CONSUMER_HOME_1: /home/runner/.three_1
-  #         CONSUMER_HOME_2: /home/runner/.three_2
-  #         CONSUMER_HOME_3: /home/runner/.three_3
-  #       run: |
-  #         tests/major_fresh_upgrade/prepare_consumer.sh
-  #     - name: Start consumer chain three-v310
-  #       env:
-  #         CONSUMER_CHAIN_ID: three-v310
-  #         CONSUMER_SERVICE_1: three_1.service
-  #         CONSUMER_SERVICE_2: three_2.service
-  #         CONSUMER_SERVICE_3: three_3.service
-  #       run: |
-  #         sudo systemctl enable $CONSUMER_SERVICE_1 --now
-  #         sleep 5
-  #         journalctl -u $CONSUMER_SERVICE_1
-  #     - name: _Pre-upgrade consumer chain produces blocks> ICS v3.1.0 chain 1
-  #       env:
-  #         CON1_RPC_PORT: 27301
-  #       run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT 5
-  #     - name: Establish CCV channel for three-v310
-  #       env:
-  #         CONSUMER_CHAIN_ID: three-v310
-  #       run: |
-  #         client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
-  #         if [ $RELAYER == "hermes" ]; then
-  #           echo "Creating channel with Hermes..."
-  #           hermes create connection --a-chain $CONSUMER_CHAIN_ID --a-client 07-tendermint-0 --b-client $client_id
-  #           hermes create channel --a-chain $CONSUMER_CHAIN_ID --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
-  #         elif [ $RELAYER == "rly" ]; then
-  #           echo "Creating channel with Go relayer..."
-  #           jq --arg CHAIN "$CONSUMER_CHAIN_ID" '.src."chain-id" = $CHAIN' tests/v15_upgrade/rly-path-template.json > three-1.json
-  #           jq --arg CLIENT "$client_id" '.dst."client-id" = $CLIENT' three-1.json > three-2.json
-  #           rly paths add testnet three-v310 three --file three-2.json
-  #           rly transact connection three
-  #           rly transact channel three --src-port consumer --dst-port provider --order ordered --version 1
-  #         fi
-  #         sudo systemctl restart $RELAYER
-  #         sleep 10
-  #     - name: _Pre-upgrade CCV channel verified> ICS v3.1.0 chain 1
-  #       env:
-  #         CONSUMER_HOME_1: /home/runner/.three_1
-  #         CON1_RPC_PORT: 27301
-  #       run: tests/major_fresh_upgrade/test_ccv_key_assignment.sh
-  #     - name: _Pre-upgrade IBC transfer successful> ICS v3.1.0 chain 1
-  #       env:
-  #         CONSUMER_CHAIN_ID: three-v310
-  #         CONSUMER_HOME_1: /home/runner/.three_1
-  #       run: |
-  #         export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V310_BINARY
-  #         client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
-  #         connection_id=$($CHAIN_BINARY q ibc connection connections -o json --home $HOME_1 | jq -r --arg client "$client_id" '.connections[] | select(.client_id==$client).id')
-  #         channel_id=$($CHAIN_BINARY q ibc channel connections $connection_id -o json --home $HOME_1 | jq -r '.channels[] | select(.port_id=="transfer").channel_id')
-  #         tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh $channel_id
+      - name: Add consumer chain with ICS v3.1.0
+        env:
+          COSMOS_SDK: v45
+          CONSUMER_CHAIN_ID: three-v310
+        run: |
+          tests/major_fresh_upgrade/add_consumer.sh
+      - name: Initialize consumer chain with ICS v3.1.0
+        env:
+          CONSUMER_CHAIN_ID: three-v310
+          CONSUMER_HOME_1: /home/runner/.three_1
+          CONSUMER_HOME_2: /home/runner/.three_2
+          CONSUMER_HOME_3: /home/runner/.three_3
+          CONSUMER_SERVICE_1: three_1.service
+          CONSUMER_SERVICE_2: three_2.service
+          CONSUMER_SERVICE_3: three_3.service
+          CON1_API_PORT: 25301
+          CON2_API_PORT: 25302
+          CON3_API_PORT: 25303
+          CON1_GRPC_PORT: 26301
+          CON2_GRPC_PORT: 26302
+          CON3_GRPC_PORT: 26303
+          CON1_RPC_PORT: 27301
+          CON2_RPC_PORT: 27302
+          CON3_RPC_PORT: 27303
+          CON1_P2P_PORT: 28301
+          CON2_P2P_PORT: 28302
+          CON3_P2P_PORT: 28303
+          CON1_PPROF_PORT: 29301
+          CON2_PPROF_PORT: 29302
+          CON3_PPROF_PORT: 29303
+          DOWNTIME_BLOCKS: 100000
+        run: |
+          export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V310_BINARY
+          tests/major_fresh_upgrade/init_consumer_assign_keys.sh
+          sleep 20
+      - name: Prepare consumer chain three-v310
+        env:
+          CONSUMER_CHAIN_ID: three-v310
+          CONSUMER_HOME_1: /home/runner/.three_1
+          CONSUMER_HOME_2: /home/runner/.three_2
+          CONSUMER_HOME_3: /home/runner/.three_3
+        run: |
+          tests/major_fresh_upgrade/prepare_consumer.sh
+      - name: Start consumer chain three-v310
+        env:
+          CONSUMER_CHAIN_ID: three-v310
+          CONSUMER_SERVICE_1: three_1.service
+          CONSUMER_SERVICE_2: three_2.service
+          CONSUMER_SERVICE_3: three_3.service
+        run: |
+          sudo systemctl enable $CONSUMER_SERVICE_1 --now
+          sleep 5
+          journalctl -u $CONSUMER_SERVICE_1
+      - name: _Pre-upgrade consumer chain produces blocks> ICS v3.1.0 chain 1
+        env:
+          CON1_RPC_PORT: 27301
+        run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT 5
+      - name: Establish CCV channel for three-v310
+        env:
+          CONSUMER_CHAIN_ID: three-v310
+        run: |
+          client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
+          if [ $RELAYER == "hermes" ]; then
+            echo "Creating channel with Hermes..."
+            hermes create connection --a-chain $CONSUMER_CHAIN_ID --a-client 07-tendermint-0 --b-client $client_id
+            hermes create channel --a-chain $CONSUMER_CHAIN_ID --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
+          elif [ $RELAYER == "rly" ]; then
+            echo "Creating channel with Go relayer..."
+            jq --arg CHAIN "$CONSUMER_CHAIN_ID" '.src."chain-id" = $CHAIN' tests/v15_upgrade/rly-path-template.json > three-1.json
+            jq --arg CLIENT "$client_id" '.dst."client-id" = $CLIENT' three-1.json > three-2.json
+            rly paths add testnet three-v310 three --file three-2.json
+            rly transact connection three
+            rly transact channel three --src-port consumer --dst-port provider --order ordered --version 1
+          fi
+          sudo systemctl restart $RELAYER
+          sleep 10
+      - name: _Pre-upgrade CCV channel verified> ICS v3.1.0 chain 1
+        env:
+          CONSUMER_HOME_1: /home/runner/.three_1
+          CON1_RPC_PORT: 27301
+        run: tests/major_fresh_upgrade/test_ccv_key_assignment.sh
+      - name: _Pre-upgrade IBC transfer successful> ICS v3.1.0 chain 1
+        env:
+          CONSUMER_CHAIN_ID: three-v310
+          CONSUMER_HOME_1: /home/runner/.three_1
+        run: |
+          export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V310_BINARY
+          client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
+          connection_id=$($CHAIN_BINARY q ibc connection connections -o json --home $HOME_1 | jq -r --arg client "$client_id" '.connections[] | select(.client_id==$client).id')
+          channel_id=$($CHAIN_BINARY q ibc channel connections $connection_id -o json --home $HOME_1 | jq -r '.channels[] | select(.port_id=="transfer").channel_id')
+          tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh $channel_id
 
-  #     - name: Test software upgrade for published releases
-  #       if: ${{ matrix.upgrade_version != 'main' }}
-  #       env:
-  #         DOWNLOAD_URL: https://github.com/cosmos/gaia/releases/download/${{ matrix.upgrade_version }}/gaiad-${{ matrix.upgrade_version }}-linux-amd64
-  #       run: |
-  #         echo $DOWNLOAD_URL
-  #         tests/major_fresh_upgrade/software_upgrade.sh 127.0.0.1 $VAL1_RPC_PORT v15
-  #     - name: Test software upgrade for main branch
-  #       if: ${{ matrix.upgrade_version == 'main' }}
-  #       env:
-  #         DOWNLOAD_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/gaiad-linux-main/gaiad-linux
-  #       run: |
-  #         tests/major_fresh_upgrade/software_upgrade.sh 127.0.0.1 $VAL1_RPC_PORT v15
+      - name: Test software upgrade for published releases
+        if: ${{ matrix.upgrade_version != 'main' }}
+        env:
+          DOWNLOAD_URL: https://github.com/cosmos/gaia/releases/download/${{ matrix.upgrade_version }}/gaiad-${{ matrix.upgrade_version }}-linux-amd64
+        run: |
+          echo $DOWNLOAD_URL
+          tests/major_fresh_upgrade/software_upgrade.sh 127.0.0.1 $VAL1_RPC_PORT v15
+      - name: Test software upgrade for main branch
+        if: ${{ matrix.upgrade_version == 'main' }}
+        env:
+          DOWNLOAD_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/gaiad-linux-main/gaiad-linux
+        run: |
+          tests/major_fresh_upgrade/software_upgrade.sh 127.0.0.1 $VAL1_RPC_PORT v15
 
-  #     - name: _Blocks produced after upgrade
-  #       run: |
-  #         tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 10
+      - name: _Blocks produced after upgrade
+        run: |
+          tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 10
 
-  #     - name: Flush "migration successful" lines
-  #       run: |
-  #         $CHAIN_BINARY keys list --home $HOME_1
+      - name: Flush "migration successful" lines
+        run: |
+          $CHAIN_BINARY keys list --home $HOME_1
 
-  #     - name: _CCV channel verified> ICS v3.1.0 chain 1
-  #       env:
-  #         CONSUMER_HOME_1: /home/runner/.three_1
-  #         CON1_RPC_PORT: 27301
-  #       run: tests/major_fresh_upgrade/test_ccv_key_assignment.sh
-  #     - name: _IBC transfer successful> ICS v3.1.0 chain 1
-  #       env:
-  #         CONSUMER_CHAIN_ID: three-v310
-  #         CONSUMER_HOME_1: /home/runner/.three_1
-  #       run: |
-  #         export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V310_BINARY
-  #         client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
-  #         connection_id=$($CHAIN_BINARY q ibc connection connections -o json --home $HOME_1 | jq -r --arg client "$client_id" '.connections[] | select(.client_id==$client).id')
-  #         channel_id=$($CHAIN_BINARY q ibc channel connections $connection_id -o json --home $HOME_1 | jq -r '.channels[] | select(.port_id=="transfer").channel_id')
-  #         tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh $channel_id
+      - name: _CCV channel verified> ICS v3.1.0 chain 1
+        env:
+          CONSUMER_HOME_1: /home/runner/.three_1
+          CON1_RPC_PORT: 27301
+        run: tests/major_fresh_upgrade/test_ccv_key_assignment.sh
+      - name: _IBC transfer successful> ICS v3.1.0 chain 1
+        env:
+          CONSUMER_CHAIN_ID: three-v310
+          CONSUMER_HOME_1: /home/runner/.three_1
+        run: |
+          export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V310_BINARY
+          client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
+          connection_id=$($CHAIN_BINARY q ibc connection connections -o json --home $HOME_1 | jq -r --arg client "$client_id" '.connections[] | select(.client_id==$client).id')
+          channel_id=$($CHAIN_BINARY q ibc channel connections $connection_id -o json --home $HOME_1 | jq -r '.channels[] | select(.port_id=="transfer").channel_id')
+          tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh $channel_id
 
-  #     - name: Add consumer chain with ICS v3.1.0
-  #       env:
-  #         COSMOS_SDK: v47
-  #         CONSUMER_CHAIN_ID: six-v310
-  #       run: |
-  #         tests/major_fresh_upgrade/add_consumer.sh
-  #     - name: Initialize consumer chain with ICS v3.1.0
-  #       env:
-  #         CONSUMER_CHAIN_ID: six-v310
-  #         CONSUMER_HOME_1: /home/runner/.six_1
-  #         CONSUMER_HOME_2: /home/runner/.six_2
-  #         CONSUMER_HOME_3: /home/runner/.six_3
-  #         CONSUMER_SERVICE_1: six_1.service
-  #         CONSUMER_SERVICE_2: six_2.service
-  #         CONSUMER_SERVICE_3: six_3.service
-  #         CON1_API_PORT: 25601
-  #         CON2_API_PORT: 25602
-  #         CON3_API_PORT: 25603
-  #         CON1_GRPC_PORT: 26601
-  #         CON2_GRPC_PORT: 26602
-  #         CON3_GRPC_PORT: 26603
-  #         CON1_RPC_PORT: 27601
-  #         CON2_RPC_PORT: 27602
-  #         CON3_RPC_PORT: 27603
-  #         CON1_P2P_PORT: 28601
-  #         CON2_P2P_PORT: 28602
-  #         CON3_P2P_PORT: 28603
-  #         CON1_PPROF_PORT: 29601
-  #         CON2_PPROF_PORT: 29602
-  #         CON3_PPROF_PORT: 29603
-  #         DOWNTIME_BLOCKS: 1000
-  #       run: |
-  #         export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V310_BINARY
-  #         tests/major_fresh_upgrade/init_consumer_assign_keys.sh
-  #         sleep 20
-  #     - name: Prepare consumer chain six-v310
-  #       env:
-  #         CONSUMER_CHAIN_ID: six-v310
-  #         CONSUMER_HOME_1: /home/runner/.six_1
-  #         CONSUMER_HOME_2: /home/runner/.six_2
-  #         CONSUMER_HOME_3: /home/runner/.six_3
-  #         CONSUMER_SERVICE_1: six_1.service
-  #         CONSUMER_SERVICE_2: six_2.service
-  #         CONSUMER_SERVICE_3: six_3.service
-  #         ICS_310: true
-  #         COSMOS_SDK: v47
-  #       run: |
-  #         tests/major_fresh_upgrade/prepare_consumer.sh
-  #     - name: Start consumer chain six-v310
-  #       env:
-  #         CONSUMER_CHAIN_ID: six-v310
-  #         CONSUMER_SERVICE_1: six_1.service
-  #         CONSUMER_SERVICE_2: six_2.service
-  #         CONSUMER_SERVICE_3: six_3.service
-  #       run: |
-  #         sudo systemctl enable $CONSUMER_SERVICE_1 --now
-  #         sudo systemctl enable $CONSUMER_SERVICE_2 --now
-  #         sudo systemctl enable $CONSUMER_SERVICE_3 --now
-  #         sleep 5
-  #         journalctl -u $CONSUMER_SERVICE_1
-  #     - name: _Consumer chain produces blocks> ICS v3.1.0 chain 2
-  #       env:
-  #         CON1_RPC_PORT: 27601
-  #       run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT 5
-  #     - name: Establish CCV channel for six-v310
-  #       env:
-  #         CONSUMER_CHAIN_ID: six-v310
-  #       run: |
-  #           client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
-  #           if [ $RELAYER == "hermes" ]; then
-  #             echo "Creating channel with Hermes..."
-  #             hermes create connection --a-chain $CONSUMER_CHAIN_ID --a-client 07-tendermint-0 --b-client $client_id
-  #             hermes create channel --a-chain $CONSUMER_CHAIN_ID --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
-  #           elif [ $RELAYER == "rly" ]; then
-  #             echo "Creating channel with Go relayer..."
-  #             jq --arg CHAIN "$CONSUMER_CHAIN_ID" '.src."chain-id" = $CHAIN' tests/v15_upgrade/rly-path-template.json > six-1.json
-  #             jq --arg CLIENT "$client_id" '.dst."client-id" = $CLIENT' six-1.json > six-2.json
-  #             rly paths add $CHAIN_ID $CONSUMER_CHAIN_ID six --file six-2.json
-  #             rly transact connection six
-  #             rly transact channel six --src-port consumer --dst-port provider --order ordered --version 1
-  #           fi
-  #           sudo systemctl restart $RELAYER
-  #           sleep 10
-  #     - name: _CCV channel verified> ICS v3.1.0 chain 2
-  #       env:
-  #         CON1_RPC_PORT: 27601
-  #         CONSUMER_HOME_1: /home/runner/.six_1
-  #       run: tests/major_fresh_upgrade/test_ccv_key_assignment.sh
-  #     - name: _IBC transfer successful> ICS v3.1.0 chain 2
-  #       env:
-  #         CONSUMER_CHAIN_ID: six-v310
-  #         CONSUMER_HOME_1: /home/runner/.six_1
-  #       run: |
-  #         export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V310_BINARY
-  #         client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
-  #         connection_id=$($CHAIN_BINARY q ibc connection connections -o json --home $HOME_1 | jq -r --arg client "$client_id" '.connections[] | select(.client_id==$client).id')
-  #         channel_id=$($CHAIN_BINARY q ibc channel connections $connection_id -o json --home $HOME_1 | jq -r '.channels[] | select(.port_id=="transfer").channel_id')
-  #         tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh $channel_id
+      - name: Add consumer chain with ICS v3.1.0
+        env:
+          COSMOS_SDK: v47
+          CONSUMER_CHAIN_ID: six-v310
+        run: |
+          tests/major_fresh_upgrade/add_consumer.sh
+      - name: Initialize consumer chain with ICS v3.1.0
+        env:
+          CONSUMER_CHAIN_ID: six-v310
+          CONSUMER_HOME_1: /home/runner/.six_1
+          CONSUMER_HOME_2: /home/runner/.six_2
+          CONSUMER_HOME_3: /home/runner/.six_3
+          CONSUMER_SERVICE_1: six_1.service
+          CONSUMER_SERVICE_2: six_2.service
+          CONSUMER_SERVICE_3: six_3.service
+          CON1_API_PORT: 25601
+          CON2_API_PORT: 25602
+          CON3_API_PORT: 25603
+          CON1_GRPC_PORT: 26601
+          CON2_GRPC_PORT: 26602
+          CON3_GRPC_PORT: 26603
+          CON1_RPC_PORT: 27601
+          CON2_RPC_PORT: 27602
+          CON3_RPC_PORT: 27603
+          CON1_P2P_PORT: 28601
+          CON2_P2P_PORT: 28602
+          CON3_P2P_PORT: 28603
+          CON1_PPROF_PORT: 29601
+          CON2_PPROF_PORT: 29602
+          CON3_PPROF_PORT: 29603
+          DOWNTIME_BLOCKS: 1000
+        run: |
+          export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V310_BINARY
+          tests/major_fresh_upgrade/init_consumer_assign_keys.sh
+          sleep 20
+      - name: Prepare consumer chain six-v310
+        env:
+          CONSUMER_CHAIN_ID: six-v310
+          CONSUMER_HOME_1: /home/runner/.six_1
+          CONSUMER_HOME_2: /home/runner/.six_2
+          CONSUMER_HOME_3: /home/runner/.six_3
+          CONSUMER_SERVICE_1: six_1.service
+          CONSUMER_SERVICE_2: six_2.service
+          CONSUMER_SERVICE_3: six_3.service
+          ICS_310: true
+          COSMOS_SDK: v47
+        run: |
+          tests/major_fresh_upgrade/prepare_consumer.sh
+      - name: Start consumer chain six-v310
+        env:
+          CONSUMER_CHAIN_ID: six-v310
+          CONSUMER_SERVICE_1: six_1.service
+          CONSUMER_SERVICE_2: six_2.service
+          CONSUMER_SERVICE_3: six_3.service
+        run: |
+          sudo systemctl enable $CONSUMER_SERVICE_1 --now
+          sudo systemctl enable $CONSUMER_SERVICE_2 --now
+          sudo systemctl enable $CONSUMER_SERVICE_3 --now
+          sleep 5
+          journalctl -u $CONSUMER_SERVICE_1
+      - name: _Consumer chain produces blocks> ICS v3.1.0 chain 2
+        env:
+          CON1_RPC_PORT: 27601
+        run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT 5
+      - name: Establish CCV channel for six-v310
+        env:
+          CONSUMER_CHAIN_ID: six-v310
+        run: |
+            client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
+            if [ $RELAYER == "hermes" ]; then
+              echo "Creating channel with Hermes..."
+              hermes create connection --a-chain $CONSUMER_CHAIN_ID --a-client 07-tendermint-0 --b-client $client_id
+              hermes create channel --a-chain $CONSUMER_CHAIN_ID --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
+            elif [ $RELAYER == "rly" ]; then
+              echo "Creating channel with Go relayer..."
+              jq --arg CHAIN "$CONSUMER_CHAIN_ID" '.src."chain-id" = $CHAIN' tests/v15_upgrade/rly-path-template.json > six-1.json
+              jq --arg CLIENT "$client_id" '.dst."client-id" = $CLIENT' six-1.json > six-2.json
+              rly paths add $CHAIN_ID $CONSUMER_CHAIN_ID six --file six-2.json
+              rly transact connection six
+              rly transact channel six --src-port consumer --dst-port provider --order ordered --version 1
+            fi
+            sudo systemctl restart $RELAYER
+            sleep 10
+      - name: _CCV channel verified> ICS v3.1.0 chain 2
+        env:
+          CON1_RPC_PORT: 27601
+          CONSUMER_HOME_1: /home/runner/.six_1
+        run: tests/major_fresh_upgrade/test_ccv_key_assignment.sh
+      - name: _IBC transfer successful> ICS v3.1.0 chain 2
+        env:
+          CONSUMER_CHAIN_ID: six-v310
+          CONSUMER_HOME_1: /home/runner/.six_1
+        run: |
+          export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V310_BINARY
+          client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
+          connection_id=$($CHAIN_BINARY q ibc connection connections -o json --home $HOME_1 | jq -r --arg client "$client_id" '.connections[] | select(.client_id==$client).id')
+          channel_id=$($CHAIN_BINARY q ibc channel connections $connection_id -o json --home $HOME_1 | jq -r '.channels[] | select(.port_id=="transfer").channel_id')
+          tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh $channel_id
 
-  # _04-v330-consumer-launches:
-  #   runs-on: ubuntu-22.04
-  #   needs: set-version-matrix
-  #   strategy:
-  #     matrix:
-  #       ${{ fromJSON(needs.set-version-matrix.outputs.upgrade_versions) }}
-  #     fail-fast: false
-  #   env:
-  #     COMMIT_TIMEOUT: 3
-  #     COSMOVISOR: false
-  #     COSMOVISOR_VERSION: ${{ matrix.cv_version }}
-  #     UPGRADE_MECHANISM: ${{ matrix.upgrade_mechanism }}
-  #     # Provider chain variables
-  #     CHAIN_BINARY: gaiad
-  #     CHAIN_ID: testnet
-  #     DENOM: uatom
-  #     BASE_FEES: 2000
-  #     HIGH_FEES: 10000
-  #     GAS: auto
-  #     GAS_ADJUSTMENT: 2
-  #     GAS_PRICE: 0.005
-  #     VOTING_PERIOD: 10s
-  #     COSMOS_SDK: v45
-  #     # Provider node variables
-  #     HOME_1: /home/runner/.val1
-  #     HOME_2: /home/runner/.val2
-  #     HOME_3: /home/runner/.val3
-  #     PROVIDER_SERVICE_1: gaia1.service
-  #     PROVIDER_SERVICE_2: gaia2.service
-  #     PROVIDER_SERVICE_3: gaia3.service
-  #     MNEMONIC_1: abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon art
-  #     MNEMONIC_2: abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon garage
-  #     MNEMONIC_3: abandon cash abandon cash abandon cash abandon cash abandon cash abandon cash abandon cash abandon cash abandon cash abandon cash abandon cash abandon earth
-  #     MNEMONIC_RELAYER: abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon success
-  #     MNEMONIC_4: abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon success
-  #     MNEMONIC_5: abandon fame abandon fame abandon fame abandon fame abandon fame abandon fame abandon fame abandon fame abandon fame abandon fame abandon fame abandon claim
-  #     MONIKER_1: val1
-  #     MONIKER_2: val2
-  #     MONIKER_3: val3
-  #     MONIKER_RELAYER: relayer
-  #     MONIKER_4: relayer
-  #     MONIKER_5: wallet5
-  #     VALOPER_1: cosmosvaloper1r5v5srda7xfth3hn2s26txvrcrntldju7lnwmv
-  #     VALOPER_2: cosmosvaloper1ay4dpm0kjmvtpug28vgw5w32yyjxa5spq248vn
-  #     VALOPER_3: cosmosvaloper1v8zgdpzqfazvk6fgwhqqhzx0hfannrajukgdkc
-  #     WALLET_1: cosmos1r5v5srda7xfth3hn2s26txvrcrntldjumt8mhl
-  #     WALLET_2: cosmos1ay4dpm0kjmvtpug28vgw5w32yyjxa5sp97pjqq
-  #     WALLET_3: cosmos1v8zgdpzqfazvk6fgwhqqhzx0hfannrajezuc6t
-  #     WALLET_4: cosmos1ty2qlurqsxj6sgs378hxmzyxh0ds8ukc70w844
-  #     WALLET_RELAYER: cosmos1ty2qlurqsxj6sgs378hxmzyxh0ds8ukc70w844
-  #     VAL1_STAKE: 800000000
-  #     VAL2_STAKE: 200000000
-  #     VAL3_STAKE: 10000000
-  #     VAL_FUNDS: 11000000000
-  #     VAL_STAKE: 1000000000
-  #     VAL_STAKE_STEP: 1000000
-  #     VAL1_API_PORT: 25001
-  #     VAL2_API_PORT: 25002
-  #     VAL3_API_PORT: 25003
-  #     VAL1_GRPC_PORT: 26001
-  #     VAL2_GRPC_PORT: 26002
-  #     VAL3_GRPC_PORT: 26003
-  #     VAL1_RPC_PORT: 27001
-  #     VAL2_RPC_PORT: 27002
-  #     VAL3_RPC_PORT: 27003
-  #     VAL1_P2P_PORT: 28001
-  #     VAL2_P2P_PORT: 28002
-  #     VAL3_P2P_PORT: 28003
-  #     VAL1_PPROF_PORT: 29001
-  #     VAL2_PPROF_PORT: 29002
-  #     VAL3_PPROF_PORT: 29003
-  #     # Consumer chain variables
-  #     DOWNTIME_BLOCKS: 10000
-  #     RECIPIENT: cosmos1r5v5srda7xfth3hn2s26txvrcrntldjumt8mhl
-  #     ICS_120: false
-  #     ICS_200: false
-  #     ICS_310: false
-  #     ICS_330: false
-  #     CONSUMER_ICS: v3.1.0
-  #     PROVIDER_ICS: v2.4.0
-  #     # Reference ICS chain variables
-  #     CONSUMER_DENOM: ucon
-  #     CONSUMER_FEES: 500
-  #     CONSUMER_CHAIN_V12_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-v1.2.0-multiden/interchain-security-cd-linux
-  #     CONSUMER_CHAIN_V12_BINARY: consumerd_v1.2.0
-  #     CONSUMER_CHAIN_V2_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-v2.0.0/interchain-security-cd-linux
-  #     CONSUMER_CHAIN_V2_BINARY: consumerd_v2.0.0
-  #     CONSUMER_CHAIN_V310_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-v3.1.0/interchain-security-cd-linux
-  #     CONSUMER_CHAIN_V310_BINARY: consumerd_v3.1.0
-  #     CONSUMER_CHAIN_V320_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-consumer-v3.2.0/interchain-security-cd-linux
-  #     CONSUMER_CHAIN_V320_BINARY: consumerd_v3.2.0
-  #     CONSUMER_CHAIN_V330_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-consumer-v3.3.0/interchain-security-cd-linux
-  #     CONSUMER_CHAIN_V330_BINARY: consumerd_v3.3.0
-  #     STRIDE_V18_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/stride-consumer-v18.0.0/strided-consumer-linux
-  #     ICS_TRANSFORM_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-v3.3.0-transform/interchain-security-cd
-  #     ICS_TRANSFORM_BINARY: cd-transform
-  #     # Sovereign-ICS chain variables
-  #     STRIDE_SOV_CHAIN_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/stride-v11.0.0/stride-v11.0.0-linux-amd64
-  #     STRIDE_CON_CHAIN_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/stride-v12.1.0/stride-v12.1.0-linux-amd64
-  #     STRIDE_CHAIN_BINARY: strided
-  #     STRIDE_CHAIN_ID: five
-  #     STRIDE_DENOM: ustrd
-  #     STRIDE_HOME_1: /home/runner/.stride1
-  #     STRIDE_HOME_2: /home/runner/.stride2
-  #     STRIDE_SERVICE_1: stride1.service
-  #     STRIDE_SERVICE_2: stride2.service
-  #     STRIDE_WALLET_1: stride1r5v5srda7xfth3hn2s26txvrcrntldjucq88rn
-  #     STRIDE_WALLET_LIQUID: stride17n3vkvg6lwf98p3kanlhlyjk6zkrfla9zrhma6
-  #     STRIDE_API_1: 35001
-  #     STRIDE_API_2: 35002
-  #     STRIDE_GRPC_1: 36001
-  #     STRIDE_GRPC_2: 36002
-  #     STRIDE_RPC_1: 37001
-  #     STRIDE_RPC_2: 37002
-  #     STRIDE_P2P_1: 38001
-  #     STRIDE_P2P_2: 38002
-  #     STRIDE_PPROF_1: 39001
-  #     STRIDE_PPROF_2: 39002
-  #     CHANGEOVER_HEIGHT_OFFSET: false
-  #     # Relayer variables
-  #     # RELAYER: hermes
-  #     HERMES_VERSION: v1.7.4
-  #     RLY_VERSION: "2.4.2"
-  #   steps:
-  #     - name: start-version
-  #       run: echo ${{matrix.gaia_version}}
-  #     - name: target-version
-  #       run: echo ${{matrix.upgrade_version}}
-  #     - name: target-commit
-  #       if: ${{ matrix.upgrade_version == 'main' }}
-  #       run: |
-  #         BUILD_TAG=gaiad-linux-${{matrix.upgrade_version}}
-  #         TARGET_COMMIT=$(curl -s -L -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" https://api.github.com/repos/hyphacoop/cosmos-builds/releases/tags/$BUILD_TAG | jq -r '.name')
-  #         echo TARGET_COMMIT: $TARGET_COMMIT
-  #     - name: Update PATH
-  #       run: |
-  #         mkdir -p $HOME/go/bin
-  #         echo "$HOME/go/bin" >> $GITHUB_PATH
-  #         echo "$HOME/.hermes" >> $GITHUB_PATH
-  #         echo "$HOME/.relayer" >> $GITHUB_PATH
-  #     - name: Bypass the grub-efi-amd64-signed package
-  #       run: sudo apt-mark hold grub-efi-amd64-signed
-  #     - name: Check out repository code
-  #       uses: actions/checkout@v3
-  #     - name: Set up Python
-  #       uses: actions/setup-python@v3
-  #       with:
-  #         python-version: '3.10'
-  #     - name: Install dependencies
-  #       run: |
-  #         python -m pip install --upgrade pip
-  #         python -m pip install toml-cli
-  #     - name: Install Cosmovisor > v1.3.0
-  #       if: ${{ (matrix.upgrade_mechanism == 'cv_manual' || matrix.upgrade_mechanism == 'cv_auto') && matrix.cv_version != 'v1.3.0' }}
-  #       run: |
-  #         go install cosmossdk.io/tools/cosmovisor/cmd/cosmovisor@$COSMOVISOR_VERSION
-  #         echo "COSMOVISOR=true" >> $GITHUB_ENV
-  #         echo "$HOME_1/cosmovisor/current/bin" >> $GITHUB_PATH
-  #     - name: Install Cosmovisor v1.3.0
-  #       if: ${{ (matrix.upgrade_mechanism == 'cv_manual' || matrix.upgrade_mechanism == 'cv_auto') && matrix.cv_version == 'v1.3.0' }}
-  #       run: |
-  #         go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@$COSMOVISOR_VERSION
-  #         echo "COSMOVISOR=true" >> $GITHUB_ENV
-  #         echo "$HOME_1/cosmovisor/current/bin" >> $GITHUB_PATH
-  #     - name: Select Hermes
-  #       if: ${{ matrix.relayer == 'hermes' }}
-  #       run: echo "RELAYER=hermes" >> $GITHUB_ENV
-  #     - name: Select Go Relayer
-  #       if: ${{ matrix.relayer == 'rly' }}
-  #       run: echo "RELAYER=rly" >> $GITHUB_ENV
-  #     - name: Set up relayer
-  #       run: tests/v15_upgrade/setup_relayer.sh
-  #     - name: Download consumer chain binaries
-  #       run: |
-  #         wget $CONSUMER_CHAIN_V2_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_V2_BINARY -q
-  #         chmod +x $HOME/go/bin/$CONSUMER_CHAIN_V2_BINARY
-  #         wget $CONSUMER_CHAIN_V310_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_V310_BINARY -q
-  #         chmod +x $HOME/go/bin/$CONSUMER_CHAIN_V310_BINARY
-  #         wget $CONSUMER_CHAIN_V320_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_V320_BINARY -q
-  #         chmod +x $HOME/go/bin/$CONSUMER_CHAIN_V320_BINARY
-  #         wget $CONSUMER_CHAIN_V330_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_V330_BINARY -q
-  #         chmod +x $HOME/go/bin/$CONSUMER_CHAIN_V330_BINARY
-  #         wget $STRIDE_CON_CHAIN_BINARY_URL -O $HOME/go/bin/$STRIDE_CHAIN_BINARY -q
-  #         chmod +x $HOME/go/bin/$STRIDE_CHAIN_BINARY
-  #         wget $ICS_TRANSFORM_BINARY_URL -O $HOME/go/bin/$ICS_TRANSFORM_BINARY -q
-  #         chmod +x $HOME/go/bin/$ICS_TRANSFORM_BINARY
-  #     - name: Consumer chain binary URLs
-  #       run: |
-  #         echo "$CONSUMER_CHAIN_V12_BINARY runs off $CONSUMER_CHAIN_V12_BINARY_URL"
-  #         echo "$CONSUMER_CHAIN_V2_BINARY runs off $CONSUMER_CHAIN_V2_BINARY_URL"
-  #         echo "$CONSUMER_CHAIN_V310_BINARY runs off $CONSUMER_CHAIN_V310_BINARY_URL"
-  #         echo "$CONSUMER_CHAIN_V320_BINARY runs off $CONSUMER_CHAIN_V320_BINARY_URL"
-  #         echo "$CONSUMER_CHAIN_V330_BINARY runs off $CONSUMER_CHAIN_V330_BINARY_URL"
-  #         echo "$STRIDE_BINARY runs off $STRIDE_CON_CHAIN_BINARY_URL"
-  #     - name: Start chain
-  #       env:
-  #         START_VERSION: ${{matrix.gaia_version}}
-  #       run: |
-  #         export CHAIN_BINARY_URL=https://github.com/cosmos/gaia/releases/download/$START_VERSION/gaiad-$START_VERSION-linux-amd64
-  #         tests/major_fresh_upgrade/start_chain.sh
-  #     - name: Check Gaia log
-  #       run: sudo journalctl -u $PROVIDER_SERVICE_1
-  #     - name: Print Gaia version
-  #       run: $CHAIN_BINARY version --long
-  #     - name: Block production check
-  #       run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 5 # 5 blocks
+  _04-v330-consumer-launches:
+    runs-on: ubuntu-22.04
+    needs: set-version-matrix
+    strategy:
+      matrix:
+        ${{ fromJSON(needs.set-version-matrix.outputs.upgrade_versions) }}
+      fail-fast: false
+    env:
+      COMMIT_TIMEOUT: 3
+      COSMOVISOR: false
+      COSMOVISOR_VERSION: ${{ matrix.cv_version }}
+      UPGRADE_MECHANISM: ${{ matrix.upgrade_mechanism }}
+      # Provider chain variables
+      CHAIN_BINARY: gaiad
+      CHAIN_ID: testnet
+      DENOM: uatom
+      BASE_FEES: 2000
+      HIGH_FEES: 10000
+      GAS: auto
+      GAS_ADJUSTMENT: 2
+      GAS_PRICE: 0.005
+      VOTING_PERIOD: 10s
+      COSMOS_SDK: v45
+      # Provider node variables
+      HOME_1: /home/runner/.val1
+      HOME_2: /home/runner/.val2
+      HOME_3: /home/runner/.val3
+      PROVIDER_SERVICE_1: gaia1.service
+      PROVIDER_SERVICE_2: gaia2.service
+      PROVIDER_SERVICE_3: gaia3.service
+      MNEMONIC_1: abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon art
+      MNEMONIC_2: abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon garage
+      MNEMONIC_3: abandon cash abandon cash abandon cash abandon cash abandon cash abandon cash abandon cash abandon cash abandon cash abandon cash abandon cash abandon earth
+      MNEMONIC_RELAYER: abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon success
+      MNEMONIC_4: abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon success
+      MNEMONIC_5: abandon fame abandon fame abandon fame abandon fame abandon fame abandon fame abandon fame abandon fame abandon fame abandon fame abandon fame abandon claim
+      MONIKER_1: val1
+      MONIKER_2: val2
+      MONIKER_3: val3
+      MONIKER_RELAYER: relayer
+      MONIKER_4: relayer
+      MONIKER_5: wallet5
+      VALOPER_1: cosmosvaloper1r5v5srda7xfth3hn2s26txvrcrntldju7lnwmv
+      VALOPER_2: cosmosvaloper1ay4dpm0kjmvtpug28vgw5w32yyjxa5spq248vn
+      VALOPER_3: cosmosvaloper1v8zgdpzqfazvk6fgwhqqhzx0hfannrajukgdkc
+      WALLET_1: cosmos1r5v5srda7xfth3hn2s26txvrcrntldjumt8mhl
+      WALLET_2: cosmos1ay4dpm0kjmvtpug28vgw5w32yyjxa5sp97pjqq
+      WALLET_3: cosmos1v8zgdpzqfazvk6fgwhqqhzx0hfannrajezuc6t
+      WALLET_4: cosmos1ty2qlurqsxj6sgs378hxmzyxh0ds8ukc70w844
+      WALLET_RELAYER: cosmos1ty2qlurqsxj6sgs378hxmzyxh0ds8ukc70w844
+      VAL1_STAKE: 800000000
+      VAL2_STAKE: 200000000
+      VAL3_STAKE: 10000000
+      VAL_FUNDS: 11000000000
+      VAL_STAKE: 1000000000
+      VAL_STAKE_STEP: 1000000
+      VAL1_API_PORT: 25001
+      VAL2_API_PORT: 25002
+      VAL3_API_PORT: 25003
+      VAL1_GRPC_PORT: 26001
+      VAL2_GRPC_PORT: 26002
+      VAL3_GRPC_PORT: 26003
+      VAL1_RPC_PORT: 27001
+      VAL2_RPC_PORT: 27002
+      VAL3_RPC_PORT: 27003
+      VAL1_P2P_PORT: 28001
+      VAL2_P2P_PORT: 28002
+      VAL3_P2P_PORT: 28003
+      VAL1_PPROF_PORT: 29001
+      VAL2_PPROF_PORT: 29002
+      VAL3_PPROF_PORT: 29003
+      # Consumer chain variables
+      DOWNTIME_BLOCKS: 10000
+      RECIPIENT: cosmos1r5v5srda7xfth3hn2s26txvrcrntldjumt8mhl
+      ICS_120: false
+      ICS_200: false
+      ICS_310: false
+      ICS_330: false
+      CONSUMER_ICS: v3.1.0
+      PROVIDER_ICS: v2.4.0
+      # Reference ICS chain variables
+      CONSUMER_DENOM: ucon
+      CONSUMER_FEES: 500
+      CONSUMER_CHAIN_V12_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-v1.2.0-multiden/interchain-security-cd-linux
+      CONSUMER_CHAIN_V12_BINARY: consumerd_v1.2.0
+      CONSUMER_CHAIN_V2_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-v2.0.0/interchain-security-cd-linux
+      CONSUMER_CHAIN_V2_BINARY: consumerd_v2.0.0
+      CONSUMER_CHAIN_V310_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-v3.1.0/interchain-security-cd-linux
+      CONSUMER_CHAIN_V310_BINARY: consumerd_v3.1.0
+      CONSUMER_CHAIN_V320_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-consumer-v3.2.0/interchain-security-cd-linux
+      CONSUMER_CHAIN_V320_BINARY: consumerd_v3.2.0
+      CONSUMER_CHAIN_V330_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-consumer-v3.3.0/interchain-security-cd-linux
+      CONSUMER_CHAIN_V330_BINARY: consumerd_v3.3.0
+      STRIDE_V18_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/stride-consumer-v18.0.0/strided-consumer-linux
+      ICS_TRANSFORM_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-v3.3.0-transform/interchain-security-cd
+      ICS_TRANSFORM_BINARY: cd-transform
+      # Sovereign-ICS chain variables
+      STRIDE_SOV_CHAIN_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/stride-v11.0.0/stride-v11.0.0-linux-amd64
+      STRIDE_CON_CHAIN_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/stride-v12.1.0/stride-v12.1.0-linux-amd64
+      STRIDE_CHAIN_BINARY: strided
+      STRIDE_CHAIN_ID: five
+      STRIDE_DENOM: ustrd
+      STRIDE_HOME_1: /home/runner/.stride1
+      STRIDE_HOME_2: /home/runner/.stride2
+      STRIDE_SERVICE_1: stride1.service
+      STRIDE_SERVICE_2: stride2.service
+      STRIDE_WALLET_1: stride1r5v5srda7xfth3hn2s26txvrcrntldjucq88rn
+      STRIDE_WALLET_LIQUID: stride17n3vkvg6lwf98p3kanlhlyjk6zkrfla9zrhma6
+      STRIDE_API_1: 35001
+      STRIDE_API_2: 35002
+      STRIDE_GRPC_1: 36001
+      STRIDE_GRPC_2: 36002
+      STRIDE_RPC_1: 37001
+      STRIDE_RPC_2: 37002
+      STRIDE_P2P_1: 38001
+      STRIDE_P2P_2: 38002
+      STRIDE_PPROF_1: 39001
+      STRIDE_PPROF_2: 39002
+      CHANGEOVER_HEIGHT_OFFSET: false
+      # Relayer variables
+      # RELAYER: hermes
+      HERMES_VERSION: v1.7.4
+      RLY_VERSION: "2.4.2"
+    steps:
+      - name: start-version
+        run: echo ${{matrix.gaia_version}}
+      - name: target-version
+        run: echo ${{matrix.upgrade_version}}
+      - name: target-commit
+        if: ${{ matrix.upgrade_version == 'main' }}
+        run: |
+          BUILD_TAG=gaiad-linux-${{matrix.upgrade_version}}
+          TARGET_COMMIT=$(curl -s -L -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" https://api.github.com/repos/hyphacoop/cosmos-builds/releases/tags/$BUILD_TAG | jq -r '.name')
+          echo TARGET_COMMIT: $TARGET_COMMIT
+      - name: Update PATH
+        run: |
+          mkdir -p $HOME/go/bin
+          echo "$HOME/go/bin" >> $GITHUB_PATH
+          echo "$HOME/.hermes" >> $GITHUB_PATH
+          echo "$HOME/.relayer" >> $GITHUB_PATH
+      - name: Bypass the grub-efi-amd64-signed package
+        run: sudo apt-mark hold grub-efi-amd64-signed
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.10'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install toml-cli
+      - name: Install Cosmovisor > v1.3.0
+        if: ${{ (matrix.upgrade_mechanism == 'cv_manual' || matrix.upgrade_mechanism == 'cv_auto') && matrix.cv_version != 'v1.3.0' }}
+        run: |
+          go install cosmossdk.io/tools/cosmovisor/cmd/cosmovisor@$COSMOVISOR_VERSION
+          echo "COSMOVISOR=true" >> $GITHUB_ENV
+          echo "$HOME_1/cosmovisor/current/bin" >> $GITHUB_PATH
+      - name: Install Cosmovisor v1.3.0
+        if: ${{ (matrix.upgrade_mechanism == 'cv_manual' || matrix.upgrade_mechanism == 'cv_auto') && matrix.cv_version == 'v1.3.0' }}
+        run: |
+          go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@$COSMOVISOR_VERSION
+          echo "COSMOVISOR=true" >> $GITHUB_ENV
+          echo "$HOME_1/cosmovisor/current/bin" >> $GITHUB_PATH
+      - name: Select Hermes
+        if: ${{ matrix.relayer == 'hermes' }}
+        run: echo "RELAYER=hermes" >> $GITHUB_ENV
+      - name: Select Go Relayer
+        if: ${{ matrix.relayer == 'rly' }}
+        run: echo "RELAYER=rly" >> $GITHUB_ENV
+      - name: Set up relayer
+        run: tests/v15_upgrade/setup_relayer.sh
+      - name: Download consumer chain binaries
+        run: |
+          wget $CONSUMER_CHAIN_V2_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_V2_BINARY -q
+          chmod +x $HOME/go/bin/$CONSUMER_CHAIN_V2_BINARY
+          wget $CONSUMER_CHAIN_V310_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_V310_BINARY -q
+          chmod +x $HOME/go/bin/$CONSUMER_CHAIN_V310_BINARY
+          wget $CONSUMER_CHAIN_V320_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_V320_BINARY -q
+          chmod +x $HOME/go/bin/$CONSUMER_CHAIN_V320_BINARY
+          wget $CONSUMER_CHAIN_V330_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_V330_BINARY -q
+          chmod +x $HOME/go/bin/$CONSUMER_CHAIN_V330_BINARY
+          wget $STRIDE_CON_CHAIN_BINARY_URL -O $HOME/go/bin/$STRIDE_CHAIN_BINARY -q
+          chmod +x $HOME/go/bin/$STRIDE_CHAIN_BINARY
+          wget $ICS_TRANSFORM_BINARY_URL -O $HOME/go/bin/$ICS_TRANSFORM_BINARY -q
+          chmod +x $HOME/go/bin/$ICS_TRANSFORM_BINARY
+      - name: Consumer chain binary URLs
+        run: |
+          echo "$CONSUMER_CHAIN_V12_BINARY runs off $CONSUMER_CHAIN_V12_BINARY_URL"
+          echo "$CONSUMER_CHAIN_V2_BINARY runs off $CONSUMER_CHAIN_V2_BINARY_URL"
+          echo "$CONSUMER_CHAIN_V310_BINARY runs off $CONSUMER_CHAIN_V310_BINARY_URL"
+          echo "$CONSUMER_CHAIN_V320_BINARY runs off $CONSUMER_CHAIN_V320_BINARY_URL"
+          echo "$CONSUMER_CHAIN_V330_BINARY runs off $CONSUMER_CHAIN_V330_BINARY_URL"
+          echo "$STRIDE_BINARY runs off $STRIDE_CON_CHAIN_BINARY_URL"
+      - name: Start chain
+        env:
+          START_VERSION: ${{matrix.gaia_version}}
+        run: |
+          export CHAIN_BINARY_URL=https://github.com/cosmos/gaia/releases/download/$START_VERSION/gaiad-$START_VERSION-linux-amd64
+          tests/major_fresh_upgrade/start_chain.sh
+      - name: Check Gaia log
+        run: sudo journalctl -u $PROVIDER_SERVICE_1
+      - name: Print Gaia version
+        run: $CHAIN_BINARY version --long
+      - name: Block production check
+        run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 5 # 5 blocks
 
-  #     - name: Add consumer chain with ICS v3.3.0
-  #       env:
-  #         COSMOS_SDK: v45
-  #         CONSUMER_CHAIN_ID: four-v330
-  #       run: |
-  #         tests/major_fresh_upgrade/add_consumer.sh
-  #     - name: Initialize consumer chain with ICS v3.3.0
-  #       env:
-  #         CONSUMER_CHAIN_ID: four-v330
-  #         CONSUMER_HOME_1: /home/runner/.four_1
-  #         CONSUMER_HOME_2: /home/runner/.four_2
-  #         CONSUMER_HOME_3: /home/runner/.four_3
-  #         CONSUMER_SERVICE_1: four_1.service
-  #         CONSUMER_SERVICE_2: four_2.service
-  #         CONSUMER_SERVICE_3: four_3.service
-  #         CON1_API_PORT: 25401
-  #         CON2_API_PORT: 25402
-  #         CON3_API_PORT: 25403
-  #         CON1_GRPC_PORT: 26401
-  #         CON2_GRPC_PORT: 26402
-  #         CON3_GRPC_PORT: 26403
-  #         CON1_RPC_PORT: 27401
-  #         CON2_RPC_PORT: 27402
-  #         CON3_RPC_PORT: 27403
-  #         CON1_P2P_PORT: 28401
-  #         CON2_P2P_PORT: 28402
-  #         CON3_P2P_PORT: 28403
-  #         CON1_PPROF_PORT: 29401
-  #         CON2_PPROF_PORT: 29402
-  #         CON3_PPROF_PORT: 29403
-  #         DOWNTIME_BLOCKS: 100000
-  #       run: |
-  #         export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V330_BINARY
-  #         tests/major_fresh_upgrade/init_consumer_assign_keys.sh
-  #         sleep 20
-  #     - name: Prepare consumer chain four-v330
-  #       env:
-  #         CONSUMER_CHAIN_ID: four-v330
-  #         CONSUMER_HOME_1: /home/runner/.four_1
-  #         CONSUMER_HOME_2: /home/runner/.four_2
-  #         CONSUMER_HOME_3: /home/runner/.four_3
-  #         ICS_330: true
-  #         CONSUMER_ICS: v3.3.0
-  #         PROVIDER_ICS: v2.4.0
-  #       run: |
-  #         export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V330_BINARY
-  #         tests/major_fresh_upgrade/prepare_consumer.sh
-  #     - name: Start consumer chain four-v330
-  #       env:
-  #         CONSUMER_CHAIN_ID: four-v330
-  #         CONSUMER_SERVICE_1: four_1.service
-  #         CONSUMER_SERVICE_2: four_2.service
-  #         CONSUMER_SERVICE_3: four_3.service
-  #       run: |
-  #         sudo systemctl enable $CONSUMER_SERVICE_1 --now
-  #         sleep 5
-  #         journalctl -u $CONSUMER_SERVICE_1
-  #     - name: _Pre-upgrade consumer chain produces blocks> ICS v3.3.0 chain 1
-  #       env:
-  #         CON1_RPC_PORT: 27401
-  #       run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT 5
-  #     - name: Establish CCV channel for four-v330
-  #       env:
-  #         CONSUMER_CHAIN_ID: four-v330
-  #       run: |
-  #         client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
-  #         if [ $RELAYER == "hermes" ]; then
-  #           echo "Creating channel with Hermes..."
-  #           hermes create connection --a-chain $CONSUMER_CHAIN_ID --a-client 07-tendermint-0 --b-client $client_id
-  #           hermes create channel --a-chain $CONSUMER_CHAIN_ID --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
-  #         elif [ $RELAYER == "rly" ]; then
-  #           echo "Creating channel with Go relayer..."
-  #           jq --arg CHAIN "$CONSUMER_CHAIN_ID" '.src."chain-id" = $CHAIN' tests/v15_upgrade/rly-path-template.json > four-1.json
-  #           jq --arg CLIENT "$client_id" '.dst."client-id" = $CLIENT' four-1.json > four-2.json
-  #           rly paths add $CHAIN_ID $CONSUMER_CHAIN_ID four --file four-2.json
-  #           rly transact connection four
-  #           rly transact channel four --src-port consumer --dst-port provider --order ordered --version 1
-  #         fi
-  #         sudo systemctl restart $RELAYER
-  #         sleep 10
-  #     - name: _Pre-upgrade CCV channel verified> ICS v3.3.0 chain 1
-  #       env:
-  #         CONSUMER_HOME_1: /home/runner/.four_1
-  #         CON1_RPC_PORT: 27401
-  #       run: tests/major_fresh_upgrade/test_ccv_key_assignment.sh
-  #     - name: _Pre-upgrade IBC transfer successful> ICS v3.3.0 chain 1
-  #       env:
-  #         CONSUMER_CHAIN_ID: four-v330
-  #         CONSUMER_HOME_1: /home/runner/.four_1
-  #       run: |
-  #         export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V330_BINARY
-  #         client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
-  #         connection_id=$($CHAIN_BINARY q ibc connection connections -o json --home $HOME_1 | jq -r --arg client "$client_id" '.connections[] | select(.client_id==$client).id')
-  #         channel_id=$($CHAIN_BINARY q ibc channel connections $connection_id -o json --home $HOME_1 | jq -r '.channels[] | select(.port_id=="transfer").channel_id')
-  #         tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh $channel_id
+      - name: Add consumer chain with ICS v3.3.0
+        env:
+          COSMOS_SDK: v45
+          CONSUMER_CHAIN_ID: four-v330
+        run: |
+          tests/major_fresh_upgrade/add_consumer.sh
+      - name: Initialize consumer chain with ICS v3.3.0
+        env:
+          CONSUMER_CHAIN_ID: four-v330
+          CONSUMER_HOME_1: /home/runner/.four_1
+          CONSUMER_HOME_2: /home/runner/.four_2
+          CONSUMER_HOME_3: /home/runner/.four_3
+          CONSUMER_SERVICE_1: four_1.service
+          CONSUMER_SERVICE_2: four_2.service
+          CONSUMER_SERVICE_3: four_3.service
+          CON1_API_PORT: 25401
+          CON2_API_PORT: 25402
+          CON3_API_PORT: 25403
+          CON1_GRPC_PORT: 26401
+          CON2_GRPC_PORT: 26402
+          CON3_GRPC_PORT: 26403
+          CON1_RPC_PORT: 27401
+          CON2_RPC_PORT: 27402
+          CON3_RPC_PORT: 27403
+          CON1_P2P_PORT: 28401
+          CON2_P2P_PORT: 28402
+          CON3_P2P_PORT: 28403
+          CON1_PPROF_PORT: 29401
+          CON2_PPROF_PORT: 29402
+          CON3_PPROF_PORT: 29403
+          DOWNTIME_BLOCKS: 100000
+        run: |
+          export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V330_BINARY
+          tests/major_fresh_upgrade/init_consumer_assign_keys.sh
+          sleep 20
+      - name: Prepare consumer chain four-v330
+        env:
+          CONSUMER_CHAIN_ID: four-v330
+          CONSUMER_HOME_1: /home/runner/.four_1
+          CONSUMER_HOME_2: /home/runner/.four_2
+          CONSUMER_HOME_3: /home/runner/.four_3
+          ICS_330: true
+          CONSUMER_ICS: v3.3.0
+          PROVIDER_ICS: v2.4.0
+        run: |
+          export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V330_BINARY
+          tests/major_fresh_upgrade/prepare_consumer.sh
+      - name: Start consumer chain four-v330
+        env:
+          CONSUMER_CHAIN_ID: four-v330
+          CONSUMER_SERVICE_1: four_1.service
+          CONSUMER_SERVICE_2: four_2.service
+          CONSUMER_SERVICE_3: four_3.service
+        run: |
+          sudo systemctl enable $CONSUMER_SERVICE_1 --now
+          sleep 5
+          journalctl -u $CONSUMER_SERVICE_1
+      - name: _Pre-upgrade consumer chain produces blocks> ICS v3.3.0 chain 1
+        env:
+          CON1_RPC_PORT: 27401
+        run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT 5
+      - name: Establish CCV channel for four-v330
+        env:
+          CONSUMER_CHAIN_ID: four-v330
+        run: |
+          client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
+          if [ $RELAYER == "hermes" ]; then
+            echo "Creating channel with Hermes..."
+            hermes create connection --a-chain $CONSUMER_CHAIN_ID --a-client 07-tendermint-0 --b-client $client_id
+            hermes create channel --a-chain $CONSUMER_CHAIN_ID --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
+          elif [ $RELAYER == "rly" ]; then
+            echo "Creating channel with Go relayer..."
+            jq --arg CHAIN "$CONSUMER_CHAIN_ID" '.src."chain-id" = $CHAIN' tests/v15_upgrade/rly-path-template.json > four-1.json
+            jq --arg CLIENT "$client_id" '.dst."client-id" = $CLIENT' four-1.json > four-2.json
+            rly paths add $CHAIN_ID $CONSUMER_CHAIN_ID four --file four-2.json
+            rly transact connection four
+            rly transact channel four --src-port consumer --dst-port provider --order ordered --version 1
+          fi
+          sudo systemctl restart $RELAYER
+          sleep 10
+      - name: _Pre-upgrade CCV channel verified> ICS v3.3.0 chain 1
+        env:
+          CONSUMER_HOME_1: /home/runner/.four_1
+          CON1_RPC_PORT: 27401
+        run: tests/major_fresh_upgrade/test_ccv_key_assignment.sh
+      - name: _Pre-upgrade IBC transfer successful> ICS v3.3.0 chain 1
+        env:
+          CONSUMER_CHAIN_ID: four-v330
+          CONSUMER_HOME_1: /home/runner/.four_1
+        run: |
+          export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V330_BINARY
+          client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
+          connection_id=$($CHAIN_BINARY q ibc connection connections -o json --home $HOME_1 | jq -r --arg client "$client_id" '.connections[] | select(.client_id==$client).id')
+          channel_id=$($CHAIN_BINARY q ibc channel connections $connection_id -o json --home $HOME_1 | jq -r '.channels[] | select(.port_id=="transfer").channel_id')
+          tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh $channel_id
 
-  #     - name: Test software upgrade for published releases
-  #       if: ${{ matrix.upgrade_version != 'main' }}
-  #       env:
-  #         DOWNLOAD_URL: https://github.com/cosmos/gaia/releases/download/${{ matrix.upgrade_version }}/gaiad-${{ matrix.upgrade_version }}-linux-amd64
-  #       run: |
-  #         echo $DOWNLOAD_URL
-  #         tests/major_fresh_upgrade/software_upgrade.sh 127.0.0.1 $VAL1_RPC_PORT v15
-  #     - name: Test software upgrade for main branch
-  #       if: ${{ matrix.upgrade_version == 'main' }}
-  #       env:
-  #         DOWNLOAD_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/gaiad-linux-main/gaiad-linux
-  #       run: |
-  #         tests/major_fresh_upgrade/software_upgrade.sh 127.0.0.1 $VAL1_RPC_PORT v15
+      - name: Test software upgrade for published releases
+        if: ${{ matrix.upgrade_version != 'main' }}
+        env:
+          DOWNLOAD_URL: https://github.com/cosmos/gaia/releases/download/${{ matrix.upgrade_version }}/gaiad-${{ matrix.upgrade_version }}-linux-amd64
+        run: |
+          echo $DOWNLOAD_URL
+          tests/major_fresh_upgrade/software_upgrade.sh 127.0.0.1 $VAL1_RPC_PORT v15
+      - name: Test software upgrade for main branch
+        if: ${{ matrix.upgrade_version == 'main' }}
+        env:
+          DOWNLOAD_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/gaiad-linux-main/gaiad-linux
+        run: |
+          tests/major_fresh_upgrade/software_upgrade.sh 127.0.0.1 $VAL1_RPC_PORT v15
 
-  #     - name: _Blocks produced after upgrade
-  #       run: |
-  #         tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 10
+      - name: _Blocks produced after upgrade
+        run: |
+          tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 10
 
-  #     - name: Flush "migration successful" lines
-  #       run: |
-  #         $CHAIN_BINARY keys list --home $HOME_1
+      - name: Flush "migration successful" lines
+        run: |
+          $CHAIN_BINARY keys list --home $HOME_1
 
-  #     - name: _CCV channel verified> ICS v3.3.0 chain 1
-  #       env:
-  #         CONSUMER_HOME_1: /home/runner/.four_1
-  #         CON1_RPC_PORT: 27401
-  #       run: tests/major_fresh_upgrade/test_ccv_key_assignment.sh
-  #     - name: _IBC transfer successful> ICS v3.3.0 chain 1
-  #       env:
-  #         CONSUMER_CHAIN_ID: four-v330
-  #         CONSUMER_HOME_1: /home/runner/.four_1
-  #       run: |
-  #         export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V330_BINARY
-  #         client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
-  #         connection_id=$($CHAIN_BINARY q ibc connection connections -o json --home $HOME_1 | jq -r --arg client "$client_id" '.connections[] | select(.client_id==$client).id')
-  #         channel_id=$($CHAIN_BINARY q ibc channel connections $connection_id -o json --home $HOME_1 | jq -r '.channels[] | select(.port_id=="transfer").channel_id')
-  #         tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh $channel_id
+      - name: _CCV channel verified> ICS v3.3.0 chain 1
+        env:
+          CONSUMER_HOME_1: /home/runner/.four_1
+          CON1_RPC_PORT: 27401
+        run: tests/major_fresh_upgrade/test_ccv_key_assignment.sh
+      - name: _IBC transfer successful> ICS v3.3.0 chain 1
+        env:
+          CONSUMER_CHAIN_ID: four-v330
+          CONSUMER_HOME_1: /home/runner/.four_1
+        run: |
+          export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V330_BINARY
+          client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
+          connection_id=$($CHAIN_BINARY q ibc connection connections -o json --home $HOME_1 | jq -r --arg client "$client_id" '.connections[] | select(.client_id==$client).id')
+          channel_id=$($CHAIN_BINARY q ibc channel connections $connection_id -o json --home $HOME_1 | jq -r '.channels[] | select(.port_id=="transfer").channel_id')
+          tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh $channel_id
 
-  #     - name: Add consumer chain with ICS v3.3.0
-  #       env:
-  #         COSMOS_SDK: v47
-  #         CONSUMER_CHAIN_ID: eight-v330
-  #       run: |
-  #         tests/major_fresh_upgrade/add_consumer.sh
-  #     - name: Initialize consumer chain with ICS v3.3.0
-  #       env:
-  #         CONSUMER_CHAIN_ID: eight-v330
-  #         CONSUMER_HOME_1: /home/runner/.eight_1
-  #         CONSUMER_HOME_2: /home/runner/.eight_2
-  #         CONSUMER_HOME_3: /home/runner/.eight_3
-  #         CONSUMER_SERVICE_1: eight_1.service
-  #         CONSUMER_SERVICE_2: eight_2.service
-  #         CONSUMER_SERVICE_3: eight_3.service
-  #         CON1_API_PORT: 25801
-  #         CON2_API_PORT: 25802
-  #         CON3_API_PORT: 25803
-  #         CON1_GRPC_PORT: 26801
-  #         CON2_GRPC_PORT: 26802
-  #         CON3_GRPC_PORT: 26803
-  #         CON1_RPC_PORT: 27801
-  #         CON2_RPC_PORT: 27802
-  #         CON3_RPC_PORT: 27803
-  #         CON1_P2P_PORT: 28801
-  #         CON2_P2P_PORT: 28802
-  #         CON3_P2P_PORT: 28803
-  #         CON1_PPROF_PORT: 29801
-  #         CON2_PPROF_PORT: 29802
-  #         CON3_PPROF_PORT: 29803
-  #         DOWNTIME_BLOCKS: 100000
-  #       run: |
-  #         export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V330_BINARY
-  #         tests/major_fresh_upgrade/init_consumer_assign_keys.sh
-  #         sleep 20
-  #     - name: Prepare consumer chain eight-v330
-  #       env:
-  #         CONSUMER_CHAIN_ID: eight-v330
-  #         CONSUMER_HOME_1: /home/runner/.eight_1
-  #         CONSUMER_HOME_2: /home/runner/.eight_2
-  #         CONSUMER_HOME_3: /home/runner/.eight_3
-  #         ICS_330: true
-  #         CONSUMER_ICS: v3.3.0
-  #         PROVIDER_ICS: v3.3.0
-  #       run: |
-  #         export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V330_BINARY
-  #         tests/major_fresh_upgrade/prepare_consumer.sh
-  #     - name: Start consumer chain eight-v330
-  #       env:
-  #         CONSUMER_CHAIN_ID: eight-v330
-  #         CONSUMER_SERVICE_1: eight_1.service
-  #         CONSUMER_SERVICE_2: eight_2.service
-  #         CONSUMER_SERVICE_3: eight_3.service
-  #       run: |
-  #         sudo systemctl enable $CONSUMER_SERVICE_1 --now
-  #         sleep 5
-  #         journalctl -u $CONSUMER_SERVICE_1
-  #     - name: _Consumer chain produces blocks> ICS v3.3.0 chain 2
-  #       env:
-  #         CON1_RPC_PORT: 27801
-  #       run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT 5
-  #     - name: Establish CCV channel for eight-v330
-  #       env:
-  #         CONSUMER_CHAIN_ID: eight-v330
-  #       run: |
-  #         client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
-  #         if [ $RELAYER == "hermes" ]; then
-  #           echo "Creating channel with Hermes..."
-  #           hermes create connection --a-chain $CONSUMER_CHAIN_ID --a-client 07-tendermint-0 --b-client $client_id
-  #           hermes create channel --a-chain $CONSUMER_CHAIN_ID --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
-  #         elif [ $RELAYER == "rly" ]; then
-  #           echo "Creating channel with Go relayer..."
-  #           jq --arg CHAIN "$CONSUMER_CHAIN_ID" '.src."chain-id" = $CHAIN' tests/v15_upgrade/rly-path-template.json > eight-1.json
-  #           jq --arg CLIENT "$client_id" '.dst."client-id" = $CLIENT' eight-1.json > eight-2.json
-  #           rly paths add $CHAIN_ID $CONSUMER_CHAIN_ID eight --file eight-2.json
-  #           rly transact connection eight
-  #           rly transact channel eight --src-port consumer --dst-port provider --order ordered --version 1
-  #         fi
-  #         sudo systemctl restart $RELAYER
-  #         sleep 10
-  #     - name: _CCV channel verified> ICS v3.3.0 chain 2
-  #       env:
-  #         CONSUMER_HOME_1: /home/runner/.eight_1
-  #         CON1_RPC_PORT: 27801
-  #       run: tests/major_fresh_upgrade/test_ccv_key_assignment.sh
-  #     - name: _IBC transfer successful> ICS v3.3.0 chain 2
-  #       env:
-  #         CONSUMER_CHAIN_ID: eight-v330
-  #         CONSUMER_HOME_1: /home/runner/.eight_1
-  #       run: |
-  #         export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V330_BINARY
-  #         client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
-  #         connection_id=$($CHAIN_BINARY q ibc connection connections -o json --home $HOME_1 | jq -r --arg client "$client_id" '.connections[] | select(.client_id==$client).id')
-  #         channel_id=$($CHAIN_BINARY q ibc channel connections $connection_id -o json --home $HOME_1 | jq -r '.channels[] | select(.port_id=="transfer").channel_id')
-  #         tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh $channel_id
+      - name: Add consumer chain with ICS v3.3.0
+        env:
+          COSMOS_SDK: v47
+          CONSUMER_CHAIN_ID: eight-v330
+        run: |
+          tests/major_fresh_upgrade/add_consumer.sh
+      - name: Initialize consumer chain with ICS v3.3.0
+        env:
+          CONSUMER_CHAIN_ID: eight-v330
+          CONSUMER_HOME_1: /home/runner/.eight_1
+          CONSUMER_HOME_2: /home/runner/.eight_2
+          CONSUMER_HOME_3: /home/runner/.eight_3
+          CONSUMER_SERVICE_1: eight_1.service
+          CONSUMER_SERVICE_2: eight_2.service
+          CONSUMER_SERVICE_3: eight_3.service
+          CON1_API_PORT: 25801
+          CON2_API_PORT: 25802
+          CON3_API_PORT: 25803
+          CON1_GRPC_PORT: 26801
+          CON2_GRPC_PORT: 26802
+          CON3_GRPC_PORT: 26803
+          CON1_RPC_PORT: 27801
+          CON2_RPC_PORT: 27802
+          CON3_RPC_PORT: 27803
+          CON1_P2P_PORT: 28801
+          CON2_P2P_PORT: 28802
+          CON3_P2P_PORT: 28803
+          CON1_PPROF_PORT: 29801
+          CON2_PPROF_PORT: 29802
+          CON3_PPROF_PORT: 29803
+          DOWNTIME_BLOCKS: 100000
+        run: |
+          export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V330_BINARY
+          tests/major_fresh_upgrade/init_consumer_assign_keys.sh
+          sleep 20
+      - name: Prepare consumer chain eight-v330
+        env:
+          CONSUMER_CHAIN_ID: eight-v330
+          CONSUMER_HOME_1: /home/runner/.eight_1
+          CONSUMER_HOME_2: /home/runner/.eight_2
+          CONSUMER_HOME_3: /home/runner/.eight_3
+          ICS_330: true
+          CONSUMER_ICS: v3.3.0
+          PROVIDER_ICS: v3.3.0
+        run: |
+          export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V330_BINARY
+          tests/major_fresh_upgrade/prepare_consumer.sh
+      - name: Start consumer chain eight-v330
+        env:
+          CONSUMER_CHAIN_ID: eight-v330
+          CONSUMER_SERVICE_1: eight_1.service
+          CONSUMER_SERVICE_2: eight_2.service
+          CONSUMER_SERVICE_3: eight_3.service
+        run: |
+          sudo systemctl enable $CONSUMER_SERVICE_1 --now
+          sleep 5
+          journalctl -u $CONSUMER_SERVICE_1
+      - name: _Consumer chain produces blocks> ICS v3.3.0 chain 2
+        env:
+          CON1_RPC_PORT: 27801
+        run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT 5
+      - name: Establish CCV channel for eight-v330
+        env:
+          CONSUMER_CHAIN_ID: eight-v330
+        run: |
+          client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
+          if [ $RELAYER == "hermes" ]; then
+            echo "Creating channel with Hermes..."
+            hermes create connection --a-chain $CONSUMER_CHAIN_ID --a-client 07-tendermint-0 --b-client $client_id
+            hermes create channel --a-chain $CONSUMER_CHAIN_ID --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
+          elif [ $RELAYER == "rly" ]; then
+            echo "Creating channel with Go relayer..."
+            jq --arg CHAIN "$CONSUMER_CHAIN_ID" '.src."chain-id" = $CHAIN' tests/v15_upgrade/rly-path-template.json > eight-1.json
+            jq --arg CLIENT "$client_id" '.dst."client-id" = $CLIENT' eight-1.json > eight-2.json
+            rly paths add $CHAIN_ID $CONSUMER_CHAIN_ID eight --file eight-2.json
+            rly transact connection eight
+            rly transact channel eight --src-port consumer --dst-port provider --order ordered --version 1
+          fi
+          sudo systemctl restart $RELAYER
+          sleep 10
+      - name: _CCV channel verified> ICS v3.3.0 chain 2
+        env:
+          CONSUMER_HOME_1: /home/runner/.eight_1
+          CON1_RPC_PORT: 27801
+        run: tests/major_fresh_upgrade/test_ccv_key_assignment.sh
+      - name: _IBC transfer successful> ICS v3.3.0 chain 2
+        env:
+          CONSUMER_CHAIN_ID: eight-v330
+          CONSUMER_HOME_1: /home/runner/.eight_1
+        run: |
+          export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V330_BINARY
+          client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
+          connection_id=$($CHAIN_BINARY q ibc connection connections -o json --home $HOME_1 | jq -r --arg client "$client_id" '.connections[] | select(.client_id==$client).id')
+          channel_id=$($CHAIN_BINARY q ibc channel connections $connection_id -o json --home $HOME_1 | jq -r '.channels[] | select(.port_id=="transfer").channel_id')
+          tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh $channel_id
 
-  # _05-pfm:
-  #   runs-on: ubuntu-22.04
-  #   needs: set-version-matrix
-  #   strategy:
-  #     matrix:
-  #       ${{ fromJSON(needs.set-version-matrix.outputs.upgrade_versions) }}
-  #     fail-fast: false
-  #   env:
-  #     COMMIT_TIMEOUT: 3
-  #     COSMOVISOR: false
-  #     COSMOVISOR_VERSION: ${{ matrix.cv_version }}
-  #     UPGRADE_MECHANISM: ${{ matrix.upgrade_mechanism }}
-  #     # Provider chain variables
-  #     CHAIN_BINARY: gaiad
-  #     CHAIN_ID: testnet
-  #     DENOM: uatom
-  #     BASE_FEES: 2000
-  #     HIGH_FEES: 10000
-  #     GAS: auto
-  #     GAS_ADJUSTMENT: 2
-  #     GAS_PRICE: 0.005
-  #     VOTING_PERIOD: 10s
-  #     COSMOS_SDK: v45
-  #     # Provider node variables
-  #     HOME_1: /home/runner/.val1
-  #     HOME_2: /home/runner/.val2
-  #     HOME_3: /home/runner/.val3
-  #     PROVIDER_SERVICE_1: gaia1.service
-  #     PROVIDER_SERVICE_2: gaia2.service
-  #     PROVIDER_SERVICE_3: gaia3.service
-  #     MNEMONIC_1: abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon art
-  #     MNEMONIC_2: abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon garage
-  #     MNEMONIC_3: abandon cash abandon cash abandon cash abandon cash abandon cash abandon cash abandon cash abandon cash abandon cash abandon cash abandon cash abandon earth
-  #     MNEMONIC_RELAYER: abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon success
-  #     MNEMONIC_4: abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon success
-  #     MNEMONIC_5: abandon fame abandon fame abandon fame abandon fame abandon fame abandon fame abandon fame abandon fame abandon fame abandon fame abandon fame abandon claim
-  #     MONIKER_1: val1
-  #     MONIKER_2: val2
-  #     MONIKER_3: val3
-  #     MONIKER_RELAYER: relayer
-  #     MONIKER_4: relayer
-  #     MONIKER_5: wallet5
-  #     VALOPER_1: cosmosvaloper1r5v5srda7xfth3hn2s26txvrcrntldju7lnwmv
-  #     VALOPER_2: cosmosvaloper1ay4dpm0kjmvtpug28vgw5w32yyjxa5spq248vn
-  #     VALOPER_3: cosmosvaloper1v8zgdpzqfazvk6fgwhqqhzx0hfannrajukgdkc
-  #     WALLET_1: cosmos1r5v5srda7xfth3hn2s26txvrcrntldjumt8mhl
-  #     WALLET_2: cosmos1ay4dpm0kjmvtpug28vgw5w32yyjxa5sp97pjqq
-  #     WALLET_3: cosmos1v8zgdpzqfazvk6fgwhqqhzx0hfannrajezuc6t
-  #     WALLET_4: cosmos1ty2qlurqsxj6sgs378hxmzyxh0ds8ukc70w844
-  #     WALLET_RELAYER: cosmos1ty2qlurqsxj6sgs378hxmzyxh0ds8ukc70w844
-  #     VAL1_STAKE: 800000000
-  #     VAL2_STAKE: 200000000
-  #     VAL3_STAKE: 10000000
-  #     VAL_FUNDS: 11000000000
-  #     VAL_STAKE: 1000000000
-  #     VAL_STAKE_STEP: 1000000
-  #     VAL1_API_PORT: 25001
-  #     VAL2_API_PORT: 25002
-  #     VAL3_API_PORT: 25003
-  #     VAL1_GRPC_PORT: 26001
-  #     VAL2_GRPC_PORT: 26002
-  #     VAL3_GRPC_PORT: 26003
-  #     VAL1_RPC_PORT: 27001
-  #     VAL2_RPC_PORT: 27002
-  #     VAL3_RPC_PORT: 27003
-  #     VAL1_P2P_PORT: 28001
-  #     VAL2_P2P_PORT: 28002
-  #     VAL3_P2P_PORT: 28003
-  #     VAL1_PPROF_PORT: 29001
-  #     VAL2_PPROF_PORT: 29002
-  #     VAL3_PPROF_PORT: 29003
-  #     # Consumer chain variables
-  #     DOWNTIME_BLOCKS: 10000
-  #     RECIPIENT: cosmos1r5v5srda7xfth3hn2s26txvrcrntldjumt8mhl
-  #     ICS_120: false
-  #     ICS_200: false
-  #     ICS_310: false
-  #     ICS_330: false
-  #     CONSUMER_ICS: v3.1.0
-  #     PROVIDER_ICS: v2.4.0
-  #     # Reference ICS chain variables
-  #     CONSUMER_DENOM: ucon
-  #     CONSUMER_FEES: 500
-  #     CONSUMER_CHAIN_V12_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-v1.2.0-multiden/interchain-security-cd-linux
-  #     CONSUMER_CHAIN_V12_BINARY: consumerd_v1.2.0
-  #     CONSUMER_CHAIN_V2_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-v2.0.0/interchain-security-cd-linux
-  #     CONSUMER_CHAIN_V2_BINARY: consumerd_v2.0.0
-  #     CONSUMER_CHAIN_V310_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-v3.1.0/interchain-security-cd-linux
-  #     CONSUMER_CHAIN_V310_BINARY: consumerd_v3.1.0
-  #     CONSUMER_CHAIN_V320_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-consumer-v3.2.0/interchain-security-cd-linux
-  #     CONSUMER_CHAIN_V320_BINARY: consumerd_v3.2.0
-  #     CONSUMER_CHAIN_V330_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-consumer-v3.3.0/interchain-security-cd-linux
-  #     CONSUMER_CHAIN_V330_BINARY: consumerd_v3.3.0
-  #     STRIDE_V18_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/stride-consumer-v18.0.0/strided-consumer-linux
-  #     ICS_TRANSFORM_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-v3.3.0-transform/interchain-security-cd
-  #     ICS_TRANSFORM_BINARY: cd-transform
-  #     # Sovereign-ICS chain variables
-  #     STRIDE_SOV_CHAIN_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/stride-v11.0.0/stride-v11.0.0-linux-amd64
-  #     STRIDE_CON_CHAIN_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/stride-v12.1.0/stride-v12.1.0-linux-amd64
-  #     STRIDE_CHAIN_BINARY: strided
-  #     STRIDE_CHAIN_ID: five
-  #     STRIDE_DENOM: ustrd
-  #     STRIDE_HOME_1: /home/runner/.stride1
-  #     STRIDE_HOME_2: /home/runner/.stride2
-  #     STRIDE_SERVICE_1: stride1.service
-  #     STRIDE_SERVICE_2: stride2.service
-  #     STRIDE_WALLET_1: stride1r5v5srda7xfth3hn2s26txvrcrntldjucq88rn
-  #     STRIDE_WALLET_LIQUID: stride17n3vkvg6lwf98p3kanlhlyjk6zkrfla9zrhma6
-  #     STRIDE_API_1: 35001
-  #     STRIDE_API_2: 35002
-  #     STRIDE_GRPC_1: 36001
-  #     STRIDE_GRPC_2: 36002
-  #     STRIDE_RPC_1: 37001
-  #     STRIDE_RPC_2: 37002
-  #     STRIDE_P2P_1: 38001
-  #     STRIDE_P2P_2: 38002
-  #     STRIDE_PPROF_1: 39001
-  #     STRIDE_PPROF_2: 39002
-  #     CHANGEOVER_HEIGHT_OFFSET: false
-  #     # Relayer variables
-  #     HERMES_VERSION: v1.7.4
-  #     RLY_VERSION: "2.4.2"
-  #   steps:
-  #     - name: start-version
-  #       run: echo ${{matrix.gaia_version}}
-  #     - name: target-version
-  #       run: echo ${{matrix.upgrade_version}}
-  #     - name: target-commit
-  #       if: ${{ matrix.upgrade_version == 'main' }}
-  #       run: |
-  #         BUILD_TAG=gaiad-linux-${{matrix.upgrade_version}}
-  #         TARGET_COMMIT=$(curl -s -L -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" https://api.github.com/repos/hyphacoop/cosmos-builds/releases/tags/$BUILD_TAG | jq -r '.name')
-  #         echo TARGET_COMMIT: $TARGET_COMMIT
-  #     - name: Update PATH
-  #       run: |
-  #         mkdir -p $HOME/go/bin
-  #         echo "$HOME/go/bin" >> $GITHUB_PATH
-  #         echo "$HOME/.hermes" >> $GITHUB_PATH
-  #         echo "$HOME/.relayer" >> $GITHUB_PATH
-  #     - name: Bypass the grub-efi-amd64-signed package
-  #       run: sudo apt-mark hold grub-efi-amd64-signed
-  #     - name: Check out repository code
-  #       uses: actions/checkout@v3
-  #     - name: Set up Python
-  #       uses: actions/setup-python@v3
-  #       with:
-  #         python-version: '3.10'
-  #     - name: Install dependencies
-  #       run: |
-  #         python -m pip install --upgrade pip
-  #         python -m pip install toml-cli
-  #     - name: Install Cosmovisor > v1.3.0
-  #       if: ${{ (matrix.upgrade_mechanism == 'cv_manual' || matrix.upgrade_mechanism == 'cv_auto') && matrix.cv_version != 'v1.3.0' }}
-  #       run: |
-  #         go install cosmossdk.io/tools/cosmovisor/cmd/cosmovisor@$COSMOVISOR_VERSION
-  #         echo "COSMOVISOR=true" >> $GITHUB_ENV
-  #         echo "$HOME_1/cosmovisor/current/bin" >> $GITHUB_PATH
-  #     - name: Install Cosmovisor v1.3.0
-  #       if: ${{ (matrix.upgrade_mechanism == 'cv_manual' || matrix.upgrade_mechanism == 'cv_auto') && matrix.cv_version == 'v1.3.0' }}
-  #       run: |
-  #         go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@$COSMOVISOR_VERSION
-  #         echo "COSMOVISOR=true" >> $GITHUB_ENV
-  #         echo "$HOME_1/cosmovisor/current/bin" >> $GITHUB_PATH
-  #     - name: Start chain
-  #       env:
-  #         START_VERSION: ${{matrix.gaia_version}}
-  #       run: |
-  #         export CHAIN_BINARY_URL=https://github.com/cosmos/gaia/releases/download/$START_VERSION/gaiad-$START_VERSION-linux-amd64
-  #         tests/major_fresh_upgrade/start_chain.sh
-  #     - name: Check Gaia log
-  #       run: sudo journalctl -u $PROVIDER_SERVICE_1
-  #     - name: Print Gaia version
-  #       run: $CHAIN_BINARY version --long
-  #     - name: Block production check
-  #       run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 5 # 5 blocks
+  _05-pfm:
+    runs-on: ubuntu-22.04
+    needs: set-version-matrix
+    strategy:
+      matrix:
+        ${{ fromJSON(needs.set-version-matrix.outputs.upgrade_versions) }}
+      fail-fast: false
+    env:
+      COMMIT_TIMEOUT: 3
+      COSMOVISOR: false
+      COSMOVISOR_VERSION: ${{ matrix.cv_version }}
+      UPGRADE_MECHANISM: ${{ matrix.upgrade_mechanism }}
+      # Provider chain variables
+      CHAIN_BINARY: gaiad
+      CHAIN_ID: testnet
+      DENOM: uatom
+      BASE_FEES: 2000
+      HIGH_FEES: 10000
+      GAS: auto
+      GAS_ADJUSTMENT: 2
+      GAS_PRICE: 0.005
+      VOTING_PERIOD: 10s
+      COSMOS_SDK: v45
+      # Provider node variables
+      HOME_1: /home/runner/.val1
+      HOME_2: /home/runner/.val2
+      HOME_3: /home/runner/.val3
+      PROVIDER_SERVICE_1: gaia1.service
+      PROVIDER_SERVICE_2: gaia2.service
+      PROVIDER_SERVICE_3: gaia3.service
+      MNEMONIC_1: abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon art
+      MNEMONIC_2: abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon cabbage abandon garage
+      MNEMONIC_3: abandon cash abandon cash abandon cash abandon cash abandon cash abandon cash abandon cash abandon cash abandon cash abandon cash abandon cash abandon earth
+      MNEMONIC_RELAYER: abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon success
+      MNEMONIC_4: abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon property abandon success
+      MNEMONIC_5: abandon fame abandon fame abandon fame abandon fame abandon fame abandon fame abandon fame abandon fame abandon fame abandon fame abandon fame abandon claim
+      MONIKER_1: val1
+      MONIKER_2: val2
+      MONIKER_3: val3
+      MONIKER_RELAYER: relayer
+      MONIKER_4: relayer
+      MONIKER_5: wallet5
+      VALOPER_1: cosmosvaloper1r5v5srda7xfth3hn2s26txvrcrntldju7lnwmv
+      VALOPER_2: cosmosvaloper1ay4dpm0kjmvtpug28vgw5w32yyjxa5spq248vn
+      VALOPER_3: cosmosvaloper1v8zgdpzqfazvk6fgwhqqhzx0hfannrajukgdkc
+      WALLET_1: cosmos1r5v5srda7xfth3hn2s26txvrcrntldjumt8mhl
+      WALLET_2: cosmos1ay4dpm0kjmvtpug28vgw5w32yyjxa5sp97pjqq
+      WALLET_3: cosmos1v8zgdpzqfazvk6fgwhqqhzx0hfannrajezuc6t
+      WALLET_4: cosmos1ty2qlurqsxj6sgs378hxmzyxh0ds8ukc70w844
+      WALLET_RELAYER: cosmos1ty2qlurqsxj6sgs378hxmzyxh0ds8ukc70w844
+      VAL1_STAKE: 800000000
+      VAL2_STAKE: 200000000
+      VAL3_STAKE: 10000000
+      VAL_FUNDS: 11000000000
+      VAL_STAKE: 1000000000
+      VAL_STAKE_STEP: 1000000
+      VAL1_API_PORT: 25001
+      VAL2_API_PORT: 25002
+      VAL3_API_PORT: 25003
+      VAL1_GRPC_PORT: 26001
+      VAL2_GRPC_PORT: 26002
+      VAL3_GRPC_PORT: 26003
+      VAL1_RPC_PORT: 27001
+      VAL2_RPC_PORT: 27002
+      VAL3_RPC_PORT: 27003
+      VAL1_P2P_PORT: 28001
+      VAL2_P2P_PORT: 28002
+      VAL3_P2P_PORT: 28003
+      VAL1_PPROF_PORT: 29001
+      VAL2_PPROF_PORT: 29002
+      VAL3_PPROF_PORT: 29003
+      # Consumer chain variables
+      DOWNTIME_BLOCKS: 10000
+      RECIPIENT: cosmos1r5v5srda7xfth3hn2s26txvrcrntldjumt8mhl
+      ICS_120: false
+      ICS_200: false
+      ICS_310: false
+      ICS_330: false
+      CONSUMER_ICS: v3.1.0
+      PROVIDER_ICS: v2.4.0
+      # Reference ICS chain variables
+      CONSUMER_DENOM: ucon
+      CONSUMER_FEES: 500
+      CONSUMER_CHAIN_V12_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-v1.2.0-multiden/interchain-security-cd-linux
+      CONSUMER_CHAIN_V12_BINARY: consumerd_v1.2.0
+      CONSUMER_CHAIN_V2_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-v2.0.0/interchain-security-cd-linux
+      CONSUMER_CHAIN_V2_BINARY: consumerd_v2.0.0
+      CONSUMER_CHAIN_V310_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-v3.1.0/interchain-security-cd-linux
+      CONSUMER_CHAIN_V310_BINARY: consumerd_v3.1.0
+      CONSUMER_CHAIN_V320_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-consumer-v3.2.0/interchain-security-cd-linux
+      CONSUMER_CHAIN_V320_BINARY: consumerd_v3.2.0
+      CONSUMER_CHAIN_V330_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-consumer-v3.3.0/interchain-security-cd-linux
+      CONSUMER_CHAIN_V330_BINARY: consumerd_v3.3.0
+      STRIDE_V18_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/stride-consumer-v18.0.0/strided-consumer-linux
+      ICS_TRANSFORM_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-v3.3.0-transform/interchain-security-cd
+      ICS_TRANSFORM_BINARY: cd-transform
+      # Sovereign-ICS chain variables
+      STRIDE_SOV_CHAIN_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/stride-v11.0.0/stride-v11.0.0-linux-amd64
+      STRIDE_CON_CHAIN_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/stride-v12.1.0/stride-v12.1.0-linux-amd64
+      STRIDE_CHAIN_BINARY: strided
+      STRIDE_CHAIN_ID: five
+      STRIDE_DENOM: ustrd
+      STRIDE_HOME_1: /home/runner/.stride1
+      STRIDE_HOME_2: /home/runner/.stride2
+      STRIDE_SERVICE_1: stride1.service
+      STRIDE_SERVICE_2: stride2.service
+      STRIDE_WALLET_1: stride1r5v5srda7xfth3hn2s26txvrcrntldjucq88rn
+      STRIDE_WALLET_LIQUID: stride17n3vkvg6lwf98p3kanlhlyjk6zkrfla9zrhma6
+      STRIDE_API_1: 35001
+      STRIDE_API_2: 35002
+      STRIDE_GRPC_1: 36001
+      STRIDE_GRPC_2: 36002
+      STRIDE_RPC_1: 37001
+      STRIDE_RPC_2: 37002
+      STRIDE_P2P_1: 38001
+      STRIDE_P2P_2: 38002
+      STRIDE_PPROF_1: 39001
+      STRIDE_PPROF_2: 39002
+      CHANGEOVER_HEIGHT_OFFSET: false
+      # Relayer variables
+      HERMES_VERSION: v1.7.4
+      RLY_VERSION: "2.4.2"
+    steps:
+      - name: start-version
+        run: echo ${{matrix.gaia_version}}
+      - name: target-version
+        run: echo ${{matrix.upgrade_version}}
+      - name: target-commit
+        if: ${{ matrix.upgrade_version == 'main' }}
+        run: |
+          BUILD_TAG=gaiad-linux-${{matrix.upgrade_version}}
+          TARGET_COMMIT=$(curl -s -L -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" https://api.github.com/repos/hyphacoop/cosmos-builds/releases/tags/$BUILD_TAG | jq -r '.name')
+          echo TARGET_COMMIT: $TARGET_COMMIT
+      - name: Update PATH
+        run: |
+          mkdir -p $HOME/go/bin
+          echo "$HOME/go/bin" >> $GITHUB_PATH
+          echo "$HOME/.hermes" >> $GITHUB_PATH
+          echo "$HOME/.relayer" >> $GITHUB_PATH
+      - name: Bypass the grub-efi-amd64-signed package
+        run: sudo apt-mark hold grub-efi-amd64-signed
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.10'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install toml-cli
+      - name: Install Cosmovisor > v1.3.0
+        if: ${{ (matrix.upgrade_mechanism == 'cv_manual' || matrix.upgrade_mechanism == 'cv_auto') && matrix.cv_version != 'v1.3.0' }}
+        run: |
+          go install cosmossdk.io/tools/cosmovisor/cmd/cosmovisor@$COSMOVISOR_VERSION
+          echo "COSMOVISOR=true" >> $GITHUB_ENV
+          echo "$HOME_1/cosmovisor/current/bin" >> $GITHUB_PATH
+      - name: Install Cosmovisor v1.3.0
+        if: ${{ (matrix.upgrade_mechanism == 'cv_manual' || matrix.upgrade_mechanism == 'cv_auto') && matrix.cv_version == 'v1.3.0' }}
+        run: |
+          go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@$COSMOVISOR_VERSION
+          echo "COSMOVISOR=true" >> $GITHUB_ENV
+          echo "$HOME_1/cosmovisor/current/bin" >> $GITHUB_PATH
+      - name: Start chain
+        env:
+          START_VERSION: ${{matrix.gaia_version}}
+        run: |
+          export CHAIN_BINARY_URL=https://github.com/cosmos/gaia/releases/download/$START_VERSION/gaiad-$START_VERSION-linux-amd64
+          tests/major_fresh_upgrade/start_chain.sh
+      - name: Check Gaia log
+        run: sudo journalctl -u $PROVIDER_SERVICE_1
+      - name: Print Gaia version
+        run: $CHAIN_BINARY version --long
+      - name: Block production check
+        run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 5 # 5 blocks
 
-  #     - name: Select Hermes
-  #       if: ${{ matrix.relayer == 'hermes' }}
-  #       run: echo "RELAYER=hermes" >> $GITHUB_ENV
-  #     - name: Select Go Relayer
-  #       if: ${{ matrix.relayer == 'rly' }}
-  #       run: echo "RELAYER=rly" >> $GITHUB_ENV
-  #     - name: Set up relayer
-  #       run: tests/v15_upgrade/setup_relayer.sh
-  #     - name: Start PFM chain 1
-  #       env:
-  #         START_VERSION: ${{matrix.gaia_version}}
-  #         PFM_SERVICE: pfm_1.service
-  #         PFM_HOME: /home/runner/.pfm1
-  #         PFM_CHAIN_ID: pfm1
-  #         PFM_API_PORT: 25011
-  #         PFM_GRPC_PORT: 26011
-  #         PFM_RPC_PORT: 27011
-  #         PFM_P2P_PORT: 28011
-  #         PFM_PPROF_PORT: 29011
-  #       run: |
-  #         export CHAIN_BINARY_URL=https://github.com/cosmos/gaia/releases/download/$START_VERSION/gaiad-$START_VERSION-linux-amd64
-  #         tests/major_fresh_upgrade/start_pfm_chain.sh
-  #         sleep 5
-  #     - name: Block production check
-  #       env:
-  #         PFM_RPC_PORT: 27011
-  #       run: |
-  #         journalctl -u pfm_1.service | tail -n 100
-  #         tests/test_block_production.sh 127.0.0.1 $PFM_RPC_PORT 5 # 5 blocks
+      - name: Select Hermes
+        if: ${{ matrix.relayer == 'hermes' }}
+        run: echo "RELAYER=hermes" >> $GITHUB_ENV
+      - name: Select Go Relayer
+        if: ${{ matrix.relayer == 'rly' }}
+        run: echo "RELAYER=rly" >> $GITHUB_ENV
+      - name: Set up relayer
+        run: tests/v15_upgrade/setup_relayer.sh
+      - name: Start PFM chain 1
+        env:
+          START_VERSION: ${{matrix.gaia_version}}
+          PFM_SERVICE: pfm_1.service
+          PFM_HOME: /home/runner/.pfm1
+          PFM_CHAIN_ID: pfm1
+          PFM_API_PORT: 25011
+          PFM_GRPC_PORT: 26011
+          PFM_RPC_PORT: 27011
+          PFM_P2P_PORT: 28011
+          PFM_PPROF_PORT: 29011
+        run: |
+          export CHAIN_BINARY_URL=https://github.com/cosmos/gaia/releases/download/$START_VERSION/gaiad-$START_VERSION-linux-amd64
+          tests/major_fresh_upgrade/start_pfm_chain.sh
+          sleep 5
+      - name: Block production check
+        env:
+          PFM_RPC_PORT: 27011
+        run: |
+          journalctl -u pfm_1.service | tail -n 100
+          tests/test_block_production.sh 127.0.0.1 $PFM_RPC_PORT 5 # 5 blocks
 
-  #     - name: Start PFM chain 2
-  #       env:
-  #         START_VERSION: ${{matrix.gaia_version}}
-  #         PFM_SERVICE: pfm_2.service
-  #         PFM_HOME: /home/runner/.pfm2
-  #         PFM_CHAIN_ID: pfm2
-  #         PFM_API_PORT: 25012
-  #         PFM_GRPC_PORT: 26012
-  #         PFM_RPC_PORT: 27012
-  #         PFM_P2P_PORT: 28012
-  #         PFM_PPROF_PORT: 29012
-  #       run: |
-  #         export CHAIN_BINARY_URL=https://github.com/cosmos/gaia/releases/download/$START_VERSION/gaiad-$START_VERSION-linux-amd64
-  #         tests/major_fresh_upgrade/start_pfm_chain.sh
-  #         sleep 5
-  #     - name: Block production check
-  #       env:
-  #         PFM_RPC_PORT: 27012
-  #       run: tests/test_block_production.sh 127.0.0.1 $PFM_RPC_PORT 5 # 5 blocks
+      - name: Start PFM chain 2
+        env:
+          START_VERSION: ${{matrix.gaia_version}}
+          PFM_SERVICE: pfm_2.service
+          PFM_HOME: /home/runner/.pfm2
+          PFM_CHAIN_ID: pfm2
+          PFM_API_PORT: 25012
+          PFM_GRPC_PORT: 26012
+          PFM_RPC_PORT: 27012
+          PFM_P2P_PORT: 28012
+          PFM_PPROF_PORT: 29012
+        run: |
+          export CHAIN_BINARY_URL=https://github.com/cosmos/gaia/releases/download/$START_VERSION/gaiad-$START_VERSION-linux-amd64
+          tests/major_fresh_upgrade/start_pfm_chain.sh
+          sleep 5
+      - name: Block production check
+        env:
+          PFM_RPC_PORT: 27012
+        run: tests/test_block_production.sh 127.0.0.1 $PFM_RPC_PORT 5 # 5 blocks
 
-  #     - name: Start PFM chain 3
-  #       env:
-  #         START_VERSION: ${{matrix.gaia_version}}
-  #         PFM_SERVICE: pfm_3.service
-  #         PFM_HOME: /home/runner/.pfm3
-  #         PFM_CHAIN_ID: pfm3
-  #         PFM_API_PORT: 25013
-  #         PFM_GRPC_PORT: 26013
-  #         PFM_RPC_PORT: 27013
-  #         PFM_P2P_PORT: 28013
-  #         PFM_PPROF_PORT: 29013
-  #       run: |
-  #         export CHAIN_BINARY_URL=https://github.com/cosmos/gaia/releases/download/$START_VERSION/gaiad-$START_VERSION-linux-amd64
-  #         tests/major_fresh_upgrade/start_pfm_chain.sh
-  #         sleep 5
-  #     - name: Block production check
-  #       env:
-  #         PFM_RPC_PORT: 27013
-  #       run: tests/test_block_production.sh 127.0.0.1 $PFM_RPC_PORT 5 # 5 blocks
+      - name: Start PFM chain 3
+        env:
+          START_VERSION: ${{matrix.gaia_version}}
+          PFM_SERVICE: pfm_3.service
+          PFM_HOME: /home/runner/.pfm3
+          PFM_CHAIN_ID: pfm3
+          PFM_API_PORT: 25013
+          PFM_GRPC_PORT: 26013
+          PFM_RPC_PORT: 27013
+          PFM_P2P_PORT: 28013
+          PFM_PPROF_PORT: 29013
+        run: |
+          export CHAIN_BINARY_URL=https://github.com/cosmos/gaia/releases/download/$START_VERSION/gaiad-$START_VERSION-linux-amd64
+          tests/major_fresh_upgrade/start_pfm_chain.sh
+          sleep 5
+      - name: Block production check
+        env:
+          PFM_RPC_PORT: 27013
+        run: tests/test_block_production.sh 127.0.0.1 $PFM_RPC_PORT 5 # 5 blocks
 
-  #     - name: Create transfer channels for PFM test
-  #       run: |
-  #         # $CHAIN_BINARY q ibc connection connections --home /home/runner/.pfm1 -o json
-  #         # $CHAIN_BINARY q ibc connection connections --home /home/runner/.pfm2 -o json
-  #         # $CHAIN_BINARY q ibc connection connections --home /home/runner/.pfm3 -o json
-  #         if [ $RELAYER == "hermes" ]; then
-  #           echo "Creating channels with Hermes..."
-  #           hermes create channel --new-client-connection --a-chain $CHAIN_ID --b-chain pfm1 --a-port transfer --b-port transfer --yes
-  #           hermes create channel --new-client-connection --a-chain pfm1 --b-chain pfm2 --a-port transfer --b-port transfer --yes
+      - name: Create transfer channels for PFM test
+        run: |
+          # $CHAIN_BINARY q ibc connection connections --home /home/runner/.pfm1 -o json
+          # $CHAIN_BINARY q ibc connection connections --home /home/runner/.pfm2 -o json
+          # $CHAIN_BINARY q ibc connection connections --home /home/runner/.pfm3 -o json
+          if [ $RELAYER == "hermes" ]; then
+            echo "Creating channels with Hermes..."
+            hermes create channel --new-client-connection --a-chain $CHAIN_ID --b-chain pfm1 --a-port transfer --b-port transfer --yes
+            hermes create channel --new-client-connection --a-chain pfm1 --b-chain pfm2 --a-port transfer --b-port transfer --yes
   #           hermes create channel --new-client-connection --a-chain pfm2 --b-chain pfm3 --a-port transfer --b-port transfer --yes
   #         elif [ $RELAYER == "rly" ]; then
   #           echo "Creating channel with Go relayer..."
