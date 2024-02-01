@@ -10,9 +10,9 @@ if $UPGRADED_V15 ; then
     echo "Validator with a min commission of <5% prior to the upgrade no has a 5% min commission"
     $CHAIN_BINARY keys list --home $MCVAL_HOME_1 --output json
     mc_val1=$($CHAIN_BINARY keys list --home $MCVAL_HOME_1 --output json | jq -r '.[] | select(.name=="mc_val1").address')
-    bytes_address=$($CHAIN_BINARY keys parse $mc_val1 --output json | jq -r '.bytes')
-    cosmosvaloper=$($CHAIN_BINARY keys parse $bytes_address --output json | jq -r '.formats[2]')
-    mcval1_commission=$($CHAIN_BINARY q staking validators --home $HOME_1 -o json | jq -r --arg ADDR "$cosmosvaloper" '.validators[] | select(.operator_address==$ADDR).commission.commission_rates.rate')
+    bytes_address1=$($CHAIN_BINARY keys parse $mc_val1 --output json | jq -r '.bytes')
+    cosmosvaloper1=$($CHAIN_BINARY keys parse $bytes_address1 --output json | jq -r '.formats[2]')
+    mcval1_commission=$($CHAIN_BINARY q staking validators --home $HOME_1 -o json | jq -r --arg ADDR "$cosmosvaloper1" '.validators[] | select(.operator_address==$ADDR).commission.commission_rates.rate')
     echo "mcval1_commission = $mcval1_commission"
     
     echo "Validator cannot be created with a minimum commission of less than the set by the param (5% for v15)"
@@ -60,7 +60,7 @@ if $UPGRADED_V15 ; then
 
     $CHAIN_BINARY tx bank send $WALLET_1 $mc_val2 10000000$DENOM --home $HOME_1 --from $WALLET_1 --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y -o json
     sleep $(( $COMMIT_TIMEOUT*2 ))
-    $CHAIN_BINARY \
+    create_val_response=$($CHAIN_BINARY \
     tx staking create-validator \
     --amount 1000000$DENOM \
     --pubkey $($CHAIN_BINARY tendermint show-validator --home $MCVAL_HOME_2) \
@@ -74,9 +74,39 @@ if $UPGRADED_V15 ; then
     --gas-prices $GAS_PRICE$DENOM \
     --from $mc_val2 \
     --home $MCVAL_HOME_2 \
-    -y -o json | jq '.'
+    -y)
+
+    echo $create_val_response
+    echo $create_val_response | grep cannot
 
     sleep $(( $COMMIT_TIMEOUT*2 ))
+
+    bytes_address2=$($CHAIN_BINARY keys parse $mc_val2 --output json | jq -r '.bytes')
+    cosmosvaloper2=$($CHAIN_BINARY keys parse $bytes_address2 --output json | jq -r '.formats[2]')
+    validator_entry=$($CHAIN_BINARY q staking validators --home $HOME_1 -o json | jq -r --arg ADDR "$cosmosvaloper2" '.validators[] | select(.operator_address==$ADDR)')
+    echo "Validator entry: $validator entry"
+
+    create_val_response=$($CHAIN_BINARY \
+    tx staking create-validator \
+    --amount 1000000$DENOM \
+    --pubkey $($CHAIN_BINARY tendermint show-validator --home $MCVAL_HOME_2) \
+    --moniker "mc_val2" \
+    --chain-id $CHAIN_ID \
+    --commission-rate "0.06" \
+    --commission-max-rate "0.20" \
+    --commission-max-change-rate "0.01" \
+    --gas $GAS \
+    --gas-adjustment $GAS_ADJUSTMENT \
+    --gas-prices $GAS_PRICE$DENOM \
+    --from $mc_val2 \
+    --home $MCVAL_HOME_2 \
+    -y)
+
+    sleep $(( $COMMIT_TIMEOUT*2 ))
+    
+    echo $create_val_response
+    validator_entry=$($CHAIN_BINARY q staking validators --home $HOME_1 -o json | jq -r --arg ADDR "$cosmosvaloper2" '.validators[] | select(.operator_address==$ADDR)')
+    echo "Validator entry: $validator entry"
 
 else
     echo "Validator can be created with a commission of 0%"
