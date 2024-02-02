@@ -2704,7 +2704,7 @@ jobs:
         run: |
           tests/v15_upgrade/test_voting.sh
 
-  _d-vesting-clawback:
+  v15-4-vesting-clawback:
     runs-on: ubuntu-22.04
     needs: set-version-matrix
     strategy:
