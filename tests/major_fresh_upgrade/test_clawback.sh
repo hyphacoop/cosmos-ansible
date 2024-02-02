@@ -110,14 +110,6 @@ cp_diff=$(echo "$post_upgrade_cp-$pre_upgrade_cp" | bc -l)
 
 echo "Community pool differences: $cp_diff"
 
-if [ $(bc -l <<< "$post_upgrade_cp < 100000000") -eq 1 ]
-then
-    echo "Community pool balance is less than 100000000uatom, funds did not returned from wallet"
-    exit 7
-else
-    echo "Community pool balance is more than 100000000uatom, funds have been returned"
-fi
-
 # get the block time of the tx for the vesting account
 vesting_txhash=$(echo $TX_VESTING_ACC_TX_JSON | jq -r .txhash)
 echo "Vesting  account create txhash: $vesting_txhash"
@@ -145,3 +137,11 @@ echo "Vested amount: $vested"
 
 unvested=$(echo "100000000-$vested" | bc -l)
 echo "Unvested amount: $unvested"
+
+if [ $(bc -l <<< "$cp_diff > $unvested") -eq 1 ]
+then
+    echo "Community pool difference is more than ${unvested}uatom, funds did not returned from wallet"
+else
+    echo "Community pool difference is less than ${unvested}uatom, funds did not returned from wallet"
+    exit 7
+fi
