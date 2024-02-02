@@ -108,17 +108,24 @@ echo "Vesting account started at: $vesting_block_time epoch: $vesting_epoch"
 echo "upgrade time: $upgrade_time epoch: $upgrade_epoch"
 
 # Calculate vesting duration
-vesting_duration=$(echo "1770000000-$vesting_epoch" | bc -l)
+vesting_duration=$(echo "$VESTING_TARGET-$vesting_epoch" | bc -l)
 echo "Total vesting duration: $vesting_duration"
 
 # Calculate elapsed vesting
 vesting_elapsed=$(echo "$upgrade_epoch-$vesting_epoch" | bc -l)
 echo "Elapsed vesting: $vesting_elapsed"
 
-# Calucate vesting amount
+# Calculate vesting amount
 vesting_div=$(echo "$vesting_elapsed/$vesting_duration" | bc -l)
 vested=$(echo "100000000*$vesting_div" | bc -l)
 echo "Vested amount: $vested, spendable balance is $spendable_balance1_acc."
+zero_diff=$(echo "$vested - $spendable_balance1_acc" | bc -l)
+if [[ "$zero_diff" == "0" ]]; then
+    echo "PASS: Unvested amount turned into spendable balance."
+else
+    echo "FAIL: Unvested amount does not equal spendable balance."
+fi
+
 
 # Check community pool
 pre_upgrade_cp=$($CHAIN_BINARY --home $HOME_1 q distribution community-pool --height $pre_upgrade_height -o json | jq -r '.pool[] | select(.denom == "uatom") | .amount')

@@ -2829,6 +2829,7 @@ jobs:
       RLY_VERSION: "2.4.2"
       CB_ACCT: cosmos145hytrc49m0hn6fphp8d5h4xspwkawcuzmx498
       V_ACCT: cosmos1n7qdtcnagfvs8p4t537c5yn2dylw2e7l7a2htm
+      VESTING_TARGET: "1720000000"
     steps:
       - name: start-version
         run: echo ${{matrix.gaia_version}}
@@ -2885,11 +2886,11 @@ jobs:
 
       - name: Create clawback vesting accounts
         run: |
-          tx_vesting_acc_tx_json=$($CHAIN_BINARY tx vesting create-vesting-account $CB_ACCT 100000000uatom 1720000000 --from $WALLET_1 --chain-id $CHAIN_ID --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y --home $HOME_1 -o json)
+          tx_vesting_acc_tx_json=$($CHAIN_BINARY tx vesting create-vesting-account $CB_ACCT 100000000uatom $VESTING_TARGET --from $WALLET_1 --chain-id $CHAIN_ID --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y --home $HOME_1 -o json)
           echo "$tx_vesting_acc_tx_json" | jq '.'
           echo "TX_VESTING_ACC_TX_JSON=$tx_vesting_acc_tx_json" >> $GITHUB_ENV
           sleep $(($COMMIT_TIMEOUT+2))
-          tx_vesting_acc2_tx_json=$($CHAIN_BINARY tx vesting create-vesting-account $V_ACCT 100000000uatom 1720000000 --from $WALLET_1 --chain-id $CHAIN_ID --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y --home $HOME_1 -o json)
+          tx_vesting_acc2_tx_json=$($CHAIN_BINARY tx vesting create-vesting-account $V_ACCT 100000000uatom $VESTING_TARGET --from $WALLET_1 --chain-id $CHAIN_ID --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y --home $HOME_1 -o json)
           echo "$tx_vesting_acc2_tx_json" | jq '.'
           echo "TX_VESTING_ACC2_TX_JSON=$tx_vesting_acc2_tx_json" >> $GITHUB_ENV
           sleep $(($COMMIT_TIMEOUT+2))
