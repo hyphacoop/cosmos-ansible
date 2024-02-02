@@ -26,6 +26,7 @@ if $UPGRADED_V15 ; then
    sleep $(($COMMIT_TIMEOUT+2))
    $CHAIN_BINARY q tx $txhash --home $HOME_1 -o json | jq '.'
    sleep $VOTING_PERIOD
+   $CHAIN_BINARY q gov proposal $proposal_id --home $HOME_1 -o json | jq '.'
    
    $CHAIN_BINARY tx staking delegate $VALOPER_1 1$DENOM --from $voter1 --home $HOME_1 --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y -o json
    sleep $(( $COMMIT_TIMEOUT*2 ))
@@ -51,6 +52,7 @@ if $UPGRADED_V15 ; then
    sleep $(($COMMIT_TIMEOUT+2))
    $CHAIN_BINARY q tx $txhash --home $HOME_1 -o json | jq '.'
    sleep $VOTING_PERIOD
+   $CHAIN_BINARY q gov proposal $proposal_id --home $HOME_1 -o json | jq '.'
 
 else
    $CHAIN_BINARY keys add voter1 --home $HOME_1
@@ -81,6 +83,7 @@ else
    sleep $(($COMMIT_TIMEOUT+2))
    $CHAIN_BINARY q tx $txhash --home $HOME_1 -o json | jq '.'
    sleep $VOTING_PERIOD
+   $CHAIN_BINARY q gov proposal $proposal_id --home $HOME_1 -o json | jq '.'
 
 
 fi
