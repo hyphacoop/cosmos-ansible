@@ -117,8 +117,9 @@ echo "Elapsed vesting: $vesting_elapsed"
 
 # Calculate vesting amount
 vesting_div=$(echo "$vesting_elapsed/$vesting_duration" | bc -l)
-vested=$(echo "100000000*$vesting_div" | bc -l)
+vested=$(echo "(100000000*$vesting_div)+0.5" | bc -l)
 
+vested=${vested%.*} # remove decimals
 spendable_balance1_acc=${spendable_balance1_acc%.*} # remove decimals
 echo "Vested amount: $vested, spendable balance is $spendable_balance1_acc."
 zero_diff=$(echo "$vested - $spendable_balance1_acc" | bc -l)
