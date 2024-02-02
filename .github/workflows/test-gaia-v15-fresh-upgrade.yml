@@ -53,7 +53,7 @@ jobs:
     outputs:
       upgrade_versions: ${{ steps.generate-upgrade.outputs.upgrade_versions }}
 
-  # _01-upgrade:
+  # Baseline-1-upgrade:
   #   runs-on: ubuntu-22.04
   #   needs: set-version-matrix
   #   strategy:
@@ -259,7 +259,7 @@ jobs:
   #     - name: _RPC endpoints check
   #       run: tests/test_endpoints_rpc.sh localhost $VAL1_RPC_PORT
 
-  # _02-globalfee:
+  # Baseline-2-globalfee:
   #   runs-on: ubuntu-22.04
   #   needs: set-version-matrix
   #   strategy:
@@ -475,7 +475,7 @@ jobs:
   #       run: |
   #         tests/test_globalfee.sh
 
-  # _03-v310-consumer-launches:
+  # Baseline-3-icsv310:
   #   runs-on: ubuntu-22.04
   #   needs: set-version-matrix
   #   strategy:
@@ -912,7 +912,7 @@ jobs:
   #         channel_id=$($CHAIN_BINARY q ibc channel connections $connection_id -o json --home $HOME_1 | jq -r '.channels[] | select(.port_id=="transfer").channel_id')
   #         tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh $channel_id
 
-  # _04-v330-consumer-launches:
+  # Baseline-4-icsv330:
   #   runs-on: ubuntu-22.04
   #   needs: set-version-matrix
   #   strategy:
@@ -1352,7 +1352,7 @@ jobs:
   #         channel_id=$($CHAIN_BINARY q ibc channel connections $connection_id -o json --home $HOME_1 | jq -r '.channels[] | select(.port_id=="transfer").channel_id')
   #         tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh $channel_id
 
-  # _05-pfm:
+  # Baseline-5-pfm:
   #   runs-on: ubuntu-22.04
   #   needs: set-version-matrix
   #   strategy:
@@ -1671,7 +1671,7 @@ jobs:
   #       run: |
   #         tests/major_fresh_upgrade/test_pfm_transfers.sh
 
-  # _06-lsm:
+  # Baseline-6-lsm:
   #   runs-on: ubuntu-22.04
   #   needs: set-version-matrix
   #   strategy:
@@ -2071,7 +2071,7 @@ jobs:
   #         LSP_COUNT: 2
   #       run: tests/v15_upgrade/ica_delegate_happy.sh
 
-  # _a-min-commission:
+  # v15-1-min-commission:
   #   runs-on: ubuntu-22.04
   #   needs: set-version-matrix
   #   strategy:
@@ -2282,7 +2282,7 @@ jobs:
   #       run: |
   #         tests/v15_upgrade/test_min_commission.sh
 
-  # _b-min-deposit:
+  # v15-2-min-deposit:
   #   runs-on: ubuntu-22.04
   #   needs: set-version-matrix
   #   strategy:
@@ -2493,7 +2493,7 @@ jobs:
   #       run: |
   #         tests/v15_upgrade/test_min_deposit.sh
 
-  # _c-voter-requirements:
+  # v15-3-voter-requirements:
   #   runs-on: ubuntu-22.04
   #   needs: set-version-matrix
   #   strategy:
@@ -2885,11 +2885,11 @@ jobs:
 
       - name: Create clawback vesting accounts
         run: |
-          tx_vesting_acc_tx_json=$($CHAIN_BINARY tx vesting create-vesting-account $CB_ACCT 100000000uatom 1770000000 --from $WALLET_1 --chain-id $CHAIN_ID --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y --home $HOME_1 -o json)
+          tx_vesting_acc_tx_json=$($CHAIN_BINARY tx vesting create-vesting-account $CB_ACCT 100000000uatom 1720000000 --from $WALLET_1 --chain-id $CHAIN_ID --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y --home $HOME_1 -o json)
           echo "$tx_vesting_acc_tx_json" | jq '.'
           echo "TX_VESTING_ACC_TX_JSON=$tx_vesting_acc_tx_json" >> $GITHUB_ENV
           sleep $(($COMMIT_TIMEOUT+2))
-          tx_vesting_acc2_tx_json=$($CHAIN_BINARY tx vesting create-vesting-account $V_ACCT 100000000uatom 1770000000 --from $WALLET_1 --chain-id $CHAIN_ID --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y --home $HOME_1 -o json)
+          tx_vesting_acc2_tx_json=$($CHAIN_BINARY tx vesting create-vesting-account $V_ACCT 100000000uatom 1720000000 --from $WALLET_1 --chain-id $CHAIN_ID --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y --home $HOME_1 -o json)
           echo "$tx_vesting_acc2_tx_json" | jq '.'
           echo "TX_VESTING_ACC2_TX_JSON=$tx_vesting_acc2_tx_json" >> $GITHUB_ENV
           sleep $(($COMMIT_TIMEOUT+2))

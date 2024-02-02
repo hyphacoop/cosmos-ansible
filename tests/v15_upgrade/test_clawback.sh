@@ -95,25 +95,6 @@ $CHAIN_BINARY --home $HOME_1 q bank spendable-balances $V_ACCT --height $pre_upg
 echo "After upgrade"
 $CHAIN_BINARY --home $HOME_1 q bank spendable-balances $V_ACCT --height $post_upgrade_height
 
-# Check community pool
-pre_upgrade_cp=$($CHAIN_BINARY --home $HOME_1 q distribution community-pool --height $pre_upgrade_height -o json | jq -r '.pool[] | select(.denom == "uatom") | .amount')
-echo "Community pool balance before upgrade: $pre_upgrade_cp"
-
-post_upgrade_cp=$($CHAIN_BINARY --home $HOME_1 q distribution community-pool --height $post_upgrade_height -o json | jq -r '.pool[] | select(.denom == "uatom") | .amount')
-echo "Community pool balance after upgrade: $post_upgrade_cp"
-
-cp_diff=$(echo "$post_upgrade_cp-$pre_upgrade_cp" | bc -l)
-
-echo "Community pool differences: $cp_diff"
-
-if [ $(bc -l <<< "$post_upgrade_cp < 100000000") -eq 1 ]
-then
-    echo "Community pool balance is less than 100000000uatom, funds did not returned from wallet"
-    exit 7
-else
-    echo "Community pool balance is more than 100000000uatom, funds have been returned"
-fi
-
 # get the block time of the tx for the vesting account
 vesting_txhash=$(echo $TX_VESTING_ACC_TX_JSON | jq -r .txhash)
 echo "Vesting  account create txhash: $vesting_txhash"
@@ -136,8 +117,33 @@ echo "Elapsed vesting: $vesting_elapsed"
 
 # Calucate vesting amount
 vesting_div=$(echo "$vesting_elapsed/$vesting_duration" | bc -l)
-vested=$(echo "100000000*$vesting_div")
-echo "Vested amount: $vested"
+vested=$(echo "100000000*$vesting_div" | bc -l)
+echo "Vested amount: $vested, spendable balance is $spendable_balance1_acc."
 
+# Check community pool
+pre_upgrade_cp=$($CHAIN_BINARY --home $HOME_1 q distribution community-pool --height $pre_upgrade_height -o json | jq -r '.pool[] | select(.denom == "uatom") | .amount')
+echo "Community pool balance before upgrade: $pre_upgrade_cp"
+
+post_upgrade_cp=$($CHAIN_BINARY --home $HOME_1 q distribution community-pool --height $post_upgrade_height -o json | jq -r '.pool[] | select(.denom == "uatom") | .amount')
+echo "Community pool balance after upgrade: $post_upgrade_cp"
+
+cp_diff=$(echo "$post_upgrade_cp-$pre_upgrade_cp" | bc -l)
 unvested=$(echo "100000000-$vested" | bc -l)
-echo "Unvested amount: $unvested"
+echo "Unvested amount: $unvested, community pool increase: $cp_diff."
+
+echo "TEST: Community pool increase must be at least as much as the unvested amount."
+cp_unvested_diff=$(echo "$cp_diff - $unvested" | bc -l)
+if [[ "$cp_unvested_diff" > "0" ]]; then
+    echo "PASS: Community pool increased by at least the unvested amount."
+else
+    echo "FAIL: Community pool did not increase by at least the unvested amount." 
+    exit 1
+fi
+
+# if [ $(bc -l <<< "$post_upgrade_cp < 100000000") -eq 1 ]
+# then
+#     echo "Community pool balance is less than 100000000uatom, funds did not returned from wallet"
+#     exit 7
+# else
+#     echo "Community pool balance is more than 100000000uatom, funds have been returned"
+# fi
