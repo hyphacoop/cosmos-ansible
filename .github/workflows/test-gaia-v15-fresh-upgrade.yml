@@ -596,7 +596,7 @@ jobs:
       CHANGEOVER_HEIGHT_OFFSET: false
       # Relayer variables
       # RELAYER: hermes
-      HERMES_VERSION: v1.7.4
+      HERMES_VERSION: v1.6.0
       RLY_VERSION: "2.4.2"
     steps:
       - name: start-version
