@@ -47,6 +47,11 @@ echo "Spendable balances for $CB_ACCT must not increase."
 spendable_balance1_acc=$(gaiad --home $HOME_1 q bank spendable-balances $CB_ACCT -o json | jq -r '.balances[] | select(.denom == "uatom") | .amount')
 echo "Current spendable balance is: $spendable_balance1_acc"
 
+echo "Spendable balances for $V_ACCT must increase."
+# Get spendable balances 1
+spendable_balance1_acc2=$(gaiad --home $HOME_1 q bank spendable-balances $V_ACCT -o json | jq -r '.balances[] | select(.denom == "uatom") | .amount')
+echo "Current spendable balance is: $spendable_balance1_acc2"
+
 sleep $VOTING_PERIOD
 
 # Get spendable balances 2
@@ -60,13 +65,6 @@ if [ $spendable_balance1_acc -ne $spendable_balance2_acc ]; then
 else
     echo "Spendable balance unchanged as expected, spendable balance 1 is: $spendable_balance1_acc balance 2 is: $spendable_balance2_acc"
 fi
-
-echo "Spendable balances for $V_ACCT must increase."
-# Get spendable balances 1
-spendable_balance1_acc2=$(gaiad --home $HOME_1 q bank spendable-balances $V_ACCT -o json | jq -r '.balances[] | select(.denom == "uatom") | .amount')
-echo "Current spendable balance is: $spendable_balance1_acc2"
-
-sleep $VOTING_PERIOD
 
 # Get spendable balances 2
 spendable_balance2_acc2=$(gaiad --home $HOME_1 q bank spendable-balances $V_ACCT -o json | jq -r '.balances[] | select(.denom == "uatom") | .amount')
