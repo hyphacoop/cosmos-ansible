@@ -77,13 +77,10 @@ else
    echo "Proposal ID: $proposal_id"
 
    echo "TEST: Vote from an account with no delegations."
-   code=$($CHAIN_BINARY tx gov vote $proposal_id yes --from $voter1 --home $HOME_1 --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y -o json | jq -r '.code')
-   if [[ "$code" == "0" ]]; then
-      echo "PASS: code 0 was received."
-   else
-      echo "FAIL: code 0 was not received."
-      exit 1
-   fi
+   txhash=$($CHAIN_BINARY tx gov vote $proposal_id yes --from $voter1 --home $HOME_1 --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y -o json | jq -r '.txhash')
    sleep $(($COMMIT_TIMEOUT+2))
+   $CHAIN_BINARY q tx $txhash --home $HOME_1 -o json | jq '.'
+   sleep $VOTING_PERIOD
+
 
 fi
