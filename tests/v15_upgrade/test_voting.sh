@@ -23,8 +23,8 @@ if $UPGRADED_V15 ; then
    echo "Proposal ID: $proposal_id"
    echo "TEST: Vote from an account with no delegations."
    txhash=$($CHAIN_BINARY tx gov vote $proposal_id yes --from $voter1 --home $HOME_1 --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y -o json | jq -r '.txhash')
-   $CHAIN_BINARY q tx $txhash --home $HOME_1 -o json | jq '.'
    sleep $(($COMMIT_TIMEOUT+2))
+   $CHAIN_BINARY q tx $txhash --home $HOME_1 -o json | jq '.'
    sleep $VOTING_PERIOD
    
    $CHAIN_BINARY tx staking delegate $VALOPER_1 1$DENOM --from $voter1 --home $HOME_1 --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y -o json
@@ -47,8 +47,9 @@ if $UPGRADED_V15 ; then
    proposal_id=$($CHAIN_BINARY --output json q tx $txhash --home $HOME_1 | jq -r '.logs[].events[] | select(.type=="submit_proposal") | .attributes[] | select(.key=="proposal_id") | .value')
    echo "Proposal ID: $proposal_id"
    echo "TEST: Vote from an account with 1uatom in delegations."
-   $CHAIN_BINARY tx gov vote $proposal_id yes --from $voter1 --home $HOME_1 --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y -o json
+   txhash=$($CHAIN_BINARY tx gov vote $proposal_id yes --from $voter1 --home $HOME_1 --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y -o json | jq -r '.txhash')
    sleep $(($COMMIT_TIMEOUT+2))
+   $CHAIN_BINARY q tx $txhash --home $HOME_1 -o json | jq '.'
    sleep $VOTING_PERIOD
 
 else
