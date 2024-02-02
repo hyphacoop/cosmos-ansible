@@ -140,7 +140,7 @@ echo "Unvested amount: $unvested"
 
 if [ $(bc -l <<< "$cp_diff > $unvested") -eq 1 ]
 then
-    echo "Community pool difference is more than ${unvested}uatom, funds did not returned from wallet"
+    echo "Community pool difference is more than ${unvested}uatom, funds returned from wallet"
 else
     echo "Community pool difference is less than ${unvested}uatom, funds did not returned from wallet"
     exit 7
