@@ -2897,7 +2897,7 @@ jobs:
         env:
           UPGRADED_V15: false
         run: |
-          acc_type=$($CHAIN_BINARY --home $HOME_1 q account $CLAWBACK_ACCOUNT -o json | jq -r '."@type"')
+          acc_type=$($CHAIN_BINARY --home $HOME_1 q account $CB_ACCT -o json | jq -r '."@type"')
           echo "Account type is: $acc_type"
           if [ "$acc_type" != "/cosmos.vesting.v1beta1.ContinuousVestingAccount" ]; then
             echo "Account is not a vesting account"
