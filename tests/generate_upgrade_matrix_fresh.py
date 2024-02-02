@@ -1,20 +1,21 @@
 #!/usr/bin/env python
 
 import json
-import sys
+# import sys
 import re
 import argparse
 
 parser = argparse.ArgumentParser()
+parser.add_argument('starting_version')
 parser.add_argument('-r', '--relayer', action='store_true')
 args = parser.parse_args()
 RELAYER = args.relayer
 
-
 SKIP_TARGET_VERSIONS = ['v14.0.0-rc0','v14.0.0-rc1','v14.0.0', 'v14.1.0-rc0']
 
 # Must provide a cutoff version, e.g. 'v6.0.4'
-starting_version = sys.argv[1].split('.')
+# starting_version = sys.argv[1].split('.')
+starting_version = args.starting_version.split('.')
 version_major = int(starting_version[0][1:])
 version_minor = int(starting_version[1])
 version_patch = int(starting_version[2])
