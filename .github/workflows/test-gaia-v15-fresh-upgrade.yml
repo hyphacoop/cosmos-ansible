@@ -53,6 +53,43 @@ jobs:
     outputs:
       upgrade_versions: ${{ steps.generate-upgrade.outputs.upgrade_versions }}
 
+  set-version-matrix-relayer:
+    runs-on: ubuntu-22.04
+    steps:
+      # Get system info
+      - run: ifconfig
+      - run: arp -a
+      - run: sudo dmidecode
+      - run: df -h
+      - run: free -m
+      - run: uname -a
+      - run: lsb_release -a
+      - run: echo "GitHub branch is ${{ github.ref }}"
+      - run: whoami
+      - run: pwd
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v3
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install requests
+      - name: Generate starting versions
+        id: generate-start
+        run: |
+          start=$(tests/generate_version_matrix.py v14.1.0)
+          echo $start
+          echo "start_versions=$start" >> $GITHUB_OUTPUT
+      - name: Generate upgrade versions
+        id: generate-upgrade
+        run: |
+          upgrade=$(tests/generate_upgrade_matrix_fresh.py v14.1.0 -r)
+          echo $upgrade
+          echo "upgrade_versions=$upgrade" >> $GITHUB_OUTPUT
+    outputs:
+      upgrade_versions: ${{ steps.generate-upgrade.outputs.upgrade_versions }}
+
   Baseline-1-upgrade:
     runs-on: ubuntu-22.04
     needs: set-version-matrix
@@ -477,10 +514,10 @@ jobs:
 
   Baseline-3-icsv310:
     runs-on: ubuntu-22.04
-    needs: set-version-matrix
+    needs: set-version-matrix-relayer
     strategy:
       matrix:
-        ${{ fromJSON(needs.set-version-matrix.outputs.upgrade_versions) }}
+        ${{ fromJSON(needs.set-version-matrix-relayer.outputs.upgrade_versions) }}
       fail-fast: false
     env:
       COMMIT_TIMEOUT: 3
@@ -596,7 +633,7 @@ jobs:
       CHANGEOVER_HEIGHT_OFFSET: false
       # Relayer variables
       # RELAYER: hermes
-      HERMES_VERSION: v1.6.0
+      HERMES_VERSION: v1.7.4
       RLY_VERSION: "2.4.2"
     steps:
       - name: start-version
@@ -914,10 +951,10 @@ jobs:
 
   Baseline-4-icsv330:
     runs-on: ubuntu-22.04
-    needs: set-version-matrix
+    needs: set-version-matrix-relayer
     strategy:
       matrix:
-        ${{ fromJSON(needs.set-version-matrix.outputs.upgrade_versions) }}
+        ${{ fromJSON(needs.set-version-matrix-relayer.outputs.upgrade_versions) }}
       fail-fast: false
     env:
       COMMIT_TIMEOUT: 3
@@ -1354,10 +1391,10 @@ jobs:
 
   Baseline-5-pfm:
     runs-on: ubuntu-22.04
-    needs: set-version-matrix
+    needs: set-version-matrix-relayer
     strategy:
       matrix:
-        ${{ fromJSON(needs.set-version-matrix.outputs.upgrade_versions) }}
+        ${{ fromJSON(needs.set-version-matrix-relayer.outputs.upgrade_versions) }}
       fail-fast: false
     env:
       COMMIT_TIMEOUT: 3
@@ -1673,10 +1710,10 @@ jobs:
 
   Baseline-6-lsm:
     runs-on: ubuntu-22.04
-    needs: set-version-matrix
+    needs: set-version-matrix-relayer
     strategy:
       matrix:
-        ${{ fromJSON(needs.set-version-matrix.outputs.upgrade_versions) }}
+        ${{ fromJSON(needs.set-version-matrix-relayer.outputs.upgrade_versions) }}
       fail-fast: false
     env:
       COMMIT_TIMEOUT: 3
