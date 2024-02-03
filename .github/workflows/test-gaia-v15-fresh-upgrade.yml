@@ -2045,6 +2045,7 @@ jobs:
         env:
           STRIDE_HOME_1: /home/runner/.five_1
           LSP_COUNT: 1
+          COSMOS_SDK: v45
         run: tests/v15_upgrade/ica_delegate_happy.sh
 
       - name: Test software upgrade for published releases
@@ -2106,6 +2107,7 @@ jobs:
         env:
           STRIDE_HOME_1: /home/runner/.five_1
           LSP_COUNT: 2
+          COSMOS_SDK: v47
         run: tests/v15_upgrade/ica_delegate_happy.sh
 
   v15-1-min-commission:
