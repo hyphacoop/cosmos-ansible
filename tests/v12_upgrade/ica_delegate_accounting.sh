@@ -12,14 +12,14 @@ $CHAIN_BINARY keys add lsp_accounting_bonding --home $HOME_1
 lsp_accounting_bonding=$($CHAIN_BINARY keys list --home $HOME_1 --output json | jq -r '.[] | select(.name=="lsp_accounting_bonding").address')
 
 echo "Funding bonding account..."
-submit_tx "tx bank send $WALLET_1 $lsp_accounting_bonding 150000000$DENOM --from $WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -o json -y" $CHAIN_BINARY $HOME_1
+submit_tx "tx bank send $WALLET_1 $lsp_accounting_bonding 150000000$DENOM --from $WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -o json -y" $CHAIN_BINARY $HOME_1
 
 delegator_shares_1=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.delegator_shares')
 validator_bond_shares_1=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.validator_bond_shares')
 
 echo "Delegating with lsp_accounting_bonding..."
 tests/v12_upgrade/log_lsm_data.sh lsp-accounting pre-delegate-1 $lsp_accounting_bonding $bond_delegation
-submit_tx "tx staking delegate $VALOPER_1 $bond_delegation$DENOM --from $lsp_accounting_bonding -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+submit_tx "tx staking delegate $VALOPER_1 $bond_delegation$DENOM --from $lsp_accounting_bonding -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y" $CHAIN_BINARY $HOME_1
 tests/v12_upgrade/log_lsm_data.sh lsp-accounting post-delegate-1 $lsp_accounting_bonding $bond_delegation
 
 delegator_shares_2=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.delegator_shares')
@@ -32,7 +32,7 @@ fi
 
 echo "Validator bond with lsp_accounting_bonding..."
 tests/v12_upgrade/log_lsm_data.sh lsp-accounting pre-bond-1 $lsp_accounting_bonding -
-submit_tx "tx staking validator-bond $VALOPER_1 --from $lsp_accounting_bonding -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT -y --fees $BASE_FEES$DENOM" $CHAIN_BINARY $HOME_1
+submit_tx "tx staking validator-bond $VALOPER_1 --from $lsp_accounting_bonding -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT -y --gas-prices $GAS_PRICE$DENOM" $CHAIN_BINARY $HOME_1
 tests/v12_upgrade/log_lsm_data.sh lsp-accounting post-bond-1 $lsp_accounting_bonding -
 
 validator_bond_shares_2=$($CHAIN_BINARY q staking validator $VALOPER_1 --home $HOME_1 -o json | jq -r '.validator_bond_shares')

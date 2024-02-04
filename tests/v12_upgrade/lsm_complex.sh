@@ -21,18 +21,18 @@ tokenized_denom_2=$VALOPER_2/4
     complex_liquid_2=$($CHAIN_BINARY keys list --home $HOME_1 --output json | jq -r '.[] | select(.name=="complex_liquid_2").address')
 
     echo "Funding bonding and tokenizing accounts..."
-    submit_tx "tx bank send $WALLET_1 $complex_bond_account  100000000uatom --from $WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -o json -y" $CHAIN_BINARY $HOME_1
-    submit_tx "tx bank send $WALLET_1 $complex_liquid_1 100000000uatom --from $WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -o json -y" $CHAIN_BINARY $HOME_1
-    submit_tx "tx bank send $WALLET_1 $complex_liquid_2 100000000uatom --from $WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -o json -y" $CHAIN_BINARY $HOME_1
+    submit_tx "tx bank send $WALLET_1 $complex_bond_account  100000000uatom --from $WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -o json -y" $CHAIN_BINARY $HOME_1
+    submit_tx "tx bank send $WALLET_1 $complex_liquid_1 100000000uatom --from $WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -o json -y" $CHAIN_BINARY $HOME_1
+    submit_tx "tx bank send $WALLET_1 $complex_liquid_2 100000000uatom --from $WALLET_1 --gas auto --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -o json -y" $CHAIN_BINARY $HOME_1
 
     echo "Delegating with complex_bond_account..."
     tests/v12_upgrade/log_lsm_data.sh complex pre-delegate-1 $complex_bond_account $delegations
-    submit_tx "tx staking delegate $VALOPER_2 $delegation$DENOM --from $complex_bond_account -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+    submit_tx "tx staking delegate $VALOPER_2 $delegation$DENOM --from $complex_bond_account -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y" $CHAIN_BINARY $HOME_1
     tests/v12_upgrade/log_lsm_data.sh complex post-delegate-1 $complex_bond_account $delegations
 
     echo "Validator bond with complex_bond_account..."
     tests/v12_upgrade/log_lsm_data.sh complex pre-bond-1 $complex_bond_account -
-    submit_tx "tx staking validator-bond $VALOPER_2 --from $complex_bond_account -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT -y --fees $BASE_FEES$DENOM" $CHAIN_BINARY $HOME_1
+    submit_tx "tx staking validator-bond $VALOPER_2 --from $complex_bond_account -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT -y --gas-prices $GAS_PRICE$DENOM" $CHAIN_BINARY $HOME_1
     tests/v12_upgrade/log_lsm_data.sh complex post-bond-1 $complex_bond_account -
 
     validator_bond_shares=$($CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq -r '.validator_bond_shares')
@@ -44,7 +44,7 @@ tokenized_denom_2=$VALOPER_2/4
 
 echo "** COMPLEX CASES> 1: DELEGATE -> TOKENIZE -> SLASH -> REDEEM **"
     tests/v12_upgrade/log_lsm_data.sh complex pre-delegate-2 $complex_liquid_1 $tokenize
-    submit_tx "tx staking delegate $VALOPER_2 $tokenize$DENOM --from $complex_liquid_1 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+    submit_tx "tx staking delegate $VALOPER_2 $tokenize$DENOM --from $complex_liquid_1 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y" $CHAIN_BINARY $HOME_1
     tests/v12_upgrade/log_lsm_data.sh complex psost-delegate-2 $complex_liquid_1 $tokenize
 
     delegation_balance_pre_tokenize=$($CHAIN_BINARY q staking delegations $complex_liquid_1 --home $HOME_1 -o json | jq -r '.delegation_responses[0].balance.amount')
@@ -53,7 +53,7 @@ echo "** COMPLEX CASES> 1: DELEGATE -> TOKENIZE -> SLASH -> REDEEM **"
 
     echo "Tokenizing with complex_liquid_1..."
     tests/v12_upgrade/log_lsm_data.sh complex pre-tokenize-1 $complex_liquid_1 $tokenize
-    submit_tx "tx staking tokenize-share $VALOPER_2 $tokenize$DENOM $complex_liquid_1 --from $complex_liquid_1 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+    submit_tx "tx staking tokenize-share $VALOPER_2 $tokenize$DENOM $complex_liquid_1 --from $complex_liquid_1 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y" $CHAIN_BINARY $HOME_1
     tests/v12_upgrade/log_lsm_data.sh complex post-tokenize-1 $complex_liquid_1 $tokenize
 
     echo "Slashing validator 2..."
@@ -63,7 +63,7 @@ echo "** COMPLEX CASES> 1: DELEGATE -> TOKENIZE -> SLASH -> REDEEM **"
 
     echo "Redeeming with complex_liquid_1..."
     tests/v12_upgrade/log_lsm_data.sh complex pre-redeem-1 $complex_liquid_1 $tokenize
-    submit_tx "tx staking redeem-tokens $tokenize$tokenized_denom_1 --from $complex_liquid_1 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+    submit_tx "tx staking redeem-tokens $tokenize$tokenized_denom_1 --from $complex_liquid_1 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y" $CHAIN_BINARY $HOME_1
     tests/v12_upgrade/log_lsm_data.sh complex post-redeem-1 $complex_liquid_1 $tokenize
 
     delegation_balance_post_redeem=$($CHAIN_BINARY q staking delegations $complex_liquid_1 --home $HOME_1 -o json | jq -r '.delegation_responses[0].balance.amount')
@@ -87,7 +87,7 @@ echo "** COMPLEX CASES> 1: DELEGATE -> TOKENIZE -> SLASH -> REDEEM **"
 
 echo "** COMPLEX CASES> 2: DELEGATE -> SLASH -> TOKENIZE -> REDEEM **"
     tests/v12_upgrade/log_lsm_data.sh complex pre-delegate-3 $complex_liquid_2 $tokenize
-    submit_tx "tx staking delegate $VALOPER_2 $tokenize$DENOM --from $complex_liquid_2 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+    submit_tx "tx staking delegate $VALOPER_2 $tokenize$DENOM --from $complex_liquid_2 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y" $CHAIN_BINARY $HOME_1
     tests/v12_upgrade/log_lsm_data.sh complex post-delegate-3 $complex_liquid_2 $tokenize
 
     echo "Slashing validator 2..."
@@ -106,13 +106,13 @@ echo "** COMPLEX CASES> 2: DELEGATE -> SLASH -> TOKENIZE -> REDEEM **"
 
     echo "Tokenizing with complex_liquid_2..."
     tests/v12_upgrade/log_lsm_data.sh complex pre-tokenize-2 $complex_liquid_2 $delegation_balance_pre_tokenize
-    submit_tx "tx staking tokenize-share $VALOPER_2 $delegation_balance_pre_tokenize$DENOM $complex_liquid_2 --from $complex_liquid_2 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+    submit_tx "tx staking tokenize-share $VALOPER_2 $delegation_balance_pre_tokenize$DENOM $complex_liquid_2 --from $complex_liquid_2 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y" $CHAIN_BINARY $HOME_1
     tests/v12_upgrade/log_lsm_data.sh complex post-tokenize-2 $complex_liquid_2 $delegation_balance_pre_tokenize
     tokenized_balance=$($CHAIN_BINARY q bank balances $complex_liquid_2 --home $HOME_1 -o json | jq -r --arg DENOM "$tokenized_denom_2" '.balances[] | select(.denom==$DENOM).amount')
 
     echo "Redeeming with complex_liquid_2..."
     tests/v12_upgrade/log_lsm_data.sh complex pre-redeem-2 $complex_liquid_2 $tokenized_balance
-    submit_tx "tx staking redeem-tokens $tokenized_balance$tokenized_denom_2 --from $complex_liquid_2 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+    submit_tx "tx staking redeem-tokens $tokenized_balance$tokenized_denom_2 --from $complex_liquid_2 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y" $CHAIN_BINARY $HOME_1
     tests/v12_upgrade/log_lsm_data.sh complex post-redeem-2 $complex_liquid_2 $tokenized_balance
 
     delegation_balance_post_redeem=$($CHAIN_BINARY q staking delegations $complex_liquid_2 --home $HOME_1 -o json | jq -r '.delegation_responses[0].balance.amount')
@@ -138,20 +138,20 @@ echo "** COMPLEX CASES> CLEANUP **"
     echo "Unbonding from bonding account..."
     delegation_balance=$($CHAIN_BINARY q staking delegations $complex_bond_account --home $HOME_1 -o json | jq -r '.delegation_responses[0].balance.amount')
     tests/v12_upgrade/log_lsm_data.sh complex pre-unbond-1 $complex_bond_account $delegation_balance
-    submit_tx "tx staking unbond $VALOPER_2 ${delegation_balance%.*}$DENOM --from complex_bond_account -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+    submit_tx "tx staking unbond $VALOPER_2 ${delegation_balance%.*}$DENOM --from complex_bond_account -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y" $CHAIN_BINARY $HOME_1
     tests/v12_upgrade/log_lsm_data.sh complex post-unbond-1 $complex_bond_account $delegation_balance
     $CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq '.'
 
     echo "Unbonding from complex_liquid_1..."
     delegation_balance=$($CHAIN_BINARY q staking delegations $complex_liquid_1 --home $HOME_1 -o json | jq -r '.delegation_responses[0].balance.amount')
     tests/v12_upgrade/log_lsm_data.sh complex pre-unbond-2 $complex_liquid_1 $delegation_balance
-    submit_tx "tx staking unbond $VALOPER_2 ${delegation_balance%.*}$DENOM --from $complex_liquid_1 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+    submit_tx "tx staking unbond $VALOPER_2 ${delegation_balance%.*}$DENOM --from $complex_liquid_1 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y" $CHAIN_BINARY $HOME_1
     tests/v12_upgrade/log_lsm_data.sh complex post-unbond-2 $complex_liquid_1 $delegation_balance
     $CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq '.'
 
     echo "Unbonding from complex_liquid_1..."
     delegation_balance=$($CHAIN_BINARY q staking delegations $complex_liquid_2 --home $HOME_1 -o json | jq -r '.delegation_responses[0].balance.amount')
     tests/v12_upgrade/log_lsm_data.sh complex pre-unbond-3 $complex_liquid_2 $delegation_balance
-    submit_tx "tx staking unbond $VALOPER_2 ${delegation_balance%.*}$DENOM --from $complex_liquid_2 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y" $CHAIN_BINARY $HOME_1
+    submit_tx "tx staking unbond $VALOPER_2 ${delegation_balance%.*}$DENOM --from $complex_liquid_2 -o json --gas auto --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y" $CHAIN_BINARY $HOME_1
     tests/v12_upgrade/log_lsm_data.sh complex post-unbond-3 $complex_liquid_2 $delegation_balance
     $CHAIN_BINARY q staking validator $VALOPER_2 --home $HOME_1 -o json | jq '.'

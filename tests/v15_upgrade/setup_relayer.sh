@@ -19,7 +19,7 @@ if [ $RELAYER == "hermes" ]; then
     hermes keys add --chain one-v120 --mnemonic-file mnemonic.txt
     hermes keys add --chain two-v200 --mnemonic-file mnemonic.txt
     hermes keys add --chain three-v310 --mnemonic-file mnemonic.txt
-    hermes keys add --chain four-v200 --mnemonic-file mnemonic.txt
+    hermes keys add --chain four-v330 --mnemonic-file mnemonic.txt
     hermes keys add --chain five --mnemonic-file mnemonic.txt
     hermes keys add --chain six-v310 --mnemonic-file mnemonic.txt
     hermes keys add --chain seven-v320 --mnemonic-file mnemonic.txt
@@ -65,6 +65,14 @@ elif [ $RELAYER == "rly" ]; then
     cat four-v330.json
     rly chains add --file four-v330.json
 
+    # five - Stride
+    jq '.value."chain-id" = "five"' tests/v15_upgrade/testnet.json > five-1.json
+    jq '.value."rpc-addr" = "http://localhost:27501"' five-1.json > five-2.json
+    jq '.value."account-prefix" = "stride"' five-2.json > five-3.json
+    jq '.value."gas-prices" = "0.0025ustrd"' five-3.json > five.json
+    cat five.json
+    rly chains add --file five.json
+
     # six
     jq '.value."chain-id" = "six-v310"' tests/v15_upgrade/testnet.json > six-1.json
     jq '.value."rpc-addr" = "http://localhost:27601"' six-1.json > six-2.json
@@ -104,6 +112,7 @@ elif [ $RELAYER == "rly" ]; then
     # rly keys restore two-v200 default "$MNEMONIC_RELAYER"
     rly keys restore three-v310 default "$MNEMONIC_RELAYER"
     rly keys restore four-v330 default "$MNEMONIC_RELAYER"
+    rly keys restore five default "$MNEMONIC_RELAYER"
     rly keys restore six-v310 default "$MNEMONIC_RELAYER"
     rly keys restore eight-v330 default "$MNEMONIC_RELAYER"
     rly keys restore pfm1 default "$MNEMONIC_RELAYER"

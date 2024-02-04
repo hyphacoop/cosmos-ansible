@@ -5,9 +5,11 @@ echo "Running with $CONSUMER_CHAIN_BINARY."
 
 PROVIDER_CHANNEL=$1
 consumer_expected_denom=ibc/$(echo -n transfer/channel-1/uatom | shasum -a 256 | cut -d ' ' -f1 | tr '[a-z]' '[A-Z]')
-provider_expected_denom=ibc/$(echo -n transfer/$PROVIDER_CHANNEL/ucon | shasum -a 256 | cut -d ' ' -f1 | tr '[a-z]' '[A-Z]')
+provider_expected_denom=ibc/$(echo -n transfer/$PROVIDER_CHANNEL/$CONSUMER_DENOM | shasum -a 256 | cut -d ' ' -f1 | tr '[a-z]' '[A-Z]')
 echo "expected denom in provider: $provider_expected_denom"
 echo "expected denom in consumer: $consumer_expected_denom"
+
+$CHAIN_BINARY q ibc channel channels --home $HOME_1 -o json | jq '.'
 
 $CONSUMER_CHAIN_BINARY --home $CONSUMER_HOME_1 q bank balances $RECIPIENT
 consumer_start_balance=$($CONSUMER_CHAIN_BINARY --home $CONSUMER_HOME_1 q bank balances $RECIPIENT -o json | jq -r --arg DENOM "$consumer_expected_denom" '.balances[] | select(.denom==$DENOM).amount')
@@ -44,12 +46,15 @@ fi
 echo "Provider starting balance in expected denom: $provider_start_balance"
 
 # Transfer consumer token to provider chain
+$CHAIN_BINARY q ibc channel channels --home $CONSUMER_HOME_1 -o json | jq '.'
+$CHAIN_BINARY q tendermint-validator-set --home $HOME_1
+$CHAIN_BINARY q tendermint-validator-set --home $CONSUMER_HOME_1
 DENOM_BEFORE=$($CHAIN_BINARY --home $HOME_1 q bank balances $WALLET_1 -o json | jq -r '.balances | length')
 echo "Sending $CONSUMER_DENOM to $CHAIN_ID..."
 command="$CONSUMER_CHAIN_BINARY --home $CONSUMER_HOME_1 tx ibc-transfer transfer transfer channel-1 $WALLET_1 1000$CONSUMER_DENOM --from $RECIPIENT --keyring-backend test --gas auto --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$CONSUMER_DENOM -y -o json"
 txhash=$($command | jq -r .txhash)
 echo "Waiting for the transfer to reach the provider chain..."
-sleep $(($COMMIT_TIMEOUT*15))
+sleep $(($COMMIT_TIMEOUT*20))
 echo "tx hash: $txhash"
 $CONSUMER_CHAIN_BINARY q tx $txhash --home $CONSUMER_HOME_1
 
@@ -59,6 +64,7 @@ if [ -z "$provider_end_balance" ]; then
   provider_end_balance=0
 fi
 echo "Provider ending balance in expected denom: $provider_end_balance"
+journalctl -u $RELAYER | tail -n 100
 
 
 if [ $provider_end_balance -gt $provider_start_balance ]; then

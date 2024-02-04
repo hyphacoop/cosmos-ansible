@@ -80,7 +80,7 @@ jq -r '.app_state.interchainaccounts.host_genesis_state.params.allow_messages[0]
 mv ica_host.json $HOME_1/config/genesis.json
 # pd
 
-cat $HOME_1/config/genesis.json
+jq '.app_state.interchainaccounts' $HOME_1/config/genesis.json
 
 echo "Copying genesis file to other nodes..."
 cp $HOME_1/config/genesis.json $HOME_2/config/genesis.json 
@@ -148,6 +148,11 @@ echo "Setting persistent peers..."
 VAL2_PEER="$VAL2_NODE_ID@localhost:$VAL2_P2P_PORT"
 VAL3_PEER="$VAL3_NODE_ID@localhost:$VAL3_P2P_PORT"
 toml set --toml-path $HOME_1/config/config.toml p2p.persistent_peers "$VAL2_PEER,$VAL3_PEER"
+
+toml set --toml-path $HOME_1/config/config.toml p2p.addr_book_strict false
+toml set --toml-path $HOME_2/config/config.toml p2p.addr_book_strict false
+toml set --toml-path $HOME_3/config/config.toml p2p.addr_book_strict false
+
 
 # Set fast_sync to false
 toml set --toml-path $HOME_1/config/config.toml block_sync false
