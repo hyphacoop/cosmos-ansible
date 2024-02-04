@@ -26,7 +26,8 @@ if $UPGRADED_V15 ; then
    txhash=$($CHAIN_BINARY tx gov vote $proposal_id yes --from $voter1 --home $HOME_1 --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y -o json | jq -r '.txhash')
    sleep $(($COMMIT_TIMEOUT+2))
    $CHAIN_BINARY version
-   $CHAIN_BINARY q tx $txhash --home $HOME_1 -o json | jq '.'
+   code=$($CHAIN_BINARY q tx $txhash --home $HOME_1 -o json | jq '.code')
+   echo "Vote tx code: \"$code\""
    sleep $VOTING_PERIOD
    $CHAIN_BINARY q gov proposal $proposal_id --home $HOME_1 -o json | jq '.'
    
@@ -52,7 +53,8 @@ if $UPGRADED_V15 ; then
    echo "TEST: Vote from an account with 1uatom in delegations."
    txhash=$($CHAIN_BINARY tx gov vote $proposal_id yes --from $voter1 --home $HOME_1 --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y -o json | jq -r '.txhash')
    sleep $(($COMMIT_TIMEOUT+2))
-   $CHAIN_BINARY q tx $txhash --home $HOME_1 -o json | jq '.'
+   code=$($CHAIN_BINARY q tx $txhash --home $HOME_1 -o json | jq '.code')
+   echo "Vote tx code: \"$code\""
    sleep $VOTING_PERIOD
    $CHAIN_BINARY q gov proposal $proposal_id --home $HOME_1 -o json | jq '.'
 
