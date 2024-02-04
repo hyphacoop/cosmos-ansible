@@ -28,6 +28,12 @@ if $UPGRADED_V15 ; then
    $CHAIN_BINARY version
    code=$($CHAIN_BINARY q tx $txhash --home $HOME_1 -o json | jq '.code')
    echo "Vote tx code: \"$code\""
+   if [[ "$code" == "0" ]]; then
+      echo "FAIL: code 0 was received."
+      exit 1
+   else
+      echo "PASS: code 0 was not received."
+   fi
    sleep $VOTING_PERIOD
    $CHAIN_BINARY q gov proposal $proposal_id --home $HOME_1 -o json | jq '.'
    
@@ -55,6 +61,13 @@ if $UPGRADED_V15 ; then
    sleep $(($COMMIT_TIMEOUT+2))
    code=$($CHAIN_BINARY q tx $txhash --home $HOME_1 -o json | jq '.code')
    echo "Vote tx code: \"$code\""
+   echo "Vote tx code: \"$code\""
+   if [[ "$code" == "0" ]]; then
+      echo "FAIL: code 0 was received."
+      exit 1
+   else
+      echo "PASS: code 0 was not received."
+   fi
    sleep $VOTING_PERIOD
    $CHAIN_BINARY q gov proposal $proposal_id --home $HOME_1 -o json | jq '.'
 
