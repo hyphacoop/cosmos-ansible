@@ -170,7 +170,7 @@ jobs:
           ARCHIVE_URL: "https://files.polypore.xyz/archived-state/v15-upgraded-state-19024649.tar.gz"
         run: tests/major_stateful_upgrade/start_chain.sh
       - name: _Blocks produced after upgrade to v15
-        run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 10 2100
+        run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 100 2100
       - name: _Transactions verified> bank send, delegate, and withdraw rewards
         run: tests/major_stateful_upgrade/test_tx.sh
       - name: _PUPMOS is safe
