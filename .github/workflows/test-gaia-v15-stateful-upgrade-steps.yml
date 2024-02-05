@@ -176,9 +176,6 @@ jobs:
           $CHAIN_BINARY keys list --home $HOME_1
       - name: _Transactions verified> bank send, delegate, and withdraw rewards
         run: tests/major_stateful_upgrade/test_tx.sh
-      - name: Save config files
-        if: always()
-        run: sleep 10h
       - name: _PUPMOS is safe
         run: tests/major_stateful_upgrade/test_pupmos_slashing.sh
       - name: Send funds to wallet 4
