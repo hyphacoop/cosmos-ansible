@@ -171,6 +171,9 @@ jobs:
         run: tests/major_stateful_upgrade/start_chain.sh
       - name: _Blocks produced after upgrade to v15
         run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 100 2100
+      - name: Flush "migration successful" lines
+        run: |
+          $CHAIN_BINARY keys list --home $HOME_1
       - name: _Transactions verified> bank send, delegate, and withdraw rewards
         run: tests/major_stateful_upgrade/test_tx.sh
       - name: Save config files
