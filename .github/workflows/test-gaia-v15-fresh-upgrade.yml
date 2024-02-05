@@ -949,7 +949,7 @@ jobs:
           channel_id=$($CHAIN_BINARY q ibc channel connections $connection_id -o json --home $HOME_1 | jq -r '.channels[] | select(.port_id=="transfer").channel_id')
           tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh $channel_id
 
-  Baseline-3b-icsv310-partial-key-assign:
+  Baseline-3b-icsv310-no-keys-assigned:
     runs-on: ubuntu-22.04
     needs: set-version-matrix-relayer
     strategy:
@@ -1275,7 +1275,9 @@ jobs:
         env:
           CONSUMER_HOME_1: /home/runner/.three_1
           CON1_RPC_PORT: 27301
-        run: tests/major_fresh_upgrade/test_ccv_key_assignment.sh
+        run: |
+          tests/major_fresh_upgrade/test_ccv_key_assignment.sh
+          journalctl -fu $RELAYER | tail -n 50
       - name: _IBC transfer successful> ICS v3.1.0 chain 1
         env:
           CONSUMER_CHAIN_ID: three-v310
