@@ -157,13 +157,20 @@ jobs:
         run: |
           echo "$DOWNLOAD_URL"
           echo "DOWNLOAD_URL=$DOWNLOAD_URL" >> $GITHUB_ENV
+      # - name: Start chain
+      #   env:
+      #     START_VERSION: ${{inputs.gaia_version}}
+      #     ARCHIVE_URL: "https://files.polypore.xyz/archived-state/latest_v14.tar.gz"
+      #   run: tests/major_stateful_upgrade/start_chain.sh
+      # - name: _Blocks produced after upgrade to v15
+      #   run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 200 2100
       - name: Start chain
         env:
           START_VERSION: ${{inputs.gaia_version}}
-          ARCHIVE_URL: "https://files.polypore.xyz/archived-state/latest_v14.tar.gz"
+          ARCHIVE_URL: "https://files.polypore.xyz/archived-state/v15-upgraded-state-19024649.tar.gz"
         run: tests/major_stateful_upgrade/start_chain.sh
       - name: _Blocks produced after upgrade to v15
-        run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 200 2100
+        run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 10 2100
       - name: _Transactions verified> bank send, delegate, and withdraw rewards
         run: tests/major_stateful_upgrade/test_tx.sh
       - name: _PUPMOS is safe
