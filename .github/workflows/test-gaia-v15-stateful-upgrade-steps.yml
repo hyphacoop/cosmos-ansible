@@ -174,8 +174,12 @@ jobs:
       - name: Flush "migration successful" lines
         run: |
           $CHAIN_BINARY keys list --home $HOME_1
+      - name: Query unbonding time
+        run: $CHAIN_BINARY --home $HOME_1 q staking params
       - name: Set unbonding time via gov proposal
         run: tests/major_stateful_upgrade/set_unbonding-time.sh
+      - name: Query unbonding time
+        run: $CHAIN_BINARY --home $HOME_1 q staking params
       - name: _Transactions verified> bank send, delegate, and withdraw rewards
         run: tests/major_stateful_upgrade/test_tx.sh
       - name: _PUPMOS is safe
