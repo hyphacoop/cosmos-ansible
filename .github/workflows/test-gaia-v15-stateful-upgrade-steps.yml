@@ -174,14 +174,14 @@ jobs:
       - name: Flush "migration successful" lines
         run: |
           $CHAIN_BINARY keys list --home $HOME_1
+      - name: Set unbonding time via gov proposal
+        run: tests/major_stateful_upgrade/set_unbonding-time.sh
       - name: _Transactions verified> bank send, delegate, and withdraw rewards
         run: tests/major_stateful_upgrade/test_tx.sh
       - name: _PUPMOS is safe
         run: tests/major_stateful_upgrade/test_pupmos_slashing.sh
       - name: Send funds to wallet 4
         run: $CHAIN_BINARY tx bank send $WALLET_1 $WALLET_4 10000000$DENOM --home $HOME_1 --from $MONIKER_1 --keyring-backend test --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM --chain-id $CHAIN_ID -y -b sync
-      - name: Set unbonding time via gov proposal
-        run: tests/major_stateful_upgrade/set_unbonding-time.sh
       - name: Delegate to mainnet validator
         run: |
           echo "Running: gaiad tx staking delegate $DELEGATE_1 $DELEGATE_1_AMOUNT$DENOM --from $MONIKER_1 --keyring-backend test --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y --chain-id $CHAIN_ID --home $HOME_1"
