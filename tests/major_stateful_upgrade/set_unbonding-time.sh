@@ -2,7 +2,7 @@
 
 # Change UnbondingTime
 echo "Set UnbondingTime time..."
-proposal="$CHAIN_BINARY tx gov submit-legacy-proposal param-change tests/major_stateful_upgrade/unbonding-prop.json --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM --from $WALLET_1 --keyring-backend test --home $HOME_1 --chain-id $CHAIN_ID -b sync -y -o json"
+proposal="$CHAIN_BINARY tx gov submit-proposal tests/major_stateful_upgrade/unbonding-prop.json --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM --from $WALLET_1 --keyring-backend test --home $HOME_1 --chain-id $CHAIN_ID -b sync -y -o json"
 echo $proposal
 gaiadout=$($proposal)
 echo "gaiad output:"

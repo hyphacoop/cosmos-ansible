@@ -1,12 +1,23 @@
 {
-    "title": "Set unbonding time to 21 days",
-    "description": "Set the unbonding time to 21 days",
-    "deposit": "10000000uatom",
-    "changes": [
+    "messages": [
         {
-            "subspace": "staking",
-            "key": "UnbondingTime",
-            "value": "1814400000000000"
+            "@type": "/cosmos.staking.v1beta1.MsgUpdateParams",
+            "authority": "cosmos1r5v5srda7xfth3hn2s26txvrcrntldjumt8mhl",
+            "params": {
+                "unbonding_time": "1814400s",
+                "max_validators": 180,
+                "max_entries": 7,
+                "historical_entries": 10000,
+                "bond_denom": "uatom",
+                "min_commission_rate": "0.050000000000000000",
+                "validator_bond_factor": "-1.000000000000000000",
+                "global_liquid_staking_cap": "1.000000000000000000",
+                "validator_liquid_staking_cap": "1.000000000000000000"
+            }
         }
-    ]
+    ],
+    "metadata": "ipfs://CID",
+    "deposit": "10000000uatom",
+    "title": "Set unbonding time to 21 days",
+    "summary": "Set the unbonding time to 21 days"
 }
