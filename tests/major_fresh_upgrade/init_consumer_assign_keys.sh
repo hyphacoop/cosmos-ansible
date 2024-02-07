@@ -38,7 +38,8 @@ mv genesis-1.json $CONSUMER_HOME_1/config/genesis.json
 
 # Set slashing to $DOWNTIME_BLOCKS
 jq -r --arg SLASH "$DOWNTIME_BLOCKS" '.app_state.slashing.params.signed_blocks_window |= $SLASH' $CONSUMER_HOME_1/config/genesis.json > consumer-slashing.json
-mv consumer-slashing.json $CONSUMER_HOME_1/config/genesis.json
+jq -r '.app_state.slashing.params.downtime_jail_duration |= 10s' consumer-slashing.json > consumer-slashing-2.json
+mv consumer-slashing-2.json $CONSUMER_HOME_1/config/genesis.json
 
 # Create self-delegation accounts
 echo $MNEMONIC_1 | $CONSUMER_CHAIN_BINARY keys add $MONIKER_1 --keyring-backend test --home $CONSUMER_HOME_1 --recover
