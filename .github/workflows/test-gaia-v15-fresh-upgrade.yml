@@ -1350,7 +1350,7 @@ jobs:
           CON1_PPROF_PORT: 29601
           CON2_PPROF_PORT: 29602
           CON3_PPROF_PORT: 29603
-          DOWNTIME_BLOCKS: 1000
+          DOWNTIME_BLOCKS: 20
         run: |
           export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V310_BINARY
           tests/major_fresh_upgrade/init_consumer_assign_some_keys.sh
@@ -1418,6 +1418,29 @@ jobs:
           connection_id=$($CHAIN_BINARY q ibc connection connections -o json --home $HOME_1 | jq -r --arg client "$client_id" '.connections[] | select(.client_id==$client).id')
           channel_id=$($CHAIN_BINARY q ibc channel connections $connection_id -o json --home $HOME_1 | jq -r '.channels[] | select(.port_id=="transfer").channel_id')
           tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh $channel_id
+
+      - name: Stop validator services
+        env:
+          CONSUMER_SERVICE_2: six_2.service
+          CONSUMER_SERVICE_3: six_3.service
+        run: |
+          sudo systemctl disable $CONSUMER_SERVICE_2 --now
+          sudo systemctl disable $CONSUMER_SERVICE_3 --now
+          sleep $(($COMMIT_TIMEOUT*30))
+      - name: _Soft opt-out test> Validator must be jailed - 1
+        run: tests/test_validator_jailed.sh $VALOPER_2 true
+      - name: _Soft opt-out test> Validator must not be jailed
+        run: tests/test_validator_jailed.sh $VALOPER_3 false
+      - name: Unjail validator
+        env:
+          CONSUMER_SERVICE_2: six_2.service
+        run: |
+          sudo systemctl enable $CONSUMER_SERVICE_2 --now
+          sleep $(($COMMIT_TIMEOUT*10))
+          $CHAIN_BINARY tx slashing unjail --from $WALLET_2 --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y --home $HOME_1
+          sleep $(($COMMIT_TIMEOUT*2))
+      - name: _Soft opt-out test> Validator must be unjailed
+        run: tests/test_validator_jailed.sh $VALOPER_2 false
 
   Baseline-3c-icsv310-no-keys-assigned:
     runs-on: ubuntu-22.04
@@ -1789,7 +1812,7 @@ jobs:
           CON1_PPROF_PORT: 29601
           CON2_PPROF_PORT: 29602
           CON3_PPROF_PORT: 29603
-          DOWNTIME_BLOCKS: 1000
+          DOWNTIME_BLOCKS: 20
         run: |
           export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V310_BINARY
           tests/major_fresh_upgrade/init_consumer_assign_no_keys.sh
@@ -1859,6 +1882,29 @@ jobs:
           tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh $channel_id
       - name: Print relayer log
         run: journalctl -u $RELAYER
+
+      - name: Stop validator services
+        env:
+          CONSUMER_SERVICE_2: six_2.service
+          CONSUMER_SERVICE_3: six_3.service
+        run: |
+          sudo systemctl disable $CONSUMER_SERVICE_2 --now
+          sudo systemctl disable $CONSUMER_SERVICE_3 --now
+          sleep $(($COMMIT_TIMEOUT*30))
+      - name: _Soft opt-out test> Validator must be jailed - 1
+        run: tests/test_validator_jailed.sh $VALOPER_2 true
+      - name: _Soft opt-out test> Validator must not be jailed
+        run: tests/test_validator_jailed.sh $VALOPER_3 false
+      - name: Unjail validator
+        env:
+          CONSUMER_SERVICE_2: six_2.service
+        run: |
+          sudo systemctl enable $CONSUMER_SERVICE_2 --now
+          sleep $(($COMMIT_TIMEOUT*10))
+          $CHAIN_BINARY tx slashing unjail --from $WALLET_2 --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y --home $HOME_1
+          sleep $(($COMMIT_TIMEOUT*2))
+      - name: _Soft opt-out test> Validator must be unjailed
+        run: tests/test_validator_jailed.sh $VALOPER_2 false
 
   Baseline-4-icsv330:
     runs-on: ubuntu-22.04
@@ -2299,6 +2345,29 @@ jobs:
           connection_id=$($CHAIN_BINARY q ibc connection connections -o json --home $HOME_1 | jq -r --arg client "$client_id" '.connections[] | select(.client_id==$client).id')
           channel_id=$($CHAIN_BINARY q ibc channel connections $connection_id -o json --home $HOME_1 | jq -r '.channels[] | select(.port_id=="transfer").channel_id')
           tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh $channel_id
+
+      - name: Stop validator services
+        env:
+          CONSUMER_SERVICE_2: eight_2.service
+          CONSUMER_SERVICE_3: eight_3.service
+        run: |
+          sudo systemctl disable $CONSUMER_SERVICE_2 --now
+          sudo systemctl disable $CONSUMER_SERVICE_3 --now
+          sleep $(($COMMIT_TIMEOUT*30))
+      - name: _Soft opt-out test> Validator must be jailed - 1
+        run: tests/test_validator_jailed.sh $VALOPER_2 true
+      - name: _Soft opt-out test> Validator must not be jailed
+        run: tests/test_validator_jailed.sh $VALOPER_3 false
+      - name: Unjail validator
+        env:
+          CONSUMER_SERVICE_2: eight_2.service
+        run: |
+          sudo systemctl enable $CONSUMER_SERVICE_2 --now
+          sleep $(($COMMIT_TIMEOUT*10))
+          $CHAIN_BINARY tx slashing unjail --from $WALLET_2 --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y --home $HOME_1
+          sleep $(($COMMIT_TIMEOUT*2))
+      - name: _Soft opt-out test> Validator must be unjailed
+        run: tests/test_validator_jailed.sh $VALOPER_2 false
 
   Baseline-5-pfm:
     runs-on: ubuntu-22.04
