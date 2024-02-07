@@ -979,7 +979,7 @@ jobs:
       #     sleep $(($COMMIT_TIMEOUT*30))
       # - name: _Soft opt-out test> Validator must be jailed - 2
       #   run: tests/test_validator_jailed.sh $VALOPER_2 true
-  
+
   Baseline-3b-icsv310-some-keys-assigned:
     runs-on: ubuntu-22.04
     needs: set-version-matrix-relayer
@@ -2280,7 +2280,7 @@ jobs:
           CON1_PPROF_PORT: 29801
           CON2_PPROF_PORT: 29802
           CON3_PPROF_PORT: 29803
-          DOWNTIME_BLOCKS: 100000
+          DOWNTIME_BLOCKS: 20
         run: |
           export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V330_BINARY
           tests/major_fresh_upgrade/init_consumer_assign_keys.sh
