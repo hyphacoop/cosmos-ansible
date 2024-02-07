@@ -2,7 +2,7 @@
     "messages": [
         {
             "@type": "/cosmos.staking.v1beta1.MsgUpdateParams",
-            "authority": "cosmos1r5v5srda7xfth3hn2s26txvrcrntldjumt8mhl",
+            "authority": "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn",
             "params": {
                 "unbonding_time": "1814400s",
                 "max_validators": 180,
