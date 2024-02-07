@@ -215,7 +215,7 @@ jobs:
       - name: Launch consumer chain a
         env:
           CONSUMER_CHAIN_ID: consumera
-        run: tests/major_stateful_upgrade/launch_consumer.sh
+        run: tests/major_stateful_upgrade/launch_consumer.sh v3.1.x
       - name: _Consumer chain produces blocks> ICS v3.1.0
         run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT 10
       - name: Establish CCV channel for consumer a
