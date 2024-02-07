@@ -46,7 +46,7 @@ sleep $(($COMMIT_TIMEOUT+2))
 $CHAIN_BINARY q gov tally $proposal_id --home $HOME_1
 
 echo "Waiting for proposal to pass..."
-sleep $(($COMMIT_TIMEOUT*3))
+sleep $(($COMMIT_TIMEOUT*5))
 $CHAIN_BINARY q gov proposals --home $HOME_1
 
 echo "Collecting the CCV state..."
