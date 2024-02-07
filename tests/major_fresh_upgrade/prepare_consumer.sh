@@ -9,32 +9,6 @@
 
 # echo "Submitting proposal..."
 
-# if [ $COSMOS_SDK == "v45" ]; then
-#     echo "Preparing proposal with v45 command..."
-#     proposal="$CHAIN_BINARY tx gov submit-proposal consumer-addition proposal-add-$CONSUMER_CHAIN_ID.json --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM --from $WALLET_2 --keyring-backend test --home $HOME_1 --chain-id $CHAIN_ID -y -o json"
-# elif [ $COSMOS_SDK == "v47" ]; then
-# echo "Preparing proposal with v47 command..."
-#     proposal="$CHAIN_BINARY tx gov submit-legacy-proposal consumer-addition proposal-add-$CONSUMER_CHAIN_ID.json --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM --from $WALLET_2 --keyring-backend test --home $HOME_1  --chain-id $CHAIN_ID -y -o json"
-# fi
-# txhash=$($proposal | jq -r .txhash)
-# # Wait for the proposal to go on chain
-# sleep $(($COMMIT_TIMEOUT+2))
-
-# # Get proposal ID from txhash
-# echo "Getting proposal ID from txhash..."
-# $CHAIN_BINARY q tx $txhash --home $HOME_1
-# proposal_id=$($CHAIN_BINARY q tx $txhash --home $HOME_1 --output json | jq -r '.logs[].events[] | select(.type=="submit_proposal") | .attributes[] | select(.key=="proposal_id") | .value')
-
-# echo "Voting on proposal $proposal_id..."
-# $CHAIN_BINARY tx gov vote $proposal_id yes --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM --from $WALLET_1 --keyring-backend test --home $HOME_1 --chain-id $CHAIN_ID -y
-# sleep $(($COMMIT_TIMEOUT+2))
-# $CHAIN_BINARY q gov tally $proposal_id --home $HOME_1
-
-# echo "Waiting for proposal to pass..."
-# sleep $VOTING_PERIOD
-# sleep $VOTING_PERIOD
-#$CHAIN_BINARY q gov proposals --home $HOME_1
-
 $CHAIN_BINARY q provider list-consumer-chains --home $HOME_1
 
 echo "Collecting the CCV state..."
