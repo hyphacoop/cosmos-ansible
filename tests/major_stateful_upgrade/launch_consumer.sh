@@ -47,7 +47,7 @@ $CHAIN_BINARY q provider consumer-genesis $CONSUMER_CHAIN_ID -o json --home $HOM
 jq '.params |= . + {"soft_opt_out_threshold": "0.05"}' ccv-pre.json > ccv.json
 jq '.' ccv.json
 
-if [ -z $transform ]
+if [ ! -z $transform ]
 then
     echo "Patching CCV for backwards compatibility"
     wget https://github.com/hyphacoop/cosmos-builds/releases/download/ics-v3.3.0-transform/interchain-security-cd -O ics-transform
