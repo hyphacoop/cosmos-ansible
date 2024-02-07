@@ -14,7 +14,7 @@ proposal="$CHAIN_BINARY tx gov submit-legacy-proposal consumer-addition proposal
 echo $proposal
 txhash=$($proposal | jq -r .txhash)
 # Wait for the proposal to go on chain
-sleep 2
+tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 1 10
 
 # Get proposal ID from txhash
 echo "Getting proposal ID from txhash..."
@@ -28,7 +28,7 @@ $CHAIN_BINARY q gov tally $proposal_id --home $HOME_1
 
 echo "Waiting for proposal to pass..."
 sleep $VOTING_PERIOD
-sleep 12
+tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 3 10
 
 $CHAIN_BINARY q gov proposal $proposal_id --home $HOME_1
 
