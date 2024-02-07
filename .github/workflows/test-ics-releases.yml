@@ -3,13 +3,13 @@
 name: Test ICS Releases
 on:
   workflow_dispatch:
-  # push:
+  push:
 jobs:
   test-consumer-launches:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        provider: ['v2.0.0', 'v2.1.0-provider-lsm', 'v2.4.0-lsm', 'v3.1.0', 'v3.2.0', 'v3.3.0', 'v4.0.0-rc1']
+        provider: ['v2.0.0', 'v2.1.0-provider-lsm', 'v2.4.0-lsm', 'v3.1.0', 'v3.2.0', 'v3.3.0', 'v4.0.0']
       fail-fast: false
     env:
       COMMIT_TIMEOUT: 3
@@ -100,8 +100,8 @@ jobs:
       CONSUMER_CHAIN_V32_BINARY: consumerd_v3.2.0
       CONSUMER_CHAIN_V33_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-consumer-v3.3.0/interchain-security-cd-linux
       CONSUMER_CHAIN_V33_BINARY: consumerd_v3.3.0
-      CONSUMER_CHAIN_V400_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-consumer-v4.0.0-rc1/interchain-security-cd-linux
-      CONSUMER_CHAIN_V400_BINARY: consumerd_v4.0.0-rc1
+      CONSUMER_CHAIN_V400_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-consumer-v4.0.0/interchain-security-cd-linux
+      CONSUMER_CHAIN_V400_BINARY: consumerd_v4.0.0
     steps:
       - name: Consumer chain binary URLs
         run: |
@@ -134,7 +134,7 @@ jobs:
         run: |
           echo "PROVIDER_V3=true" >> $GITHUB_ENV
       - name: Use legacy proposal command for v4
-        if: ${{ (matrix.provider == 'v4.0.0-rc1' )}}
+        if: ${{ (matrix.provider == 'v4.0.0' )}}
         run: |
           echo "PROVIDER_V4=true" >> $GITHUB_ENV
 
@@ -176,7 +176,7 @@ jobs:
           wget https://github.com/hyphacoop/cosmos-builds/releases/download/ics-v3.3.0-transform/interchain-security-cd -q -O $HOME/go/bin/ics-cd-transform
           chmod +x $HOME/go/bin/ics-cd-transform
 
-          # - name: Initialize consumer chain with ICS v1.2.0-multiden
+      # - name: Initialize consumer chain with ICS v1.2.0-multiden
       #   env:
       #     CONSUMER_CHAIN_ID: one-v120
       #     CONSUMER_HOME_1: /home/runner/.one_1
@@ -253,7 +253,7 @@ jobs:
       #     tests/ics_tests/test_consumer_ibc_transfer.sh $channel_id
 
       - name: Initialize consumer chain with ICS v2.0.0
-        if: ${{ (matrix.provider != 'v4.0.0-rc1' )}}
+        if: ${{ (matrix.provider != 'v4.0.0' )}}
         env:
           CONSUMER_CHAIN_ID: two-v200
           CONSUMER_HOME_1: /home/runner/.two_1
@@ -282,7 +282,7 @@ jobs:
           export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V2_BINARY
           tests/major_fresh_upgrade/init_consumer.sh
       - name: Prepare consumer chain two-v200
-        if: ${{ (matrix.provider != 'v4.0.0-rc1' )}}
+        if: ${{ (matrix.provider != 'v4.0.0' )}}
         env:
           CONSUMER_CHAIN_ID: two-v200
           CONSUMER_HOME_1: /home/runner/.two_1
@@ -293,7 +293,7 @@ jobs:
           export CONSUMER_V200=true
           tests/ics_tests/prepare_consumer.sh
       - name: Start consumer chain two-v200
-        if: ${{ (matrix.provider != 'v4.0.0-rc1' )}}
+        if: ${{ (matrix.provider != 'v4.0.0' )}}
         env:
           CONSUMER_CHAIN_ID: two-v200
           CONSUMER_SERVICE_1: two_1.service
@@ -304,10 +304,10 @@ jobs:
           sleep 5
           journalctl -u $CONSUMER_SERVICE_1
       - name: _Consumer chain produces blocks> ICS v2.0.0
-        if: ${{ (matrix.provider != 'v4.0.0-rc1' )}}
+        if: ${{ (matrix.provider != 'v4.0.0' )}}
         run: tests/test_block_production.sh 127.0.0.1 27201 5
       - name: Establish CCV channel for two-v200
-        if: ${{ (matrix.provider != 'v4.0.0-rc1' )}}
+        if: ${{ (matrix.provider != 'v4.0.0' )}}
         env:
           CONSUMER_CHAIN_ID: two-v200
         run: |
@@ -317,12 +317,12 @@ jobs:
           sudo systemctl restart hermes
           sleep 10
       - name: _CCV channel verified> ICS v2.0.0
-        if: ${{ (matrix.provider != 'v4.0.0-rc1' )}}
+        if: ${{ (matrix.provider != 'v4.0.0' )}}
         env:
           CON1_RPC_PORT: 27201
         run: tests/ics_tests/test_ccv.sh
       - name: _IBC transfer successful> ICS v2.0.0
-        if: ${{ (matrix.provider != 'v4.0.0-rc1' )}}
+        if: ${{ (matrix.provider != 'v4.0.0' )}}
         env:
           CONSUMER_CHAIN_ID: two-v200
           CONSUMER_HOME_1: /home/runner/.two_1
@@ -334,7 +334,7 @@ jobs:
           tests/ics_tests/test_consumer_ibc_transfer.sh $channel_id
 
       - name: Initialize consumer chain with ICS v3.1.0
-        if: ${{ (matrix.provider != 'v4.0.0-rc1' )}}
+        if: ${{ (matrix.provider != 'v4.0.0' )}}
         env:
           CONSUMER_CHAIN_ID: three-v310
           CONSUMER_HOME_1: /home/runner/.three_1
@@ -363,7 +363,7 @@ jobs:
           export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V31_BINARY
           tests/major_fresh_upgrade/init_consumer.sh
       - name: Prepare consumer chain three-v310
-        if: ${{ (matrix.provider != 'v4.0.0-rc1' )}}
+        if: ${{ (matrix.provider != 'v4.0.0' )}}
         env:
           CONSUMER_CHAIN_ID: three-v310
           CONSUMER_HOME_1: /home/runner/.three_1
@@ -374,7 +374,7 @@ jobs:
           export CONSUMER_V310=true
           tests/ics_tests/prepare_consumer.sh
       - name: Start consumer chain three-v310
-        if: ${{ (matrix.provider != 'v4.0.0-rc1' )}}
+        if: ${{ (matrix.provider != 'v4.0.0' )}}
         env:
           CONSUMER_CHAIN_ID: three-v310
           CONSUMER_SERVICE_1: three_1.service
@@ -385,12 +385,12 @@ jobs:
           sleep 5
           journalctl -u $CONSUMER_SERVICE_1
       - name: _Consumer chain produces blocks> ICS v3.1.0
-        if: ${{ (matrix.provider != 'v4.0.0-rc1' )}}
+        if: ${{ (matrix.provider != 'v4.0.0' )}}
         env:
           CON1_RPC_PORT: 27301
         run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT 5
       - name: Establish CCV channel for three-v310
-        if: ${{ (matrix.provider != 'v4.0.0-rc1' )}}
+        if: ${{ (matrix.provider != 'v4.0.0' )}}
         env:
           CONSUMER_CHAIN_ID: three-v310
         run: |
@@ -400,12 +400,12 @@ jobs:
           sudo systemctl restart hermes
           sleep 10
       - name: _CCV channel verified> ICS v3.1.0
-        if: ${{ (matrix.provider != 'v4.0.0-rc1' )}}
+        if: ${{ (matrix.provider != 'v4.0.0' )}}
         env:
           CON1_RPC_PORT: 27301
         run: tests/ics_tests/test_ccv.sh
       - name: _IBC transfer successful> ICS v3.1.0
-        if: ${{ (matrix.provider != 'v4.0.0-rc1' )}}
+        if: ${{ (matrix.provider != 'v4.0.0' )}}
         env:
           CONSUMER_CHAIN_ID: three-v310
           CONSUMER_HOME_1: /home/runner/.three_1
@@ -575,7 +575,7 @@ jobs:
           channel_id=$($CHAIN_BINARY q ibc channel connections $connection_id -o json --home $HOME_1 | jq -r '.channels[] | select(.port_id=="transfer").channel_id')
           tests/ics_tests/test_consumer_ibc_transfer.sh $channel_id
 
-      - name: Initialize consumer chain with ICS v4.0.0-rc1
+      - name: Initialize consumer chain with ICS v4.0.0
         env:
           CONSUMER_CHAIN_ID: six-v400
           CONSUMER_HOME_1: /home/runner/.six_1
@@ -627,7 +627,7 @@ jobs:
           sudo systemctl enable $CONSUMER_SERVICE_1 --now
           sleep 5
           journalctl -u $CONSUMER_SERVICE_1
-      - name: _Consumer chain produces blocks> ICS v4.0.0-rc1
+      - name: _Consumer chain produces blocks> ICS v4.0.0
         env:
           CON1_RPC_PORT: 27501
         run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT 5
@@ -640,11 +640,11 @@ jobs:
           hermes create channel --a-chain $CONSUMER_CHAIN_ID --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
           sudo systemctl restart hermes
           sleep 10
-      - name: _CCV channel verified> ICS v4.0.0-rc1
+      - name: _CCV channel verified> ICS v4.0.0
         env:
           CON1_RPC_PORT: 27601
         run: tests/ics_tests/test_ccv.sh
-      - name: _IBC transfer successful> ICS v4.0.0-rc1
+      - name: _IBC transfer successful> ICS v4.0.0
         env:
           CONSUMER_CHAIN_ID: six-v400
           CONSUMER_HOME_1: /home/runner/.six_1
@@ -661,12 +661,12 @@ jobs:
       #     CON1_RPC_PORT: 27101
       #   run: tests/ics_tests/test_ccv.sh
       - name: _Final CCV channel check> ICS v2.0.0
-        if: ${{ (matrix.provider != 'v4.0.0-rc1' )}}
+        if: ${{ (matrix.provider != 'v4.0.0' )}}
         env:
           CON1_RPC_PORT: 27201
         run: tests/ics_tests/test_ccv.sh
       - name: _Final CCV channel check> ICS v3.1.0
-        if: ${{ (matrix.provider != 'v4.0.0-rc1' )}}
+        if: ${{ (matrix.provider != 'v4.0.0' )}}
         env:
           CON1_RPC_PORT: 27301
         run: tests/ics_tests/test_ccv.sh
@@ -678,7 +678,7 @@ jobs:
         env:
           CON1_RPC_PORT: 27501
         run: tests/ics_tests/test_ccv.sh
-      - name: _Final CCV channel check> ICS v4.0.0-rc1
+      - name: _Final CCV channel check> ICS v4.0.0
         env:
           CON1_RPC_PORT: 27601
         run: tests/ics_tests/test_ccv.sh

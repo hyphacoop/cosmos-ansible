@@ -46,7 +46,7 @@ sleep $(($COMMIT_TIMEOUT+2))
 $CHAIN_BINARY q gov tally $proposal_id --home $HOME_1
 
 echo "Waiting for proposal to pass..."
-sleep $(($COMMIT_TIMEOUT*3))
+sleep $(($COMMIT_TIMEOUT*5))
 $CHAIN_BINARY q gov proposals --home $HOME_1
 
 echo "Collecting the CCV state..."
@@ -102,8 +102,8 @@ if $CONSUMER_V320 ; then
         echo "Patching for provider v3.3.0"
         ics-cd-transform genesis transform --to v3.2.x ccv.json > ccv-320.json
         cp ccv-320.json ccv.json
-    elif [ $PROVIDER_VERSION == "v4.0.0-rc1" ]; then
-        echo "Patching for provider v4.0.0-rc1"
+    elif [ $PROVIDER_VERSION == "v4.0.0" ]; then
+        echo "Patching for provider v4.0.0"
         ics-cd-transform genesis transform --to v3.2.x ccv.json > ccv-320.json
         cp ccv-320.json ccv.json
     fi
@@ -111,8 +111,8 @@ fi
 
 if $CONSUMER_V330 ; then
     echo "Patching for consumer v3.3.0..."
-    if [ $PROVIDER_VERSION == "v4.0.0-rc1" ]; then
-        echo "Patching for provider v4.0.0-rc1"
+    if [ $PROVIDER_VERSION == "v4.0.0" ]; then
+        echo "Patching for provider v4.0.0"
         ics-cd-transform genesis transform --to v3.3.x ccv.json > ccv-400.json
         cp ccv-400.json ccv.json
     elif [ $PROVIDER_VERSION != "v3.3.0" ]; then
@@ -122,8 +122,8 @@ if $CONSUMER_V330 ; then
 fi
 
 if $CONSUMER_V400 ; then
-    echo "Patching for consumer v4.0.0-rc1..."
-    if [ $PROVIDER_VERSION != "v4.0.0-rc1" ]; then
+    echo "Patching for consumer v4.0.0..."
+    if [ $PROVIDER_VERSION != "v4.0.0" ]; then
         $CONSUMER_CHAIN_BINARY genesis transform ccv.json > ccv-400-1.json
         cp ccv-400-1.json ccv.json
     fi
