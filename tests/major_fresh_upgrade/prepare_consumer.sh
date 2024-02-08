@@ -48,6 +48,14 @@ if [ "$CONSUMER_ICS" == "v3.3.0" ]; then
     fi
 fi
 
+if [ "$CONSUMER_ICS" == "v4.0.0" ]; then
+    if [ "$PROVIDER_ICS" != "v4.0.0" ]; then
+        echo "Patching for ICS v4.0.0 consumer"
+        $CONSUMER_CHAIN_BINARY genesis transform ccv.json > ccv-400-1.json
+        cp ccv-400-1.json ccv.json
+    fi
+fi
+
 echo "Patching the consumer genesis file..."
 jq -s '.[0].app_state.ccvconsumer = .[1] | .[0]' $CONSUMER_HOME_1/config/genesis.json ccv.json > consumer-genesis.json
 cp consumer-genesis.json $CONSUMER_HOME_1/config/genesis.json

@@ -82,6 +82,7 @@ env:
   ICS_200: false
   ICS_310: false
   ICS_330: false
+  ICS_400: false
   RECIPIENT: cosmos1r5v5srda7xfth3hn2s26txvrcrntldjumt8mhl
   # Reference ICS chain variables
   CONSUMER_DENOM: ucon
@@ -1798,7 +1799,357 @@ jobs:
       - name: _Soft opt-out test> Validator must be unjailed
         run: tests/test_validator_jailed.sh $VALOPER_2 false
 
-  Baseline-5-pfm:
+  Baseline-5-icsv400:
+    runs-on: ubuntu-22.04
+    needs: set-version-matrix-relayer
+    strategy:
+      matrix:
+        ${{ fromJSON(needs.set-version-matrix-relayer.outputs.upgrade_versions) }}
+      fail-fast: false
+    env:
+      COSMOVISOR_VERSION: ${{ matrix.cv_version }}
+      UPGRADE_MECHANISM: ${{ matrix.upgrade_mechanism }}
+      # Consumer chain variables
+      RECIPIENT: cosmos1r5v5srda7xfth3hn2s26txvrcrntldjumt8mhl
+      ICS_400: true
+      CONSUMER_ICS: v4.0.0
+      PROVIDER_ICS: v2.4.0
+      # Reference ICS chain variables
+      CONSUMER_DENOM: ucon
+      CONSUMER_FEES: 500
+      CONSUMER_CHAIN_V400_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-consumer-v4.0.0/interchain-security-cd-linux
+      CONSUMER_CHAIN_V400_BINARY: consumerd_v4.0.0
+      ICS_TRANSFORM_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-v3.3.0-transform/interchain-security-cd
+      ICS_TRANSFORM_BINARY: cd-transform      
+    steps:
+      - name: start-version
+        run: echo ${{matrix.gaia_version}}
+      - name: target-version
+        run: echo ${{matrix.upgrade_version}}
+      - name: target-commit
+        if: ${{ matrix.upgrade_version == 'main' }}
+        run: |
+          BUILD_TAG=gaiad-linux-${{matrix.upgrade_version}}
+          TARGET_COMMIT=$(curl -s -L -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" https://api.github.com/repos/hyphacoop/cosmos-builds/releases/tags/$BUILD_TAG | jq -r '.name')
+          echo TARGET_COMMIT: $TARGET_COMMIT
+      - name: Update PATH
+        run: |
+          mkdir -p $HOME/go/bin
+          echo "$HOME/go/bin" >> $GITHUB_PATH
+          echo "$HOME/.hermes" >> $GITHUB_PATH
+          echo "$HOME/.relayer" >> $GITHUB_PATH
+      - name: Bypass the grub-efi-amd64-signed package
+        run: sudo apt-mark hold grub-efi-amd64-signed
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.10'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install toml-cli
+      - name: Install Cosmovisor > v1.3.0
+        if: ${{ (matrix.upgrade_mechanism == 'cv_manual' || matrix.upgrade_mechanism == 'cv_auto') && matrix.cv_version != 'v1.3.0' }}
+        run: |
+          go install cosmossdk.io/tools/cosmovisor/cmd/cosmovisor@$COSMOVISOR_VERSION
+          echo "COSMOVISOR=true" >> $GITHUB_ENV
+          echo "$HOME_1/cosmovisor/current/bin" >> $GITHUB_PATH
+      - name: Install Cosmovisor v1.3.0
+        if: ${{ (matrix.upgrade_mechanism == 'cv_manual' || matrix.upgrade_mechanism == 'cv_auto') && matrix.cv_version == 'v1.3.0' }}
+        run: |
+          go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@$COSMOVISOR_VERSION
+          echo "COSMOVISOR=true" >> $GITHUB_ENV
+          echo "$HOME_1/cosmovisor/current/bin" >> $GITHUB_PATH
+      - name: Select Hermes
+        if: ${{ matrix.relayer == 'hermes' }}
+        run: echo "RELAYER=hermes" >> $GITHUB_ENV
+      - name: Select Go Relayer
+        if: ${{ matrix.relayer == 'rly' }}
+        run: echo "RELAYER=rly" >> $GITHUB_ENV
+      - name: Set up relayer
+        run: tests/v15_upgrade/setup_relayer.sh
+      - name: Download consumer chain binaries
+        run: |
+          wget $CONSUMER_CHAIN_V400_BINARY_URL -O $HOME/go/bin/$CONSUMER_CHAIN_V400_BINARY -q
+          chmod +x $HOME/go/bin/$CONSUMER_CHAIN_V400_BINARY
+          wget $ICS_TRANSFORM_BINARY_URL -O $HOME/go/bin/$ICS_TRANSFORM_BINARY -q
+          chmod +x $HOME/go/bin/$ICS_TRANSFORM_BINARY
+      - name: Consumer chain binary URLs
+        run: |
+          echo "$CONSUMER_CHAIN_V400_BINARY runs off $CONSUMER_CHAIN_V400_BINARY_URL"
+      - name: Start chain
+        env:
+          START_VERSION: ${{matrix.gaia_version}}
+        run: |
+          export CHAIN_BINARY_URL=https://github.com/cosmos/gaia/releases/download/$START_VERSION/gaiad-$START_VERSION-linux-amd64
+          tests/major_fresh_upgrade/start_chain.sh
+      - name: Check Gaia log
+        run: sudo journalctl -u $PROVIDER_SERVICE_1
+      - name: Print Gaia version
+        run: $CHAIN_BINARY version --long
+      - name: Block production check
+        run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 5 # 5 blocks
+
+      - name: Add consumer chain with ICS v4.0.0
+        env:
+          COSMOS_SDK: v45
+          CONSUMER_CHAIN_ID: nine-v400
+        run: |
+          tests/major_fresh_upgrade/add_consumer.sh
+      - name: Initialize consumer chain with ICS v4.0.0
+        env:
+          CONSUMER_CHAIN_ID: nine-v400
+          CONSUMER_HOME_1: /home/runner/.nine_1
+          CONSUMER_HOME_2: /home/runner/.nine_2
+          CONSUMER_HOME_3: /home/runner/.nine_3
+          CONSUMER_SERVICE_1: nine_1.service
+          CONSUMER_SERVICE_2: nine_2.service
+          CONSUMER_SERVICE_3: nine_3.service
+          CON1_API_PORT: 25901
+          CON2_API_PORT: 25902
+          CON3_API_PORT: 25903
+          CON1_GRPC_PORT: 26901
+          CON2_GRPC_PORT: 26902
+          CON3_GRPC_PORT: 26903
+          CON1_RPC_PORT: 27901
+          CON2_RPC_PORT: 27902
+          CON3_RPC_PORT: 27903
+          CON1_P2P_PORT: 28901
+          CON2_P2P_PORT: 28902
+          CON3_P2P_PORT: 28903
+          CON1_PPROF_PORT: 29901
+          CON2_PPROF_PORT: 29902
+          CON3_PPROF_PORT: 29903
+          DOWNTIME_BLOCKS: 100000
+        run: |
+          export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V400_BINARY
+          tests/major_fresh_upgrade/init_consumer_assign_keys.sh
+          sleep 20
+      - name: Prepare consumer chain nine-v400
+        env:
+          CONSUMER_CHAIN_ID: nine-v400
+          CONSUMER_HOME_1: /home/runner/.nine_1
+          CONSUMER_HOME_2: /home/runner/.nine_2
+          CONSUMER_HOME_3: /home/runner/.nine_3
+          ICS_400: true
+          CONSUMER_ICS: v4.0.0
+          PROVIDER_ICS: v2.4.0
+        run: |
+          export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V400_BINARY
+          tests/major_fresh_upgrade/prepare_consumer.sh
+      - name: Start consumer chain nine-v400
+        env:
+          CONSUMER_CHAIN_ID: nine-v400
+          CONSUMER_SERVICE_1: nine_1.service
+          CONSUMER_SERVICE_2: nine_2.service
+          CONSUMER_SERVICE_3: nine_3.service
+        run: |
+          sudo systemctl enable $CONSUMER_SERVICE_1 --now
+          sleep 5
+          journalctl -u $CONSUMER_SERVICE_1
+      - name: _Pre-upgrade consumer chain produces blocks> ICS v4.0.0 chain 1
+        env:
+          CON1_RPC_PORT: 27901
+        run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT 5
+      - name: Establish CCV channel for nine-v400
+        env:
+          CONSUMER_CHAIN_ID: nine-v400
+        run: |
+          client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
+          if [ $RELAYER == "hermes" ]; then
+            echo "Creating channel with Hermes..."
+            hermes create connection --a-chain $CONSUMER_CHAIN_ID --a-client 07-tendermint-0 --b-client $client_id
+            hermes create channel --a-chain $CONSUMER_CHAIN_ID --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
+          elif [ $RELAYER == "rly" ]; then
+            echo "Creating channel with Go relayer..."
+            jq --arg CHAIN "$CONSUMER_CHAIN_ID" '.src."chain-id" = $CHAIN' tests/v15_upgrade/rly-path-template.json > nine-1.json
+            jq --arg CLIENT "$client_id" '.dst."client-id" = $CLIENT' nine-1.json > nine-2.json
+            rly paths add $CHAIN_ID $CONSUMER_CHAIN_ID four --file nine-2.json
+            rly transact connection nine
+            rly transact channel nine --src-port consumer --dst-port provider --order ordered --version 1
+          fi
+          sudo systemctl restart $RELAYER
+          sleep 10
+      - name: _Pre-upgrade CCV channel verified> ICS v4.0.0 chain 1
+        env:
+          CONSUMER_HOME_1: /home/runner/.nine_1
+          CON1_RPC_PORT: 27901
+        run: tests/major_fresh_upgrade/test_ccv_key_assignment.sh
+      - name: _Pre-upgrade IBC transfer successful> ICS v4.0.0 chain 1
+        env:
+          CONSUMER_CHAIN_ID: nine-v400
+          CONSUMER_HOME_1: /home/runner/.nine_1
+        run: |
+          export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V400_BINARY
+          client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
+          connection_id=$($CHAIN_BINARY q ibc connection connections -o json --home $HOME_1 | jq -r --arg client "$client_id" '.connections[] | select(.client_id==$client).id')
+          channel_id=$($CHAIN_BINARY q ibc channel connections $connection_id -o json --home $HOME_1 | jq -r '.channels[] | select(.port_id=="transfer").channel_id')
+          tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh $channel_id
+
+      - name: Test software upgrade for published releases
+        if: ${{ matrix.upgrade_version != 'main' }}
+        env:
+          DOWNLOAD_URL: https://github.com/cosmos/gaia/releases/download/${{ matrix.upgrade_version }}/gaiad-${{ matrix.upgrade_version }}-linux-amd64
+        run: |
+          echo $DOWNLOAD_URL
+          tests/major_fresh_upgrade/software_upgrade.sh 127.0.0.1 $VAL1_RPC_PORT v15
+      - name: Test software upgrade for main branch
+        if: ${{ matrix.upgrade_version == 'main' }}
+        env:
+          DOWNLOAD_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/gaiad-linux-main/gaiad-linux
+        run: |
+          tests/major_fresh_upgrade/software_upgrade.sh 127.0.0.1 $VAL1_RPC_PORT v15
+
+      - name: _Blocks produced after upgrade
+        run: |
+          tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 10
+
+      - name: Restart relayer
+        run: sudo systemctl restart $RELAYER
+
+      - name: Flush "migration successful" lines
+        run: |
+          $CHAIN_BINARY keys list --home $HOME_1
+
+      - name: _CCV channel verified> ICS v4.0.0 chain 1
+        env:
+          CONSUMER_HOME_1: /home/runner/.nine_1
+          CON1_RPC_PORT: 27901
+        run: tests/major_fresh_upgrade/test_ccv_key_assignment.sh
+      - name: _IBC transfer successful> ICS v4.0.0 chain 1
+        env:
+          CONSUMER_CHAIN_ID: nine-v400
+          CONSUMER_HOME_1: /home/runner/.nine_1
+        run: |
+          export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V400_BINARY
+          client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
+          connection_id=$($CHAIN_BINARY q ibc connection connections -o json --home $HOME_1 | jq -r --arg client "$client_id" '.connections[] | select(.client_id==$client).id')
+          channel_id=$($CHAIN_BINARY q ibc channel connections $connection_id -o json --home $HOME_1 | jq -r '.channels[] | select(.port_id=="transfer").channel_id')
+          tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh $channel_id
+
+      # - name: Add consumer chain with ICS v3.3.0
+      #   env:
+      #     COSMOS_SDK: v47
+      #     CONSUMER_CHAIN_ID: eight-v330
+      #   run: |
+      #     tests/major_fresh_upgrade/add_consumer.sh
+      # - name: Initialize consumer chain with ICS v3.3.0
+      #   env:
+      #     CONSUMER_CHAIN_ID: eight-v330
+      #     CONSUMER_HOME_1: /home/runner/.eight_1
+      #     CONSUMER_HOME_2: /home/runner/.eight_2
+      #     CONSUMER_HOME_3: /home/runner/.eight_3
+      #     CONSUMER_SERVICE_1: eight_1.service
+      #     CONSUMER_SERVICE_2: eight_2.service
+      #     CONSUMER_SERVICE_3: eight_3.service
+      #     CON1_API_PORT: 25801
+      #     CON2_API_PORT: 25802
+      #     CON3_API_PORT: 25803
+      #     CON1_GRPC_PORT: 26801
+      #     CON2_GRPC_PORT: 26802
+      #     CON3_GRPC_PORT: 26803
+      #     CON1_RPC_PORT: 27801
+      #     CON2_RPC_PORT: 27802
+      #     CON3_RPC_PORT: 27803
+      #     CON1_P2P_PORT: 28801
+      #     CON2_P2P_PORT: 28802
+      #     CON3_P2P_PORT: 28803
+      #     CON1_PPROF_PORT: 29801
+      #     CON2_PPROF_PORT: 29802
+      #     CON3_PPROF_PORT: 29803
+      #     DOWNTIME_BLOCKS: 20
+      #   run: |
+      #     export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V330_BINARY
+      #     tests/major_fresh_upgrade/init_consumer_assign_keys.sh
+      #     sleep 20
+      # - name: Prepare consumer chain eight-v330
+      #   env:
+      #     CONSUMER_CHAIN_ID: eight-v330
+      #     CONSUMER_HOME_1: /home/runner/.eight_1
+      #     CONSUMER_HOME_2: /home/runner/.eight_2
+      #     CONSUMER_HOME_3: /home/runner/.eight_3
+      #     ICS_330: true
+      #     CONSUMER_ICS: v3.3.0
+      #     PROVIDER_ICS: v3.3.0
+      #   run: |
+      #     export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V330_BINARY
+      #     tests/major_fresh_upgrade/prepare_consumer.sh
+      # - name: Start consumer chain eight-v330
+      #   env:
+      #     CONSUMER_CHAIN_ID: eight-v330
+      #     CONSUMER_SERVICE_1: eight_1.service
+      #     CONSUMER_SERVICE_2: eight_2.service
+      #     CONSUMER_SERVICE_3: eight_3.service
+      #   run: |
+      #     sudo systemctl enable $CONSUMER_SERVICE_1 --now
+      #     sleep 5
+      #     journalctl -u $CONSUMER_SERVICE_1
+      # - name: _Consumer chain produces blocks> ICS v3.3.0 chain 2
+      #   env:
+      #     CON1_RPC_PORT: 27801
+      #   run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT 5
+      # - name: Establish CCV channel for eight-v330
+      #   env:
+      #     CONSUMER_CHAIN_ID: eight-v330
+      #   run: |
+      #     client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
+      #     if [ $RELAYER == "hermes" ]; then
+      #       echo "Creating channel with Hermes..."
+      #       hermes create connection --a-chain $CONSUMER_CHAIN_ID --a-client 07-tendermint-0 --b-client $client_id
+      #       hermes create channel --a-chain $CONSUMER_CHAIN_ID --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
+      #     elif [ $RELAYER == "rly" ]; then
+      #       echo "Creating channel with Go relayer..."
+      #       jq --arg CHAIN "$CONSUMER_CHAIN_ID" '.src."chain-id" = $CHAIN' tests/v15_upgrade/rly-path-template.json > eight-1.json
+      #       jq --arg CLIENT "$client_id" '.dst."client-id" = $CLIENT' eight-1.json > eight-2.json
+      #       rly paths add $CHAIN_ID $CONSUMER_CHAIN_ID eight --file eight-2.json
+      #       rly transact connection eight
+      #       rly transact channel eight --src-port consumer --dst-port provider --order ordered --version 1
+      #     fi
+      #     sudo systemctl restart $RELAYER
+      #     sleep 10
+      # - name: _CCV channel verified> ICS v3.3.0 chain 2
+      #   env:
+      #     CONSUMER_HOME_1: /home/runner/.eight_1
+      #     CON1_RPC_PORT: 27801
+      #   run: tests/major_fresh_upgrade/test_ccv_key_assignment.sh
+      # - name: _IBC transfer successful> ICS v3.3.0 chain 2
+      #   env:
+      #     CONSUMER_CHAIN_ID: eight-v330
+      #     CONSUMER_HOME_1: /home/runner/.eight_1
+      #   run: |
+      #     export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V330_BINARY
+      #     client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
+      #     connection_id=$($CHAIN_BINARY q ibc connection connections -o json --home $HOME_1 | jq -r --arg client "$client_id" '.connections[] | select(.client_id==$client).id')
+      #     channel_id=$($CHAIN_BINARY q ibc channel connections $connection_id -o json --home $HOME_1 | jq -r '.channels[] | select(.port_id=="transfer").channel_id')
+      #     tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh $channel_id
+
+      # - name: Stop validator services
+      #   env:
+      #     CONSUMER_SERVICE_2: eight_2.service
+      #     CONSUMER_SERVICE_3: eight_3.service
+      #   run: |
+      #     sudo systemctl disable $CONSUMER_SERVICE_2 --now
+      #     sudo systemctl disable $CONSUMER_SERVICE_3 --now
+      #     sleep $(($COMMIT_TIMEOUT*30))
+      # - name: _Soft opt-out test> Validator must be jailed - 1
+      #   run: tests/test_validator_jailed.sh $VALOPER_2 true
+      # - name: _Soft opt-out test> Validator must not be jailed
+      #   run: tests/test_validator_jailed.sh $VALOPER_3 false
+      # - name: Unjail validator
+      #   env:
+      #     CONSUMER_SERVICE_2: eight_2.service
+      #   run: |
+      #     sudo systemctl enable $CONSUMER_SERVICE_2 --now
+      #     sleep $(($COMMIT_TIMEOUT*10))
+      #     $CHAIN_BINARY tx slashing unjail --from $WALLET_2 --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y --home $HOME_1
+      #     sleep $(($COMMIT_TIMEOUT*2))
+      # - name: _Soft opt-out test> Validator must be unjailed
+      #   run: tests/test_validator_jailed.sh $VALOPER_2 false
+
+
+  Baseline-6-pfm:
     runs-on: ubuntu-22.04
     needs: set-version-matrix-relayer
     strategy:
@@ -2005,7 +2356,7 @@ jobs:
         run: |
           tests/major_fresh_upgrade/test_pfm_transfers.sh
 
-  Baseline-6-lsm:
+  Baseline-7-lsm:
     runs-on: ubuntu-22.04
     needs: set-version-matrix-relayer
     strategy:
