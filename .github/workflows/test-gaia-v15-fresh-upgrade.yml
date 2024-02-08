@@ -1966,7 +1966,7 @@ jobs:
             echo "Creating channel with Go relayer..."
             jq --arg CHAIN "$CONSUMER_CHAIN_ID" '.src."chain-id" = $CHAIN' tests/v15_upgrade/rly-path-template.json > nine-1.json
             jq --arg CLIENT "$client_id" '.dst."client-id" = $CLIENT' nine-1.json > nine-2.json
-            rly paths add $CHAIN_ID $CONSUMER_CHAIN_ID four --file nine-2.json
+            rly paths add $CHAIN_ID $CONSUMER_CHAIN_ID nine --file nine-2.json
             rly transact connection nine
             rly transact channel nine --src-port consumer --dst-port provider --order ordered --version 1
           fi
