@@ -1470,7 +1470,7 @@ jobs:
       CONSUMER_CHAIN_V330_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-consumer-v3.3.0/interchain-security-cd-linux
       CONSUMER_CHAIN_V330_BINARY: consumerd_v3.3.0
       ICS_TRANSFORM_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-v3.3.0-transform/interchain-security-cd
-      ICS_TRANSFORM_BINARY: cd-transform      
+      ICS_TRANSFORM_BINARY: cd-transform
     steps:
       - name: start-version
         run: echo ${{matrix.gaia_version}}
@@ -1820,7 +1820,7 @@ jobs:
       CONSUMER_CHAIN_V400_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-consumer-v4.0.0/interchain-security-cd-linux
       CONSUMER_CHAIN_V400_BINARY: consumerd_v4.0.0
       ICS_TRANSFORM_BINARY_URL: https://github.com/hyphacoop/cosmos-builds/releases/download/ics-v3.3.0-transform/interchain-security-cd
-      ICS_TRANSFORM_BINARY: cd-transform      
+      ICS_TRANSFORM_BINARY: cd-transform
     steps:
       - name: start-version
         run: echo ${{matrix.gaia_version}}
