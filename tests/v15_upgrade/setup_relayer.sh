@@ -99,7 +99,7 @@ elif [ $RELAYER == "rly" ]; then
 
     # ten
     jq '.value."chain-id" = "ten-v400"' tests/v15_upgrade/testnet.json > ten-1.json
-    jq '.value."rpc-addr" = "http://localhost:47901"' nine-1.json > ten-2.json
+    jq '.value."rpc-addr" = "http://localhost:47901"' ten-1.json > ten-2.json
     jq '.value."account-prefix" = "consumer"' ten-2.json > ten-3.json
     jq '.value."gas-prices" = "0.005ucon"' ten-3.json > ten-v400.json
     cat ten-v400.json
