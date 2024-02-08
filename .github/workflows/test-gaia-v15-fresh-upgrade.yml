@@ -2023,6 +2023,7 @@ jobs:
         env:
           CONSUMER_CHAIN_ID: nine-v400
           CONSUMER_HOME_1: /home/runner/.nine_1
+          RECIPIENT: consumer1r5v5srda7xfth3hn2s26txvrcrntldju7725yc
         run: |
           export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V400_BINARY
           client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
@@ -2030,124 +2031,125 @@ jobs:
           channel_id=$($CHAIN_BINARY q ibc channel connections $connection_id -o json --home $HOME_1 | jq -r '.channels[] | select(.port_id=="transfer").channel_id')
           tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh $channel_id
 
-      # - name: Add consumer chain with ICS v3.3.0
-      #   env:
-      #     COSMOS_SDK: v47
-      #     CONSUMER_CHAIN_ID: eight-v330
-      #   run: |
-      #     tests/major_fresh_upgrade/add_consumer.sh
-      # - name: Initialize consumer chain with ICS v3.3.0
-      #   env:
-      #     CONSUMER_CHAIN_ID: eight-v330
-      #     CONSUMER_HOME_1: /home/runner/.eight_1
-      #     CONSUMER_HOME_2: /home/runner/.eight_2
-      #     CONSUMER_HOME_3: /home/runner/.eight_3
-      #     CONSUMER_SERVICE_1: eight_1.service
-      #     CONSUMER_SERVICE_2: eight_2.service
-      #     CONSUMER_SERVICE_3: eight_3.service
-      #     CON1_API_PORT: 25801
-      #     CON2_API_PORT: 25802
-      #     CON3_API_PORT: 25803
-      #     CON1_GRPC_PORT: 26801
-      #     CON2_GRPC_PORT: 26802
-      #     CON3_GRPC_PORT: 26803
-      #     CON1_RPC_PORT: 27801
-      #     CON2_RPC_PORT: 27802
-      #     CON3_RPC_PORT: 27803
-      #     CON1_P2P_PORT: 28801
-      #     CON2_P2P_PORT: 28802
-      #     CON3_P2P_PORT: 28803
-      #     CON1_PPROF_PORT: 29801
-      #     CON2_PPROF_PORT: 29802
-      #     CON3_PPROF_PORT: 29803
-      #     DOWNTIME_BLOCKS: 20
-      #   run: |
-      #     export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V330_BINARY
-      #     tests/major_fresh_upgrade/init_consumer_assign_keys.sh
-      #     sleep 20
-      # - name: Prepare consumer chain eight-v330
-      #   env:
-      #     CONSUMER_CHAIN_ID: eight-v330
-      #     CONSUMER_HOME_1: /home/runner/.eight_1
-      #     CONSUMER_HOME_2: /home/runner/.eight_2
-      #     CONSUMER_HOME_3: /home/runner/.eight_3
-      #     ICS_330: true
-      #     CONSUMER_ICS: v3.3.0
-      #     PROVIDER_ICS: v3.3.0
-      #   run: |
-      #     export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V330_BINARY
-      #     tests/major_fresh_upgrade/prepare_consumer.sh
-      # - name: Start consumer chain eight-v330
-      #   env:
-      #     CONSUMER_CHAIN_ID: eight-v330
-      #     CONSUMER_SERVICE_1: eight_1.service
-      #     CONSUMER_SERVICE_2: eight_2.service
-      #     CONSUMER_SERVICE_3: eight_3.service
-      #   run: |
-      #     sudo systemctl enable $CONSUMER_SERVICE_1 --now
-      #     sleep 5
-      #     journalctl -u $CONSUMER_SERVICE_1
-      # - name: _Consumer chain produces blocks> ICS v3.3.0 chain 2
-      #   env:
-      #     CON1_RPC_PORT: 27801
-      #   run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT 5
-      # - name: Establish CCV channel for eight-v330
-      #   env:
-      #     CONSUMER_CHAIN_ID: eight-v330
-      #   run: |
-      #     client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
-      #     if [ $RELAYER == "hermes" ]; then
-      #       echo "Creating channel with Hermes..."
-      #       hermes create connection --a-chain $CONSUMER_CHAIN_ID --a-client 07-tendermint-0 --b-client $client_id
-      #       hermes create channel --a-chain $CONSUMER_CHAIN_ID --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
-      #     elif [ $RELAYER == "rly" ]; then
-      #       echo "Creating channel with Go relayer..."
-      #       jq --arg CHAIN "$CONSUMER_CHAIN_ID" '.src."chain-id" = $CHAIN' tests/v15_upgrade/rly-path-template.json > eight-1.json
-      #       jq --arg CLIENT "$client_id" '.dst."client-id" = $CLIENT' eight-1.json > eight-2.json
-      #       rly paths add $CHAIN_ID $CONSUMER_CHAIN_ID eight --file eight-2.json
-      #       rly transact connection eight
-      #       rly transact channel eight --src-port consumer --dst-port provider --order ordered --version 1
-      #     fi
-      #     sudo systemctl restart $RELAYER
-      #     sleep 10
-      # - name: _CCV channel verified> ICS v3.3.0 chain 2
-      #   env:
-      #     CONSUMER_HOME_1: /home/runner/.eight_1
-      #     CON1_RPC_PORT: 27801
-      #   run: tests/major_fresh_upgrade/test_ccv_key_assignment.sh
-      # - name: _IBC transfer successful> ICS v3.3.0 chain 2
-      #   env:
-      #     CONSUMER_CHAIN_ID: eight-v330
-      #     CONSUMER_HOME_1: /home/runner/.eight_1
-      #   run: |
-      #     export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V330_BINARY
-      #     client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
-      #     connection_id=$($CHAIN_BINARY q ibc connection connections -o json --home $HOME_1 | jq -r --arg client "$client_id" '.connections[] | select(.client_id==$client).id')
-      #     channel_id=$($CHAIN_BINARY q ibc channel connections $connection_id -o json --home $HOME_1 | jq -r '.channels[] | select(.port_id=="transfer").channel_id')
-      #     tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh $channel_id
+      - name: Add consumer chain with ICS v4.0.0
+        env:
+          COSMOS_SDK: v47
+          CONSUMER_CHAIN_ID: ten-v400
+        run: |
+          tests/major_fresh_upgrade/add_consumer.sh
+      - name: Initialize consumer chain with ICS v4.0.0
+        env:
+          CONSUMER_CHAIN_ID: ten-v400
+          CONSUMER_HOME_1: /home/runner/.ten_1
+          CONSUMER_HOME_2: /home/runner/.ten_2
+          CONSUMER_HOME_3: /home/runner/.ten_3
+          CONSUMER_SERVICE_1: ten_1.service
+          CONSUMER_SERVICE_2: ten_2.service
+          CONSUMER_SERVICE_3: ten_3.service
+          CON1_API_PORT: 45901
+          CON2_API_PORT: 45902
+          CON3_API_PORT: 45903
+          CON1_GRPC_PORT: 46901
+          CON2_GRPC_PORT: 46902
+          CON3_GRPC_PORT: 46903
+          CON1_RPC_PORT: 47901
+          CON2_RPC_PORT: 47902
+          CON3_RPC_PORT: 47903
+          CON1_P2P_PORT: 48901
+          CON2_P2P_PORT: 48902
+          CON3_P2P_PORT: 48903
+          CON1_PPROF_PORT: 49901
+          CON2_PPROF_PORT: 49902
+          CON3_PPROF_PORT: 49903
+          DOWNTIME_BLOCKS: 20
+        run: |
+          export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V400_BINARY
+          tests/major_fresh_upgrade/init_consumer_assign_keys.sh
+          sleep 20
+      - name: Prepare consumer chain ten-v400
+        env:
+          CONSUMER_CHAIN_ID: ten-v400
+          CONSUMER_HOME_1: /home/runner/.ten_1
+          CONSUMER_HOME_2: /home/runner/.ten_2
+          CONSUMER_HOME_3: /home/runner/.ten_3
+          ICS_400: true
+          CONSUMER_ICS: v4.0.0
+          PROVIDER_ICS: v3.3.0
+        run: |
+          export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V400_BINARY
+          tests/major_fresh_upgrade/prepare_consumer.sh
+      - name: Start consumer chain ten-v400
+        env:
+          CONSUMER_CHAIN_ID: eight-v330
+          CONSUMER_SERVICE_1: ten_1.service
+          CONSUMER_SERVICE_2: ten_2.service
+          CONSUMER_SERVICE_3: ten_3.service
+        run: |
+          sudo systemctl enable $CONSUMER_SERVICE_1 --now
+          sleep 5
+          journalctl -u $CONSUMER_SERVICE_1
+      - name: _Consumer chain produces blocks> ICS v4.0.0 chain 2
+        env:
+          CON1_RPC_PORT: 47901
+        run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT 5
+      - name: Establish CCV channel for ten-v400
+        env:
+          CONSUMER_CHAIN_ID: ten-v400
+        run: |
+          client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
+          if [ $RELAYER == "hermes" ]; then
+            echo "Creating channel with Hermes..."
+            hermes create connection --a-chain $CONSUMER_CHAIN_ID --a-client 07-tendermint-0 --b-client $client_id
+            hermes create channel --a-chain $CONSUMER_CHAIN_ID --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
+          elif [ $RELAYER == "rly" ]; then
+            echo "Creating channel with Go relayer..."
+            jq --arg CHAIN "$CONSUMER_CHAIN_ID" '.src."chain-id" = $CHAIN' tests/v15_upgrade/rly-path-template.json > ten-1.json
+            jq --arg CLIENT "$client_id" '.dst."client-id" = $CLIENT' ten-1.json > ten-2.json
+            rly paths add $CHAIN_ID $CONSUMER_CHAIN_ID ten --file ten-2.json
+            rly transact connection ten
+            rly transact channel ten --src-port consumer --dst-port provider --order ordered --version 1
+          fi
+          sudo systemctl restart $RELAYER
+          sleep 10
+      - name: _CCV channel verified> ICS v4.0.0 chain 2
+        env:
+          CONSUMER_HOME_1: /home/runner/.ten_1
+          CON1_RPC_PORT: 47901
+        run: tests/major_fresh_upgrade/test_ccv_key_assignment.sh
+      - name: _IBC transfer successful> ICS v4.0.0 chain 2
+        env:
+          CONSUMER_CHAIN_ID: ten-v400
+          CONSUMER_HOME_1: /home/runner/.ten_1
+          RECIPIENT: consumer1r5v5srda7xfth3hn2s26txvrcrntldju7725yc
+        run: |
+          export CONSUMER_CHAIN_BINARY=$CONSUMER_CHAIN_V400_BINARY
+          client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r --arg chain "$CONSUMER_CHAIN_ID" '.chains[] | select(.chain_id==$chain).client_id')
+          connection_id=$($CHAIN_BINARY q ibc connection connections -o json --home $HOME_1 | jq -r --arg client "$client_id" '.connections[] | select(.client_id==$client).id')
+          channel_id=$($CHAIN_BINARY q ibc channel connections $connection_id -o json --home $HOME_1 | jq -r '.channels[] | select(.port_id=="transfer").channel_id')
+          tests/major_fresh_upgrade/test_consumer_ibc_transfer.sh $channel_id
 
-      # - name: Stop validator services
-      #   env:
-      #     CONSUMER_SERVICE_2: eight_2.service
-      #     CONSUMER_SERVICE_3: eight_3.service
-      #   run: |
-      #     sudo systemctl disable $CONSUMER_SERVICE_2 --now
-      #     sudo systemctl disable $CONSUMER_SERVICE_3 --now
-      #     sleep $(($COMMIT_TIMEOUT*30))
-      # - name: _Soft opt-out test> Validator must be jailed - 1
-      #   run: tests/test_validator_jailed.sh $VALOPER_2 true
-      # - name: _Soft opt-out test> Validator must not be jailed
-      #   run: tests/test_validator_jailed.sh $VALOPER_3 false
-      # - name: Unjail validator
-      #   env:
-      #     CONSUMER_SERVICE_2: eight_2.service
-      #   run: |
-      #     sudo systemctl enable $CONSUMER_SERVICE_2 --now
-      #     sleep $(($COMMIT_TIMEOUT*10))
-      #     $CHAIN_BINARY tx slashing unjail --from $WALLET_2 --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y --home $HOME_1
-      #     sleep $(($COMMIT_TIMEOUT*2))
-      # - name: _Soft opt-out test> Validator must be unjailed
-      #   run: tests/test_validator_jailed.sh $VALOPER_2 false
+      - name: Stop validator services
+        env:
+          CONSUMER_SERVICE_2: ten_2.service
+          CONSUMER_SERVICE_3: ten_3.service
+        run: |
+          sudo systemctl disable $CONSUMER_SERVICE_2 --now
+          sudo systemctl disable $CONSUMER_SERVICE_3 --now
+          sleep $(($COMMIT_TIMEOUT*30))
+      - name: _Soft opt-out test> Validator must be jailed - 1
+        run: tests/test_validator_jailed.sh $VALOPER_2 true
+      - name: _Soft opt-out test> Validator must not be jailed
+        run: tests/test_validator_jailed.sh $VALOPER_3 false
+      - name: Unjail validator
+        env:
+          CONSUMER_SERVICE_2: ten_2.service
+        run: |
+          sudo systemctl enable $CONSUMER_SERVICE_2 --now
+          sleep $(($COMMIT_TIMEOUT*10))
+          $CHAIN_BINARY tx slashing unjail --from $WALLET_2 --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --gas-prices $GAS_PRICE$DENOM -y --home $HOME_1
+          sleep $(($COMMIT_TIMEOUT*2))
+      - name: _Soft opt-out test> Validator must be unjailed
+        run: tests/test_validator_jailed.sh $VALOPER_2 false
 
 
   Baseline-6-pfm:
