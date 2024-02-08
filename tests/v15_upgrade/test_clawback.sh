@@ -23,20 +23,20 @@ if [ "$pre_upgrade_acc_type" != "/cosmos.vesting.v1beta1.ContinuousVestingAccoun
     exit 1
 fi
 
-echo "Post upgrade account type is: $post_upgrade_acc_type"
+echo "Post upgrade account type is: $post_upgrade_acc2_type"
 if [ "$post_upgrade_acc_type" != "/cosmos.auth.v1beta1.BaseAccount" ]; then
     echo "Post upgrade account is not a base account"
     exit 2
 fi
 
 # Check if account type matches
-echo "Pre upgrade account2 type is: $pre_upgrade_acc_type"
+echo "Pre upgrade account2 type is: $pre_upgrade_acc2_type"
 if [ "$pre_upgrade_acc2_type" != "/cosmos.vesting.v1beta1.ContinuousVestingAccount" ]; then
     echo "Pre upgrade account is not a vesting account"
     exit 3
 fi
 
-echo "Post upgrade account type is: $post_upgrade_acc_type"
+echo "Post upgrade account2 type is: $post_upgrade_acc2_type"
 if [ "$post_upgrade_acc2_type" != "/cosmos.vesting.v1beta1.ContinuousVestingAccount" ]; then
     echo "Post upgrade account is not a vesting account, this account's type shouldn't change"
     exit 4
@@ -147,11 +147,3 @@ else
     echo "FAIL: Community pool did not increase by at least the unvested amount." 
     exit 1
 fi
-
-# if [ $(bc -l <<< "$post_upgrade_cp < 100000000") -eq 1 ]
-# then
-#     echo "Community pool balance is less than 100000000uatom, funds did not returned from wallet"
-#     exit 7
-# else
-#     echo "Community pool balance is more than 100000000uatom, funds have been returned"
-# fi
