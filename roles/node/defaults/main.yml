@@ -104,6 +104,7 @@ statesync_snapshot_keep_recent: 2
 # config.toml: Base Config
 config_proxy_app: 'tcp://127.0.0.1:26658'
 fast_sync: true
+block_sync: ''
 config_genesis_file: 'config/genesis.json'
 config_priv_validator_key_file: 'config/priv_validator_key.json'
 config_priv_validator_state_file: 'data/priv_validator_state.json'
