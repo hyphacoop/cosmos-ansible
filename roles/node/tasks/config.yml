@@ -256,12 +256,20 @@
   delegate_to: "{{ genesis_node }}"
   throttle: 1
 
-- name: collect gentx
-  when: chain_create_validator or chain_recover_validator
+- name: collect gentx (command for < v15)
+  when: (chain_create_validator or chain_recover_validator) and major_version|int < 15
   shell: |
     cd $HOME
     PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
     {{chain_bin}} collect-gentxs --home {{ chain_home }}
+  become_user: "{{ node_user }}"
+
+- name: collect gentx (command for => v15)
+  when: (chain_create_validator or chain_recover_validator) and (major_version|int ==15 or major_version|int > 15)
+  shell: |
+    cd $HOME
+    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+    {{chain_bin}} genesis collect-gentxs --home {{ chain_home }}
   become_user: "{{ node_user }}"
 
 - name: patch genesis file with minimum deposit and short voting period
