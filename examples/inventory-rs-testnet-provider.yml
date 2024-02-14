@@ -3,8 +3,8 @@
 all:
   vars:
     ansible_user: root
-    chain_version: v14.1.0
-    go_version: '1.20'
+    chain_version: v15.0.0-rc0
+    go_version: '1.21.6'
     genesis_url: "https://github.com/cosmos/testnets/raw/master/replicated-security/provider/provider-genesis.json"
     chain_id: provider
     node_user: provider
