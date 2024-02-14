@@ -44,12 +44,8 @@ echo "After upgrade"
 $CHAIN_BINARY --home $HOME_1 q bank spendable-balances $CB_ACCT --height $post_upgrade_height
 
 
-# get the block time of the tx for the vesting account
-vesting_txhash="3BE5D97625DD0D896251AC484097B3456A036AA5DBB01299A981C16A1B2B1F74 "
-echo "Vesting  account create txhash: $vesting_txhash"
-vesting_height=$(gaiad --home $HOME_1 q tx $vesting_txhash -o json | jq -r '.height')
-echo "Vesting height: $vesting_height"
-vesting_block_time=$(gaiad --home $HOME_1 q block $vesting_height | jq -r '.block.header.time')
+# Set the block time
+vesting_block_time="2023-03-14T20:07:23Z"
 vesting_epoch=$(date -d "$vesting_block_time" +%s)
 upgrade_epoch=$(date -d "$upgrade_time" +%s)
 
