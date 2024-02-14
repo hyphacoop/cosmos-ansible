@@ -83,7 +83,7 @@ jobs:
       DELEGATE_2_AMOUNT: ${{ vars.DELEGATE_2_AMOUNT }}
       LSM_LOG: /home/runner/artifact/lsm_log.csv
       COMMIT_TIMEOUT: 5
-      V_ACCT: cosmos1n7qdtcnagfvs8p4t537c5yn2dylw2e7l7a2htm
+      CB_ACCT: cosmos145hytrc49m0hn6fphp8d5h4xspwkawcuzmx498
       VESTING_TARGET: "1772414007"
     steps:
       # Get system info
