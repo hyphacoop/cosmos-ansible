@@ -83,6 +83,8 @@ jobs:
       DELEGATE_2_AMOUNT: ${{ vars.DELEGATE_2_AMOUNT }}
       LSM_LOG: /home/runner/artifact/lsm_log.csv
       COMMIT_TIMEOUT: 5
+      V_ACCT: cosmos1n7qdtcnagfvs8p4t537c5yn2dylw2e7l7a2htm
+      VESTING_TARGET: "1772414007"
     steps:
       # Get system info
       - run: ifconfig
@@ -174,6 +176,8 @@ jobs:
       - name: Flush "migration successful" lines
         run: |
           $CHAIN_BINARY keys list --home $HOME_1
+      - name: _Clawback test
+        run: tests/v15_upgrade/test_clawback_stateful.sh
       - name: Query unbonding time
         run: $CHAIN_BINARY --home $HOME_1 q staking params
       - name: Set unbonding time via gov proposal
