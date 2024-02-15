@@ -176,6 +176,8 @@ jobs:
       - name: Flush "migration successful" lines
         run: |
           $CHAIN_BINARY keys list --home $HOME_1
+      - name: debug sleep
+        run: sleep 10h
       - name: _Clawback test
         run: tests/v15_upgrade/test_clawback_stateful.sh
       - name: Query unbonding time
