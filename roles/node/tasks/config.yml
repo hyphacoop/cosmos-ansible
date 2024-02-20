@@ -296,12 +296,20 @@
     {{chain_bin}} genesis collect-gentxs --home {{ chain_home }}
   become_user: "{{ node_user }}"
 
-- name: patch genesis file with minimum deposit and short voting period
-  when: chain_gov_testing
+- name: patch genesis file with minimum deposit and short voting period (command for < v15)
+  when: chain_gov_testing and major_version|int < 15
   shell: |
     cd {{chain_home}}/config
     jq '.app_state.gov.deposit_params.min_deposit[0].amount |= "1"' genesis.json > temp.json
     jq '.app_state.gov.voting_params.voting_period |= "{{ chain_voting_period }}"' temp.json > genesis.json
+    rm temp.json
+
+- name: patch genesis file with minimum deposit and short voting period (command for => v15)
+  when: chain_gov_testing and (major_version|int ==15 or major_version|int > 15)
+  shell: |
+    cd {{chain_home}}/config
+    jq '.app_state.gov.params.min_deposit[0].amount |= "1"' genesis.json > temp.json
+    jq '.app_state.gov.params.voting_period |= "{{ chain_voting_period }}"' temp.json > genesis.json
     rm temp.json
 
 - name: patch genesis file with specified denom
