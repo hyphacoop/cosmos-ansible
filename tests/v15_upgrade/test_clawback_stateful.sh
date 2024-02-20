@@ -21,12 +21,11 @@ if [ "$pre_upgrade_acc_type" != "/cosmos.vesting.v1beta1.ContinuousVestingAccoun
     exit 1
 fi
 
-echo "Post upgrade account type is: $post_upgrade_acc2_type"
+echo "Post upgrade account type is: $post_upgrade_acc_type"
 if [ "$post_upgrade_acc_type" != "/cosmos.auth.v1beta1.BaseAccount" ]; then
     echo "Post upgrade account is not a base account"
     exit 2
 fi
-
 
 echo "Spendable balances for $CB_ACCT must not increase."
 # Get spendable balances 1
