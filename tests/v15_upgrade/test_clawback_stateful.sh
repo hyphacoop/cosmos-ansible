@@ -65,7 +65,6 @@ vested=$(echo "(120000000000*$vesting_div)+0.5" | bc -l)
 
 vested=${vested%.*} # remove decimals
 spendable_balance1_acc=${spendable_balance1_acc%.*} # remove decimals
-echo "Vested amount: $vested, spendable balance is $spendable_balance1_acc."
 zero_diff=$(echo "$vested - $spendable_balance1_acc" | bc -l)
 # if [[ "$zero_diff" == "0" ]]; then
 #     echo "PASS: Unvested amount turned into spendable balance."
@@ -84,6 +83,8 @@ echo "Community pool balance after upgrade: $post_upgrade_cp"
 cp_diff=$(echo "$post_upgrade_cp-$pre_upgrade_cp" | bc -l)
 unvested=$(echo "120000000000-$vested" | bc -l)
 echo "Unvested amount: $unvested, community pool increase: $cp_diff."
+
+echo "Vested amount: $vested, spendable balance is $spendable_balance1_acc."
 
 echo "TEST: Community pool increase must be at least as much as the unvested amount."
 cp_unvested_diff=$(echo "$cp_diff - $unvested" | bc -l)
