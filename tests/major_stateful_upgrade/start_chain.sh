@@ -44,6 +44,9 @@ toml set --toml-path $HOME_1/config/app.toml grpc.address "0.0.0.0:$VAL1_GRPC_PO
 toml set --toml-path $HOME_1/config/app.toml grpc-web.enable false
 
 # config.toml
+# Replace fast_sync with block_sync
+sed -i -e "s\fast_sync\block_sync\g" $HOME_1/config/config.toml
+
 # Set different ports for rpc
 toml set --toml-path $HOME_1/config/config.toml rpc.laddr "tcp://0.0.0.0:$VAL1_RPC_PORT"
 

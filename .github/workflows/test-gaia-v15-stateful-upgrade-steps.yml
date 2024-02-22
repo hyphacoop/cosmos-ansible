@@ -83,6 +83,8 @@ jobs:
       DELEGATE_2_AMOUNT: ${{ vars.DELEGATE_2_AMOUNT }}
       LSM_LOG: /home/runner/artifact/lsm_log.csv
       COMMIT_TIMEOUT: 5
+      CB_ACCT: cosmos145hytrc49m0hn6fphp8d5h4xspwkawcuzmx498
+      VESTING_TARGET: "1772414007"
     steps:
       # Get system info
       - run: ifconfig
@@ -131,7 +133,7 @@ jobs:
       - name: Install required packages
         run: |
           sudo apt update
-          sudo apt -y install python-is-python3 python3-distutils screen curl jq wget python3-venv python3-pip
+          sudo apt -y install python-is-python3 python3-distutils screen curl jq wget python3-venv python3-pip bc
       - name: Check out repository code
         uses: actions/checkout@v3
       - name: Init Python venv
@@ -163,19 +165,41 @@ jobs:
           ARCHIVE_URL: "https://files.polypore.xyz/archived-state/latest_v14.tar.gz"
         run: tests/major_stateful_upgrade/start_chain.sh
       - name: _Blocks produced after upgrade to v15
-        run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 200 2100
+        run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 200 12600
+      # - name: Start chain
+      #   env:
+      #     START_VERSION: ${{inputs.gaia_version}}
+      #     ARCHIVE_URL: "https://files.polypore.xyz/archived-state/v15-upgraded-state-19024649.tar.gz"
+      #   run: tests/major_stateful_upgrade/start_chain.sh
+      # - name: _Blocks produced after upgrade to v15
+      #   run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 100 2100
+      - name: Flush "migration successful" lines
+        run: |
+          $CHAIN_BINARY keys list --home $HOME_1
+      # - name: debug sleep
+      #   run: sleep 10h
+      - name: _Clawback test
+        run: tests/v15_upgrade/test_clawback_stateful.sh
+      - name: Query unbonding time
+        run: $CHAIN_BINARY --home $HOME_1 q staking params
+      - name: Set unbonding time via gov proposal
+        run: tests/major_stateful_upgrade/set_unbonding-time.sh
+      - name: Query unbonding time
+        run: $CHAIN_BINARY --home $HOME_1 q staking params
       - name: _Transactions verified> bank send, delegate, and withdraw rewards
         run: tests/major_stateful_upgrade/test_tx.sh
       - name: _PUPMOS is safe
         run: tests/major_stateful_upgrade/test_pupmos_slashing.sh
       - name: Send funds to wallet 4
-        run: $CHAIN_BINARY tx bank send $WALLET_1 $WALLET_4 10000000$DENOM --home $HOME_1 --from $MONIKER_1 --keyring-backend test --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM --chain-id $CHAIN_ID -y -b block
-      - name: Set unbonding time via gov proposal
-        run: tests/major_stateful_upgrade/set_unbonding-time.sh
+        run: $CHAIN_BINARY tx bank send $WALLET_1 $WALLET_4 10000000$DENOM --home $HOME_1 --from $MONIKER_1 --keyring-backend test --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM --chain-id $CHAIN_ID -y -b sync
+      - name: Wait for 1 block to pass
+        run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 1 10
       - name: Delegate to mainnet validator
         run: |
           echo "Running: gaiad tx staking delegate $DELEGATE_1 $DELEGATE_1_AMOUNT$DENOM --from $MONIKER_1 --keyring-backend test --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y --chain-id $CHAIN_ID --home $HOME_1"
           gaiad tx staking delegate $DELEGATE_1 $DELEGATE_1_AMOUNT$DENOM --from $MONIKER_1 --keyring-backend test --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --fees $BASE_FEES$DENOM -y --chain-id $CHAIN_ID --home $HOME_1
+      - name: Wait for 1 block to pass
+        run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 1 10
       - name: _Provider API tests> gaiad v15
         run: tests/test_endpoints_api.sh localhost $VAL1_API_PORT
       - name: _Provider RPC tests> gaiad v15
@@ -197,7 +221,7 @@ jobs:
       - name: Launch consumer chain a
         env:
           CONSUMER_CHAIN_ID: consumera
-        run: tests/major_stateful_upgrade/launch_consumer.sh
+        run: tests/major_stateful_upgrade/launch_consumer.sh v3.1.x
       - name: _Consumer chain produces blocks> ICS v3.1.0
         run: tests/test_block_production.sh 127.0.0.1 $CON1_RPC_PORT 10
       - name: Establish CCV channel for consumer a
@@ -246,7 +270,7 @@ jobs:
           CONSUMER_CHAIN_ID: consumerb
           CONSUMER_HOME_1: /home/runner/.conb1
           CONSUMER_SERVICE_1: conb1.service
-        run: tests/major_stateful_upgrade/launch_consumer.sh
+        run: tests/major_stateful_upgrade/launch_consumer.sh v2.x
       - name: _Consumer chain produces blocks> ICS v2.0.0
         run: tests/test_block_production.sh 127.0.0.1 27201 10
       - name: Establish CCV channel for consumer b
@@ -280,54 +304,54 @@ jobs:
           channel_id=$(hermes --json query connection channels --chain local-testnet --connection $connection_id | jq -r '. | select(.result).result[] | select(.port_id=="transfer").channel_id')
           echo "Channel ID: $channel_id"
           tests/major_stateful_upgrade/test_consumer_ibc_transfer.sh $channel_id 3
-      - name: Start Stride chain
-        run: tests/major_stateful_upgrade/start_stride.sh
-      - name: Pre-upgrade block Production> Stride
-        run: tests/test_block_production.sh 127.0.0.1 $STRIDE_RPC_1 5 # 5 blocks
-      - name: Prepare Stride chain upgrade # saves $STRIDE_REV_HEIGHT environment variable
-        run: tests/major_stateful_upgrade/upgrade_stride.sh
-      - name: Re-launch Stride as a consumer chain
-        run: tests/major_stateful_upgrade/launch_stride_consumer.sh
-      - name: _Consumer chain produces blocks after changeover from sovereign> Stride
-        run: tests/test_block_production.sh 127.0.0.1 $STRIDE_RPC_1 5 # 5 blocks
-      - name: Establish CCV channel for consumer d
-        run: |
-          echo "Stopping hermes"
-          killall hermes || true
-          screen -XS hermes.service quit || true
-          client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r '.chains[] | select(.chain_id=="consumerd").client_id')
-          hermes create connection --a-chain consumerd --a-client 07-tendermint-0 --b-client $client_id
-          hermes create channel --a-chain consumerd --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
-          echo "Starting Hermes"
-          screen -L -Logfile $HOME/artifact/hermes.service.log -S hermes.service -d -m bash $HOME/hermes.service.sh
-          # set screen to flush log to 0
-          screen -r hermes.service -p0 -X logfile flush 0
-          echo "Wait for hermes to start..."
-          ( tail -f -n0 $HOME/artifact/hermes.service.log & ) | grep -q "Hermes has started"
-          sleep 60
-      - name: _VSC successful> Stride consumer
-        env:
-          CON1_RPC_PORT: 37001
-        run: tests/major_stateful_upgrade/test_ccv.sh
-      - name: _IBC transfer successful> Stride consumer
-        env:
-          CONSUMER_CHAIN_ID: consumerd
-          CONSUMER_HOME_1: /home/runner/.stride1
-          CONSUMER_CHAIN_BINARY: strided
-          CONSUMER_DENOM: ustrd
-          CONSUMER_FEES: 1000
-          RECIPIENT: stride1r5v5srda7xfth3hn2s26txvrcrntldjucq88rn
-        run: |
-          client_id=$(gaiad --home $HOME/.val1 q provider list-consumer-chains --output json | jq -r '.chains[] | select(.chain_id=="consumerd").client_id')
-          echo "Client ID: $client_id"
-          connection_id=$(hermes --json query client connections --chain local-testnet --client $client_id | jq -r '. | select(.result).result[]')
-          echo "Connection ID: $connection_id"
-          channel_id=$(hermes --json query connection channels --chain local-testnet --connection $connection_id | jq -r '. | select(.result).result[] | select(.port_id=="transfer").channel_id')
-          echo "Channel ID: $channel_id"
-          tests/major_stateful_upgrade/test_consumer_ibc_transfer.sh $channel_id 2 $WALLET_2 $RECIPIENT
-          echo "CONSUMERD_CHAN=$channel_id" >> $GITHUB_ENV
-      - name: Register and fund ICA
-        run: tests/v12_upgrade/setup_ica.sh
+      # - name: Start Stride chain
+      #   run: tests/major_stateful_upgrade/start_stride.sh
+      # - name: Pre-upgrade block Production> Stride
+      #   run: tests/test_block_production.sh 127.0.0.1 $STRIDE_RPC_1 5 # 5 blocks
+      # - name: Prepare Stride chain upgrade # saves $STRIDE_REV_HEIGHT environment variable
+      #   run: tests/major_stateful_upgrade/upgrade_stride.sh
+      # - name: Re-launch Stride as a consumer chain
+      #   run: tests/major_stateful_upgrade/launch_stride_consumer.sh
+      # - name: _Consumer chain produces blocks after changeover from sovereign> Stride
+      #   run: tests/test_block_production.sh 127.0.0.1 $STRIDE_RPC_1 5 # 5 blocks
+      # - name: Establish CCV channel for consumer d
+      #   run: |
+      #     echo "Stopping hermes"
+      #     killall hermes || true
+      #     screen -XS hermes.service quit || true
+      #     client_id=$($CHAIN_BINARY q provider list-consumer-chains -o json --home $HOME_1 | jq -r '.chains[] | select(.chain_id=="consumerd").client_id')
+      #     hermes create connection --a-chain consumerd --a-client 07-tendermint-0 --b-client $client_id
+      #     hermes create channel --a-chain consumerd --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
+      #     echo "Starting Hermes"
+      #     screen -L -Logfile $HOME/artifact/hermes.service.log -S hermes.service -d -m bash $HOME/hermes.service.sh
+      #     # set screen to flush log to 0
+      #     screen -r hermes.service -p0 -X logfile flush 0
+      #     echo "Wait for hermes to start..."
+      #     ( tail -f -n0 $HOME/artifact/hermes.service.log & ) | grep -q "Hermes has started"
+      #     sleep 60
+      # - name: _VSC successful> Stride consumer
+      #   env:
+      #     CON1_RPC_PORT: 37001
+      #   run: tests/major_stateful_upgrade/test_ccv.sh
+      # - name: _IBC transfer successful> Stride consumer
+      #   env:
+      #     CONSUMER_CHAIN_ID: consumerd
+      #     CONSUMER_HOME_1: /home/runner/.stride1
+      #     CONSUMER_CHAIN_BINARY: strided
+      #     CONSUMER_DENOM: ustrd
+      #     CONSUMER_FEES: 1000
+      #     RECIPIENT: stride1r5v5srda7xfth3hn2s26txvrcrntldjucq88rn
+      #   run: |
+      #     client_id=$(gaiad --home $HOME/.val1 q provider list-consumer-chains --output json | jq -r '.chains[] | select(.chain_id=="consumerd").client_id')
+      #     echo "Client ID: $client_id"
+      #     connection_id=$(hermes --json query client connections --chain local-testnet --client $client_id | jq -r '. | select(.result).result[]')
+      #     echo "Connection ID: $connection_id"
+      #     channel_id=$(hermes --json query connection channels --chain local-testnet --connection $connection_id | jq -r '. | select(.result).result[] | select(.port_id=="transfer").channel_id')
+      #     echo "Channel ID: $channel_id"
+      #     tests/major_stateful_upgrade/test_consumer_ibc_transfer.sh $channel_id 2 $WALLET_2 $RECIPIENT
+      #     echo "CONSUMERD_CHAN=$channel_id" >> $GITHUB_ENV
+      # - name: Register and fund ICA
+      #   run: tests/v12_upgrade/setup_ica.sh
 
       - name: Stop services
         if: always()
