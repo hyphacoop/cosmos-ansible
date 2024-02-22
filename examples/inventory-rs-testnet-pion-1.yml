@@ -7,7 +7,7 @@ all:
     chain_version: v2.0.2
     go_version: '1.20'
     genesis_url: "https://github.com/cosmos/testnets/raw/master/replicated-security/pion-1/pion-1-genesis-with-ccv.json.gz"
-    chain_binary_release: https://github.com/neutron-org/neutron/releases/download/v2.0.0/neutrond-linux-amd64
+    chain_binary_release: https://github.com/neutron-org/neutron/releases/download/v2.0.2/neutrond-linux-amd64
     chain_binary_source: release
     chain_binary_name: neutrond
     chain_id: pion-1
