@@ -1,0 +1,14 @@
+---
+node_user: gaia
+node_group: gaia
+node_user_home: "/home/{{node_user}}"
+chain_home: "{{node_user_home}}/.gaia"
+chain_restart: false
+chain_service: cosmovisor
+chain_bin: "{{ chain_home }}/cosmovisor/current/bin/gaiad"
+machine_reboot: false
+machine_upgrade: false
+chain_version: v13.0.0
+chain_binary_release: "https://github.com/cosmos/gaia/releases/download/{{ chain_version }}/gaiad-{{ chain_version }}-linux-amd64"
+chain_upgrade: false
+toml_cli_args: ""

@@ -1,0 +1,101 @@
+---
+
+- name: Upgrade the system
+  apt:
+    update_cache: true
+    upgrade: dist
+  register: apt_cache
+  retries: 50
+  until: apt_cache is success
+  when: machine_upgrade | default(false) | bool
+
+- name: Install required packages
+  apt:
+    update_cache: true
+    pkg:
+      - python-is-python3
+      - python3-venv
+      - python3-pip
+
+- name: Init Python venv
+  shell: python -m venv {{ node_user_home }}/env
+  args:
+    creates: '{{ node_user_home }}/env/bin/activate'
+  become_user: '{{ node_user }}'
+
+- name: Install toml
+  pip:
+    virtualenv: '{{ node_user_home }}/env'
+    virtualenv_python: python3
+    state: latest
+    name:
+      - toml_cli
+  become_user: '{{ node_user }}'
+
+- name: Configure {{ chain_home }}/config/config.toml
+  shell: |
+    {{ node_user_home }}/env/bin/toml set --toml-path {{ chain_home }}/config/config.toml {{ config_toml[count].key }} {{ config_toml[count].value }} {{ config_toml[count].toml_cli_args }}
+  become_user: '{{ node_user }}'
+  when: config_toml is defined
+  loop: "{{ config_toml }}"
+  loop_control:
+    index_var: count
+
+- name: Configure {{ chain_home }}/config/app.toml
+  shell: |
+    {{ node_user_home }}/env/bin/toml set --toml-path {{ chain_home }}/config/app.toml {{ app_toml[count].key }} {{ app_toml[count].value }} {{ app_toml[count].toml_cli_args }}
+  become_user: '{{ node_user }}'
+  when: app_toml is defined
+  loop: "{{ app_toml }}"
+  loop_control:
+    index_var: count
+
+- name: Configure {{ chain_home }}/config/client.toml
+  shell: |
+    {{ node_user_home }}/env/bin/toml set --toml-path {{ chain_home }}/config/client.toml {{ client_toml[count].key }} {{ client_toml[count].value }} {{ client_toml[count].toml_cli_args }}
+  become_user: '{{ node_user }}'
+  when: client_toml is defined
+  loop: "{{ client_toml }}"
+  loop_control:
+    index_var: count
+
+- name: Update node binary - stopping service
+  systemd:
+    daemon_reload: true
+    state: stopped
+    enabled: true
+    name: "{{ chain_service }}"
+  become: true
+  when: chain_upgrade | default(false) | bool
+
+- name: Update node binary - downloading binary
+  get_url:
+    url: "{{ chain_binary_release }}"
+    dest: "{{ chain_bin }}"
+    mode: "0777"
+    force: true
+  become_user: "{{node_user}}"
+  when: chain_upgrade | default(false) | bool
+
+- name: Update node binary - starting service
+  systemd:
+    daemon_reload: true
+    state: started
+    enabled: true
+    name: "{{ chain_service }}"
+  become: true
+  when: (chain_upgrade | default(false) | bool) and (not machine_reboot)
+
+- name: Restart node
+  systemd:
+    daemon_reload: true
+    state: restarted
+    enabled: true
+    name: "{{ chain_service }}"
+  become: true
+  when: (chain_restart | default(false) | bool) and (not machine_reboot | default(false) | bool) and (not chain_upgrade | default(false) | bool)
+
+- name: Reboot machine
+  reboot:
+  become: true
+  when: (machine_reboot | default(false) | bool)

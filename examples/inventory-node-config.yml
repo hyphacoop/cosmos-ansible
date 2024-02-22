@@ -1,0 +1,39 @@
+---
+# yamllint disable rule:line-length
+all:
+  vars:
+    ansible_user: root
+  children:
+    node:
+      hosts:
+        "{{ target }}":
+          # update system packages
+          machine_upgrade: false
+
+          # update chain binary
+          chain_upgrade: false
+
+          # restart the chain service
+          chain_restart: false
+
+          # Reboot the machine
+          machine_reboot: false
+
+          # config files to modify
+          config_toml:
+            - key: consensus.timeout_commit
+              toml_cli_args: ""
+              value: 5s
+            - key: rpc.laddr
+              value: tcp://127.0.0.1:26657
+          app_toml:
+            - key: pruning
+              toml_cli_args: ""
+              value: default
+          client_toml:
+            - key: chain-id
+              toml_cli_args: ""
+              value: my-testnet
+            - key: mempool.max_txs_bytes
+              toml_cli_args: "--to-int"
+              value: 52428800
