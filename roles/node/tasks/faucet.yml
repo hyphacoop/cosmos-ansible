@@ -1,10 +1,27 @@
 ---
-- name: create faucet account
+- name: create faucet account (command for < v15)
+  when: major_version|int < 15
   shell: |
     {{chain_bin}} keys add faucet --home {{chain_home}} --keyring-backend {{node_keyring}} --output json
     {{chain_bin}} add-genesis-account faucet 1000000000000{{ chain_denom }} --home {{chain_home}} --keyring-backend="{{node_keyring}}"
-  register: create_faucet_output
+  register: create_faucet_output_old
   become_user: "{{node_user}}"
+
+- name: Store create_faucet_output
+  when: create_faucet_output_old.changed
+  set_fact: create_faucet_output="{{ create_faucet_output_old }}"
+
+- name: create faucet account (command for => v15)
+  when: major_version|int ==15 or major_version|int > 15
+  shell: |
+    {{chain_bin}} keys add faucet --home {{chain_home}} --keyring-backend {{node_keyring}} --output json
+    {{chain_bin}} genesis add-genesis-account faucet 1000000000000{{ chain_denom }} --home {{chain_home}} --keyring-backend="{{node_keyring}}"
+  register: create_faucet_output_new
+  become_user: "{{node_user}}"
+
+- name: Store create_faucet_output
+  when: create_faucet_output_new.changed
+  set_fact: create_faucet_output="{{ create_faucet_output_new }}"
 
 - name: save faucet name, address, and mnemonic
   copy:

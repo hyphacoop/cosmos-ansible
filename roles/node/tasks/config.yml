@@ -113,43 +113,84 @@
   delegate_to: "{{ genesis_node }}"
 
 # Create validator
-- name: create validator
-  when: chain_create_validator and not chain_recover_validator
+- name: create validator (command for <v15)
+  when: chain_create_validator and not chain_recover_validator and major_version|int < 15
   shell: |
     cd $HOME
     {{chain_bin}} keys add validator --keyring-backend {{node_keyring}} --home {{chain_home}} --output json
     {{chain_bin}} add-genesis-account validator {{chain_validator_coins}}{{ chain_denom }} --home {{chain_home}} --keyring-backend="{{node_keyring}}"
-  register: chain_create_validator_output
+  register: chain_create_validator_old
   become_user: "{{node_user}}"
+
+- name: Store chain_create_validator_output
+  when: chain_create_validator_old.changed
+  set_fact: chain_create_validator_output="{{ chain_create_validator_old.stderr }}"
+
+- name: create validator (command for => v15)
+  when: chain_create_validator and not chain_recover_validator and (major_version|int ==15 or major_version|int > 15)
+  shell: |
+    cd $HOME
+    {{chain_bin}} keys add validator --keyring-backend {{node_keyring}} --home {{chain_home}} --output json
+    {{chain_bin}} genesis add-genesis-account validator {{chain_validator_coins}}{{ chain_denom }} --home {{chain_home}} --keyring-backend="{{node_keyring}}"
+  register: chain_create_validator_new
+  become_user: "{{node_user}}"
+
+- name: Store chain_create_validator_output
+  when: chain_create_validator_new.changed
+  set_fact: chain_create_validator_output="{{ chain_create_validator_new }}"
 
 - name: save validator name, address, and mnemonic
   when: chain_create_validator and not chain_recover_validator
   copy:
-    content="{{chain_create_validator_output.stderr}}"
+    content="{{chain_create_validator_output}}"
     dest="{{chain_home}}/validator.json"
   become_user: "{{node_user}}"
 
-- name: recover validator
-  when: chain_recover_validator
+- name: recover validator (command for <v15)
+  when: chain_recover_validator and major_version|int < 15
   shell: |
     cd $HOME
     echo {{ self_delegation_mnemonic }} | {{chain_bin}} keys add validator --keyring-backend {{node_keyring}} --home {{chain_home}} --output json --recover
     {{chain_bin}} add-genesis-account validator {{chain_validator_coins}}{{ chain_denom }} --home {{chain_home}} --keyring-backend="{{node_keyring}}"
-  register: chain_recover_validator_output
+  register: chain_recover_validator_output_old
   become_user: "{{node_user}}"
 
 - name: save validator name, address, and mnemonic
-  when: chain_recover_validator
+  when: chain_recover_validator_output_old.changed
   copy:
-    content="{{chain_recover_validator_output.stderr}}"
+    content="{{chain_recover_validator_output_old.stderr}}"
     dest="{{chain_home}}/validator.json"
   become_user: "{{node_user}}"
 
-- name: create genesis accounts
-  when: chain_airdrop
+- name: recover validator (command for => v15)
+  when: chain_recover_validator and (major_version|int ==15 or major_version|int > 15)
+  shell: |
+    cd $HOME
+    echo {{ self_delegation_mnemonic }} | {{chain_bin}} keys add validator --keyring-backend {{node_keyring}} --home {{chain_home}} --output json --recover
+    {{chain_bin}} genesis add-genesis-account validator {{chain_validator_coins}}{{ chain_denom }} --home {{chain_home}} --keyring-backend="{{node_keyring}}"
+  register: chain_recover_validator_output_new
+  become_user: "{{node_user}}"
+
+- name: save validator name, address, and mnemonic
+  when: chain_recover_validator_output_new.changed
+  copy:
+    content="{{chain_recover_validator_output_new}}"
+    dest="{{chain_home}}/validator.json"
+  become_user: "{{node_user}}"
+
+- name: create genesis accounts (command for < v15)
+  when: chain_airdrop and major_version|int < 15
   shell: |
     cd $HOME
     {{chain_bin}} add-genesis-account {{ item }} {{chain_airdrop_coins}}{{ chain_denom }} --home {{chain_home}}
+  become_user: "{{node_user}}"
+  loop: "{{ chain_airdrop_accounts }}"
+
+- name: create genesis accounts (command for => v15)
+  when: chain_airdrop and (major_version|int ==15 or major_version|int > 15)
+  shell: |
+    cd $HOME
+    {{chain_bin}} genesis add-genesis-account {{ item }} {{chain_airdrop_coins}}{{ chain_denom }} --home {{chain_home}}
   become_user: "{{node_user}}"
   loop: "{{ chain_airdrop_accounts }}"
 
@@ -169,11 +210,18 @@
     dest="{{chain_home}}/{{delegator_account_name}}.json"
   become_user: "{{ node_user }}"
 
-- name: gentx validator
-  when: chain_create_validator or chain_recover_validator
+- name: gentx validator (command for < v15)
+  when: (chain_create_validator or chain_recover_validator) and major_version|int < 15
   shell: |
     cd $HOME
     {{chain_bin}} gentx validator {{chain_gentx_validator}}{{ chain_denom }} --keyring-backend="{{node_keyring}}" --home {{chain_home}} --moniker {{ validator_moniker }} --chain-id {{chain_id}}
+  become_user: "{{node_user}}"
+
+- name: gentx validator (command for => v15)
+  when: (chain_create_validator or chain_recover_validator) and (major_version|int ==15 or major_version|int > 15)
+  shell: |
+    cd $HOME
+    {{chain_bin}} genesis gentx validator {{chain_gentx_validator}}{{ chain_denom }} --keyring-backend="{{node_keyring}}" --home {{chain_home}} --moniker {{ validator_moniker }} --chain-id {{chain_id}}
   become_user: "{{node_user}}"
 
 - name: create multi-node self-delegation accounts save the mnemonics shown in the output
@@ -232,20 +280,36 @@
   delegate_to: "{{ genesis_node }}"
   throttle: 1
 
-- name: collect gentx
-  when: chain_create_validator or chain_recover_validator
+- name: collect gentx (command for < v15)
+  when: (chain_create_validator or chain_recover_validator) and major_version|int < 15
   shell: |
     cd $HOME
     PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
     {{chain_bin}} collect-gentxs --home {{ chain_home }}
   become_user: "{{ node_user }}"
 
-- name: patch genesis file with minimum deposit and short voting period
-  when: chain_gov_testing
+- name: collect gentx (command for => v15)
+  when: (chain_create_validator or chain_recover_validator) and (major_version|int ==15 or major_version|int > 15)
+  shell: |
+    cd $HOME
+    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+    {{chain_bin}} genesis collect-gentxs --home {{ chain_home }}
+  become_user: "{{ node_user }}"
+
+- name: patch genesis file with minimum deposit and short voting period (command for < v15)
+  when: chain_gov_testing and major_version|int < 15
   shell: |
     cd {{chain_home}}/config
     jq '.app_state.gov.deposit_params.min_deposit[0].amount |= "1"' genesis.json > temp.json
     jq '.app_state.gov.voting_params.voting_period |= "{{ chain_voting_period }}"' temp.json > genesis.json
+    rm temp.json
+
+- name: patch genesis file with minimum deposit and short voting period (command for => v15)
+  when: chain_gov_testing and (major_version|int ==15 or major_version|int > 15)
+  shell: |
+    cd {{chain_home}}/config
+    jq '.app_state.gov.params.min_deposit[0].amount |= "1"' genesis.json > temp.json
+    jq '.app_state.gov.params.voting_period |= "{{ chain_voting_period }}"' temp.json > genesis.json
     rm temp.json
 
 - name: patch genesis file with specified denom
