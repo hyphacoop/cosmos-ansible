@@ -6,6 +6,7 @@ on:
   schedule:
     # At 14:30 on M/W/F.
     - cron: '30 14 * * 1,3,5'
+  push:
 jobs:
   test-provider:
     runs-on: ubuntu-22.04
@@ -64,7 +65,15 @@ jobs:
       - name: Configure ansible.cfg
         run: ansible_cfg=$(sed '/\[defaults\]/a transport = local' ansible.cfg); echo "$ansible_cfg" > ansible.cfg
       - name: Print disk use
-        run: df
+        run: df -h
+      - name: Clean up files to free up disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf "/usr/local/share/boost"
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+      - name: Print disk use
+        run: df -h
       - name: Run playbook
         run: |
           chain_version=$(curl -s $RPC_ENDPOINT/abci_info? | jq -r '.result.response.version')
