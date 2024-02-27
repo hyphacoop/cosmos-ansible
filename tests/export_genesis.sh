@@ -8,7 +8,7 @@ cosmos_upgrade_name="v15"
 export cosmos_current_name="v14"
 
 # cosmos-genesis-tinkerer repo config
-gh_branch="main"
+gh_branch="remove-unbonding"
 gh_user="hypha-bot"
 
 # get cosmos-ansible from $1
