@@ -43,7 +43,7 @@ Set up nodes to join the [Replicated Security Testnet](https://github.com/cosmos
 
 * **Inventory file:** [`inventory-rs-testnet-provider.yml`](inventory-rs-testnet-provider.yml)
 * **Chain ID:** `provider`
-* **Gaia version:** `v15.0.0-rc0`
+* **Gaia version:** `v15.0.0`
 
 Run the playbook:
 ```
