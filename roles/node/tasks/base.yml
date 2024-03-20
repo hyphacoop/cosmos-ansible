@@ -11,10 +11,6 @@
   when: chain_registry is defined
   register: chain_registry_json
 
-- name: print json
-  debug:
-    msg: '{{ chain_registry_json }}'
-
 - name: Set chain_id to {{ chain_registry_json.json.chain_id }}
   when: chain_registry is defined
   set_fact:
