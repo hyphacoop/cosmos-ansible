@@ -7,9 +7,13 @@
     return_content: yes
     status_code: 200
     body_format: json
-    # http_agent: "Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:59.0) Gecko/20100101 Firefox/59.0"
+    http_agent: "Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:59.0) Gecko/20100101 Firefox/59.0"
   when: chain_registry is defined
   register: chain_registry_json
+
+- name: print json
+  debug:
+    msg: '{{ chain_registry_json }}'
 
 - name: Set chain_id to {{ chain_registry_json.json.chain_id }}
   when: chain_registry is defined
