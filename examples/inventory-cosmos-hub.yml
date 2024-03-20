@@ -3,8 +3,8 @@
 all:
   vars:
     ansible_user: root
-    chain_registry: "https://registry.ping.pub/cosmoshub/chain.json"
-    # chain_registry: "https://files.polypore.xyz/chain.json"
+    # chain_registry: "https://registry.ping.pub/cosmoshub/chain.json"
+    chain_registry: "https://raw.githubusercontent.com/cosmos/chain-registry/master/cosmoshub/chain.json"
     chain_home_clear: false
     node_unsafe_reset: true
     chain_use_ssl_proxy: false
