@@ -54,7 +54,7 @@ jobs:
         run: echo "${{ secrets.MAINNET_PRIV_VALIDATOR_KEY }}" | base64 --decode > ~/priv_validator_key.json
 
       - name: Install Gaia and configure for mainnet
-        run: ansible-playbook node.yml -i examples/inventory-cosmos-hub.yml --extra-vars "target=mainnet-export chain_start=false chain_binary_source=release statesync_rpc_servers=${{ secrets.MAINNET_RPC_SERVERS }} p2p_persistent_peers=${{ secrets.MAINNET_PERSISTENT_PEERS }} node_key_file=~/node_key.json priv_validator_key_file=~/priv_validator_key.json"
+        run: ansible-playbook node.yml -i examples/inventory-cosmos-hub.yml --extra-vars "target=mainnet-export chain_start=false chain_binary_source=release statesync_rpc_servers=${{ secrets.MAINNET_RPC_SERVERS }} p2p_persistent_peers=${{ secrets.MAINNET_PERSISTENT_PEERS }} node_key_file=~/node_key.json priv_validator_key_file=~/priv_validator_key.json chain_registry=https://files.polypore.xyz/chain-registry/cosmoshub.json"
 
       - name: Copy export_genesis.sh to VM
         run: |
