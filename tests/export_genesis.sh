@@ -125,7 +125,6 @@ echo `date +"%b %d %H:%M:%S "` "Installed gaiad version is $chain_version"
 if [ ! -d mainnet-genesis-export ]
 then
     mkdir mainnet-genesis-export
-    chown
 fi
 echo `date +"%b %d %H:%M:%S "` "Export genesis"
 time su gaia -c "~gaia/.gaia/cosmovisor/current/bin/gaiad export --height $current_block --output-document /tmp/genesis_export.json
