@@ -127,7 +127,7 @@ then
     mkdir mainnet-genesis-export
 fi
 echo `date +"%b %d %H:%M:%S "` "Export genesis"
-time su gaia -c "~gaia/.gaia/cosmovisor/current/bin/gaiad export --height $current_block --output-document /tmp/genesis_export.json
+time su gaia -c "~gaia/.gaia/cosmovisor/current/bin/gaiad export --height $current_block --output-document /tmp/genesis_export.json"
 mv /tmp/genesis_export.json "mainnet-genesis-export/mainnet-genesis_${current_block_time}_${chain_version}_${current_block}.json"
 
 echo `date +"%b %d %H:%M:%S "` "Tinkering exported genesis"
