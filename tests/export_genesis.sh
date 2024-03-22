@@ -11,7 +11,7 @@ export cosmos_current_name="v15"
 current_chain_binary_url="https://github.com/hyphacoop/cosmos-builds/releases/download/v15.1.0-snappy/gaiad"
 
 # cosmos-genesis-tinkerer repo config
-gh_branch="main"
+gh_branch="v15-update"
 gh_user="hypha-bot"
 
 # get cosmos-ansible from $1
