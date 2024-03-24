@@ -2,12 +2,12 @@
 
 name: Test Gaia Stateful Upgrade - v15
 on:
-  repository_dispatch:
-    types: [new_main_build]
+  # repository_dispatch:
+  #   types: [new_main_build]
   workflow_dispatch:
-  schedule:
-    # Once a day at 13:15
-    - cron: '15 13 * * 1'
+  # schedule:
+  #   # Once a day at 13:15
+  #   - cron: '15 13 * * 1'
 
 concurrency:
   group: self-hosted-runners
