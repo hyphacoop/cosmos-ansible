@@ -25,7 +25,7 @@ Set up a node to join the Cosmos Hub [public testnet](https://github.com/cosmos/
 
 * **Inventory file:** [`inventory-public-testnet.yml`](inventory-public-testnet.yml)
 * **Chain ID:** `theta-testnet-001`
-* **Gaia version:** `v15.1.0`
+* **Gaia version:** `v15.2.0`
 
 ### Run the playbook 
 
@@ -43,7 +43,7 @@ Set up nodes to join the [Replicated Security Testnet](https://github.com/cosmos
 
 * **Inventory file:** [`inventory-rs-testnet-provider.yml`](inventory-rs-testnet-provider.yml)
 * **Chain ID:** `provider`
-* **Gaia version:** `v15.1.0`
+* **Gaia version:** `v15.2.0`
 
 Run the playbook:
 ```
@@ -73,16 +73,6 @@ Run the playbook using the keys collected from the provider chain node:
 ansible-playbook node.yml -i examples/inventory-rs-testnet-pion-1.yml -e 'target=SERVER_IP_OR_DOMAIN node_key_file=node_key.json priv_validator_key_file=priv_validator_key.json"
 ```
 
-### `duality-rehearsal-1` Consumer Chain
-
-* **Inventory file:** [`inventory-rs-testnet-duality.yml`](inventory-rs-testnet-duality.yml)
-* **Chain ID:** `duality-rehearsal-1`
-
-Run the playbook using the keys collected from the provider chain node:
-```
-ansible-playbook node.yml -i examples/inventory-rs-testnet-duality.yml -e 'target=SERVER_IP_OR_DOMAIN node_key_file=node_key.json priv_validator_key_file=priv_validator_key.json"
-```
-
 ---
 
 To set up a validator, do the following after the consumer chain plays have finished running and all nodes are synced:
@@ -90,7 +80,7 @@ To set up a validator, do the following after the consumer chain plays have fini
 3. Get tokens for your validator address.
 4. Bond the validator on the provider chain:
 ```
-gaiad tx staking create-validator --amount 2000000uatom --pubkey <validator_public_key> --from <validator_keypair_name> --keyring-backend test --home ~/.gaia --chain-id provider --commission-max-change-rate 0.01 --commission-max-rate 0.2 --commission-rate 0.1 --moniker <validator_moniker> --min-self-delegation 1 -b block -y
+gaiad tx staking create-validator --amount 2000000uatom --pubkey <validator_public_key> --from <validator_keypair_name> --keyring-backend test --home ~/.gaia --chain-id provider --commission-max-change-rate 0.01 --commission-max-rate 0.2 --commission-rate 0.1 --moniker <validator_moniker> --min-self-delegation 1 -y
 ```
 
 For more information, see the [validator joining guide](https://github.com/cosmos/testnets/blob/master/replicated-security/VALIDATOR_JOINING_GUIDE.md).
