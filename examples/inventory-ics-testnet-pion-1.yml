@@ -6,7 +6,7 @@ all:
     chain_repository: "https://github.com/neutron-org/neutron.git"
     chain_version: v3.0.0
     go_version: '1.21.6'
-    genesis_url: "https://github.com/cosmos/testnets/raw/master/replicated-security/pion-1/pion-1-genesis-with-ccv.json.gz"
+    genesis_url: "https://github.com/cosmos/testnets/raw/master/interchain-security/pion-1/pion-1-genesis-with-ccv.json.gz"
     chain_binary_name: neutrond
     chain_id: pion-1
     node_user: neutron

@@ -19,35 +19,35 @@ Before running any playbooks, first install the Ansible dependencies:
 ansible-galaxy install -r requirements.yml
 ```
 
-## Join the Cosmos Hub Public Testnet
+## Join the Cosmos Hub Release Testnet
 
-Set up a node to join the Cosmos Hub [public testnet](https://github.com/cosmos/testnets/tree/master/public) using state sync.
+Set up a node to join the Cosmos Hub [release testnet](https://github.com/cosmos/testnets/tree/master/release) using state sync.
 
-* **Inventory file:** [`inventory-public-testnet.yml`](inventory-public-testnet.yml)
+* **Inventory file:** [`inventory-release-testnet.yml`](inventory-release-testnet.yml)
 * **Chain ID:** `theta-testnet-001`
 * **Gaia version:** `v15.2.0`
 
 ### Run the playbook 
 
 ```
-ansible-playbook node.yml -i examples/inventory-public-testnet.yml -e 'target=SERVER_IP_OR_DOMAIN'
+ansible-playbook node.yml -i examples/inventory-release-testnet.yml -e 'target=SERVER_IP_OR_DOMAIN'
 ```
 
 This playbook obtains a trust block height and the corresponding hash ID from the first RPC server listed in the inventory file in order to use the state sync feature. 
 
-## Join the Replicated Security Testnet
+## Join the Interchain Security Testnet
 
-Set up nodes to join the [Replicated Security Testnet](https://github.com/cosmos/testnets/tree/master/replicated-security).
+Set up nodes to join the [Interchain Security Testnet](https://github.com/cosmos/testnets/tree/master/interchain-security).
 
 ### Provider Chain
 
-* **Inventory file:** [`inventory-rs-testnet-provider.yml`](inventory-rs-testnet-provider.yml)
+* **Inventory file:** [`inventory-ics-testnet-provider.yml`](inventory-ics-testnet-provider.yml)
 * **Chain ID:** `provider`
 * **Gaia version:** `v15.2.0`
 
 Run the playbook:
 ```
-ansible-playbook node.yml -i examples/inventory-rs-testnet-provider.yml -e 'target=SERVER_IP_OR_DOMAIN'
+ansible-playbook node.yml -i examples/inventory-ics-testnet-provider.yml -e 'target=SERVER_IP_OR_DOMAIN'
 ```
 
 If you want to run a validator, do the following after this play has finished running and continue to join the consumer chains:
@@ -65,12 +65,12 @@ gaiad keys add <validator_keypair_name> --home ~/.gaia --keyring-backend test --
 
 ### `pion-1` Consumer Chain
 
-* **Inventory file:** [`inventory-rs-testnet-pion-1.yml`](inventory-rs-testnet-pion-1.yml)
+* **Inventory file:** [`inventory-ics-testnet-pion-1.yml`](inventory-ics-testnet-pion-1.yml)
 * **Chain ID:** `pion-1`
 
 Run the playbook using the keys collected from the provider chain node:
 ```
-ansible-playbook node.yml -i examples/inventory-rs-testnet-pion-1.yml -e 'target=SERVER_IP_OR_DOMAIN node_key_file=node_key.json priv_validator_key_file=priv_validator_key.json"
+ansible-playbook node.yml -i examples/inventory-ics-testnet-pion-1.yml -e 'target=SERVER_IP_OR_DOMAIN node_key_file=node_key.json priv_validator_key_file=priv_validator_key.json"
 ```
 
 ---

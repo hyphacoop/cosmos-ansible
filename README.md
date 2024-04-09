@@ -24,14 +24,14 @@ Use this toolkit to:
 
 ## 🌱 Quick Start
 
-To join the Cosmos Hub [public testnet](https://github.com/cosmos/testnets/tree/master/public):
+To join the Cosmos Hub [release testnet](https://github.com/cosmos/testnets/tree/master/release):
 
 1. Clone this repository
 2. Run `ansible-galaxy install -r requirements.yml` to install dependencies 
 3. Set up SSH access to the target machine
 4. Run the playbook
    ```
-   ansible-playbook node.yml -i examples/inventory-public-testnet.yml -e 'target=SERVER_IP_OR_DOMAIN'
+   ansible-playbook node.yml -i examples/inventory-release-testnet.yml -e 'target=SERVER_IP_OR_DOMAIN'
    ```
 5. Log into the target machine to follow the syncing process
    ```
