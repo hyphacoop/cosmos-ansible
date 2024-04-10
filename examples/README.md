@@ -83,7 +83,7 @@ To set up a validator, do the following after the consumer chain plays have fini
 gaiad tx staking create-validator --amount 2000000uatom --pubkey <validator_public_key> --from <validator_keypair_name> --keyring-backend test --home ~/.gaia --chain-id provider --commission-max-change-rate 0.01 --commission-max-rate 0.2 --commission-rate 0.1 --moniker <validator_moniker> --min-self-delegation 1 -y
 ```
 
-For more information, see the [validator joining guide](https://github.com/cosmos/testnets/blob/master/replicated-security/VALIDATOR_JOINING_GUIDE.md).
+For more information, see the [validator joining guide](https://github.com/cosmos/testnets/blob/master/interchain-security/VALIDATOR_JOINING_GUIDE.md).
 
 ## Start a Local Testnet
 
