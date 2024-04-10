@@ -18,7 +18,7 @@ all:
     chain_rpc_host: "rpc"
     chain_p2p_host: "p2p"
     chain_grpc_host: "grpc"
-    p2p_seeds: "08ec17e86dac67b9da70deb20177655495a55407@provider-seed-01.rs-testnet.polypore.xyz:26656,4ea6e56300a2f37b90e58de5ee27d1c9065cf871@provider-seed-02.rs-testnet.polypore.xyz:26656"
+    p2p_seeds: "08ec17e86dac67b9da70deb20177655495a55407@provider-seed-01.ics-testnet.polypore.xyz:26656,4ea6e56300a2f37b90e58de5ee27d1c9065cf871@provider-seed-02.ics-testnet.polypore.xyz:26656"
     reboot: true
   children:
     node:
@@ -26,4 +26,4 @@ all:
         "{{ target }}":
           fast_sync: true
           statesync_enabled: true
-          statesync_rpc_servers: 'provider-state-sync-01.rs-testnet.polypore.xyz:26657,provider-state-sync-02.rs-testnet.polypore.xyz:26657'
+          statesync_rpc_servers: 'https://rpc.provider-state-sync-01.ics-testnet.polypore.xyz:443,https://rpc.provider-state-sync-02.ics-testnet.polypore.xyz:443'
