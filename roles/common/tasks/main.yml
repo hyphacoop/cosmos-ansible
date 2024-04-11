@@ -27,6 +27,7 @@
       - python3-pip
       - jq
       - rsync
+      - file
 
 - name: Install basic utils
   apt:
