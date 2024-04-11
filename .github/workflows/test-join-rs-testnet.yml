@@ -51,15 +51,6 @@ jobs:
     steps:
       # - name: Bypass the grub-efi-amd64-signed package
       #   run: sudo apt-mark hold grub-efi-amd64-signed
-      - run: ip addr
-      - run: lscpu
-      - run: df -h
-      - run: free -m
-      - run: uname -a
-      - run: lsb_release -a
-      - run: echo "GitHub branch is ${{ github.ref }}"
-      - run: whoami
-      - run: pwd
       - name: Check out repository code
         uses: actions/checkout@v3
       - name: Set up Python
@@ -69,7 +60,16 @@ jobs:
       - name: Install system packages
         run: |
           apt update
-          apt install -y curl jq
+          apt install -y curl jq net-tools
+      - run: ifconfig
+      - run: lscpu
+      - run: df -h
+      - run: free -m
+      - run: uname -a
+      - run: lsb_release -a
+      - run: echo "GitHub branch is ${{ github.ref }}"
+      - run: whoami
+      - run: pwd
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
