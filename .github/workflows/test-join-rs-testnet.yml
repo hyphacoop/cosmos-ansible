@@ -51,7 +51,7 @@ jobs:
     steps:
       # - name: Bypass the grub-efi-amd64-signed package
       #   run: sudo apt-mark hold grub-efi-amd64-signed
-      - run: ifconfig
+      - run: ip addr
       - run: lscpu
       - run: df -h
       - run: free -m
