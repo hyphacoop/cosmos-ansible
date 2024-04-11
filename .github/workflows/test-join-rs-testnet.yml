@@ -60,7 +60,7 @@ jobs:
       - name: Install system packages
         run: |
           sudo apt update
-          sudo apt install -y curl jq net-tools
+          sudo apt install -y curl jq net-tools screen
       - run: ifconfig
       - run: lscpu
       - run: df -h
