@@ -59,8 +59,8 @@ jobs:
           python-version: '3.10'
       - name: Install system packages
         run: |
-          apt update
-          apt install -y curl jq net-tools
+          sudo apt update
+          sudo apt install -y curl jq net-tools
       - run: ifconfig
       - run: lscpu
       - run: df -h
