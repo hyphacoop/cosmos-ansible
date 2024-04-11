@@ -91,7 +91,7 @@ jobs:
           ansible-playbook node.yml -i examples/inventory-ics-testnet-pion-1.yml --extra-vars "target=local reboot=false chain_home={{ node_user_home }}/.neutrond node_user=runner enable_swap=false use_cosmovisor=false node_service_name=neutrond chain_start=false"
       - name: Start neutrond
         run: |
-          echo "while true; do $HOME/go/bin/$CHAIN_BINARY start; sleep 1; done" > $HOME/chain.sh
+          echo "while true; do $HOME/go/bin/neutrond start; sleep 1; done" > $HOME/chain.sh
           chmod +x $HOME/chain.sh
           screen -S chain -d -m bash $HOME/chain.sh
       - name: Wait for neutrond to start syncing
