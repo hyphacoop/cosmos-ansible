@@ -1,6 +1,6 @@
 ---
 
-name: Join Replicated Security Testnet
+name: Join Interchain Security Testnet
 on:
   workflow_dispatch:
   schedule:
@@ -10,7 +10,7 @@ jobs:
   test-provider:
     runs-on: ubuntu-22.04
     env:
-      RPC_ENDPOINT: https://rpc.provider-sentry-02.rs-testnet.polypore.xyz
+      RPC_ENDPOINT: https://rpc.provider-sentry-02.ics-testnet.polypore.xyz
     steps:
       - name: Bypass the grub-efi-amd64-signed package
         run: sudo apt-mark hold grub-efi-amd64-signed
@@ -47,7 +47,7 @@ jobs:
   test-pion-1:
     runs-on: self-hosted-ubuntu-22.04 
     env:
-      RPC_ENDPOINT: https://rpc.pion.rs-testnet.polypore.xyz
+      RPC_ENDPOINT: https://rpc.pion.ics-testnet.polypore.xyz
     steps:
       # - name: Bypass the grub-efi-amd64-signed package
       #   run: sudo apt-mark hold grub-efi-amd64-signed
