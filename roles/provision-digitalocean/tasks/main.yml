@@ -74,11 +74,8 @@
     name: "{{ item }}.{{ digitalocean_dns_hostname }}"
     data: "{{ digitalocean_dns_hostname }}"
     force_update: true
-  with_items:
-    - grpc
-    - rpc
-    - rest
-    - p2p
+  with_items: "{{ digitalocean_cnames_list }}"
+
   when: (digitalocean_dns | default(false) | bool) and (digitalocean_dns_cname | default(false) | bool)
   throttle: 3
 - name: Wait for DNS to update

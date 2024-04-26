@@ -36,9 +36,5 @@
     type: CNAME
     name: "{{ item }}.{{ digitalocean_dns_hostname }}"
     data: "{{ digitalocean_dns_hostname }}"
-  with_items:
-    - grpc
-    - rpc
-    - rest
-    - p2p
+  with_items: "{{ digitalocean_cnames_list }}"
   when: (digitalocean_dns | default(false) | bool) and (digitalocean_delete_dns | default(false) | bool)
