@@ -75,8 +75,7 @@
     data: "{{ digitalocean_dns_hostname }}"
     force_update: true
   with_items: "{{ digitalocean_cnames_list }}"
-
-  when: (digitalocean_dns | default(false) | bool) and (digitalocean_dns_cname | default(false) | bool)
+  when: (digitalocean_dns | default(false) | bool) and (digitalocean_cnames_list is defined)
   throttle: 3
 - name: Wait for DNS to update
   ansible.builtin.pause:

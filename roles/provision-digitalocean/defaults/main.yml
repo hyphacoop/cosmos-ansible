@@ -9,8 +9,6 @@ digitalocean_project: ''
 digitalocean_region: tor1
 # Add DNS records for new droplets
 digitalocean_dns: false
-# Add CNAMEs to DNS record
-digitalocean_dns_cname: false
 # Default TTL for DNS records
 digitalocean_dns_record_ttl: 60
 # Use existing DNS records with the same name without creating new ones

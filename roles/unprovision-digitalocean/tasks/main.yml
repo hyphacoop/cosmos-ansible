@@ -37,4 +37,4 @@
     name: "{{ item }}.{{ digitalocean_dns_hostname }}"
     data: "{{ digitalocean_dns_hostname }}"
   with_items: "{{ digitalocean_cnames_list }}"
-  when: (digitalocean_dns | default(false) | bool) and (digitalocean_delete_dns | default(false) | bool)
+  when: (digitalocean_dns | default(false) | bool) and (digitalocean_delete_dns | default(false) | bool) and (digitalocean_cnames_list is defined)
