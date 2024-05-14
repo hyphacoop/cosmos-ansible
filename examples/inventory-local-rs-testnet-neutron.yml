@@ -2,6 +2,7 @@
 all:
   vars:
     reboot: false
+    fast_sync: false
   children:
     provider:
       vars:
