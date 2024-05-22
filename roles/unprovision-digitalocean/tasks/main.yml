@@ -27,3 +27,14 @@
     name: "{{ digitalocean_dns_hostname }}"
   throttle: 3
   when: (digitalocean_dns | default(false) | bool) and (digitalocean_delete_dns | default(false) | bool)
+
+- name: Delete CNAME record DNS hostname for droplets
+  community.digitalocean.digital_ocean_domain_record:
+    state: absent
+    oauth_token: "{{ digitalocean_api_key }}"
+    domain: "{{ digitalocean_domain }}"
+    type: CNAME
+    name: "{{ item }}.{{ digitalocean_dns_hostname }}"
+    data: "{{ digitalocean_dns_hostname }}"
+  with_items: "{{ digitalocean_cnames_list }}"
+  when: (digitalocean_dns | default(false) | bool) and (digitalocean_delete_dns | default(false) | bool) and (digitalocean_cnames_list is defined)

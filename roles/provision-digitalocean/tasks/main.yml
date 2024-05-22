@@ -64,6 +64,20 @@
     force_update: true
   when: digitalocean_dns | default(false) | bool
   throttle: 3
+- name: Add CNAME record DNS hostname for droplets
+  community.digitalocean.digital_ocean_domain_record:
+    state: present
+    oauth_token: "{{ digitalocean_api_key }}"
+    domain: "{{ digitalocean_domain }}"
+    type: CNAME
+    ttl: "{{ digitalocean_dns_record_ttl }}"
+    name: "{{ item }}.{{ digitalocean_dns_hostname }}"
+    data: "{{ digitalocean_dns_hostname }}"
+    force_update: true
+  with_items: "{{ digitalocean_cnames_list }}"
+  when: (digitalocean_dns | default(false) | bool) and (digitalocean_cnames_list is defined)
+  throttle: 3
 - name: Wait for DNS to update
   ansible.builtin.pause:
     minutes: 1
+  when: digitalocean_dns
