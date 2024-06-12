@@ -53,7 +53,7 @@ jobs:
       - name: Create snapshot
         run: |
           cd ~/.gaia
-          tar cfvz data ~/artifact/snapshot.tar.gz
+          tar cfvz ~/artifact/snapshot.tar.gz data
       - name: Upload artifacts
         if: always()
         uses: actions/upload-artifact@v4
