@@ -53,13 +53,14 @@ jobs:
       - name: Create snapshot
         run: |
           cd ~/.gaia
-          tar cfvz ~/artifact/snapshot.tar.gz data
+          mkdir ~/artifact/snapshot
+          tar cfvz ~/artifact/snapshot/snapshot.tar.gz data
       - name: Upload artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: join-ics-provider
-          path: ~/artifact/
+          name: ics-provider-snapshot
+          path: ~/artifact/snapshot/
  
   # test-pion-1:
   #   runs-on: self-hosted-ubuntu-22.04
