@@ -12,6 +12,8 @@ jobs:
     env:
       RPC_ENDPOINT: https://rpc.provider-sentry-02.ics-testnet.polypore.xyz
     steps:
+      - name: mkdir ~/artifact
+        run: mkdir ~/artifact
       - name: Bypass the grub-efi-amd64-signed package
         run: sudo apt-mark hold grub-efi-amd64-signed
       - name: Check out repository code
@@ -44,63 +46,80 @@ jobs:
         run: |
           chain_height=$(curl -s $RPC_ENDPOINT/block | jq -r '.result.block.header.height')
           tests/test_block_production.sh 127.0.0.1 26657 10
-  test-pion-1:
-    runs-on: self-hosted-ubuntu-22.04
-    env:
-      RPC_ENDPOINT: https://rpc.pion.ics-testnet.polypore.xyz
-    steps:
-      # - name: Bypass the grub-efi-amd64-signed package
-      #   run: sudo apt-mark hold grub-efi-amd64-signed
-      - name: Check out repository code
-        uses: actions/checkout@v3
-      - name: Set up Python
-        uses: actions/setup-python@v3
+      - name: Stop service
+        run: | 
+          systemctl stop gaiad
+          sleep 10
+      - name: Create snapshot
+        run: |
+          cd ~/.gaia
+          tar cfvz data ~/artifact/snapshot.tar.gz
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
         with:
-          python-version: '3.10'
-      - name: Install system packages
-        run: |
-          sudo apt update
-          sudo apt install -y curl jq net-tools screen
-      - run: ifconfig
-      - run: lscpu
-      - run: df -h
-      - run: free -m
-      - run: uname -a
-      - run: lsb_release -a
-      - run: echo "GitHub branch is ${{ github.ref }}"
-      - run: whoami
-      - run: pwd
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install ansible toml
-      - name: Configure ansible.cfg
-        run: ansible_cfg=$(sed '/\[defaults\]/a transport = local' ansible.cfg); echo "$ansible_cfg" > ansible.cfg
-      # - name: Remove unused files
-      #   run: |
-      #     df -h
-      #     sudo rm -rf /usr/share/dotnet
-      #     sudo rm -rf /opt/ghc
-      #     sudo rm -rf "/usr/local/share/boost"
-      #     sudo rm -rf "$AGENT_TOOLSDIRECTORY"
-      #     df -h
-      - name: Run playbook
-        run: |
-          chain_version=$(curl -s $RPC_ENDPOINT/abci_info? | jq -r '.result.response.version')
-          # ansible-playbook node.yml -i examples/inventory-ics-testnet-pion-1.yml --extra-vars "target=local reboot=false chain_home={{ node_user_home }}/.neutrond node_user=runner enable_swap=true swap_size=16384 use_cosmovisor=false node_service_name=neutrond chain_binary_release=https://github.com/neutron-org/neutron/releases/download/v$chain_version/neutrond-linux-amd64 chain_binary_source=release"
-          ansible-playbook node.yml -i examples/inventory-ics-testnet-pion-1.yml --extra-vars "target=local reboot=false chain_home={{ node_user_home }}/.neutrond node_user=runner enable_swap=false use_cosmovisor=false node_service_name=neutrond chain_start=false"
-      - name: Start neutrond
-        run: |
-          echo "while true; do $HOME/go/bin/neutrond start; sleep 1; done" > $HOME/chain.sh
-          chmod +x $HOME/chain.sh
-          screen -S chain -d -m bash $HOME/chain.sh
-      - name: Wait for neutrond to start syncing
-        run: |
-          chain_height=$(curl -s $RPC_ENDPOINT/block | jq -r '.result.block.header.height')
-          tests/test_block_production.sh 127.0.0.1 26657 10
-      - name: Check if neutrond is still syncing
-        run: tests/test_still_syncing.sh 127.0.0.1 26657
-      - name: Check blocks are being produced
-        run: |
-          chain_height=$(curl -s $RPC_ENDPOINT/block | jq -r '.result.block.header.height')
-          tests/test_block_production.sh 127.0.0.1 26657 10
+          name: export-cosmos-hub-mainnet
+          path: ~/artifact/
+ 
+  # test-pion-1:
+  #   runs-on: self-hosted-ubuntu-22.04
+  #   env:
+  #     RPC_ENDPOINT: https://rpc.pion.ics-testnet.polypore.xyz
+  #   steps:
+  #     # - name: Bypass the grub-efi-amd64-signed package
+  #     #   run: sudo apt-mark hold grub-efi-amd64-signed
+  #     - name: mkdir ~/artifact
+  #       run: mkdir ~/artifact
+  #     - name: Check out repository code
+  #       uses: actions/checkout@v3
+  #     - name: Set up Python
+  #       uses: actions/setup-python@v3
+  #       with:
+  #         python-version: '3.10'
+  #     - name: Install system packages
+  #       run: |
+  #         sudo apt update
+  #         sudo apt install -y curl jq net-tools screen
+  #     - run: ifconfig
+  #     - run: lscpu
+  #     - run: df -h
+  #     - run: free -m
+  #     - run: uname -a
+  #     - run: lsb_release -a
+  #     - run: echo "GitHub branch is ${{ github.ref }}"
+  #     - run: whoami
+  #     - run: pwd
+  #     - name: Install dependencies
+  #       run: |
+  #         python -m pip install --upgrade pip
+  #         python -m pip install ansible toml
+  #     - name: Configure ansible.cfg
+  #       run: ansible_cfg=$(sed '/\[defaults\]/a transport = local' ansible.cfg); echo "$ansible_cfg" > ansible.cfg
+  #     # - name: Remove unused files
+  #     #   run: |
+  #     #     df -h
+  #     #     sudo rm -rf /usr/share/dotnet
+  #     #     sudo rm -rf /opt/ghc
+  #     #     sudo rm -rf "/usr/local/share/boost"
+  #     #     sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+  #     #     df -h
+  #     - name: Run playbook
+  #       run: |
+  #         chain_version=$(curl -s $RPC_ENDPOINT/abci_info? | jq -r '.result.response.version')
+  #         # ansible-playbook node.yml -i examples/inventory-ics-testnet-pion-1.yml --extra-vars "target=local reboot=false chain_home={{ node_user_home }}/.neutrond node_user=runner enable_swap=true swap_size=16384 use_cosmovisor=false node_service_name=neutrond chain_binary_release=https://github.com/neutron-org/neutron/releases/download/v$chain_version/neutrond-linux-amd64 chain_binary_source=release"
+  #         ansible-playbook node.yml -i examples/inventory-ics-testnet-pion-1.yml --extra-vars "target=local reboot=false chain_home={{ node_user_home }}/.neutrond node_user=runner enable_swap=false use_cosmovisor=false node_service_name=neutrond chain_start=false"
+  #     - name: Start neutrond
+  #       run: |
+  #         echo "while true; do $HOME/go/bin/neutrond start; sleep 1; done" > $HOME/chain.sh
+  #         chmod +x $HOME/chain.sh
+  #         screen -S chain -d -m bash $HOME/chain.sh
+  #     - name: Wait for neutrond to start syncing
+  #       run: |
+  #         chain_height=$(curl -s $RPC_ENDPOINT/block | jq -r '.result.block.header.height')
+  #         tests/test_block_production.sh 127.0.0.1 26657 10
+  #     - name: Check if neutrond is still syncing
+  #       run: tests/test_still_syncing.sh 127.0.0.1 26657
+  #     - name: Check blocks are being produced
+  #       run: |
+  #         chain_height=$(curl -s $RPC_ENDPOINT/block | jq -r '.result.block.header.height')
+  #         tests/test_block_production.sh 127.0.0.1 26657 10
