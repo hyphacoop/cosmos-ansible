@@ -48,7 +48,7 @@ jobs:
           tests/test_block_production.sh 127.0.0.1 26657 10
       - name: Stop service
         run: | 
-          systemctl stop gaiad
+          sudo systemctl stop gaiad
           sleep 10
       - name: Create snapshot
         run: |
