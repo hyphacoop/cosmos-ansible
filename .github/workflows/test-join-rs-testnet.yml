@@ -58,7 +58,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: export-cosmos-hub-mainnet
+          name: join-ics-provider
           path: ~/artifact/
  
   # test-pion-1:
