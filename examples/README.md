@@ -25,7 +25,7 @@ Set up a node to join the Cosmos Hub [release testnet](https://github.com/cosmos
 
 * **Inventory file:** [`inventory-release-testnet.yml`](inventory-release-testnet.yml)
 * **Chain ID:** `theta-testnet-001`
-* **Gaia version:** `v17.0.0-rc0`
+* **Gaia version:** `v17.2.0`
 
 ### Run the playbook 
 
@@ -43,7 +43,7 @@ Set up nodes to join the [Interchain Security Testnet](https://github.com/cosmos
 
 * **Inventory file:** [`inventory-ics-testnet-provider.yml`](inventory-ics-testnet-provider.yml)
 * **Chain ID:** `provider`
-* **Gaia version:** `v17.0.0-rc0`
+* **Gaia version:** `v17.2.0`
 
 Run the playbook:
 ```
@@ -92,7 +92,7 @@ Set up a node with a single validator account.
 * **Inventory file:** [`inventory-local.yml`](inventory-local.yml)
 * **Chain ID:** `my-testnet`
 * **Moniker:** `cosmos-node`
-* **Gaia version:** `14.1.0`
+* **Gaia version:** `v17.2.0`
 * **Faucet REST server**
 
 ### Run the Playbook
@@ -201,7 +201,7 @@ Each of the validators has a balance of 100 000 000 uatom.
 
 - **Inventory file:** [`inventory-three-node.yml`](inventory-three-node.yml)
 - **Chain ID:** `cosmos-testnet`
-- **Gaia version:** `14.1.0`
+- **Gaia version:** `v17.2.0`
 
 Refer to the [Multi-Node Testnet Setup](/docs/Multi-Node-Testnet-Setup.md) guide in the `docs` folder to learn how these accounts were created and how you can set up a genesis file and private keys if you want to further customize your testnet.
 
@@ -230,7 +230,7 @@ Set up a chain with three validator nodes that have the following voting power:
 
 - **Inventory file:** [`inventory-three-node-scratch.yml`](inventory-three-node-scratch.yml)
 - **Chain ID:** `cosmos-testnet`
-- **Gaia version:** `14.1.0`
+- **Gaia version:** `v17.2.0`
 
 Refer to the [Multi-Node Testnet Setup](/docs/Multi-Node-Testnet-Setup.md) guide in the `docs` folder if you want to further customize your testnet.
 
@@ -258,7 +258,7 @@ Set up a host as a single-node developer testnet.
 
 * **Inventory file:** [`inventory-dev.yml`](inventory-dev.yml)
 * **Chain ID:** `my-devnet`
-* **Gaia version:** `14.1.0`
+* **Gaia version:** `v17.2.0`
 
 ### Requirements
 

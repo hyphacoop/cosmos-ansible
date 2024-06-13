@@ -3,7 +3,7 @@
 all:
   vars:
     ansible_user: root
-    chain_version: v14.1.0
+    chain_version: v17.2.0
     chain_id: cosmos-testnet
     minimum_gas_prices: '0.001uatom'
     chain_home_clear: true
@@ -12,7 +12,7 @@ all:
     chain_p2p_host: "p2p"
     chain_grpc_host: "grpc"
     swap_size: 8192
-    genesis_node: validator-40.testnet.com
+    genesis_node: 137.184.160.164
     dynamic_p2p_persistent_peers: true
     bonded_tokens_pool: 100000000
     bonded_supply_divider: 10
