@@ -224,8 +224,8 @@
     {{chain_bin}} genesis gentx validator {{chain_gentx_validator}}{{ chain_denom }} --keyring-backend="{{node_keyring}}" --home {{chain_home}} --moniker {{ validator_moniker }} --chain-id {{chain_id}}
   become_user: "{{node_user}}"
 
-- name: create multi-node self-delegation accounts save the mnemonics shown in the output
-  when: start_multinode
+- name: create multi-node self-delegation accounts save the mnemonics shown in the output (command for <v15)
+  when: start_multinode and (major_version|int < 15)
   shell: |
     cd $HOME
     PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
@@ -235,6 +235,17 @@
   become_user: "{{ node_user }}"
   delegate_to: "{{ genesis_node }}"
   throttle: 1
+
+- name: create multi-node self-delegation accounts save the mnemonics shown in the output (command for => v15)
+  when: start_multinode and (major_version|int ==15 or major_version|int > 15)
+  shell: |
+    cd $HOME
+    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+    {{chain_bin}} keys add {{ inventory_hostname }} --keyring-backend {{ node_keyring }} --home {{chain_home}} --output json
+    {{chain_bin}} genesis add-genesis-account {{ inventory_hostname }} {{ chain_validator_coins }}{{ chain_denom }} --home {{chain_home}} --keyring-backend="{{ node_keyring }}"
+  register: node_create_multinode_validator_output
+  become_user: "{{ node_user }}"
+  delegate_to: "{{ genesis_node }}"
 
 - name: save multi-node validator name, address, and mnemonic
   when: start_multinode
@@ -270,12 +281,22 @@
     msg: 'Node ID for {{ inventory_hostname }} is {{ node_multinode_id.stdout }} and public key is {{ node_multinode_pubkey.stdout }}'
   become_user: "{{node_user}}"
 
-- name: create multi-node validators
-  when: start_multinode
+- name: create multi-node validators (command for <v15)
+  when: start_multinode and (major_version|int < 15)
   shell: |
     cd $HOME
     PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
     {{chain_bin}} gentx {{ inventory_hostname }} {{ chain_gentx_validator }}{{ chain_denom }} --pubkey $({{chain_bin}} tendermint show-validator --home {{ node_user_home }}/multinode/{{ inventory_hostname }}) --keyring-backend="{{ node_keyring }}" --home {{ chain_home }} --chain-id {{ chain_id }} --node-id {{ node_multinode_id.stdout }} --moniker {{ validator_moniker }} --output-document {{ chain_home }}/config/gentx/{{ inventory_hostname }}.json
+  become_user: "{{ node_user }}"
+  delegate_to: "{{ genesis_node }}"
+  throttle: 1
+
+- name: create multi-node validators (command for => v15)
+  when: start_multinode and (major_version|int ==15 or major_version|int > 15)
+  shell: |
+    cd $HOME
+    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+    {{chain_bin}} genesis gentx {{ inventory_hostname }} {{ chain_gentx_validator }}{{ chain_denom }} --pubkey $({{chain_bin}} tendermint show-validator --home {{ node_user_home }}/multinode/{{ inventory_hostname }}) --keyring-backend="{{ node_keyring }}" --home {{ chain_home }} --chain-id {{ chain_id }} --node-id {{ node_multinode_id.stdout }} --moniker {{ validator_moniker }} --output-document {{ chain_home }}/config/gentx/{{ inventory_hostname }}.json
   become_user: "{{ node_user }}"
   delegate_to: "{{ genesis_node }}"
   throttle: 1

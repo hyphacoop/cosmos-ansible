@@ -3,7 +3,7 @@
 all:
   vars:
     chain_home_clear: true
-    chain_version: v15.2.0
+    chain_version: v17.2.0
     block_sync: false
     api_enabled: true
     chain_id: "my-devnet"
@@ -18,6 +18,7 @@ all:
     monitoring_prometheus: true
     grafana_ssh_url: root@monitor.devnet.com
     reboot: false
+    go_version: "1.21.1"
   children:
     node:
       hosts:
