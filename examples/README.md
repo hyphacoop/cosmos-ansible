@@ -25,7 +25,7 @@ Set up a node to join the Cosmos Hub [release testnet](https://github.com/cosmos
 
 * **Inventory file:** [`inventory-release-testnet.yml`](inventory-release-testnet.yml)
 * **Chain ID:** `theta-testnet-001`
-* **Gaia version:** `v17.2.0`
+* **Gaia version:** `v18.0.0-rc3`
 
 ### Run the playbook 
 
@@ -43,7 +43,7 @@ Set up nodes to join the [Interchain Security Testnet](https://github.com/cosmos
 
 * **Inventory file:** [`inventory-ics-testnet-provider.yml`](inventory-ics-testnet-provider.yml)
 * **Chain ID:** `provider`
-* **Gaia version:** `v17.2.0`
+* **Gaia version:** `v18.0.0-rc3`
 
 Run the playbook:
 ```

@@ -3,8 +3,9 @@
 all:
   vars:
     ansible_user: root
-    chain_version: v17.2.0
-    go_version: '1.21.6'
+    chain_version: 'v18.0.0-rc3'
+    go_version: '1.22.3'
+    genesis_patching: false
     genesis_url: "https://github.com/cosmos/testnets/raw/master/release/genesis.json.gz"
     chain_id: theta-testnet-001
     chain_home_clear: false

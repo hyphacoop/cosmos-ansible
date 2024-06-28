@@ -22,6 +22,7 @@ delegator_account_coins: "1000000000000"
 validator_moniker: "{{inventory_hostname}}"
 
 # genesis config
+genesis_patching: true
 chain_gov_testing: false
 chain_voting_period: 10s
 chain_denom: uatom
