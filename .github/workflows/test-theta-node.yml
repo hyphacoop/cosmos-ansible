@@ -10,7 +10,7 @@ concurrency:
   group: self-hosted-runners
 jobs:
   test-public-testnet:
-    runs-on: self-hosted-ubuntu-22.04
+    runs-on: cosmos-runner-set
     steps:
       # Get system info
       - run: ifconfig
@@ -42,8 +42,7 @@ jobs:
           python -m pip install toml toml-cli ansible
       - name: Configure ansible.cfg
         run: |
-          source ~/env/bin/activate
-          echo "transport = local" >> ansible.cfg
+          ansible_cfg=$(sed '/\[defaults\]/a transport = local' ansible.cfg); echo "$ansible_cfg" > ansible.cfg
       - name: Install ansible-galaxy requirements
         run: |
           source ~/env/bin/activate
