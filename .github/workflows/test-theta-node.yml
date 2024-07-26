@@ -17,7 +17,7 @@ jobs:
         run: |
           sudo apt update
           sudo apt dist-upgrade -y
-          sudo apt -y install python-is-python3 python3-distutils screen curl jq wget python3-venv python3-pip net-tools git
+          sudo apt -y install python-is-python3 python3-distutils screen curl jq wget python3-venv python3-pip net-tools git psmisc
       - run: ifconfig
       - run: lscpu
       - run: df -h
@@ -61,6 +61,12 @@ jobs:
           height=$(curl -s http://rpc.state-sync-01.theta-testnet.polypore.xyz:26657/block | jq -r '.result.block.header.height')
           echo "Waiting for block $[ $height + 100 ]..."
           tests/test_block_production.sh 127.0.0.1 26657 100
+      - name: Check if gaiad is still syncing
+        run: tests/test_still_syncing.sh 127.0.0.1 26657
+      - name: Check blocks are being produced
+        run: |
+          chain_height=$(curl -s $RPC_ENDPOINT/block | jq -r '.result.block.header.height')
+          tests/test_block_production.sh 127.0.0.1 26657 10
       - name: Stop services
         if: always()
         run: |
