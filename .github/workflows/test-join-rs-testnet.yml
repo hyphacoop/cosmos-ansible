@@ -45,7 +45,7 @@ jobs:
           chain_height=$(curl -s $RPC_ENDPOINT/block | jq -r '.result.block.header.height')
           tests/test_block_production.sh 127.0.0.1 26657 10
   test-pion-1:
-    runs-on: self-hosted-ubuntu-22.04
+    runs-on: cosmos-runner-set
     env:
       RPC_ENDPOINT: https://rpc.pion.ics-testnet.polypore.xyz
     steps:
@@ -60,7 +60,7 @@ jobs:
       - name: Install system packages
         run: |
           sudo apt update
-          sudo apt install -y curl jq net-tools screen
+          sudo apt install -y python-is-python3 python3-distutils screen curl jq wget python3-venv python3-pip net-tools git psmisc
       - run: ifconfig
       - run: lscpu
       - run: df -h
