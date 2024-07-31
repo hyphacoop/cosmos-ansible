@@ -350,22 +350,37 @@
   set_fact:
     genesis_json: "{{ genesis_input.stdout | from_json }}"
 
-- name: Update block params
-  when: (chain_binary_name == 'gaiad') and (genesis_patching)
+- name: Update block params for gaiad version < v19
+  when: (chain_binary_name == 'gaiad') and (genesis_patching) and major_version|int < 19
   set_fact:
-    updated_block_params: "{{ genesis_json['consensus_params']['block'] | combine({'max_bytes': chain_block_max_bytes}, recursive=True) }}"
+    updated_block_params: "{{ genesis_json['consensus']['params']['block'] | combine({'max_bytes': chain_block_max_bytes}, recursive=True) }}"
 
-- name: Update evidence params
-  when: (chain_binary_name == 'gaiad') and (genesis_patching)
+- name: Update block params for gaiad version => v19
+  when: (chain_binary_name == 'gaiad') and (genesis_patching) and (major_version|int ==19 or major_version|int > 19)
+  set_fact:
+    updated_block_params: "{{ genesis_json['consensus']['params']['block'] | combine({'max_bytes': chain_block_max_bytes}, recursive=True) }}"
+
+- name: Update evidence params for gaiad version < v19
+  when: (chain_binary_name == 'gaiad') and (genesis_patching) and major_version|int < 19
   set_fact:
     updated_evidence_params: "{{ genesis_json['consensus_params']['evidence'] | combine({'max_bytes': chain_evidence_max_bytes}, recursive=True) }}"
 
-- name: Update consensus block
-  when: (chain_binary_name == 'gaiad') and (genesis_patching)
+- name: Update evidence params for gaiad version => v19
+  when: (chain_binary_name == 'gaiad') and (genesis_patching) and (major_version|int ==19 or major_version|int > 19)
+  set_fact:
+    updated_evidence_params: "{{ genesis_json['consensus']['params']['evidence'] | combine({'max_bytes': chain_evidence_max_bytes}, recursive=True) }}"
+
+- name: Update consensus block for gaiad version < v19
+  when: (chain_binary_name == 'gaiad') and (genesis_patching) and major_version|int < 19
   set_fact:
     updated_consensus_params: "{{ genesis_json['consensus_params'] | combine({'block': updated_block_params}, recursive=True) }}"
 
-- name: Update consensus evidence
+- name: Update consensus block for gaiad version => v19
+  when: (chain_binary_name == 'gaiad') and (genesis_patching) and (major_version|int ==19 or major_version|int > 19)
+  set_fact:
+    updated_consensus_params: "{{ genesis_json['consensus']['params'] | combine({'block': updated_block_params}, recursive=True) }}"
+
+- name: Update consensus evidence for gaiad version
   when: (chain_binary_name == 'gaiad') and (genesis_patching)
   set_fact:
     updated_consensus_params: "{{ updated_consensus_params | combine({'evidence': updated_evidence_params}, recursive=True) }}"
@@ -385,13 +400,13 @@
   set_fact:
     updated_auth: "{{ genesis_json['app_state']['auth'] | combine({'params': updated_auth_params}, recursive=True) }}"
 
-- name: Update globalfee params
-  when: (chain_binary_name == 'gaiad') and (genesis_patching)
+- name: Update globalfee params for gaiad version < v19
+  when: (chain_binary_name == 'gaiad') and (genesis_patching) and major_version|int < 19
   set_fact:
     updated_globalfee_params: "{{ genesis_json['app_state']['globalfee']['params'] | combine({'minimum_gas_prices': chain_globalfee_min_gas_prices}, recursive=True) }}"
 
-- name: Update globalfee module
-  when: (chain_binary_name == 'gaiad') and (genesis_patching)
+- name: Update globalfee modulefor gaiad version < v19
+  when: (chain_binary_name == 'gaiad') and (genesis_patching) and major_version|int < 19
   set_fact:
     updated_globalfee: "{{ genesis_json['app_state']['globalfee'] | combine({'params': updated_globalfee_params}, recursive=True) }}"
 
@@ -400,8 +415,8 @@
   set_fact:
     updated_app_state: "{{ genesis_json['app_state'] | combine({'auth': updated_auth}, recursive=True) }}"
 
-- name: Update app_state with globalfee
-  when: (chain_binary_name == 'gaiad') and (genesis_patching)
+- name: Update app_state with globalfee for gaiad version < v19
+  when: (chain_binary_name == 'gaiad') and (genesis_patching) and major_version|int < 19
   set_fact:
     updated_app_state: "{{ updated_app_state | combine({'globalfee': updated_globalfee}, recursive=True) }}"
 
