@@ -15,7 +15,7 @@ all:
     letsencrypt_email: "validator@devnet.com"
     enable_swap: false
     swap_size: 8192
-    monitoring_prometheus: true
+    monitoring_prometheus: false
     grafana_ssh_url: root@monitor.devnet.com
     reboot: false
     go_version: "1.21.1"
