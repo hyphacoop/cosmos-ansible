@@ -3,7 +3,7 @@
 all:
   vars:
     ansible_user: root
-    chain_version: v20.0.0-rc0
+    chain_version: v20.0.0
     go_version: "1.22.3"
     genesis_patching: false
     genesis_url: "https://github.com/cosmos/testnets/raw/master/interchain-security/provider/provider-genesis.json"

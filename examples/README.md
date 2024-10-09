@@ -25,7 +25,7 @@ Set up a node to join the Cosmos Hub [release testnet](https://github.com/cosmos
 
 * **Inventory file:** [`inventory-release-testnet.yml`](inventory-release-testnet.yml)
 * **Chain ID:** `theta-testnet-001`
-* **Gaia version:** `v20.0.0-rc0`
+* **Gaia version:** `v20.0.0`
 
 ### Run the playbook 
 
@@ -43,7 +43,7 @@ Set up nodes to join the [Interchain Security Testnet](https://github.com/cosmos
 
 * **Inventory file:** [`inventory-ics-testnet-provider.yml`](inventory-ics-testnet-provider.yml)
 * **Chain ID:** `provider`
-* **Gaia version:** `v20.0.0-rc0`
+* **Gaia version:** `v20.0.0`
 
 Run the playbook:
 ```
@@ -92,7 +92,7 @@ Set up a node with a single validator account.
 * **Inventory file:** [`inventory-local.yml`](inventory-local.yml)
 * **Chain ID:** `my-testnet`
 * **Moniker:** `cosmos-node`
-* **Gaia version:** `v17.2.0`
+* **Gaia version:** `v20.0.0`
 * **Faucet REST server**
 
 ### Run the Playbook
@@ -258,7 +258,7 @@ Set up a host as a single-node developer testnet.
 
 * **Inventory file:** [`inventory-dev.yml`](inventory-dev.yml)
 * **Chain ID:** `my-devnet`
-* **Gaia version:** `v17.2.0`
+* **Gaia version:** `v20.0.0`
 
 ### Requirements
 

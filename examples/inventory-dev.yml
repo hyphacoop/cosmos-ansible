@@ -3,7 +3,7 @@
 all:
   vars:
     chain_home_clear: true
-    chain_version: v17.2.0
+    chain_version: v20.0.0
     block_sync: false
     api_enabled: true
     chain_id: "my-devnet"
