@@ -25,7 +25,7 @@ Set up a node to join the Cosmos Hub [release testnet](https://github.com/cosmos
 
 * **Inventory file:** [`inventory-release-testnet.yml`](inventory-release-testnet.yml)
 * **Chain ID:** `theta-testnet-001`
-* **Gaia version:** `v21.0.0-rc1`
+* **Gaia version:** `v21.0.1`
 
 ### Run the playbook 
 
@@ -43,7 +43,7 @@ Set up nodes to join the [Interchain Security Testnet](https://github.com/cosmos
 
 * **Inventory file:** [`inventory-ics-testnet-provider.yml`](inventory-ics-testnet-provider.yml)
 * **Chain ID:** `provider`
-* **Gaia version:** `v21.0.0-rc1`
+* **Gaia version:** `v21.0.1`
 
 Run the playbook:
 ```
@@ -92,7 +92,7 @@ Set up a node with a single validator account.
 * **Inventory file:** [`inventory-local.yml`](inventory-local.yml)
 * **Chain ID:** `my-testnet`
 * **Moniker:** `cosmos-node`
-* **Gaia version:** `v20.0.0`
+* **Gaia version:** `v21.0.1`
 * **Faucet REST server**
 
 ### Run the Playbook
@@ -122,69 +122,6 @@ The playbook will download the genesis file, and the validator keys are listed b
 
 ```
 ansible-playbook node.yml -i examples/inventory-local-genesis.yml -e 'target=SERVER_IP_OR_DOMAIN'
-```
-
-## Start a Local Replicated Security Testnet
-
-Set up a provider chain, a consumer chain, and Hermes on the same machine.
-
-* **Inventory file:** [`inventory-local-rs-testnet.yml`](inventory-local-rs-testnet.yml)
-* **Provider binary:** [`gaiad 14.1.0`](https://github.com/cosmos/gaia/releases/tag/v14.1.0)
-* **Provider denom:** `uatom`
-* **Consumer binary:** [`interchain-security-cd v2.0.0`](https://github.com/cosmos/interchain-security/releases/tag/v2.0.0)
-* **Consumer denom:** `ucons`
-
-The RPC, API, and gRPC ports are set to non-default values so both chains can run on the same machine. You can modify the `consumer` host entry in the inventory file to install a different consumer chain.
-
-### Run the playbook
-
-Use the same address for both `target_provider` and `target_consumer`:
-```
-ansible-playbook local-rs-testnet.yml -i examples/inventory-local-rs-testnet.yml -e 'target_provider=SERVER_IP_OR_DOMAIN target_consumer=SERVER_IP_OR_DOMAIN'
-```
-
-To check the validator set is being updated in the consumer chain:
-```bash
-su provider
-gaiad q tendermint-validator-set --node http://localhost:26650 # validator has a voting power of 8000 on the provider chain
-gaiad q tendermint-validator-set --node http://localhost:26660 # validator has a voting power of 8000 on the consumer chain
-gaiad tx staking delegate cosmosvaloper1r5v5srda7xfth3hn2s26txvrcrntldju7lnwmv 1000000000uatom --from validator --gas auto --fees 1000uatom -b block -y
-gaiad q tendermint-validator-set --node http://localhost:26650 # validator has a voting power of 9000 on the provider chain
-gaiad q tendermint-validator-set --node http://localhost:26660 # validator has a voting power of 9000 on the consumer chain
-```
-
-## Start a Local Replicated Security Testnet with a Neutron Consumer Chain
-
-Set up a provider chain, a Neutron consumer chain, and Hermes on the same machine.
-
-* **Inventory file:** [`inventory-local-rs-testnet-neutron.yml`](inventory-local-rs-testnet-neutron.yml)
-* **Provider binary:** [`gaiad `](https://github.com/cosmos/gaia/releases/tag/v10.0.2)
-* **Provider denom:** `uatom`
-* **Consumer binary:** [`neutrond v1.0.0-rc1`](https://github.com/neutron-org/neutron/releases/tag/v1.0.0-rc1)
-* **Consumer denom:** `untrn`
-
-The RPC, API, and gRPC ports are set to non-default values so both chains can run on the same machine. You can modify the `consumer` host entry in the inventory file to install a different consumer chain.
-
-### Run the playbook
-
-Use the same address for both `target_provider` and `target_consumer`:
-```
-ansible-playbook local-rs-testnet.yml -i examples/inventory-local-rs-testnet-neutron.yml -e 'target_provider=SERVER_IP_OR_DOMAIN target_consumer=SERVER_IP_OR_DOMAIN'
-```
-
-To run this on the same machine as Ansible locally:
-```
-ansible-playbook local-rs-testnet.yml -i examples/inventory-local-rs-testnet-neutron.yml -e 'ansible_connection=local target_provider=localhost target_consumer=localhost'
-```
-
-To check the validator set is being updated in the consumer chain:
-```bash
-su provider
-gaiad q tendermint-validator-set --node http://localhost:26650 # validator has a voting power of 8000 in the provider chain
-gaiad q tendermint-validator-set --node http://localhost:26660 # validator has a voting power of 8000 in the Neutron chain
-gaiad tx staking delegate cosmosvaloper1r5v5srda7xfth3hn2s26txvrcrntldju7lnwmv 1000000000uatom --from validator --gas auto --fees 1000uatom -b block -y
-gaiad q tendermint-validator-set --node http://localhost:26650 # validator has a voting power of 9000 in the provider chain
-gaiad q tendermint-validator-set --node http://localhost:26660 # validator has a voting power of 9000 in the Neutron chain
 ```
 
 ## Start a three-node testnet from existing keys and genesis file
@@ -258,7 +195,7 @@ Set up a host as a single-node developer testnet.
 
 * **Inventory file:** [`inventory-dev.yml`](inventory-dev.yml)
 * **Chain ID:** `my-devnet`
-* **Gaia version:** `v20.0.0`
+* **Gaia version:** `v21.0.1`
 
 ### Requirements
 
