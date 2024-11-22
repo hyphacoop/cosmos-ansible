@@ -13,7 +13,7 @@ all:
     chain_p2p_host: "p2p"
     chain_grpc_host: "grpc"
     addrbook_url: "https://quicksync.io/addrbook.cosmos.json"
-    minimum_gas_prices: "0.0025uatom"
+    minimum_gas_prices: "0.005uatom"
     enable_swap: true
     swap_size: 65536
     reboot: true
