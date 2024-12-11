@@ -4,7 +4,7 @@ all:
   vars:
     ansible_user: root
     chain_repository: "https://github.com/neutron-org/neutron.git"
-    chain_version: v5.0.0-rc0
+    chain_version: v5.0.2
     go_version: '1.22.3'
     genesis_patching: false
     genesis_url: "https://github.com/cosmos/testnets/raw/master/interchain-security/pion-1/pion-1-genesis-with-ccv.json.gz"
