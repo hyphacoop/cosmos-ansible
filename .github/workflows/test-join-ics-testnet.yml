@@ -45,8 +45,8 @@ jobs:
           chain_height=$(curl -s $RPC_ENDPOINT/block | jq -r '.result.block.header.height')
           tests/test_block_production.sh 127.0.0.1 26657 10
   test-pion-1:
-    # runs-on: cosmos-runner-set
-    runs-on: ubuntu-22.04
+    runs-on: cosmos-runner-set
+    # runs-on: ubuntu-22.04
     env:
       RPC_ENDPOINT: https://rpc.pion.ics-testnet.polypore.xyz
     steps:
