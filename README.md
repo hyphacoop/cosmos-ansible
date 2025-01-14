@@ -72,13 +72,9 @@ The operation will apply to all the nodes in the inventory:
 - To add a variable to the node config files, add it to:
   - `roles/node/templates/ansible_vars.json.j2`
 
-## 🌴 Automatic Tests
+## 🌴 Automatic Test
 
 This repository runs different tests automatically as defined below.
-
-### Fresh State (weekly)
-
-The fresh state test is run using GitHub Actions and results are displayed with a badge at the top of this readme.
 
 ### Joining the Public Testnet (weekly)
 
