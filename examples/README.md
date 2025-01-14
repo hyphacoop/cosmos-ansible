@@ -19,22 +19,6 @@ Before running any playbooks, first install the Ansible dependencies:
 ansible-galaxy install -r requirements.yml
 ```
 
-## Join the Cosmos Hub Release Testnet
-
-Set up a node to join the Cosmos Hub [release testnet](https://github.com/cosmos/testnets/tree/master/release) using state sync.
-
-* **Inventory file:** [`inventory-release-testnet.yml`](inventory-release-testnet.yml)
-* **Chain ID:** `theta-testnet-001`
-* **Gaia version:** `v21.0.1`
-
-### Run the playbook 
-
-```
-ansible-playbook node.yml -i examples/inventory-release-testnet.yml -e 'target=SERVER_IP_OR_DOMAIN'
-```
-
-This playbook obtains a trust block height and the corresponding hash ID from the first RPC server listed in the inventory file in order to use the state sync feature. 
-
 ## Join the Interchain Security Testnet
 
 Set up nodes to join the [Interchain Security Testnet](https://github.com/cosmos/testnets/tree/master/interchain-security).
