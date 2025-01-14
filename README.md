@@ -74,7 +74,7 @@ The operation will apply to all the nodes in the inventory:
 
 ## 🌴 Automatic Test
 
-This repository runs different tests automatically as defined below.
+This repository runs the following test automatically as defined below.
 
 ### Joining the Public Testnet (weekly)
 
