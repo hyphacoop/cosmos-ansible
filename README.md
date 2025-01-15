@@ -24,7 +24,7 @@ Use this toolkit to:
 
 ## 🌱 Quick Start
 
-To join the Cosmos Hub [Interchain Security Persistent Testnet](https://github.com/cosmos/testnets/tree/master/interchain-security) provider chain:
+To join the Cosmos Hub [Interchain Security Testnet](https://github.com/cosmos/testnets/tree/master/interchain-security):
 
 1. Clone this repository
 2. Run `ansible-galaxy install -r requirements.yml` to install dependencies 
