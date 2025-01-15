@@ -24,23 +24,19 @@ Use this toolkit to:
 
 ## 🌱 Quick Start
 
-To join the Cosmos Hub [release testnet](https://github.com/cosmos/testnets/tree/master/release):
+To join the Cosmos Hub [Interchain Security Testnet](https://github.com/cosmos/testnets/tree/master/interchain-security):
 
 1. Clone this repository
 2. Run `ansible-galaxy install -r requirements.yml` to install dependencies 
 3. Set up SSH access to the target machine
 4. Run the playbook
    ```
-   ansible-playbook node.yml -i examples/inventory-release-testnet.yml -e 'target=SERVER_IP_OR_DOMAIN'
+   ansible-playbook node.yml -i examples/inventory-ics-testnet-provider.yml -e 'target=SERVER_IP_OR_DOMAIN'
    ```
 5. Log into the target machine to follow the syncing process
    ```
-   journalctl -fu cosmovisor
+   journalctl -fu cv-provider
    ```
-
-Watch the video below to see the playbook in action:
-
-[![Join the Cosmos Hub Public Testnet](https://img.youtube.com/vi/4KkMblQ6wcY/0.jpg)](https://youtu.be/4KkMblQ6wcY)
 
 ## 🌳 Explore Further
 
@@ -76,19 +72,9 @@ The operation will apply to all the nodes in the inventory:
 - To add a variable to the node config files, add it to:
   - `roles/node/templates/ansible_vars.json.j2`
 
-## 🌴 Automatic Tests
+## 🌴 Automatic Test
 
-This repository runs different tests automatically as defined below.
-
-### Fresh State (weekly)
-
-The fresh state test is run using GitHub Actions and results are displayed with a badge at the top of this readme.
-
-### Mainnet exported genesis (bi-weekly)
-
-We export a genesis file from `cosmoshub-4` and modify it using our [tinkerer script](https://github.com/hyphacoop/cosmos-genesis-tinkerer). The exported and modified genesis files can be accessed [here](https://files.polypore.xyz/genesis/).
-
-We run the stateful tests with the modified genesis file when there is a major version of Gaia that is higher than the major version running on `cosmoshub-4`.
+This repository runs the following test automatically as defined below.
 
 ### Joining the Public Testnet (weekly)
 
