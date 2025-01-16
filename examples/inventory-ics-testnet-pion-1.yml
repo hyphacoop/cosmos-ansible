@@ -27,4 +27,4 @@ all:
           fast_sync: false
           statesync_enabled: true
           statesync_rpc_servers: 'https://rpc.pion.ics-testnet.polypore.xyz:443,https://rpc.pion.ics-testnet.polypore.xyz:443'
-          statesync_trust_period: 8h0m0s
+          statesync_trust_period: 16h0m0s
