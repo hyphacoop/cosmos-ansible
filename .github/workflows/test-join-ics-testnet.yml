@@ -94,7 +94,8 @@ jobs:
         run: |
           echo "while true; do $HOME/go/bin/neutrond start; sleep 1; done" > $HOME/chain.sh
           chmod +x $HOME/chain.sh
-          screen -S chain -d -m bash $HOME/chain.sh
+          screen -L -Logfile $HOME/chain.log -S chain -d -m bash $HOME/chain.sh
+          screen -r chain -p0 -X logfile flush 0
       - name: Wait for neutrond to start syncing
         run: |
           chain_height=$(curl -s $RPC_ENDPOINT/block | jq -r '.result.block.header.height')
