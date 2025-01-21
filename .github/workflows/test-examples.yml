@@ -3,9 +3,9 @@
 name: Test Examples
 on:
   workflow_dispatch:
-  schedule:
+  # schedule:
     # At 9:00 on Mondays.
-    - cron: '0 9 * * 1'
+    # - cron: '0 9 * * 1'
 jobs:
   fresh-state-testnet:
     runs-on: ubuntu-22.04
