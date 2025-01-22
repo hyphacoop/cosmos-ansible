@@ -4,13 +4,13 @@ all:
   vars:
     ansible_user: root
     chain_repository: "https://github.com/neutron-org/neutron.git"
-    chain_version: v5.0.2
+    chain_version: v5.0.6
     go_version: '1.22.3'
     genesis_patching: false
     genesis_url: "https://github.com/cosmos/testnets/raw/master/interchain-security/pion-1/pion-1-genesis-with-ccv.json.gz"
     chain_binary_name: neutrond
     chain_binary_source: release
-    chain_binary_release: https://github.com/neutron-org/neutron/releases/download/v5.0.2/neutrond-linux-amd64
+    chain_binary_release: https://github.com/neutron-org/neutron/releases/download/v5.0.6/neutrond-linux-amd64
     chain_id: pion-1
     node_user: neutron
     chain_home: "{{ node_user_home }}/.neutrond"
