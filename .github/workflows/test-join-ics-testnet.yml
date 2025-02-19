@@ -98,6 +98,7 @@ jobs:
           screen -r chain -p0 -X logfile flush 0
       - name: Wait for neutrond to start syncing
         run: |
+          tail -f $HOME/chain.log &
           chain_height=$(curl -s $RPC_ENDPOINT/block | jq -r '.result.block.header.height')
           tests/test_block_production.sh 127.0.0.1 26657 10
       - name: Check if neutrond is still syncing
