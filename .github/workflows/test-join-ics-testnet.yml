@@ -88,8 +88,8 @@ jobs:
       - name: Run playbook
         run: |
           chain_version=$(curl -s $RPC_ENDPOINT/abci_info? | jq -r '.result.response.version')
-          # ansible-playbook node.yml -i examples/inventory-ics-testnet-pion-1.yml --extra-vars "target=local reboot=false chain_home={{ node_user_home }}/.neutrond node_user=runner enable_swap=true swap_size=16384 use_cosmovisor=false node_service_name=neutrond chain_binary_release=https://github.com/neutron-org/neutron/releases/download/v$chain_version/neutrond-linux-amd64 chain_binary_source=release"
-          ansible-playbook node.yml -i examples/inventory-ics-testnet-pion-1.yml --extra-vars "target=local reboot=false chain_home={{ node_user_home }}/.neutrond node_user=runner enable_swap=false use_cosmovisor=false node_service_name=neutrond chain_start=false chain_version=v$chain_version"
+          ansible-playbook node.yml -i examples/inventory-ics-testnet-pion-1.yml --extra-vars "target=local reboot=false chain_home={{ node_user_home }}/.neutrond node_user=runner enable_swap=true swap_size=16384 use_cosmovisor=false node_service_name=neutrond chain_binary_release=https://github.com/neutron-org/neutron/releases/download/v$chain_version/neutrond-linux-amd64 chain_binary_source=release"
+          # ansible-playbook node.yml -i examples/inventory-ics-testnet-pion-1.yml --extra-vars "target=local reboot=false chain_home={{ node_user_home }}/.neutrond node_user=runner enable_swap=false use_cosmovisor=false node_service_name=neutrond chain_start=false chain_version=v$chain_version chain_binary_source=build"
       - name: Start neutrond
         run: |
           echo "while true; do $HOME/go/bin/neutrond start; sleep 1; done" > $HOME/chain.sh
