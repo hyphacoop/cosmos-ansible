@@ -28,6 +28,7 @@ chain_voting_period: 10s
 chain_denom: uatom
 chain_id: "cosmos-testnet"
 chain_block_max_bytes: "22020096"
+chain_block_max_gas: "75000000"
 chain_evidence_max_bytes: "1048576"
 chain_globalfee_min_gas_prices: []
 chain_auth_cost_per_byte: "10"

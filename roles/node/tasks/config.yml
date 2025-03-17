@@ -360,6 +360,11 @@
   set_fact:
     updated_block_params: "{{ genesis_json['consensus']['params']['block'] | combine({'max_bytes': chain_block_max_bytes}, recursive=True) }}"
 
+- name: Update block params for gaiad version => v19
+  when: (chain_binary_name == 'gaiad') and (genesis_patching) and (major_version|int ==19 or major_version|int > 19)
+  set_fact:
+    updated_block_params: "{{ genesis_json['consensus']['params']['block'] | combine({'max_gas': chain_block_max_gas}, recursive=True) }}"
+
 - name: Update evidence params for gaiad version < v19
   when: (chain_binary_name == 'gaiad') and (genesis_patching) and major_version|int < 19
   set_fact:
@@ -390,6 +395,16 @@
   set_fact:
     updated_genesis: "{{ genesis_json | combine({'consensus_params': updated_consensus_params}, recursive=True) }}"
 
+- name: Update consensus module
+  when: (chain_binary_name == 'gaiad') and (genesis_patching)
+  set_fact:
+    updated_consensus: "{{ genesis_json['consensus'] | combine({'params': updated_consensus_params}, recursive=True) }}"
+
+- name: Update genesis consensus
+  when: (chain_binary_name == 'gaiad') and (genesis_patching)
+  set_fact:
+    updated_genesis: "{{ genesis_json | combine({'consensus': updated_consensus}, recursive=True) }}"
+
 - name: Update auth params
   when: (chain_binary_name == 'gaiad') and (genesis_patching)
   set_fact:
@@ -405,10 +420,20 @@
   set_fact:
     updated_globalfee_params: "{{ genesis_json['app_state']['globalfee']['params'] | combine({'minimum_gas_prices': chain_globalfee_min_gas_prices}, recursive=True) }}"
 
+- name: Update feemarket params for gaiad version > v19
+  when: (chain_binary_name == 'gaiad') and (genesis_patching) and major_version|int > 19
+  set_fact:
+    updated_feemarket_params: "{{ genesis_json['app_state']['feemarket']['params'] | combine({'min_base_gas_price': minimum_gas_prices | regex_replace('[a-zA-Z]+$', '') }, recursive=True) }}"
+
 - name: Update globalfee modulefor gaiad version < v19
   when: (chain_binary_name == 'gaiad') and (genesis_patching) and major_version|int < 19
   set_fact:
     updated_globalfee: "{{ genesis_json['app_state']['globalfee'] | combine({'params': updated_globalfee_params}, recursive=True) }}"
+
+- name: Update feemarket modulefor gaiad version > v19
+  when: (chain_binary_name == 'gaiad') and (genesis_patching) and major_version|int > 19
+  set_fact:
+    updated_feemarket: "{{ genesis_json['app_state']['feemarket'] | combine({'params': updated_feemarket_params}, recursive=True) }}"
 
 - name: Update app_state with auth
   when: (chain_binary_name == 'gaiad') and (genesis_patching)
@@ -419,6 +444,11 @@
   when: (chain_binary_name == 'gaiad') and (genesis_patching) and major_version|int < 19
   set_fact:
     updated_app_state: "{{ updated_app_state | combine({'globalfee': updated_globalfee}, recursive=True) }}"
+
+- name: Update app_state with feemarket for gaiad version > v19
+  when: (chain_binary_name == 'gaiad') and (genesis_patching) and major_version|int > 19
+  set_fact:
+    updated_app_state: "{{ updated_app_state | combine({'feemarket': updated_feemarket}, recursive=True) }}"
 
 - name: Update genesis app_state
   when: (chain_binary_name == 'gaiad') and (genesis_patching)
