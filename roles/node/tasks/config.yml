@@ -425,15 +425,20 @@
   set_fact:
     updated_feemarket_params: "{{ genesis_json['app_state']['feemarket']['params'] | combine({'min_base_gas_price': minimum_gas_prices | regex_replace('[a-zA-Z]+$', '') }, recursive=True) }}"
 
+- name: Update feemarket state for gaiad version > v19
+  when: (chain_binary_name == 'gaiad') and (genesis_patching) and major_version|int > 19
+  set_fact:
+    updated_feemarket_state: "{{ genesis_json['app_state']['feemarket']['state'] | combine({'base_gas_price': minimum_gas_prices | regex_replace('[a-zA-Z]+$', '') }, recursive=True) }}"
+
 - name: Update globalfee modulefor gaiad version < v19
   when: (chain_binary_name == 'gaiad') and (genesis_patching) and major_version|int < 19
   set_fact:
     updated_globalfee: "{{ genesis_json['app_state']['globalfee'] | combine({'params': updated_globalfee_params}, recursive=True) }}"
 
-- name: Update feemarket modulefor gaiad version > v19
+- name: Update feemarket module for gaiad version > v19
   when: (chain_binary_name == 'gaiad') and (genesis_patching) and major_version|int > 19
   set_fact:
-    updated_feemarket: "{{ genesis_json['app_state']['feemarket'] | combine({'params': updated_feemarket_params}, recursive=True) }}"
+    updated_feemarket: "{{ genesis_json['app_state']['feemarket'] | combine({'params': updated_feemarket_params, 'state': updated_feemarket_state}, recursive=True) }}"
 
 - name: Update app_state with auth
   when: (chain_binary_name == 'gaiad') and (genesis_patching)
