@@ -420,6 +420,11 @@
   set_fact:
     updated_globalfee_params: "{{ genesis_json['app_state']['globalfee']['params'] | combine({'minimum_gas_prices': chain_globalfee_min_gas_prices}, recursive=True) }}"
 
+- name: Update globalfee module for gaiad version < v19
+  when: (chain_binary_name == 'gaiad') and (genesis_patching) and major_version|int < 19
+  set_fact:
+    updated_globalfee: "{{ genesis_json['app_state']['globalfee'] | combine({'params': updated_globalfee_params}, recursive=True) }}"
+
 - name: Update feemarket params for gaiad version > v19
   when: (chain_binary_name == 'gaiad') and (genesis_patching) and major_version|int > 19
   set_fact:
@@ -430,15 +435,26 @@
   set_fact:
     updated_feemarket_state: "{{ genesis_json['app_state']['feemarket']['state'] | combine({'base_gas_price': minimum_gas_prices | regex_replace('[a-zA-Z]+$', '') }, recursive=True) }}"
 
-- name: Update globalfee modulefor gaiad version < v19
-  when: (chain_binary_name == 'gaiad') and (genesis_patching) and major_version|int < 19
-  set_fact:
-    updated_globalfee: "{{ genesis_json['app_state']['globalfee'] | combine({'params': updated_globalfee_params}, recursive=True) }}"
-
 - name: Update feemarket module for gaiad version > v19
   when: (chain_binary_name == 'gaiad') and (genesis_patching) and major_version|int > 19
   set_fact:
     updated_feemarket: "{{ genesis_json['app_state']['feemarket'] | combine({'params': updated_feemarket_params, 'state': updated_feemarket_state}, recursive=True) }}"
+
+- name: Update wasm params code upload access permission for gaiad version > v19
+  when: (chain_binary_name == 'gaiad') and (genesis_patching) and major_version|int > 19
+  set_fact:
+    updated_wasm_code_upload_access_permission: "{{ genesis_json['app_state']['wasm']['params']['code_upload_access'] | combine({'permission': wasm_code_upload_access_permission, 'addresses': wasm_code_upload_access_addresses}, recursive=True) }}"
+
+- name: Update wasm params instantiate default permission for gaiad version > v19
+  when: (chain_binary_name == 'gaiad') and (genesis_patching) and major_version|int > 19
+  set_fact:
+    updated_wasm_instantiate_default_permission: "{{ genesis_json['app_state']['wasm']['params'] | combine({'instantiate_default_permission': wasm_instantiate_default_permission}, recursive=True) }}"
+
+- name: Update wasm module for gaiad version > v19
+  when: (chain_binary_name == 'gaiad') and (genesis_patching) and major_version|int > 19
+  set_fact:
+    # updated_wasm: "{{ genesis_json['app_state']['wasm'] | combine({'params':{'code_upload_access': updated_wasm_code_upload_access_permission}}, recursive=True) }}"
+    updated_wasm: "{{ genesis_json['app_state']['wasm'] | combine({'params': updated_wasm_instantiate_default_permission}, {'params':{'code_upload_access': updated_wasm_code_upload_access_permission}}, recursive=True) }}"
 
 - name: Update app_state with auth
   when: (chain_binary_name == 'gaiad') and (genesis_patching)
@@ -454,6 +470,11 @@
   when: (chain_binary_name == 'gaiad') and (genesis_patching) and major_version|int > 19
   set_fact:
     updated_app_state: "{{ updated_app_state | combine({'feemarket': updated_feemarket}, recursive=True) }}"
+
+- name: Update app_state with wasm for gaiad version > v19
+  when: (chain_binary_name == 'gaiad') and (genesis_patching) and major_version|int > 19
+  set_fact:
+    updated_app_state: "{{ updated_app_state | combine({'wasm': updated_wasm}, recursive=True) }}"
 
 - name: Update genesis app_state
   when: (chain_binary_name == 'gaiad') and (genesis_patching)

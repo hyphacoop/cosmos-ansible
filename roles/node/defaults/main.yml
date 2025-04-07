@@ -33,6 +33,11 @@ chain_evidence_max_bytes: "1048576"
 chain_globalfee_min_gas_prices: []
 chain_auth_cost_per_byte: "10"
 
+# genesis wasm config
+wasm_code_upload_access_permission: "Everybody"
+wasm_code_upload_access_addresses: []
+wasm_instantiate_default_permission: "Everybody"
+
 # Default variables for creating a validator
 chain_create_validator: false
 chain_recover_validator: false
