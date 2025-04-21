@@ -1,6 +1,32 @@
 ---
-# Configure a chain node
-- hosts: node
+- name: Gather node IP facts
+  hosts: node
+  gather_facts: yes
+  tasks:
+    - name: Set node IP fact
+      set_fact:
+        node_ip: "{{ ansible_default_ipv4.address }}"
+
+- name: Build complete IP mapping
+  hosts: localhost
+  tasks:
+    - name: Create comprehensive IP mapping
+      set_fact:
+        node_ip_map: "{{ dict(groups['node'] | map('extract', hostvars, ['node_ip']) | zip(groups['node'])) }}"
+
+    - name: Debug IP mapping to verify all hosts
+      debug:
+        var: node_ip_map
+
+- name: Distribute IP mapping to all nodes
+  hosts: node
+  tasks:
+    - name: Ensure all nodes have the complete IP mapping
+      set_fact:
+        node_ip_map: "{{ hostvars['localhost']['node_ip_map'] }}"
+
+- name: Rest of your playbook
+  hosts: node
   become: true
   roles:
   - node
