@@ -1,7 +1,44 @@
+# Secrets and sensitive data
 secrets/
-*.log
-inventory.yml
-releases.json
-!logs/*.log
-.vscode
+*.env
 .env
+*.key
+*.pem
+
+# Logs
+*.log
+logs/
+!logs/.gitkeep
+!logs/*.log
+
+# Ansible inventory files
+inventory.yml
+inventory/*.yml
+host_vars/
+group_vars/
+
+# Local configs
+.vscode/
+.idea/
+*.retry
+*.tar.gz
+*.zip
+*.bak
+
+# Python artifacts (if scripts are extended)
+__pycache__/
+*.py[cod]
+*.pyo
+.Python
+build/
+dist/
+*.egg-info/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Release artifacts
+releases.json
+*.deb
+*.rpm
