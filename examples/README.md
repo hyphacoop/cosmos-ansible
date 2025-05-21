@@ -27,7 +27,7 @@ Set up nodes to join the [Interchain Security Testnet](https://github.com/cosmos
 
 * **Inventory file:** [`inventory-ics-testnet-provider.yml`](inventory-ics-testnet-provider.yml)
 * **Chain ID:** `provider`
-* **Gaia version:** `v23.0.1`
+* **Gaia version:** `v24.0.0-rc0`
 
 Run the playbook:
 ```
@@ -44,30 +44,6 @@ If you want to run a validator, do the following after this play has finished ru
 ```
 gaiad keys add <validator_keypair_name> --home ~/.gaia --keyring-backend test --output json > ~/validator-keypair.json 2>&1
 ```
-
----
-
-### `pion-1` Consumer Chain
-
-* **Inventory file:** [`inventory-ics-testnet-pion-1.yml`](inventory-ics-testnet-pion-1.yml)
-* **Chain ID:** `pion-1`
-
-Run the playbook using the keys collected from the provider chain node:
-```
-ansible-playbook node.yml -i examples/inventory-ics-testnet-pion-1.yml -e 'target=SERVER_IP_OR_DOMAIN node_key_file=node_key.json priv_validator_key_file=priv_validator_key.json"
-```
-
----
-
-To set up a validator, do the following after the consumer chain plays have finished running and all nodes are synced:
-
-3. Get tokens for your validator address.
-4. Bond the validator on the provider chain:
-```
-gaiad tx staking create-validator --amount 2000000uatom --pubkey <validator_public_key> --from <validator_keypair_name> --keyring-backend test --home ~/.gaia --chain-id provider --commission-max-change-rate 0.01 --commission-max-rate 0.2 --commission-rate 0.1 --moniker <validator_moniker> --min-self-delegation 1 -y
-```
-
-For more information, see the [validator joining guide](https://github.com/cosmos/testnets/blob/master/interchain-security/VALIDATOR_JOINING_GUIDE.md).
 
 ## Start a Local Testnet
 
