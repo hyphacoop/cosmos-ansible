@@ -44,4 +44,3 @@ jobs:
         run: |
           chain_height=$(curl -s $RPC_ENDPOINT/block | jq -r '.result.block.header.height')
           tests/test_block_production.sh 127.0.0.1 26657 10
- 
