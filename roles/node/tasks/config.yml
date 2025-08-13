@@ -210,6 +210,91 @@
     dest="{{chain_home}}/{{delegator_account_name}}.json"
   become_user: "{{ node_user }}"
 
+- name: patch genesis file with specified denom
+  when: not (archive_url is defined)
+  replace:
+    path: '{{chain_home}}/config/genesis.json'
+    regexp: '"stake"'
+    replace: '"{{chain_denom}}"'
+
+- name: EVM configure client.toml
+  when: cosmos_evm
+  args:
+    executable: /bin/bash
+  become_user: "{{node_user}}"
+  shell: |
+    source {{ node_user_home }}/env/bin/activate
+    toml set --toml-path {{chain_home}}/config/client.toml chain-id {{ chain_id }}
+    toml set --toml-path {{chain_home}}/config/client.toml keyring-backend {{ client_keyring_backend }}
+
+- name: EVM configure app.toml
+  when: cosmos_evm
+  args:
+    executable: /bin/bash
+  become_user: "{{node_user}}"
+  shell: |
+    source {{ node_user_home }}/env/bin/activate
+    toml set --toml-path {{chain_home}}/config/app.toml evm.tracer {{ evm_tracer }}
+    toml set --toml-path {{chain_home}}/config/app.toml evm.max-tx-gas-wanted  --to-int {{ evm_max_tx_gas_wanted }}
+    toml set --toml-path {{chain_home}}/config/app.toml evm.cache-preimage  --to-bool {{ evm_cache_preimage }}
+    toml set --toml-path {{chain_home}}/config/app.toml evm.evm-chain-id {{ evm_chain_id }}
+    # json-rpc
+    toml set --toml-path {{chain_home}}/config/app.toml json-rpc.enable --to-bool {{ evm_json_rpc_enable }}
+    toml set --toml-path {{chain_home}}/config/app.toml json-rpc.address {{ evm_json_rpc_address }}
+    toml set --toml-path {{chain_home}}/config/app.toml json-rpc.ws-address {{ evm_json_rpc_ws_address }}
+    toml set --toml-path {{chain_home}}/config/app.toml json-rpc.api {{ evm_json_rpc_api }}
+    toml set --toml-path {{chain_home}}/config/app.toml json-rpc.gas-cap --to-int {{ evm_json_rpc_gas_cap }}
+    toml set --toml-path {{chain_home}}/config/app.toml json-rpc.allow-insecure-unlock --to-bool {{ evm_json_rpc_allow_insecure_unlock }}
+    toml set --toml-path {{chain_home}}/config/app.toml json-rpc.evm-timeout {{ evm_json_rpc_evm_timeout }}
+    toml set --toml-path {{chain_home}}/config/app.toml json-rpc.txfee-cap --to-int {{ evm_json_rpc_txfee_cap }}
+    toml set --toml-path {{chain_home}}/config/app.toml json-rpc.filter-cap --to-int {{ evm_json_rpc_filter_cap }}
+    toml set --toml-path {{chain_home}}/config/app.toml json-rpc.feehistory-cap --to-int {{ evm_json_rpc_feehistory_cap }}
+    toml set --toml-path {{chain_home}}/config/app.toml json-rpc.logs-cap --to-int {{ evm_json_rpc_logs_cap }}
+    toml set --toml-path {{chain_home}}/config/app.toml json-rpc.block-range-cap --to-int {{ evm_json_rpc_block_range_cap }}
+    toml set --toml-path {{chain_home}}/config/app.toml json-rpc.http-timeout {{ evm_json_rpc_http_timeout }}
+    toml set --toml-path {{chain_home}}/config/app.toml json-rpc.http-idle-timeout {{ evm_json_rpc_http_idle_timeout }}
+    toml set --toml-path {{chain_home}}/config/app.toml json-rpc.allow-unprotected-txs --to-bool {{ evm_json_rpc_allow_unprotected_txs }}
+    toml set --toml-path {{chain_home}}/config/app.toml json-rpc.max-open-connections --to-int {{ evm_json_rpc_max_open_connections }}
+    toml set --toml-path {{chain_home}}/config/app.toml json-rpc.enable-indexer --to-bool {{ evm_json_rpc_enable_indexer }}
+    toml set --toml-path {{chain_home}}/config/app.toml json-rpc.metrics-address {{ evm_json_rpc_metrics_address}}
+    toml set --toml-path {{chain_home}}/config/app.toml json-rpc.fix-revert-gas-refund-height --to-int {{ evm_json_rpc_fix_revert_gas_refund_height }}
+
+- name: EVM set active_static_precompiles
+  when: cosmos_evm
+  become_user: "{{node_user}}"
+  shell: |
+    cd $HOME
+    jq -r '.app_state.evm.params.active_static_precompiles[.app_state.evm.params.active_static_precompiles| length] |= "{{ item }}"' {{chain_home}}/config/genesis.json > tmp.json
+    mv tmp.json {{chain_home}}/config/genesis.json
+  loop: "{{ evm_active_static_precompiles }}"
+
+- name: EVM set erc20_native_precompiles
+  when: cosmos_evm
+  become_user: "{{node_user}}"
+  shell: |
+    cd $HOME
+    jq -r '.app_state.erc20.params.native_precompiles[.app_state.erc20.params.native_precompiles| length] |= "{{ item }}"' {{chain_home}}/config/genesis.json > tmp.json
+    mv tmp.json {{chain_home}}/config/genesis.json
+  loop: "{{ erc20_native_precompiles }}"
+
+- name: EVM set erc20_token_pairs
+  when: cosmos_evm
+  become_user: "{{node_user}}"
+  shell: |
+    cd $HOME
+    jq -r '.app_state.erc20.token_pairs[.app_state.erc20.token_pairs| length] |= . + {{ item }}' {{chain_home}}/config/genesis.json > tmp.json
+    mv tmp.json {{chain_home}}/config/genesis.json
+  loop: "{{ erc20_token_pairs }}"
+
+- name: EVM set bank denom_metadata
+  when: cosmos_evm
+  become_user: "{{node_user}}"
+  shell: |
+    cd $HOME
+    jq -r '.app_state.bank.denom_metadata[.app_state.bank.denom_metadata| length] |= . + {{ item }}' {{chain_home}}/config/genesis.json > tmp.json
+    mv tmp.json {{chain_home}}/config/genesis.json
+  loop: "{{ bank_denom_metadata }}"
+
 - name: gentx validator (command for < v15)
   when: (chain_create_validator or chain_recover_validator) and major_version|int < 15
   shell: |
@@ -332,13 +417,6 @@
     jq '.app_state.gov.params.min_deposit[0].amount |= "1"' genesis.json > temp.json
     jq '.app_state.gov.params.voting_period |= "{{ chain_voting_period }}"' temp.json > genesis.json
     rm temp.json
-
-- name: patch genesis file with specified denom
-  when: not (archive_url is defined)
-  replace:
-    path: '{{chain_home}}/config/genesis.json'
-    regexp: '"stake"'
-    replace: '"{{chain_denom}}"'
 
 - name: Read the genesis file
   when: chain_binary_name == 'gaiad'

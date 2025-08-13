@@ -81,6 +81,7 @@
     name:
       - pyOpenSSL
       - toml
+      - toml-cli
       - github3.py
   become_user: '{{ node_user }}'
 
