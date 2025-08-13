@@ -1,0 +1,47 @@
+---
+# yamllint disable rule:line-length
+all:
+  vars:
+    cosmos_evm: true
+    chain_home_clear: true
+    chain_repository: https://github.com/cosmos/evm.git
+    chain_version: v1.0.0-rc2
+    chain_id: my-evm-testnet-1
+    chain_create_validator: true
+    node_user: evm
+    chain_binary_name: evmd
+    node_service_name: evmd
+    chain_denom: "atest"
+    chain_home: "{{node_user_home}}/.evmd"
+    go_version: "1.24.6"
+    major_version: "25"
+    minor_version: "0"
+    patch_version: "0"
+    ansible_user: root
+    block_sync: false
+    use_cosmovisor: false
+    delegator_account_coins: "100000000000000000000000000"
+    chain_validator_coins: "100000000000000000000000000"
+    chain_gentx_validator: "80000000000000000000000000"
+    evm_active_static_precompiles:
+      - "0x0000000000000000000000000000000000000100"
+      - "0x0000000000000000000000000000000000000400"
+      - "0x0000000000000000000000000000000000000800"
+      - "0x0000000000000000000000000000000000000801"
+      - "0x0000000000000000000000000000000000000802"
+      - "0x0000000000000000000000000000000000000803"
+      - "0x0000000000000000000000000000000000000804"
+      - "0x0000000000000000000000000000000000000805"
+      - "0x0000000000000000000000000000000000000806"
+      - "0x0000000000000000000000000000000000000807"
+    erc20_native_precompiles:
+      - "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"
+    erc20_token_pairs:
+      - '{"contract_owner": 1, "erc20_address": "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE", "denom": "atest", "enabled": true }'
+    bank_denom_metadata:
+      - '{"description":"The native staking token for evmd.","denom_units":[{"denom":"atest","exponent":0,"aliases":["attotest"]},{"denom":"test","exponent":18,"aliases":[]}],"base":"atest","display":"test","name":"Test Token","symbol":"TEST","uri":"","uri_hash":""}'
+  children:
+    node:
+      hosts:
+        "{{ target }}":
+          chain_moniker: evm-node

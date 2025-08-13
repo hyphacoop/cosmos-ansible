@@ -250,3 +250,39 @@ binary_arch_map:
 start_multinode: false
 sync_multinode_genesis: false
 dynamic_p2p_persistent_peers: false
+
+# EVM config params
+cosmos_evm: false
+evm_tracer: ""
+evm_max_tx_gas_wanted: 0
+evm_cache_preimage: false
+evm_chain_id: 4221
+evm_json_rpc_enable : false
+evm_json_rpc_address: "127.0.0.1:8545"
+evm_json_rpc_ws_address: "127.0.0.1:8546"
+evm_json_rpc_api: "eth,net,web3"
+evm_json_rpc_gas_cap: 25000000
+evm_json_rpc_allow_insecure_unlock: true
+evm_json_rpc_evm_timeout: "5s"
+evm_json_rpc_txfee_cap: 1
+evm_json_rpc_filter_cap: 200
+evm_json_rpc_feehistory_cap: 200
+evm_json_rpc_logs_cap: 10000
+evm_json_rpc_block_range_cap: 10000
+evm_json_rpc_http_timeout: "30s"
+evm_json_rpc_http_idle_timeout: "2m0s"
+evm_json_rpc_allow_unprotected_txs: false
+evm_json_rpc_max_open_connections: 0
+evm_json_rpc_enable_indexer: false
+evm_json_rpc_metrics_address: "127.0.0.1:6065"
+evm_json_rpc_fix_revert_gas_refund_height: 0
+
+# EVM params
+evm_active_static_precompiles: []
+erc20_enable: true
+erc20_native_precompiles: []
+erc20_dynamic_precompiles: []
+erc20_permissionless_registration: true
+erc20_token_pairs: []
+erc20_allowances: []
+bank_denom_metadata: []
