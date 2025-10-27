@@ -1,0 +1,15 @@
+---
+# Minimal playbook to ONLY setup monitoring without touching the chain
+- hosts: node
+  become: true
+  tasks:
+    - name: Setup node-exporter
+      include_role:
+        name: node-exporter
+
+    - name: Setup on prometheus server
+      include_role:
+        name: configure-prometheus
+        apply:
+          delegate_to: "{{ grafana_ssh_url }}"
+      when: monitoring_prometheus | default(false) | bool
