@@ -1,4 +1,5 @@
 ---
+# Existing scrape target configuration (per-node)
 - name: Copy over Prometheus configuration
   template:
     src: prometheus.json.j2
@@ -14,3 +15,85 @@
     mode: 0644
     owner: prometheus
     group: prometheus
+
+# Alert rules deployment (run once per playbook execution)
+- name: Create alert rules directory
+  delegate_to: "{{ grafana_ssh_url }}"
+  file:
+    path: /opt/alertmanager/rules
+    state: directory
+    owner: prometheus
+    group: prometheus
+    mode: 0755
+  run_once: true
+  tags:
+    - alerting
+    - monitoring
+
+- name: Deploy shared alert rules
+  delegate_to: "{{ grafana_ssh_url }}"
+  copy:
+    src: "alert-rules/{{ item }}"
+    dest: "/opt/alertmanager/rules/{{ item }}"
+    owner: prometheus
+    group: prometheus
+    mode: 0644
+  loop:
+    - chain-health.yml
+    - relayer-health.yml
+    - host-os.yml
+    - blackbox.yml
+    - prometheus-selfcheck.yml
+  notify: reload prometheus
+  run_once: true
+  tags:
+    - alerting
+    - monitoring
+
+# Alertmanager fragment-based configuration
+- name: Create alertmanager fragments directory
+  delegate_to: "{{ grafana_ssh_url }}"
+  file:
+    path: /opt/alertmanager/fragments
+    state: directory
+    owner: prometheus
+    group: prometheus
+    mode: 0755
+  run_once: true
+  tags:
+    - alerting
+    - monitoring
+
+- name: Deploy alertmanager fragment templates
+  delegate_to: "{{ grafana_ssh_url }}"
+  template:
+    src: "alertmanager-fragments/{{ item }}"
+    dest: "/opt/alertmanager/fragments/{{ item | regex_replace('\\.j2$', '') }}"
+    owner: prometheus
+    group: prometheus
+    mode: 0644
+  loop:
+    - 00-header.yml.j2
+    - 10-routes.yml.j2
+    - 20-receivers.yml.j2
+    - 30-inhibit.yml.j2
+  run_once: true
+  notify: assemble alertmanager config
+  tags:
+    - alerting
+    - monitoring
+
+- name: Assemble alertmanager.yml from fragments
+  delegate_to: "{{ grafana_ssh_url }}"
+  assemble:
+    src: /opt/alertmanager/fragments
+    dest: /opt/alertmanager/alertmanager.yml
+    regexp: '\.yml$'
+    owner: prometheus
+    group: prometheus
+    mode: 0644
+  run_once: true
+  notify: reload alertmanager
+  tags:
+    - alerting
+    - monitoring

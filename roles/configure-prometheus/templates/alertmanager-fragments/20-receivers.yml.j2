@@ -1,0 +1,25 @@
+receivers:
+  # Matrix webhook - default receiver for all alerts
+  - name: 'cosmos-monitoring-matrix'
+    webhook_configs:
+      - url: 'http://localhost:3001/alerts?secret={{ matrix_alertmanager_secret }}'
+        send_resolved: true
+
+{% raw %}
+  # Future PagerDuty receivers (placeholder):
+  # - name: 'pagerduty-mainnet-critical'
+  #   pagerduty_configs:
+  #     - service_key: '{{ pagerduty_mainnet_integration_key }}'
+  #       severity: critical
+  #       description: '[MAINNET-CRITICAL] {{ .GroupLabels.alertname }}'
+  #       details:
+  #         summary: '{{ .CommonAnnotations.summary }}'
+  #         description: '{{ .CommonAnnotations.description }}'
+  #
+  # - name: 'pagerduty-mainnet-warning'
+  #   pagerduty_configs:
+  #     - service_key: '{{ pagerduty_mainnet_integration_key }}'
+  #       severity: warning
+  #       description: '[MAINNET] {{ .GroupLabels.alertname }}'
+{% endraw %}
+

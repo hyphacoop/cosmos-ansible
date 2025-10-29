@@ -2,5 +2,7 @@
 # Configure a chain node
 - hosts: node
   become: true
+  vars_files:
+    - ../cosmos-configurations-private/vault.yml
   roles:
   - node
