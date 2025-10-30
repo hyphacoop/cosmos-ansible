@@ -1,0 +1,12 @@
+---
+# Alertmanager configuration
+# This should be overridden in inventory files with vault variables
+matrix_alertmanager_secret: ""  # Required: set via {{ vault_matrix_secret }} in inventory
+
+# Future PagerDuty integration (placeholders)
+# pagerduty_mainnet_integration_key: ""  # Optional: set via {{ vault_pagerduty_mainnet_key }}
+# pagerduty_testnet_integration_key: ""  # Optional: set via {{ vault_pagerduty_testnet_key }}
+
+# Environment classification
+# Used for alert routing (future PagerDuty integration)
+chain_mainnet: false  # Set to true in mainnet inventory files

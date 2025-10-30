@@ -2,6 +2,8 @@
 # Minimal playbook to ONLY setup monitoring without touching the chain
 - hosts: node
   become: true
+  vars_files:
+    - ../cosmos-configurations-private/vault.yml
   tasks:
     - name: Setup node-exporter
       include_role:

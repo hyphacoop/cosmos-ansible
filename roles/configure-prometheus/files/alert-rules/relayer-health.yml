@@ -1,0 +1,52 @@
+groups:
+  - name: IBCRelayerHealth
+    rules:
+      # Hermes Relayer Health
+      - alert: RelayerProcessDown
+        expr: up{job="hermes"} == 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "IBC Relayer process down on {{ $labels.instance }}"
+          description: "Hermes relayer is not responding on {{ $labels.instance }} for 5+ minutes. IBC packets may not be relayed."
+          # Future: Critical on mainnet should page via PagerDuty
+
+      # Wallet Balance Alerts (if tracked)
+      - alert: RelayerWalletLowBalance
+        expr: hermes_wallet_balance < 1000000
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Relayer wallet low balance on {{ $labels.instance }}"
+          description: "Relayer wallet balance is below 1 token on {{ $labels.instance }}. May not be able to relay packets soon."
+
+      - alert: RelayerWalletCriticalBalance
+        expr: hermes_wallet_balance < 100000
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Relayer wallet critically low on {{ $labels.instance }}"
+          description: "Relayer wallet balance is critically low on {{ $labels.instance }}. Top up immediately."
+          # Future: Critical on mainnet should page via PagerDuty
+
+      # Packet/Transaction Health
+      - alert: RelayerHighErrorRate
+        expr: rate(hermes_tx_failed_total[10m]) > 0.1
+        for: 15m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High relayer error rate on {{ $labels.instance }}"
+          description: "Relayer on {{ $labels.instance }} is experiencing {{ $value }} transaction failures per second"
+
+      - alert: RelayerStuckPackets
+        expr: hermes_backlog_pending_packets > 100
+        for: 30m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Relayer has stuck packets on {{ $labels.instance }}"
+          description: "Relayer on {{ $labels.instance }} has {{ $value }} pending packets for 30+ minutes"

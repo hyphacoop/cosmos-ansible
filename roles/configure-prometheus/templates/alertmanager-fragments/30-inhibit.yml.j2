@@ -1,0 +1,14 @@
+inhibit_rules:
+  # Inhibit warning alerts if critical alert is firing for the same alert
+  - source_match:
+      severity: 'critical'
+    target_match:
+      severity: 'warning'
+    equal: ['alertname', 'instance', 'chain_id']
+
+  # Inhibit error alerts if critical alert is firing
+  - source_match:
+      severity: 'critical'
+    target_match:
+      severity: 'error'
+    equal: ['alertname', 'instance', 'chain_id']

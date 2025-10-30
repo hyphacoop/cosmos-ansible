@@ -1,0 +1,139 @@
+groups:
+
+- name: nodexporter-HostOSMonitor
+  rules:
+
+  - alert: HostOutOfMemory-Error
+    expr: node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes * 100 < 10
+    for: 10m
+    labels:
+      severity: error
+    annotations:
+      summary: "Out of memory (instance {{ $labels.instance }})"
+      description: "Node memory is filling up (< 10% left)\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+
+  - alert: HostOutOfMemory-Warning
+    expr: node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes * 100 < 20
+    for: 15m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Out of memory (instance {{ $labels.instance }})"
+      description: "Node memory is filling up (< 20% left)\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+
+#  - alert: UnusualNetworkThroughputInbound
+#    expr: sum by (instance) (irate(node_network_receive_bytes_total[2m])) / 1024 / 1024 > 100
+#   for: 5m
+#    labels:
+#      severity: warning
+#    annotations:
+#      summary: "Unusual network throughput inbound (instance {{ $labels.instance }})"
+#      description: "Host network interfaces are probably receiving too much data (> 100 MB/s)\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+
+#  - alert: UnusualNetworkThroughputOutbound
+#    expr: sum by (instance) (irate(node_network_transmit_bytes_total[2m])) / 1024 / 1024 > 100
+#    for: 5m
+#    labels:
+#      severity: warning
+#    annotations:
+#      summary: "Unusual network throughput outbound (instance {{ $labels.instance }})"
+#      description: "Host network interfaces are probably sending too much data (> 100 MB/s)\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+
+ #  - alert: UnusualDiskReadRate
+ #   expr: sum by (instance) (irate(node_disk_read_bytes_total[2m])) / 1024 / 1024 > 50
+ #   for: 10m
+ #   labels:
+ #     severity: warning
+ #   annotations:
+ #     summary: "Unusual disk read rate (instance {{ $labels.instance }})"
+ #     description: "Disk is probably reading too much data (> 50 MB/s)\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+
+#  - alert: UnusualDiskWriteRate
+#    expr: sum by (instance) (irate(node_disk_written_bytes_total[2m])) / 1024 / 1024 > 50
+#    for: 10m
+#    labels:
+#      severity: warning
+#    annotations:
+#      summary: "Unusual disk write rate (instance {{ $labels.instance }})"
+#      description: "Disk is probably writing too much data (> 50 MB/s)\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"  
+
+  - alert: OutOfLocalDiskSpace
+    expr: (node_filesystem_avail_bytes{mountpoint="/"} * 100) / node_filesystem_size_bytes{mountpoint="/"} < 20
+    for: 3m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Critical disk warning on ROOT (instance {{ $labels.instance }})"
+      description: "Root disk is almost full (< 10% left)\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"  
+
+  - alert: WarningLocalDiskSpace
+    expr: (node_filesystem_avail_bytes * 100) / node_filesystem_size_bytes < 20 and ON (instance, device, mountpoint) node_filesystem_readonly == 0
+    for: 10m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Host out of disk space (instance {{ $labels.instance }})"
+      description: "Disk is almost full (< 20% left)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+  - alert: OutOfInodes
+    expr: node_filesystem_files_free / node_filesystem_files * 100 < 10
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Out of inodes (instance {{ $labels.instance }})"
+      description: "Disk is almost running out of available inodes (< 10% left)\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"  
+
+  - alert: UnusualDiskReadLatency
+    expr: rate(node_disk_read_time_seconds_total[1m]) / rate(node_disk_reads_completed_total[1m]) > 100
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Unusual disk read latency (instance {{ $labels.instance }})"
+      description: "Disk latency is growing (read operations > 100ms)\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+
+  - alert: UnusualDiskWriteLatency
+    expr: rate(node_disk_write_time_seconds_total[1m]) / rate(node_disk_writes_completed_total[1m]) > 100
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Unusual disk write latency (instance {{ $labels.instance }})"
+      description: "Disk latency is growing (write operations > 100ms)\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+
+  - alert: HighCpuLoad
+    expr: 100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 90
+    for: 15m
+    labels:
+      severity: warning
+    annotations:
+      summary: "CPU load warning (instance {{ $labels.instance }})"
+      description: "CPU load is over 90%\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+
+  - alert: CriticalHighCpuLoad
+    expr: 100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 95
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Critical CPU load warning (instance {{ $labels.instance }})"
+      description: "CPU load is over 95% for the past 5 minutes\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+
+  - alert: SystemdServiceCrashed
+    expr: node_systemd_unit_state{state="failed"} == 1
+    for: 1m
+    labels:
+      severity: warning
+    annotations:
+      summary: "SystemD service crashed (instance {{ $labels.instance }})"
+      description: "SystemD service crashed\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+
+  - alert: PhysicalComponentTooHot
+    expr: node_hwmon_temp_celsius > 88
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Physical component too hot (instance {{ $labels.instance }})"
+      description: "Physical hardware component too hot\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"

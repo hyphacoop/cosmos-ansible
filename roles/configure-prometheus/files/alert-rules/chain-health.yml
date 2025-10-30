@@ -1,0 +1,102 @@
+groups:
+  - name: CosmosChainHealth
+    rules:
+      # Validator/Chain Binary Health
+      - alert: ValidatorProcessDown
+        expr: up{job=~".*_gaiad"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Validator process down on {{ $labels.instance }}"
+          description: "Cosmos chain binary (gaiad/interchain-security-pd) is not responding on {{ $labels.instance }} for 2+ minutes"
+          # Future: Critical on mainnet should page via PagerDuty
+
+      # Peer Connectivity
+      - alert: LowPeerCount
+        expr: tendermint_p2p_peers < 3
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Low peer count on {{ $labels.instance }}"
+          description: "Node {{ $labels.instance }} has less than 3 peers for 10+ minutes. Current peers: {{ $value }}"
+
+      - alert: CriticalLowPeerCount
+        expr: tendermint_p2p_peers < 1
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Critical: No peers on {{ $labels.instance }}"
+          description: "Node {{ $labels.instance }} has no peers for 5+ minutes. Chain may be isolated."
+          # Future: Critical on mainnet should page via PagerDuty
+
+      # Block Production / Chain Halt Detection
+      - alert: ChainNotProducingBlocks
+        expr: rate(tendermint_consensus_height[5m]) == 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Chain stopped producing blocks on {{ $labels.instance }}"
+          description: "No new blocks detected for 5+ minutes on {{ $labels.instance }}. Chain may be halted."
+          # Future: Critical on mainnet should page via PagerDuty
+
+      - alert: SlowBlockProduction
+        expr: rate(tendermint_consensus_height[5m]) < 0.15
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Slow block production on {{ $labels.instance }}"
+          description: "Block production rate is below expected on {{ $labels.instance }}. Current rate: {{ $value }} blocks/sec"
+
+      # Consensus Health
+      - alert: ValidatorMissingBlocks
+        expr: increase(tendermint_consensus_validator_missed_blocks[30m]) > 10
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Validator missing blocks on {{ $labels.instance }}"
+          description: "Validator on {{ $labels.instance }} has missed {{ $value }} blocks in the last 30 minutes"
+
+      - alert: ConsensusRoundIncreasing
+        expr: increase(tendermint_consensus_rounds[10m]) > 50
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High consensus rounds on {{ $labels.instance }}"
+          description: "Consensus is taking multiple rounds to complete on {{ $labels.instance }}. May indicate network issues or validator problems."
+
+      # Mempool Health
+      - alert: MempoolGrowingUnbounded
+        expr: tendermint_mempool_size > 5000
+        for: 15m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Large mempool on {{ $labels.instance }}"
+          description: "Mempool has {{ $value }} transactions pending for 15+ minutes on {{ $labels.instance }}. Chain may be overloaded."
+
+      # Chain Sync Status (for non-validator nodes)
+      - alert: NodeFallingBehind
+        expr: (time() - tendermint_consensus_latest_block_time) > 300
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Node falling behind on {{ $labels.instance }}"
+          description: "Latest block is {{ $value }}s old on {{ $labels.instance }}. Node may be out of sync."
+
+      - alert: NodeStuckSyncing
+        expr: (time() - tendermint_consensus_latest_block_time) > 600
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Node stuck syncing on {{ $labels.instance }}"
+          description: "Latest block is {{ $value }}s old on {{ $labels.instance }}. Node appears stuck."
+          # Future: Critical on mainnet should page via PagerDuty
