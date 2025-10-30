@@ -1,0 +1,6 @@
+receivers:
+  # Matrix webhook - default receiver for all alerts
+  - name: 'cosmos-monitoring-matrix'
+    webhook_configs:
+      - url: 'http://localhost:3001/alerts?secret={{ matrix_alertmanager_secret }}'
+        send_resolved: true
