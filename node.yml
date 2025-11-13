@@ -5,4 +5,4 @@
   vars_files:
     - ../cosmos-configurations-private/vault.yml
   roles:
-  - node
+    - node

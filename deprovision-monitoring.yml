@@ -1,0 +1,90 @@
+---
+# Deprovision monitoring configs for removed chains/nodes
+# This playbook removes Prometheus scrape configs and Alertmanager fragments
+# while leaving node-exporter installed on the nodes themselves
+#
+# Usage:
+#   ansible-playbook \
+#     -i ../cosmos-configurations-private/ansible-inventories/REMOVED_NETWORK/inventory.yml \
+#     deprovision-monitoring.yml
+
+- hosts: node
+  become: true
+  tasks:
+    - name: Remove monitoring configs from prometheus server
+      when: monitoring_prometheus | default(false) | bool
+      delegate_to: "{{ grafana_ssh_url }}"
+      tags:
+        - alerting
+        - monitoring
+      block:
+        - name: Remove Prometheus scrape config for this host
+          file:
+            path: "/opt/prometheus/hosts/{{ inventory_hostname }}.json"
+            state: absent
+          notify:
+            - reload prometheus
+
+        - name: Remove Blackbox ICMP probe config for this host
+          file:
+            path: "/opt/prometheus/blackbox-icmp/{{ inventory_hostname }}.json"
+            state: absent
+          notify:
+            - reload prometheus
+
+        - name: Remove environment-specific alertmanager route fragment
+          file:
+            path: "/opt/alertmanager/fragments/15-routes-{{ chain_id }}.yml"
+            state: absent
+          run_once: true
+          notify:
+            - assemble alertmanager config
+            - reload alertmanager
+          tags:
+            - alerting
+
+        - name: Remove environment-specific alertmanager receiver fragment
+          file:
+            path: "/opt/alertmanager/fragments/25-receivers-{{ chain_id }}.yml"
+            state: absent
+          run_once: true
+          notify:
+            - assemble alertmanager config
+            - reload alertmanager
+          tags:
+            - alerting
+
+        - name: Restart alertmanager to clear stale in-memory alerts
+          systemd:
+            name: alertmanager
+            state: restarted
+          run_once: true
+          tags:
+            - alerting
+            - monitoring
+
+  handlers:
+    - name: assemble alertmanager config
+      delegate_to: "{{ grafana_ssh_url }}"
+      assemble:
+        src: /opt/alertmanager/fragments
+        dest: /opt/alertmanager/alertmanager.yml
+        regexp: '\.yml$'
+        owner: prometheus
+        group: prometheus
+        mode: 0644
+      listen: assemble alertmanager config
+
+    - name: reload prometheus
+      delegate_to: "{{ grafana_ssh_url }}"
+      systemd:
+        name: prometheus
+        state: reloaded
+      listen: reload prometheus
+
+    - name: reload alertmanager
+      delegate_to: "{{ grafana_ssh_url }}"
+      systemd:
+        name: alertmanager
+        state: restarted
+      listen: reload alertmanager

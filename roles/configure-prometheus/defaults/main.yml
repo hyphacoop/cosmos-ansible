@@ -3,9 +3,9 @@
 # This should be overridden in inventory files with vault variables
 matrix_alertmanager_secret: ""  # Required: set via {{ vault_matrix_secret }} in inventory
 
-# Future PagerDuty integration (placeholders)
-# pagerduty_mainnet_integration_key: ""  # Optional: set via {{ vault_pagerduty_mainnet_key }}
-# pagerduty_testnet_integration_key: ""  # Optional: set via {{ vault_pagerduty_testnet_key }}
+# PagerDuty integration (generic variable for all environments)
+# pagerduty_integration_key: ""  # Optional: set via {{ vault_pagerduty_keys.ENVIRONMENT }} in inventory
+#                                 # Example: {{ vault_pagerduty_keys.devnet }} or {{ vault_pagerduty_keys.provider }}
 
 # Environment classification
 # Used for alert routing (future PagerDuty integration)

@@ -14,4 +14,10 @@
         name: configure-prometheus
         apply:
           delegate_to: "{{ grafana_ssh_url }}"
+          tags:
+            - alerting
+            - monitoring
       when: monitoring_prometheus | default(false) | bool
+      tags:
+        - alerting
+        - monitoring

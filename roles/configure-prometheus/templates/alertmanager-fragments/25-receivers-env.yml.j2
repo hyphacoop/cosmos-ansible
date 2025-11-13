@@ -1,0 +1,15 @@
+{% if pagerduty_integration_key is defined %}
+  # PagerDuty receiver for {{ chain_id }}
+  - name: 'pagerduty-{{ chain_id }}'
+    pagerduty_configs:
+      - routing_key: '{{ pagerduty_integration_key }}'
+        description: '[{{ chain_id }}] {% raw %}{{ .GroupLabels.alertname }}{% endraw %}'
+        severity: '{% raw %}{{ .CommonLabels.severity }}{% endraw %}'
+        details:
+          summary: '{% raw %}{{ .CommonAnnotations.summary }}{% endraw %}'
+          description: '{% raw %}{{ .CommonAnnotations.description }}{% endraw %}'
+          chain_id: '{% raw %}{{ .GroupLabels.chain_id }}{% endraw %}'
+          instance: '{% raw %}{{ .GroupLabels.instance }}{% endraw %}'
+          severity_label: '{% raw %}{{ .CommonLabels.severity }}{% endraw %}'
+        send_resolved: true
+{% endif %}
