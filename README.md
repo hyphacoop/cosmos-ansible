@@ -42,6 +42,7 @@ To join the Cosmos Hub [Interchain Security Testnet](https://github.com/cosmos/t
 
 - See the [examples](examples/README.md) for more command, playbook, and configuration options.
 - See the [Playbook Variables Overview](docs/Playbook-Variables.md) for a list of default variables you can override with the `--extra-vars` or `-e` option.
+- See the [Monitoring Setup Guide](docs/Monitoring-Setup.md) for setting up alerting and monitoring infrastructure.
 - Visit the [Cosmos testnets repo](https://github.com/cosmos/testnets) for more information.
 
 ### Playbook Tags

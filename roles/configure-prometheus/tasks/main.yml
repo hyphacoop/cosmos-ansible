@@ -64,7 +64,7 @@
     - alerting
     - monitoring
 
-- name: Deploy alertmanager fragment templates
+- name: Deploy alertmanager base fragment templates
   delegate_to: "{{ grafana_ssh_url }}"
   template:
     src: "alertmanager-fragments/{{ item }}"
@@ -74,9 +74,26 @@
     mode: 0644
   loop:
     - 00-header.yml.j2
-    - 10-routes.yml.j2
-    - 20-receivers.yml.j2
+    - 10-routes-base.yml.j2
+    - 20-receivers-base.yml.j2
     - 30-inhibit.yml.j2
+  run_once: true
+  notify: assemble alertmanager config
+  tags:
+    - alerting
+    - monitoring
+
+- name: Deploy alertmanager environment-specific fragment templates
+  delegate_to: "{{ grafana_ssh_url }}"
+  template:
+    src: "alertmanager-fragments/{{ item }}"
+    dest: "/opt/alertmanager/fragments/{{ item | regex_replace('\\.j2$', '') | regex_replace('-env', '-' + chain_id) }}"
+    owner: prometheus
+    group: prometheus
+    mode: 0644
+  loop:
+    - 15-routes-env.yml.j2
+    - 25-receivers-env.yml.j2
   run_once: true
   notify: assemble alertmanager config
   tags:
