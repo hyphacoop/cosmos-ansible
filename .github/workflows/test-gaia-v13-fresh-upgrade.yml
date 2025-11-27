@@ -220,11 +220,11 @@ jobs:
       - name: Blocks are being produced prior to the upgrade.
         run: tests/test_block_production.sh 127.0.0.1 $VAL1_RPC_PORT 5 # 5 blocks
       # - name: Pre-upgrade transactions verified> bank send, delegate, and withdraw rewards
-        # run: tests/patch_upgrade/patch_test_tx.sh
+      #   run: tests/patch_upgrade/patch_test_tx.sh
       # - name: Pre-upgrade API endpoints check
-        # run: tests/test_endpoints_api.sh localhost $VAL1_API_PORT
+      #   run: tests/test_endpoints_api.sh localhost $VAL1_API_PORT
       # - name: Pre-upgrade RPC endpoints check
-        # run: tests/test_endpoints_rpc.sh localhost $VAL1_RPC_PORT
+      #   run: tests/test_endpoints_rpc.sh localhost $VAL1_RPC_PORT
       - name: Validators initial state
         run: |
           $CHAIN_BINARY q staking validators -o json --home $HOME_1 | jq '.'

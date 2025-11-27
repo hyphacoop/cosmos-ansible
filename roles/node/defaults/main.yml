@@ -215,7 +215,7 @@ client_broadcast_mode: sync
 faucet_enabled: false
 
 # Pingpub explorer settings
-pingpub_enabled : false
+pingpub_enabled: false
 pingpub_ssl_provider: ""
 
 # Node Exporter config
@@ -262,7 +262,7 @@ evm_tracer: ""
 evm_max_tx_gas_wanted: 0
 evm_cache_preimage: false
 evm_chain_id: 4221
-evm_json_rpc_enable : false
+evm_json_rpc_enable: false
 evm_json_rpc_address: "127.0.0.1:8545"
 evm_json_rpc_ws_address: "127.0.0.1:8546"
 evm_json_rpc_api: "eth,net,web3"
