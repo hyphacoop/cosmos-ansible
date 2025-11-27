@@ -10,7 +10,7 @@ groups:
         annotations:
           summary: "HTTP Probe Failed"
           description: "HTTP Site unreachable or not responding on {{ $labels.instance }}"
-      
+
       - alert: HTTPS-ProbeFailing
         expr: probe_success{job="internalhttps-mon"} == 0
         for: 1m
@@ -37,5 +37,3 @@ groups:
         annotations:
           summary: "ICMP Probe Failed"
           description: "Host unreachable via ping on {{ $labels.instance }}"
-
-
