@@ -1,0 +1,26 @@
+---
+- name: Populate service facts
+  service_facts:
+
+- include_role:
+    name: common
+
+# Set up nginx
+- name: Change vars for TLS
+  when: (pingpub_setup_nginx | default(false) | bool) and (pingpub_use_tls_proxy | default(false) | bool)
+  set_fact:
+    ssl_provider: "letsencrypt"
+
+- include_role:
+    name: hypha.common.nginx
+  when: (pingpub_setup_nginx | default(false) | bool)
+
+- include_role:
+    name: hypha.common.ssl
+  when: (pingpub_setup_nginx | default(false) | bool) and (pingpub_use_tls_proxy | default(false) | bool)
+
+- name: Restart nginx to apply new config
+  systemd:
+    state: restarted
+    name: nginx
+  when: (pingpub_setup_nginx | default(false) | bool)

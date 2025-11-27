@@ -683,7 +683,7 @@ jobs:
           CON1_RPC_PORT: 27601
         run: tests/ics_tests/test_ccv.sh
 
-  #     - name: _Soft opt-out test> Validator must be jailed
-  #       run: tests/test_validator_jailed.sh $VALOPER_2 true
-  #     - name: _Soft opt-out test> Validator must not be jailed
-  #       run: tests/test_validator_jailed.sh $VALOPER_3 false
+      # - name: _Soft opt-out test> Validator must be jailed
+      #   run: tests/test_validator_jailed.sh $VALOPER_2 true
+      # - name: _Soft opt-out test> Validator must not be jailed
+      #   run: tests/test_validator_jailed.sh $VALOPER_3 false

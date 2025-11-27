@@ -6,6 +6,9 @@ all:
     chain_version: v25.2.0
     chain_create_validator: true
     faucet_enabled: true
+    pingpub_enabled: true
+    api_enabled: true
+    api_enabled_unsafe_cors: true
     ansible_user: root
     block_sync: false
   children:

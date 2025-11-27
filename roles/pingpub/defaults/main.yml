@@ -1,0 +1,23 @@
+---
+# Chain settings
+chain_denom: uatom
+chain_denom_symbol: ATOM
+chain_id: "my-testnet"
+
+# Explorer setting
+pingpub_version: master
+node_rpc_url: "http://{{ pingpub_host }}{{inventory_hostname}}:26657"
+node_api_url: "http://{{ pingpub_host }}{{inventory_hostname}}:1317"
+# Nginx / SSL settings
+pingpub_setup_nginx: true
+pingpub_host: "pingpub."
+pingpub_use_tls_proxy: false
+ssl_provider: "{{pingpub_ssl_provider}}"
+nginx_sites:
+  "{{ pingpub_host }}{{ inventory_hostname }}":
+    ssl_provider: "{{ ssl_provider }}"
+    web_hostname: "{{ pingpub_host }}{{inventory_hostname}}"
+    locations:
+      "/":
+        local_location: /var/www/pingpub
+        cors: true
