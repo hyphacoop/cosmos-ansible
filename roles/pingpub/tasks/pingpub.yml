@@ -1,0 +1,41 @@
+---
+- name: Checkout Ping Dashboard repo
+  git:
+    repo: 'https://github.com/ping-pub/explorer.git'
+    dest: "{{node_user_home}}/ping-explorer"
+    version: "{{pingpub_version}}"
+    force: yes
+  become_user: "{{node_user}}"
+
+- name: Remove unused files
+  shell: rm {{node_user_home}}/ping-explorer/chains/mainnet/*
+  become_user: "{{node_user}}"
+
+- name: Configure Ping explorer
+  template:
+    src: chain.json.j2
+    dest: "{{node_user_home}}/ping-explorer/chains/mainnet/chain.json"
+  become_user: "{{node_user}}"
+
+- name: Install nodejs
+  apt:
+    state: present
+    pkg:
+      - nodejs
+      - rsync
+
+- name: Install yarn
+  shell: curl --compressed -o- -L https://yarnpkg.com/install.sh | bash
+  args:
+    creates: "{{node_user_home}}/.yarn/bin/yarn"
+  become_user: "{{node_user}}"
+
+- name: Build Ping explorer
+  shell: |
+    cd {{node_user_home}}/ping-explorer
+    {{node_user_home}}/.yarn/bin/yarn install --ignore-engines
+    {{node_user_home}}/.yarn/bin/yarn build-only
+  become_user: "{{node_user}}"
+
+- name: Update /var/www/pingpub
+  shell: rsync -av --delete-after --progress -t {{node_user_home}}/ping-explorer/dist/ /var/www/pingpub

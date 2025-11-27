@@ -1,0 +1,6 @@
+---
+- name: Base setup
+  import_tasks: base.yml
+
+- name: pingpub setup
+  import_tasks: pingpub.yml

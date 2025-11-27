@@ -23,6 +23,10 @@
     name: faucet
   when: faucet_enabled | default(false) | bool
 
+- include_role:
+    name: pingpub
+  when: pingpub_enabled | default(false) | bool
+
 - name: setup monitoring
   import_tasks: monitoring.yml
 

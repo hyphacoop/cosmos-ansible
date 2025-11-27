@@ -26,6 +26,7 @@ genesis_patching: true
 chain_gov_testing: false
 chain_voting_period: 10s
 chain_denom: uatom
+chain_denom_symbol: ATOM
 chain_id: "cosmos-testnet"
 chain_block_max_bytes: "22020096"
 chain_block_max_gas: "75000000"
@@ -212,6 +213,10 @@ client_broadcast_mode: sync
 
 # Faucet settings
 faucet_enabled: false
+
+# Pingpub explorer settings
+pingpub_enabled : false
+pingpub_ssl_provider: ""
 
 # Node Exporter config
 node_exporter_port: 9100
