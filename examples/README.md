@@ -80,6 +80,7 @@ Require hostnames:
 ### Run the Playbook
 
 ```
+# DOMAIN="node.testnet.com"
 ansible-playbook node.yml -i examples/inventory-local-with-explorer.yml -e 'target=DOMAIN'
 ```
 
