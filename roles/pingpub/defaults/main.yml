@@ -21,3 +21,4 @@ nginx_sites:
       "/":
         local_location: /var/www/pingpub
         cors: true
+        try_files: "$uri /index.html"

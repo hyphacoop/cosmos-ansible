@@ -65,7 +65,7 @@ ansible-playbook node.yml -i examples/inventory-local.yml -e 'target=SERVER_IP_O
 
 Set up a node with a single validator account with Pingpub explorer.
 
-* **Inventory file:** [`inventory-local.yml`](inventory-local-with-explorer.yml)
+* **Inventory file:** [`inventory-local-with-explorer.yml`](inventory-local-with-explorer.yml)
 * **Chain ID:** `my-testnet`
 * **Moniker:** `cosmos-node`
 * **Gaia version:** `v25.2.0`
