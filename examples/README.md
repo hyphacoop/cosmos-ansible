@@ -52,13 +52,36 @@ Set up a node with a single validator account.
 * **Inventory file:** [`inventory-local.yml`](inventory-local.yml)
 * **Chain ID:** `my-testnet`
 * **Moniker:** `cosmos-node`
-* **Gaia version:** `v21.0.1`
+* **Gaia version:** `v21.2.0`
 * **Faucet REST server**
 
 ### Run the Playbook
 
 ```
 ansible-playbook node.yml -i examples/inventory-local.yml -e 'target=SERVER_IP_OR_DOMAIN'
+```
+
+## Start a Local Testnet with Pingpub explorer
+
+Set up a node with a single validator account with Pingpub explorer.
+
+* **Inventory file:** [`inventory-local-with-explorer.yml`](inventory-local-with-explorer.yml)
+* **Chain ID:** `my-testnet`
+* **Moniker:** `cosmos-node`
+* **Gaia version:** `v25.2.0`
+* **Faucet REST server**
+
+### Requirements
+
+Require hostnames:
+- faucet: node.testnet.com
+- explorer: pingpub.node.testnet.com
+
+### Run the Playbook
+
+```
+# DOMAIN="node.testnet.com"
+ansible-playbook node.yml -i examples/inventory-local-with-explorer.yml -e 'target=DOMAIN'
 ```
 
 - The validator address and mnemonic will be saved to `/home/gaia/.gaia/validator.json` in the host.

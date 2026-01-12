@@ -1,0 +1,6 @@
+---
+# Configure pingpub explorer
+- hosts: pingpub
+  become: true
+  roles:
+  - pingpub

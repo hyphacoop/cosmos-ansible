@@ -1,39 +1,39 @@
 ---
 groups:
-- name: example
-  rules:
-  - alert: HTTP-ProbeFailing
-    expr: probe_success{job="internalhttp-mon"} == 0
-    for: 1m
-    labels:
-      severity: critical
-    annotations:
-      summary: "HTTP Probe Failed"
-      description: "HTTP Site unreachable or not responding on {{ $labels.instance }}"
+  - name: example
+    rules:
+      - alert: HTTP-ProbeFailing
+        expr: probe_success{job="internalhttp-mon"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "HTTP Probe Failed"
+          description: "HTTP Site unreachable or not responding on {{ $labels.instance }}"
 
-  - alert: HTTPS-ProbeFailing
-    expr: probe_success{job="internalhttps-mon"} == 0
-    for: 1m
-    labels:
-      severity: critical
-    annotations:
-      summary: "HTTPS Probe Failed"
-      description: "HTTPS Site unreachable or not responding on {{ $labels.instance }}"
+      - alert: HTTPS-ProbeFailing
+        expr: probe_success{job="internalhttps-mon"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "HTTPS Probe Failed"
+          description: "HTTPS Site unreachable or not responding on {{ $labels.instance }}"
 
-  - alert: HTTPS-CertFailing
-    expr: probe_ssl_earliest_cert_expiry{job="internalhttps-mon"} - time() < 86400 * 15
-    for: 1m
-    labels:
-      severity: critical
-    annotations:
-      summary: "HTTPS Probe Failed"
-      description: "HTTPS Cert expired or is expiring on {{ $labels.instance }}"
+      - alert: HTTPS-CertFailing
+        expr: probe_ssl_earliest_cert_expiry{job="internalhttps-mon"} - time() < 86400 * 15
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "HTTPS Probe Failed"
+          description: "HTTPS Cert expired or is expiring on {{ $labels.instance }}"
 
-  - alert: ICMP-ProbeFailing
-    expr: probe_success{service="icmp-probe"} == 0
-    for: 1m
-    labels:
-      severity: critical
-    annotations:
-      summary: "ICMP Probe Failed"
-      description: "Host unreachable via ping on {{ $labels.instance }}"
+      - alert: ICMP-ProbeFailing
+        expr: probe_success{service="icmp-probe"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "ICMP Probe Failed"
+          description: "Host unreachable via ping on {{ $labels.instance }}"
