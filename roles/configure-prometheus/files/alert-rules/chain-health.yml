@@ -1,28 +1,91 @@
 ---
 groups:
-  - name: CosmosChainHealth
+  # ==================================================================
+  # SEV 1: Critical Alerts - PagerDuty Page
+  # ==================================================================
+  - name: CosmosChainCritical
     rules:
       # Validator/Chain Binary Health
-      - alert: ValidatorProcessDown
+      - alert: NodeProcessDown
         expr: up{job=~".*_gaiad"} == 0
         for: 2m
         labels:
           severity: critical
         annotations:
-          summary: "Validator process down on {{ $labels.instance }}"
-          description: "Cosmos chain binary (gaiad/interchain-security-pd) is not responding on {{ $labels.instance }} for 2+ minutes"
-          # Future: Critical on mainnet should page via PagerDuty
+          summary: "Node process down on {{ $labels.instance }}"
+          description: "Cosmos chain binary (gaiad/interchain-security-pd) is not responding on {{ $labels.instance }} for 2+ minutes. OUR MONITOR IS DOWN."
 
-      # Peer Connectivity
-      - alert: LowPeerCount
-        expr: tendermint_p2p_peers < 3
-        for: 10m
+      # Chain Halt Detection
+      - alert: ChainNotProducingBlocks
+        expr: rate(tendermint_consensus_height[1m]) == 0
+        for: 1m
         labels:
-          severity: warning
+          severity: critical
         annotations:
-          summary: "Low peer count on {{ $labels.instance }}"
-          description: "Node {{ $labels.instance }} has less than 3 peers for 10+ minutes. Current peers: {{ $value }}"
+          summary: "Chain stopped producing blocks on {{ $labels.instance }}"
+          description: "No new blocks detected for 1+ minutes on {{ $labels.instance }}. Chain may be halted. See https://www.notion.so/SEV-1-Chain-halt-296099a65ba180f58bb7cae3f759a560?t=2a7099a65ba180f59a9400a9dcc5b383"
 
+      # Validator Set Health
+      - alert: ValidatorDowntime
+        expr: tendermint_consensus_missing_validators > 15 OR delta(tendermint_consensus_missing_validators[1m]) > 5
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High validator downtime on {{ $labels.instance }}"
+          description: "More than 15 validators are missing OR 5+ validators went down in the last minute on {{ $labels.instance }}. Current missing: {{ $value }}. See https://www.notion.so/SEV-1-Validator-downtime-2a1099a65ba1800f9591fb3e3731fa3a?t=2a7099a65ba180f59a9400a9dcc5b383"
+
+      # Voting Power Health
+      - alert: VotingPowerDowntime
+        expr: tendermint_consensus_missing_validators_power / (tendermint_consensus_missing_validators_power + tendermint_consensus_validators_power) > 0.1
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High voting power offline on {{ $labels.instance }}"
+          description: "More than 10% of voting power is offline on {{ $labels.instance }}. Chain security is at risk. Current: {{ $value | humanizePercentage }}. See https://www.notion.so/SEV-1-Validator-downtime-2a1099a65ba1800f9591fb3e3731fa3a?t=2a7099a65ba180f59a9400a9dcc5b383"
+
+      # Transaction Health
+      - alert: HighTransactionFailureRate
+        expr: rate(tendermint_mempool_evicted_txs[10m]) / (rate(tendermint_consensus_total_txs[10m]) + rate(tendermint_mempool_evicted_txs[10m])) > 0.10
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High transaction failure rate on {{ $labels.instance }}"
+          description: "More than 10% of transactions are being evicted from mempool on {{ $labels.instance }}. Current rate: {{ $value | humanizePercentage }}. See https://www.notion.so/SEV-1-Degraded-transaction-handling-2a1099a65ba180b39523ec2006d77a08"
+
+      # Mempool Health - Transaction Count
+      - alert: MempoolUnconfirmedTransactions
+        expr: min_over_time(tendermint_mempool_size[10m]) > 5
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High unconfirmed transactions on {{ $labels.instance }}"
+          description: "Mempool has sustained {{ $value }} unconfirmed transactions for 10+ minutes on {{ $labels.instance }}. Chain may be overloaded or stalled. https://www.notion.so/SEV-1-Degraded-transaction-handling-2a1099a65ba180b39523ec2006d77a08"
+
+      # Mempool Health - Byte Size
+      - alert: MempoolSizeBytesNotClearing
+        expr: min_over_time(tendermint_mempool_size_bytes[10m]) > 5000
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Mempool size not clearing on {{ $labels.instance }}"
+          description: "Mempool size has sustained {{ $value }} bytes for 10+ minutes on {{ $labels.instance }}. Chain may be congested. https://www.notion.so/SEV-1-Degraded-transaction-handling-2a1099a65ba180b39523ec2006d77a08"
+
+      # Chain Performance - Critical Slowdown
+      - alert: ChainSlowdownCritical
+        expr: rate(tendermint_consensus_height[10m]) < 0.14
+        for: 1h
+        labels:
+          severity: critical
+        annotations:
+          summary: "Critical chain slowdown on {{ $labels.instance }}"
+          description: "Block production rate is critically slow (block time > 7s) for 1 hour on {{ $labels.instance }}. Current rate: {{ $value }} blocks/sec. See https://www.notion.so/SEV-1-Block-time-degradation-29a099a65ba180db8badcf8f121ad547?t=2a7099a65ba180f59a9400a9dcc5b383"
+
+      # Peer Connectivity - Critical
       - alert: CriticalLowPeerCount
         expr: tendermint_p2p_peers < 1
         for: 5m
@@ -31,27 +94,41 @@ groups:
         annotations:
           summary: "Critical: No peers on {{ $labels.instance }}"
           description: "Node {{ $labels.instance }} has no peers for 5+ minutes. Chain may be isolated."
-          # Future: Critical on mainnet should page via PagerDuty
 
-      # Block Production / Chain Halt Detection
-      - alert: ChainNotProducingBlocks
-        expr: rate(tendermint_consensus_height[5m]) == 0
-        for: 5m
+      # Sync Status - Critical
+      - alert: NodeStuckSyncing
+        expr: (time() - tendermint_consensus_latest_block_time) > 600
+        for: 10m
         labels:
           severity: critical
         annotations:
-          summary: "Chain stopped producing blocks on {{ $labels.instance }}"
-          description: "No new blocks detected for 5+ minutes on {{ $labels.instance }}. Chain may be halted."
-          # Future: Critical on mainnet should page via PagerDuty
+          summary: "Node stuck syncing on {{ $labels.instance }}"
+          description: "Latest block is {{ $value }}s old on {{ $labels.instance }}. Node appears stuck."
 
-      - alert: SlowBlockProduction
-        expr: rate(tendermint_consensus_height[5m]) < 0.15
+  # ==================================================================
+  # SEV 2: Warning Alerts - PagerDuty Alert/Ticket
+  # ==================================================================
+  - name: CosmosChainWarning
+    rules:
+      # Chain Performance - Warning
+      - alert: ChainSlowdownWarning
+        expr: rate(tendermint_consensus_height[10m]) < 0.14
         for: 10m
         labels:
           severity: warning
         annotations:
-          summary: "Slow block production on {{ $labels.instance }}"
-          description: "Block production rate is below expected on {{ $labels.instance }}. Current rate: {{ $value }} blocks/sec"
+          summary: "Chain slowdown detected on {{ $labels.instance }}"
+          description: "Block production rate is slow (block time > 7s) for 10 minutes on {{ $labels.instance }}. Current rate: {{ $value }} blocks/sec"
+
+      # Peer Connectivity - Warning
+      - alert: LowPeerCount
+        expr: tendermint_p2p_peers < 5
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Low peer count on {{ $labels.instance }}"
+          description: "Node {{ $labels.instance }} has less than 5 peers for 10+ minutes. Current peers: {{ $value }}"
 
       # Consensus Health
       - alert: ValidatorMissingBlocks
@@ -72,17 +149,7 @@ groups:
           summary: "High consensus rounds on {{ $labels.instance }}"
           description: "Consensus is taking multiple rounds to complete on {{ $labels.instance }}. May indicate network issues or validator problems."
 
-      # Mempool Health
-      - alert: MempoolGrowingUnbounded
-        expr: tendermint_mempool_size > 5000
-        for: 15m
-        labels:
-          severity: warning
-        annotations:
-          summary: "Large mempool on {{ $labels.instance }}"
-          description: "Mempool has {{ $value }} transactions pending for 15+ minutes on {{ $labels.instance }}. Chain may be overloaded."
-
-      # Chain Sync Status (for non-validator nodes)
+      # Sync Status - Warning
       - alert: NodeFallingBehind
         expr: (time() - tendermint_consensus_latest_block_time) > 300
         for: 5m
@@ -92,12 +159,8 @@ groups:
           summary: "Node falling behind on {{ $labels.instance }}"
           description: "Latest block is {{ $value }}s old on {{ $labels.instance }}. Node may be out of sync."
 
-      - alert: NodeStuckSyncing
-        expr: (time() - tendermint_consensus_latest_block_time) > 600
-        for: 10m
-        labels:
-          severity: critical
-        annotations:
-          summary: "Node stuck syncing on {{ $labels.instance }}"
-          description: "Latest block is {{ $value }}s old on {{ $labels.instance }}. Node appears stuck."
-          # Future: Critical on mainnet should page via PagerDuty
+  # ==================================================================
+  # SEV 3: Monitoring Alerts - PagerDuty Info/Dashboard
+  # ==================================================================
+  - name: CosmosChainMonitoring
+    rules: []

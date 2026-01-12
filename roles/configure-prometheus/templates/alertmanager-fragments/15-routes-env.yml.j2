@@ -1,0 +1,13 @@
+{% if pagerduty_integration_key is defined %}
+    # {{ chain_id }} critical/error alerts → PagerDuty first
+    - match_re:
+        chain_id: "{{ chain_id }}"
+        severity: (critical|error)
+      receiver: 'pagerduty-{{ chain_id }}'
+      continue: true
+
+    # {{ chain_id }} all alerts → Matrix
+    - match:
+        chain_id: "{{ chain_id }}"
+      receiver: 'cosmos-monitoring-matrix'
+{% endif %}
