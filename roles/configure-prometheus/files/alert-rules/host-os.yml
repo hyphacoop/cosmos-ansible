@@ -138,3 +138,22 @@ groups:
     annotations:
       summary: "Physical component too hot (instance {{ $labels.instance }})"
       description: "Physical hardware component too hot\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+
+  # Network Health Monitoring (SEV 3 from Cosmos Hub Alerting Plan)
+  - alert: HighNetworkErrors
+    expr: rate(node_network_receive_errs_total[5m]) > 0.01
+    for: 10m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High network errors on {{ $labels.instance }}"
+      description: "Network interface {{ $labels.device }} is experiencing receive errors on {{ $labels.instance }}\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+
+  - alert: HighDroppedPackets
+    expr: rate(node_network_receive_drop_total[5m]) > 0.01
+    for: 10m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High dropped packets on {{ $labels.instance }}"
+      description: "Network interface {{ $labels.device }} is dropping received packets on {{ $labels.instance }}\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
