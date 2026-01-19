@@ -1,0 +1,12 @@
+[
+  {
+    "targets": ["{{ item.target }}"],
+    "labels": {
+      "job": "{{ item.job | default('https-exporter') }}",
+      "service": "{{ item.service }}",
+      "environment": "{{ item.environment | default('production') }}"{% if item.metrics_path is defined %},
+      "__metrics_path__": "{{ item.metrics_path }}"{% endif %}
+
+    }
+  }
+]
