@@ -16,6 +16,52 @@
     owner: prometheus
     group: prometheus
 
+# Prometheus configuration (run once)
+- name: Deploy prometheus.yml configuration
+  delegate_to: "{{ grafana_ssh_url }}"
+  template:
+    src: prometheus.yml.j2
+    dest: /opt/prometheus/prometheus.yml
+    owner: prometheus
+    group: prometheus
+    mode: 0644
+    backup: yes
+  run_once: true
+  notify: reload prometheus
+  tags:
+    - prometheus
+    - monitoring
+
+# HTTPS exporters configuration
+- name: Create HTTPS exporters directory
+  delegate_to: "{{ grafana_ssh_url }}"
+  file:
+    path: /opt/prometheus/https-exporters
+    state: directory
+    owner: prometheus
+    group: prometheus
+    mode: 0755
+  run_once: true
+  tags:
+    - prometheus
+    - monitoring
+
+- name: Deploy HTTPS exporter targets
+  delegate_to: "{{ grafana_ssh_url }}"
+  template:
+    src: https-exporter.json.j2
+    dest: "/opt/prometheus/https-exporters/{{ item.name }}.json"
+    owner: prometheus
+    group: prometheus
+    mode: 0644
+  loop: "{{ prometheus_https_exporters | default([]) }}"
+  when: prometheus_https_exporters is defined
+  run_once: true
+  notify: reload prometheus
+  tags:
+    - prometheus
+    - monitoring
+
 # Alert rules deployment (run once per playbook execution)
 - name: Create alert rules directory
   delegate_to: "{{ grafana_ssh_url }}"

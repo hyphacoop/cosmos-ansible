@@ -1,0 +1,64 @@
+---
+# Deploy prometheus server configuration without needing chain node access
+# Usage: ansible-playbook -i inventory-observability.yml prometheus-server.yml --vault-password-file ../vault_pw.txt
+
+# First play: Add monitoring server as a host dynamically
+- hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Add monitoring server to inventory
+      add_host:
+        name: "{{ grafana_ssh_url | regex_replace('^.*@', '') }}"
+        groups: monitoring_server
+        ansible_user: "{{ grafana_ssh_url | regex_replace('@.*$', '') }}"
+
+# Second play: Deploy to monitoring server
+- hosts: monitoring_server
+  gather_facts: false
+  vars_files:
+    - ../cosmos-configurations-private/vault.yml
+  tasks:
+    - name: Deploy prometheus.yml configuration
+      template:
+        src: roles/configure-prometheus/templates/prometheus.yml.j2
+        dest: /opt/prometheus/prometheus.yml
+        owner: prometheus
+        group: prometheus
+        mode: 0644
+        backup: yes
+        follow: yes
+      notify: reload prometheus
+      tags:
+        - prometheus
+
+    - name: Create HTTPS exporters directory
+      file:
+        path: /opt/prometheus/https-exporters
+        state: directory
+        owner: prometheus
+        group: prometheus
+        mode: 0755
+        follow: yes
+      tags:
+        - prometheus
+
+    - name: Deploy HTTPS exporter targets
+      template:
+        src: roles/configure-prometheus/templates/https-exporter.json.j2
+        dest: "/opt/prometheus/https-exporters/{{ item.name }}.json"
+        owner: prometheus
+        group: prometheus
+        mode: 0644
+        follow: yes
+      loop: "{{ prometheus_https_exporters | default([]) }}"
+      when: prometheus_https_exporters is defined
+      notify: reload prometheus
+      tags:
+        - prometheus
+
+  handlers:
+    - name: reload prometheus
+      systemd:
+        name: prometheus
+        state: reloaded

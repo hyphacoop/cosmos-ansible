@@ -10,3 +10,13 @@ matrix_alertmanager_secret: ""  # Required: set via {{ vault_matrix_secret }} in
 # Environment classification
 # Used for alert routing (future PagerDuty integration)
 chain_mainnet: false  # Set to true in mainnet inventory files
+
+# HTTPS exporter targets (external Prometheus endpoints over HTTPS)
+prometheus_https_exporters: []
+# Example:
+# prometheus_https_exporters:
+#   - name: factory-monitor
+#     target: factory-monitor.polypore.xyz
+#     service: token-factory
+#     environment: polypore
+#     metrics_path: /

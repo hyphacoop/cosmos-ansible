@@ -1,0 +1,63 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+alerting:
+  alertmanagers:
+  - scheme: http
+    path_prefix: 'alertmanager/'
+    static_configs:
+    - targets:
+      - localhost:9093
+
+rule_files:
+  - '/opt/alertmanager/rules/*.yml'
+
+scrape_configs:
+  # Node exporters (existing)
+  - job_name: 'node-exporters'
+    scheme: http
+    tls_config:
+      insecure_skip_verify: true
+    file_sd_configs:
+    - files:
+      - /opt/prometheus/hosts/*.json
+
+  # Blackbox HTTP probes (existing)
+  - job_name: 'internalhttp-mon'
+    metrics_path: /probe
+    params:
+      module: [http_2xx]
+    file_sd_configs:
+    - files:
+      - /opt/prometheus/blackbox-http/*.json
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: 127.0.0.1:9115
+
+  # ICMP probes (existing)
+  - job_name: 'icmp-probe'
+    metrics_path: /probe
+    params:
+      module: [icmp]
+    file_sd_configs:
+    - files:
+      - /opt/prometheus/blackbox-icmp/*.json
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: 127.0.0.1:9115
+
+  # HTTPS external exporters (NEW)
+  - job_name: 'https-exporters'
+    scheme: https
+    file_sd_configs:
+    - files:
+      - /opt/prometheus/https-exporters/*.json
