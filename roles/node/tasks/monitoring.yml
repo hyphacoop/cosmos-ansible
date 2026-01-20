@@ -9,6 +9,8 @@
     name: configure-prometheus
     apply:
       delegate_to: "{{ grafana_ssh_url }}"
+      vars:
+        ansible_user: "{{ grafana_user }}"
   when: monitoring_prometheus | default(false) | bool
 
 - name: Setup PANIC on monitoring server
