@@ -1,7 +1,7 @@
 ---
 # Handler to assemble alertmanager config from fragments
 - name: assemble alertmanager config
-  delegate_to: "{{ grafana_ssh_url }}"
+
   assemble:
     src: /opt/alertmanager/fragments
     dest: /opt/alertmanager/alertmanager.yml
@@ -13,7 +13,7 @@
 
 # Handler to reload Prometheus (picks up new alert rules)
 - name: reload prometheus
-  delegate_to: "{{ grafana_ssh_url }}"
+
   systemd:
     name: prometheus
     state: reloaded
@@ -22,7 +22,7 @@
 # Handler to restart Alertmanager (picks up new config)
 # Note: Alertmanager doesn't support reload, must restart
 - name: reload alertmanager
-  delegate_to: "{{ grafana_ssh_url }}"
+
   systemd:
     name: alertmanager
     state: restarted

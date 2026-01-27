@@ -2,20 +2,21 @@
   {
     "targets": ["{{ item }}:{{ hostvars[item].node_exporter_port | default(9100) }}"],
     "labels": {
-      "job": "{{ hostvars[item].chain_id | default('unknown') }}",
-      "chain_id": "{{ hostvars[item].chain_id | default('unknown') }}",
+      "job": "systems",
+      "chain_id": "systems",
       "environment": "{{ item }}_exporter",
       "service": "{{ item }}_exporter"
     }
-  },
-  {
+  }
+{% if hostvars[item].prometheus_listen_addr is defined %}
+  ,{
     "targets": ["{{ item }}:{{ (hostvars[item].prometheus_listen_addr | default(':26660')) | regex_replace('^:','') }}"],
     "labels": {
-      "job": "{{ hostvars[item].chain_id | default('unknown') }}_gaiad",
-      "chain_id": "{{ hostvars[item].chain_id | default('unknown') }}",
+      "job": "systems",
+      "chain_id": "systems",
       "environment": "{{ item }}_gaiad_exporter",
       "service": "{{ item }}_gaiad_exporter"
     }
   }
+{% endif %}
 ]
-

@@ -11,6 +11,12 @@ matrix_alertmanager_secret: ""  # Required: set via {{ vault_matrix_secret }} in
 # Used for alert routing (future PagerDuty integration)
 chain_mainnet: false  # Set to true in mainnet inventory files
 
+# List of chains to configure alerting for
+# Each item should have:
+#   name: chain_id
+#   pagerduty_key: integration_key (optional)
+alertmanager_chains: []
+
 # HTTPS exporter targets (external Prometheus endpoints over HTTPS)
 prometheus_https_exporters: []
 # Example:
