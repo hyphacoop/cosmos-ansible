@@ -1,4 +1,13 @@
+
 ---
+
+# Add hosts entries to allow nodes to resolve each other
+- name: Create hosts entries for all nodes
+  lineinfile:
+    path: /etc/hosts
+    line: "{{ item }} {{ node_ip_map[item] }}"
+    state: present
+  with_items: "{{ node_ip_map.keys() | list }}"
 
 - name: get home directory of Ansible runner
   shell: "echo $HOME"
@@ -436,12 +445,7 @@
 - name: Update block params for gaiad version => v19
   when: (chain_binary_name == 'gaiad') and (genesis_patching) and (major_version|int ==19 or major_version|int > 19)
   set_fact:
-    updated_block_params: "{{ genesis_json['consensus']['params']['block'] | combine({'max_bytes': chain_block_max_bytes}, recursive=True) }}"
-
-- name: Update block params for gaiad version => v19
-  when: (chain_binary_name == 'gaiad') and (genesis_patching) and (major_version|int ==19 or major_version|int > 19)
-  set_fact:
-    updated_block_params: "{{ genesis_json['consensus']['params']['block'] | combine({'max_gas': chain_block_max_gas}, recursive=True) }}"
+    updated_block_params: "{{ genesis_json['consensus']['params']['block'] | combine({'max_bytes': chain_block_max_bytes, 'max_gas': chain_block_max_gas}, recursive=True) }}"
 
 - name: Update evidence params for gaiad version < v19
   when: (chain_binary_name == 'gaiad') and (genesis_patching) and major_version|int < 19
@@ -506,7 +510,7 @@
 - name: Update feemarket params for gaiad version > v19
   when: (chain_binary_name == 'gaiad') and (genesis_patching) and major_version|int > 19
   set_fact:
-    updated_feemarket_params: "{{ genesis_json['app_state']['feemarket']['params'] | combine({'min_base_gas_price': minimum_gas_prices | regex_replace('[a-zA-Z]+$', '') }, recursive=True) }}"
+    updated_feemarket_params: "{{ genesis_json['app_state']['feemarket']['params'] | combine({'min_base_gas_price': minimum_gas_prices | regex_replace('[a-zA-Z]+$', ''), 'max_block_utilization': chain_block_max_gas }, recursive=True) }}"
 
 - name: Update feemarket state for gaiad version > v19
   when: (chain_binary_name == 'gaiad') and (genesis_patching) and major_version|int > 19
@@ -714,3 +718,26 @@
     user: "{{ ansible_user }}"
     state: absent
     key: "{{ ssh_pub_key.stdout }}"
+
+# Ensure client.toml exists and has proper permissions
+- name: Create client.toml if it doesn't exist
+  copy:
+    content: |
+      # This is a minimal client.toml
+      chain-id = "{{chain_id}}"
+      keyring-backend = "{{node_keyring}}"
+    dest: '{{chain_home}}/config/client.toml'
+    owner: '{{node_user}}'
+    group: '{{node_user}}'
+    mode: '0644'
+    force: no  # Don't overwrite if it exists
+
+# Ensure all config files have the correct permissions
+- name: Set proper ownership and permissions
+  file:
+    path: "{{chain_home}}"
+    state: directory
+    owner: "{{node_user}}"
+    group: "{{node_user}}"
+    mode: '0755'
+    recurse: yes

@@ -54,7 +54,7 @@ if operation == "reset":
     if answer.lower() in ["yes"]:
         print(os.popen("ansible-playbook node.yml -i " +
                        inventory +
-                       " --extra-vars 'node_unsafe_reset=true target=" + target + "' "
+                       " --extra-vars 'reboot=false node_unsafe_reset=true target=" + target + "' "
                        " --tags 'chain_stop,chain_reset,chain_start'").read())
         sys.exit(0)
     else:
