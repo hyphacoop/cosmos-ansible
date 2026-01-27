@@ -1,8 +1,8 @@
 [
   {
-    "targets": ["{{ inventory_hostname }}"],
+    "targets": ["{{ item }}"],
     "labels": {
-      "job": "{{ chain_id }}",
+      "job": "{{ hostvars[item].chain_id | default('unknown') }}",
       "environment": "icmp-probe",
       "service": "icmp-probe"
     }

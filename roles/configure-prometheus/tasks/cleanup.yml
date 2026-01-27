@@ -1,0 +1,44 @@
+# CLEANUP STALE TARGETS
+- name: List existing Chain Node targets
+  find:
+    paths: /opt/prometheus/hosts
+    patterns: "*.json"
+  register: existing_chain_targets
+  run_once: true
+  tags:
+    - prometheus
+    - monitoring
+
+- name: Remove stale Chain Node targets
+  file:
+    path: "{{ item.path }}"
+    state: absent
+  loop: "{{ existing_chain_targets.files }}"
+  when: "item.path | basename | regex_replace('\\.json$', '') not in groups['node'] | default([])"
+  run_once: true
+  notify: reload prometheus
+  tags:
+    - prometheus
+    - monitoring
+
+- name: List existing System Node targets
+  find:
+    paths: /opt/prometheus/systems
+    patterns: "*.json"
+  register: existing_system_targets
+  run_once: true
+  tags:
+    - prometheus
+    - monitoring
+
+- name: Remove stale System Node targets
+  file:
+    path: "{{ item.path }}"
+    state: absent
+  loop: "{{ existing_system_targets.files }}"
+  when: "item.path | basename | regex_replace('\\.json$', '') not in groups['system'] | default([])"
+  run_once: true
+  notify: reload prometheus
+  tags:
+    - prometheus
+    - monitoring

@@ -61,3 +61,11 @@ scrape_configs:
     file_sd_configs:
     - files:
       - /opt/prometheus/https-exporters/*.json
+
+  # System/Infra Exporters (faucet, monitor, etc)
+  # Separated to avoid triggering chain-health alerts
+  - job_name: 'systems-exporters'
+    scheme: http
+    file_sd_configs:
+    - files:
+      - /opt/prometheus/systems/*.json

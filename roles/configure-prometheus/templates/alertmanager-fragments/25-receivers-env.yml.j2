@@ -1,9 +1,9 @@
-{% if pagerduty_integration_key is defined %}
-  # PagerDuty receiver for {{ chain_id }}
-  - name: 'pagerduty-{{ chain_id }}'
+{% if item.1.pagerduty_key is defined %}
+  # PagerDuty receiver for {{ item.1.name }}
+  - name: 'pagerduty-{{ item.1.name }}'
     pagerduty_configs:
-      - routing_key: '{{ pagerduty_integration_key }}'
-        description: '[{{ chain_id }}] {% raw %}{{ .GroupLabels.alertname }}{% endraw %}'
+      - routing_key: '{{ item.1.pagerduty_key }}'
+        description: '[{{ item.1.name }}] {% raw %}{{ .GroupLabels.alertname }}{% endraw %}'
         severity: '{% raw %}{{ .CommonLabels.severity }}{% endraw %}'
         details:
           summary: '{% raw %}{{ .CommonAnnotations.summary }}{% endraw %}'

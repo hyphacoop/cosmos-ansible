@@ -1,23 +1,47 @@
 ---
-# Minimal playbook to ONLY setup monitoring without touching the chain
-- hosts: node
-  become: true
+# Minimal playbook to setup monitoring (node-exporter + prometheus/alertmanager)
+# Usage: ansible-playbook -i inventory-observability.yml setup-monitoring.yml --vault-password-file ../vault_pw.txt
+
+# 1. Add monitoring server to inventory dynamically
+- hosts: localhost
+  connection: local
+  gather_facts: false
   vars_files:
     - ../cosmos-configurations-private/vault.yml
   tasks:
-    - name: Setup node-exporter
-      include_role:
-        name: node-exporter
+    - name: Add monitoring server to inventory
+      add_host:
+        name: "{{ grafana_ssh_url | regex_replace('^.*@', '') }}"
+        groups: monitoring_server
+        ansible_user: "{{ grafana_ssh_url | regex_replace('@.*$', '') }}"
 
+# 2. Gather facts from targeted nodes (hosts: node AND system)
+# This allows the monitoring server to know about their check details (chain_id, etc)
+- hosts: node,system
+  gather_facts: true
+  vars_files:
+    - ../cosmos-configurations-private/vault.yml
+
+# 3. Setup Prometheus and Alertmanager on the monitoring server
+- hosts: monitoring_server
+  gather_facts: false
+  vars_files:
+    - ../cosmos-configurations-private/vault.yml
+  vars:
+    # Explicitly pass the Matrix secret from vault
+    matrix_alertmanager_secret: "{{ vault_matrix_secret }}"
+  tasks:
+    # Build list of chains from vault_pagerduty_keys dictionary
+    - name: Construct alertmanager_chains from vault keys
+      set_fact:
+        alertmanager_chains: "{{ alertmanager_chains | default([]) + [{'name': item.key, 'pagerduty_key': item.value}] }}"
+      loop: "{{ vault_pagerduty_keys | dict2items }}"
+      when: vault_pagerduty_keys is defined
+    # Configure Prometheus/Alertmanager
+    # This now handles creating all scrape targets by looping over inventory groups
     - name: Setup on prometheus server
       include_role:
         name: configure-prometheus
-        apply:
-          delegate_to: "{{ grafana_ssh_url }}"
-          tags:
-            - alerting
-            - monitoring
-      when: monitoring_prometheus | default(false) | bool
       tags:
         - alerting
         - monitoring
