@@ -25,13 +25,13 @@ Set up nodes to join the [Interchain Security Testnet](https://github.com/cosmos
 
 ### Provider Chain
 
-* **Inventory file:** [`inventory-ics-testnet-provider.yml`](inventory-ics-testnet-provider.yml)
+* **Inventory file:** [`inventory-hub-testnet-provider.yml`](inventory-hub-testnet-provider.yml)
 * **Chain ID:** `provider`
-* **Gaia version:** `v25.3.0`
+* **Gaia version:** `v26.0.0-rc0`
 
 Run the playbook:
 ```
-ansible-playbook node.yml -i examples/inventory-ics-testnet-provider.yml -e 'target=SERVER_IP_OR_DOMAIN'
+ansible-playbook node.yml -i examples/inventory-hub-testnet-provider.yml -e 'target=SERVER_IP_OR_DOMAIN'
 ```
 
 If you want to run a validator, do the following after this play has finished running and continue to join the consumer chains:
