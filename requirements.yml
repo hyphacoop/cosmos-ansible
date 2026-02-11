@@ -4,7 +4,7 @@ collections:
   - name: community.postgresql
   - name: https://github.com/hyphacoop/ansible-common.git
     type: git
-    version: 870ee7f77f5f6bd3102d4180af6b24497aa5ac26
+    version: 62c85a3cca778750ad7eefff5aa786b52fc55426
 roles:
   - src: geerlingguy.docker
   - src: geerlingguy.nodejs
