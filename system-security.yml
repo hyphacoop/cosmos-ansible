@@ -1,0 +1,6 @@
+---
+# Preform system update and update firewall
+- hosts: node
+  become: true
+  roles:
+    - system-security

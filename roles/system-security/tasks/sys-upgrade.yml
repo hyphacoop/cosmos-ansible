@@ -1,0 +1,9 @@
+---
+
+- name: Upgrade the system
+  apt:
+    update_cache: true
+    upgrade: dist
+  register: apt_cache
+  retries: 50
+  until: apt_cache is success

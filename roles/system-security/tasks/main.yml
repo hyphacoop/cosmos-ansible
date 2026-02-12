@@ -1,0 +1,6 @@
+---
+- name: Upgrade system
+  import_tasks: sys-upgrade.yml
+
+# - name: Configure firewall
+#   import_tasks: firewall.yml
