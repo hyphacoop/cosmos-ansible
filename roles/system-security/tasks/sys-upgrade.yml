@@ -5,5 +5,15 @@
     update_cache: true
     upgrade: dist
   register: apt_cache
-  # retries: 50
+  retries: 50
   until: apt_cache is success
+
+- name: Check if the system needs rebooting
+  stat:
+    path: /var/run/reboot-required
+  register: stat_result
+
+- name: Reboot the system if needed
+  include_role:
+    name: reboot
+  when: stat_result.stat.exists
