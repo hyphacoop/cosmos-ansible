@@ -1,16 +1,18 @@
 ---
 
-name: Join Interchain Security Testnet
+name: Join Cosmos Hub Testnet
 on:
   workflow_dispatch:
   schedule:
     # At 14:30 on M/W/F.
     - cron: '30 14 * * 1,3,5'
+  push:
+    
 jobs:
   test-provider:
     runs-on: ubuntu-22.04
     env:
-      RPC_ENDPOINT: https://rpc.provider-sentry-02.ics-testnet.polypore.xyz
+      RPC_ENDPOINT: https://rpc.provider-sentry-02.hub-testnet.polypore.xyz
     steps:
       - name: Bypass the grub-efi-amd64-signed package
         run: sudo apt-mark hold grub-efi-amd64-signed
@@ -29,7 +31,7 @@ jobs:
       - name: Run playbook
         run: |
           chain_version=$(curl -s $RPC_ENDPOINT/abci_info? | jq -r '.result.response.version')
-          ansible-playbook node.yml -i examples/inventory-ics-testnet-provider.yml --extra-vars "target=local reboot=false chain_home={{ node_user_home }}/.gaia node_user=runner enable_swap=false use_cosmovisor=false chain_binary_release=https://github.com/cosmos/gaia/releases/download/$chain_version/gaiad-$chain_version-linux-amd64 chain_binary_source=release"
+          ansible-playbook node.yml -i examples/inventory-hub-testnet-provider.yml --extra-vars "target=local reboot=false chain_home={{ node_user_home }}/.gaia node_user=runner enable_swap=false use_cosmovisor=false chain_binary_release=https://github.com/cosmos/gaia/releases/download/$chain_version/gaiad-$chain_version-linux-amd64 chain_binary_source=release"
       - name: Check gaiad service
         run: |
           journalctl -u gaiad
