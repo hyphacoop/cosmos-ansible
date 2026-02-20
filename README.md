@@ -1,7 +1,7 @@
 # Ansible Cosmos Network Creator
 
 [![Lint](https://github.com/hyphacoop/cosmos-ansible/actions/workflows/lint.yml/badge.svg?branch=main)](https://github.com/hyphacoop/cosmos-ansible/actions/workflows/lint.yml)
-[![Join Interchain Security Testnet](https://github.com/hyphacoop/cosmos-ansible/actions/workflows/test-join-ics-testnet.yml/badge.svg)](https://github.com/hyphacoop/cosmos-ansible/actions/workflows/test-join-ics-testnet.yml)
+[![Join Cosmos Hub Testnet](https://github.com/hyphacoop/cosmos-ansible/actions/workflows/test-join-hub-testnet.yml/badge.svg)](https://github.com/hyphacoop/cosmos-ansible/actions/workflows/test-join-hub-testnet.yml)
 
 ✨ An Ansible toolkit for Cosmos networks 💫
 
