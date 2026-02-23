@@ -47,13 +47,13 @@ groups:
 
       # Transaction Health
       - alert: HighTransactionFailureRate
-        expr: rate(tendermint_mempool_evicted_txs[10m]) / (rate(tendermint_consensus_total_txs[10m]) + rate(tendermint_mempool_evicted_txs[10m])) > 0.10
+        expr: rate(tendermint_mempool_evicted_txs[10m]) / (rate(tendermint_consensus_total_txs[10m]) + rate(tendermint_mempool_evicted_txs[10m])) > 0.50
         for: 5m
         labels:
           severity: critical
         annotations:
           summary: "High transaction failure rate on {{ $labels.instance }}"
-          description: "More than 10% of transactions are being evicted from mempool on {{ $labels.instance }}. Current rate: {{ $value | humanizePercentage }}. See https://www.notion.so/SEV-1-Degraded-transaction-handling-2a1099a65ba180b39523ec2006d77a08"
+          description: "More than 50% of transactions are being evicted from mempool on {{ $labels.instance }}. Current rate: {{ $value | humanizePercentage }}. See https://www.notion.so/SEV-1-Degraded-transaction-handling-2a1099a65ba180b39523ec2006d77a08"
 
       # Mempool Health - Transaction Count
       - alert: MempoolUnconfirmedTransactions
@@ -110,6 +110,16 @@ groups:
   # ==================================================================
   - name: CosmosChainWarning
     rules:
+      # Transaction Health - Warning
+      - alert: HighTransactionFailureRateWarning
+        expr: rate(tendermint_mempool_evicted_txs[10m]) / (rate(tendermint_consensus_total_txs[10m]) + rate(tendermint_mempool_evicted_txs[10m])) > 0.10
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Elevated transaction failure rate on {{ $labels.instance }}"
+          description: "More than 10% of transactions are being evicted from mempool on {{ $labels.instance }}. Current rate: {{ $value | humanizePercentage }}. See https://www.notion.so/SEV-1-Degraded-transaction-handling-2a1099a65ba180b39523ec2006d77a08"
+
       # Chain Performance - Warning
       - alert: ChainSlowdownWarning
         expr: rate(tendermint_consensus_height[10m]) < 0.14
