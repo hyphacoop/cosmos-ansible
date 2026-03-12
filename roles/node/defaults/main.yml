@@ -223,7 +223,8 @@ node_exporter_port: 9100
 node_exporter_binary_memory: false
 
 # Prometheus / Grafana defaults
-grafana_ssh_url: root@monitor.testnet.com
+grafana_ssh_url: monitor.testnet.com
+grafana_user: root
 monitoring_prometheus: false
 
 # PANIC monitoring
