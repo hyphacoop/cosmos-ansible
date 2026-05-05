@@ -27,7 +27,7 @@ Set up nodes to join the [Interchain Security Testnet](https://github.com/cosmos
 
 * **Inventory file:** [`inventory-hub-testnet-provider.yml`](inventory-hub-testnet-provider.yml)
 * **Chain ID:** `provider`
-* **Gaia version:** `v27.2.0-rc0`
+* **Gaia version:** `v27.3.0-rc0`
 
 Run the playbook:
 ```
