@@ -14,8 +14,8 @@ jobs:
     env:
       RPC_ENDPOINT: https://rpc.provider-sentry-02.hub-testnet.polypore.xyz
     steps:
-      - name: Bypass the grub-efi-amd64-signed package
-        run: sudo apt-mark hold grub-efi-amd64-signed
+      - name: Bypass the grub-efi-arm64-signed package
+        run: sudo apt-mark hold grub-efi-arm64-signed
       - name: Check out repository code
         uses: actions/checkout@v3
       - name: Set up Python
