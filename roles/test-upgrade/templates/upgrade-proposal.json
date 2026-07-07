@@ -1,0 +1,20 @@
+{
+    "messages": [
+        {
+            "@type": "/cosmos.upgrade.v1beta1.MsgSoftwareUpgrade",
+            "authority": "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn",
+            "plan": {
+                "name": "v27.5.0",
+                "time": "0001-01-01T00:00:00Z",
+                "height": "17868500",
+                "info": "{\"binaries\": {\"darwin/amd64\": \"https://github.com/cosmos/gaia/releases/download/v27.5.0-rc0/gaiad-v27.5.0-rc0-darwin-amd64?checksum=sha256:7847f69e8793637545374797131273b19fb8bf2571f8aa51ba15b3d96a0fd544\", \"linux/amd64\": \"https://github.com/cosmos/gaia/releases/download/v27.5.0-rc0/gaiad-v27.5.0-rc0-linux-amd64?checksum=sha256:99d0cdabba5b731a825433c232dc50be1473ebc85f6868c77f95ff86493dd9fb\"}}",
+                "upgraded_client_state": null
+            }
+        }
+    ],
+    "metadata": "ipfs://CID",
+    "deposit": "150000000uatom",
+    "title": "Gaia v27.5.0-rc0 Upgrade",
+    "summary": "# Summary\r\n\r\n- The `v27.5.0` upgrade bumps the following versions:\r\n    - `ibc-go` v10.6.0 \u2192 v10.7.0\r\n- If the proposal passes, validators will be required to update the Cosmos Hub binary at the specified upgrade height.\r\n\r\n# Release Details\r\n\r\n- The release can be found [here](https://github.com/cosmos/gaia/releases/tag/v27.5.0-rc0).\r\n- The changelog can be found [here](https://github.com/cosmos/gaia/blob/v27.5.0-rc0/CHANGELOG.md).\r\n\r\n**This upgrade is state-breaking and mandatory once the on-chain vote passes and the upgrade height is reached.**",
+    "expedited": true
+}

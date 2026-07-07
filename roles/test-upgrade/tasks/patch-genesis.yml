@@ -1,0 +1,18 @@
+---
+- name: Patch Exported Genesis
+  service_facts:
+
+- include_role:
+    name: common
+
+- name: Read upgrade proposal and extract height
+  set_fact:
+    upgrade_proposal: "{{ lookup('template', 'upgrade-proposal.json') | from_json }}"
+
+- name: Set upgrade height from proposal
+  set_fact:
+    upgrade_height: "{{ upgrade_proposal.messages[0].plan.height | int }}"
+
+- name: Print upgrade height
+  debug:
+    msg: "Upgrade height is {{ upgrade_height }}"

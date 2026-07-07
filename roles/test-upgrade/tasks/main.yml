@@ -1,0 +1,6 @@
+---
+- name: Export Current Chain
+  import_tasks: export.yml
+
+- name: Patch Exported Genesis
+  import_tasks: patch-genesis.yml
