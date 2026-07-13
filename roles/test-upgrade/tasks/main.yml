@@ -4,3 +4,12 @@
 
 - name: Patch Exported Genesis
   import_tasks: patch-genesis.yml
+
+- name: Start Chain
+  import_tasks: start.yml
+
+- name: Submit Gov proposal
+  import_tasks: gov_proposal.yml
+
+- name: Submit Upgrade proposal
+  import_tasks: upgrade_proposal.yml

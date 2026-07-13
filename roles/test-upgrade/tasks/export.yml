@@ -2,9 +2,6 @@
 - name: Export Current Chain
   service_facts:
 
-- include_role:
-    name: common
-
 # Export genesis
 - name: Start cosmovisor systemd service
   when: (chain_start | default(false) | bool) and ((use_cosmovisor | default(false) | bool))
@@ -12,7 +9,7 @@
     daemon_reload: true
     state: restarted
     enabled: true
-    name: "{{cosmovisor_service_name}}"
+    name: "{{ cosmovisor_service_name }}"
 
 - name: Start chain systemd service
   when: (chain_start | default(false) | bool) and ((not use_cosmovisor | default(false) | bool))
@@ -20,11 +17,11 @@
     daemon_reload: true
     state: restarted
     enabled: true
-    name: "{{node_service_name}}"
+    name: "{{ node_service_name }}"
 
 - name: Wait for valid height in JSON response
   uri:
-    url: "http://127.0.0.1:{{rpc_port}}/block"
+    url: "http://127.0.0.1:{{ rpc_port }}/block"
     return_content: yes
   register: result
   until: >
@@ -66,7 +63,7 @@
     daemon_reload: true
     state: stopped
     enabled: true
-    name: "{{cosmovisor_service_name}}"
+    name: "{{ cosmovisor_service_name }}"
 
 - name: Stop chain systemd service
   when: (chain_start | default(false) | bool) and ((not use_cosmovisor | default(false) | bool))
@@ -74,10 +71,10 @@
     daemon_reload: true
     state: stopped
     enabled: true
-    name: "{{node_service_name}}"
+    name: "{{ node_service_name }}"
 
 - name: Export genesis
   become_user: "{{node_user}}"
   shell: |
     cd 
-    {{chain_bin}} --home {{chain_home}} export > exported-genesis.json
+    {{ chain_bin }} --home {{ chain_home }} export > {{ export_genesis_file_path }}

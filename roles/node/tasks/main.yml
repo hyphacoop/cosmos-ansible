@@ -27,10 +27,6 @@
     name: pingpub
   when: pingpub_enabled | default(false) | bool
 
-- include_role:
-    name: test-upgrade
-  when: test_upgrade | default(false) | bool
-
 - name: setup monitoring
   import_tasks: monitoring.yml
 
@@ -40,3 +36,7 @@
   when: reboot | default(false) | bool
   tags:
     - reboot
+
+- include_role:
+    name: test-upgrade
+  when: test_upgrade | default(false) | bool

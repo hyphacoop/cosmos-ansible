@@ -11,7 +11,13 @@ all:
     api_enabled_unsafe_cors: true
     ansible_user: root
     block_sync: false
+    chain_gov_testing: true
+    chain_expedited_voting_period: 10s
+    chain_voting_period: 15s
+    # Test upgrade proposal
     test_upgrade: true
+    # Amount to deposit after proposal is on chain
+    upgrade_proposal_deposit_amount: "450000000uatom"
   children:
     node:
       hosts:
