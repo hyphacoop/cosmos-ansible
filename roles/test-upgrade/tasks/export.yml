@@ -76,5 +76,5 @@
 - name: Export genesis
   become_user: "{{node_user}}"
   shell: |
-    cd 
+    cd
     {{ chain_bin }} --home {{ chain_home }} export > {{ export_genesis_file_path }}

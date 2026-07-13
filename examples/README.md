@@ -59,7 +59,7 @@ Set up a node with a single validator account with Pingpub explorer and pass a u
 Require hostnames:
 - explorer: pingpub.node.testnet.com
 
-Update [roles/test-upgrade/templates/gov-params-proposal.json](../roles/test-upgrade/templates/gov-params-proposal.json) and [roles/test-upgrade/templates/upgrade-proposal.json](../roles/test-upgrade/templates/upgrade-proposal.json) for your targeted upgrade.
+Update [`roles/test-upgrade/templates/gov-params-proposal.json`](../roles/test-upgrade/templates/gov-params-proposal.json) and [`roles/test-upgrade/templates/upgrade-proposal.json`](../roles/test-upgrade/templates/upgrade-proposal.json) for your targeted upgrade.
 
 ### Run the Playbook
 
