@@ -45,6 +45,32 @@ If you want to run a validator, do the following after this play has finished ru
 gaiad keys add <validator_keypair_name> --home ~/.gaia --keyring-backend test --output json > ~/validator-keypair.json 2>&1
 ```
 
+## Start a Local Testnet with Pingpub explorer and Test Upgrade Proposal
+
+Set up a node with a single validator account with Pingpub explorer and pass a upgrade proposal.
+
+* **Inventory file:** [`inventory-test-upgrade.yml`](inventory-test-upgrade.yml)
+* **Chain ID:** `my-testnet`
+* **Moniker:** `cosmos-node`
+* **Starting Gaia version:** `v27.4.0`
+
+### Requirements
+
+Require hostnames:
+- explorer: pingpub.node.testnet.com
+
+Update [roles/test-upgrade/templates/gov-params-proposal.json](../roles/test-upgrade/templates/gov-params-proposal.json) and [roles/test-upgrade/templates/upgrade-proposal.json](../roles/test-upgrade/templates/upgrade-proposal.json) for your targeted upgrade.
+
+### Run the Playbook
+
+```
+# DOMAIN="node.testnet.com"
+ansible-playbook node.yml -i examples/inventory-test-upgrade.yml -e 'target=DOMAIN'
+```
+
+- The validator address and mnemonic will be saved to `/home/gaia/.gaia/validator.json` in the host.
+- The play will export a genesis from fresh state and modify the initial height and start the chain 50 blocks before upgrade based on the height in the upgrade proposal
+
 ## Start a Local Testnet
 
 Set up a node with a single validator account.

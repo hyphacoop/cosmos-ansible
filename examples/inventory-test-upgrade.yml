@@ -5,7 +5,6 @@ all:
     chain_home_clear: true
     chain_version: v27.4.0
     chain_create_validator: true
-    faucet_enabled: true
     pingpub_enabled: true
     api_enabled: true
     api_enabled_unsafe_cors: true
