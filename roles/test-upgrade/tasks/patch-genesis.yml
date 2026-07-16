@@ -1,0 +1,29 @@
+---
+- name: Patch Exported Genesis
+  service_facts:
+
+- name: Read upgrade proposal and extract height
+  set_fact:
+    upgrade_proposal: "{{ lookup('template', 'upgrade-proposal.json') | from_json }}"
+
+- name: Set upgrade height from proposal
+  set_fact:
+    upgrade_height: "{{ upgrade_proposal.messages[0].plan.height | int }}"
+
+- name: Print upgrade height
+  debug:
+    msg: "Upgrade height is {{ upgrade_height }}"
+
+- name: Read genesis file
+  slurp:
+    src: "{{ export_genesis_file_path }}"
+  register: genesis_raw
+
+- name: Parse genesis
+  set_fact:
+    genesis: "{{ genesis_raw.content | b64decode | from_json }}"
+
+- name: Write updated genesis with new initial_height
+  copy:
+    content: "{{ genesis | combine({'initial_height': upgrade_height | int - 50}) }}"
+    dest: "{{ patched_genesis_file_path }}"

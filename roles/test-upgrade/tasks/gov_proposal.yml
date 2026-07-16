@@ -1,0 +1,99 @@
+---
+- name: Set target height (current + 1)
+  set_fact:
+    target_height: "{{ result.json.result.block.header.height | int + 1 }}"
+
+- name: Print target height
+  debug:
+    msg: "Current height: {{ result.json.result.block.header.height | int }}, waiting until: {{ target_height }}"
+
+- name: Wait until target height is reached
+  uri:
+    url: "http://127.0.0.1:{{ rpc_port }}/block"
+    return_content: yes
+  register: result
+  until: >
+    result.status == 200 and
+    result.json is defined and
+    result.json.result.block.header.height is defined and
+    result.json.result.block.header.height | int >= target_height | int
+  retries: 50
+  delay: 5
+
+- name: Print final height
+  debug:
+    msg: "Target reached! Block height is now {{ result.json.result.block.header.height | int }}"
+
+- name: Copy gov proposal to host
+  template:
+    src: 'gov-params-proposal.json'
+    dest: '{{ gov_proposal_path }}'
+    owner: '{{ node_user }}'
+    group: '{{ node_user }}'
+    mode: "0644"
+
+- name: Submit gov proposal
+  shell: |
+    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+    cd $HOME
+    {{ chain_binary_name }} tx gov submit-proposal {{ gov_proposal_path }} --keyring-backend test --chain-id {{ chain_id }} --from validator --home {{ chain_home }} --gas auto --gas-prices {{ minimum_gas_prices }} --gas-adjustment 5 -y --output json > gov_proposal_result.json
+  become_user: '{{ node_user }}'
+
+- name: Wait for block
+  pause:
+    seconds: "6"
+
+- name: Collect proposal ID
+  shell: |
+    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+    cd $HOME
+    txhash=$(jq -r '.txhash' gov_proposal_result.json)
+    proposal_id=$({{ chain_binary_name }} --home {{ chain_home }} q tx $txhash -o json | jq -r '.events[] | select(.type == "submit_proposal") | .attributes[] | select(.key == "proposal_id") | .value')
+    echo $proposal_id
+  register: proposal_result
+  become_user: '{{ node_user }}'
+
+- name: Store proposal ID
+  set_fact:
+    proposal_id: "{{ proposal_result.stdout | trim }}"
+
+- name: Print proposal ID
+  debug:
+    msg: "Proposal ID is {{ proposal_id }}"
+
+- name: Vote on proposal
+  shell: |
+    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+    cd $HOME
+    {{ chain_binary_name }} tx gov vote {{ proposal_id }} yes --from validator --keyring-backend test --chain-id {{ chain_id }} --home {{ chain_home }} --gas auto --gas-prices {{ minimum_gas_prices }} --gas-adjustment 5 -y
+  become_user: '{{ node_user }}'
+
+- name: Collect voting period
+  shell: |
+    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+    cd $HOME
+    period=$({{ chain_binary_name }} q gov params -o json | jq -r '.params.voting_period')
+    hours=$(echo $period | grep -oP '\d+(?=h)' || echo 0)
+    minutes=$(echo $period | grep -oP '\d+(?=m)' || echo 0)
+    seconds=$(echo $period | grep -oP '\d+(?=s)' || echo 0)
+    total=$(( (hours * 3600) + (minutes * 60) + seconds ))
+    echo $total
+  register: voting_period_seconds
+  become_user: '{{ node_user }}'
+
+- name: Wait for voting period to end
+  pause:
+    seconds: "{{ voting_period_seconds.stdout }}"
+
+- name: Check proposal status
+  shell: |
+    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+    cd $HOME
+    {{ chain_binary_name }} q gov proposal {{ proposal_id }} --output json | jq -r '.proposal.status'
+  register: proposal_status
+  become_user: '{{ node_user }}'
+
+- name: Fail if proposal does not pass
+  fail:
+    msg: 'The proposal did not reach "PROPOSAL_STATUS_PASSED" status'
+  when: proposal_status.stdout != "PROPOSAL_STATUS_PASSED"

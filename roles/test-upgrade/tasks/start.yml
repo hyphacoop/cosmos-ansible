@@ -1,0 +1,46 @@
+---
+- name: Patch Exported Genesis
+  service_facts:
+
+- name: Copy patched genesis to conf directory
+  copy:
+    src: '{{ patched_genesis_file_path }}'
+    dest: '{{ chain_home }}/config/genesis.json'
+    owner: '{{ node_user }}'
+    group: '{{ node_user }}'
+    remote_src: true
+
+- name: reset gaiad database
+  shell: |
+    cd $HOME
+    {{ chain_bin }} tendermint unsafe-reset-all --home {{ chain_home }}
+  become_user: "{{node_user}}"
+
+- name: Start cosmovisor systemd service
+  when: (chain_start | default(false) | bool) and ((use_cosmovisor | default(false) | bool))
+  systemd:
+    daemon_reload: true
+    state: restarted
+    enabled: true
+    name: "{{ cosmovisor_service_name }}"
+
+- name: Start chain systemd service
+  when: (chain_start | default(false) | bool) and ((not use_cosmovisor | default(false) | bool))
+  systemd:
+    daemon_reload: true
+    state: restarted
+    enabled: true
+    name: "{{ node_service_name }}"
+
+- name: Wait for valid height in JSON response
+  uri:
+    url: "http://127.0.0.1:{{ rpc_port }}/block"
+    return_content: yes
+  register: result
+  until: >
+    result.status == 200 and
+    result.json is defined and
+    result.json.result.block.header.height is defined and
+    result.json.result.block.header.height | int > 0
+  retries: 50
+  delay: 1

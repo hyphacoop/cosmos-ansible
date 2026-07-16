@@ -407,7 +407,7 @@
   shell: |
     cd {{chain_home}}/config
     jq '.app_state.gov.deposit_params.min_deposit[0].amount |= "1"' genesis.json > temp.json
-    jq '.app_state.gov.voting_params.voting_period |= "{{ chain_voting_period }}"' temp.json > genesis.json
+    jq '.app_state.gov.voting_params.voting_period |= "{{ chain_voting_period }}"' temp.json > genesis.
     rm temp.json
 
 - name: patch genesis file with minimum deposit and short voting period (command for => v15)
@@ -415,8 +415,9 @@
   shell: |
     cd {{chain_home}}/config
     jq '.app_state.gov.params.min_deposit[0].amount |= "1"' genesis.json > temp.json
-    jq '.app_state.gov.params.voting_period |= "{{ chain_voting_period }}"' temp.json > genesis.json
-    rm temp.json
+    jq '.app_state.gov.params.voting_period |= "{{ chain_voting_period }}"' temp.json > voting.json
+    jq '.app_state.gov.params.expedited_voting_period |= "{{ chain_expedited_voting_period }}"' voting.json > genesis.json
+    rm temp.json voting.json
 
 - name: Read the genesis file
   when: chain_binary_name == 'gaiad'

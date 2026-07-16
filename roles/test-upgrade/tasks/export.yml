@@ -1,0 +1,80 @@
+---
+- name: Export Current Chain
+  service_facts:
+
+# Export genesis
+- name: Start cosmovisor systemd service
+  when: (chain_start | default(false) | bool) and ((use_cosmovisor | default(false) | bool))
+  systemd:
+    daemon_reload: true
+    state: restarted
+    enabled: true
+    name: "{{ cosmovisor_service_name }}"
+
+- name: Start chain systemd service
+  when: (chain_start | default(false) | bool) and ((not use_cosmovisor | default(false) | bool))
+  systemd:
+    daemon_reload: true
+    state: restarted
+    enabled: true
+    name: "{{ node_service_name }}"
+
+- name: Wait for valid height in JSON response
+  uri:
+    url: "http://127.0.0.1:{{ rpc_port }}/block"
+    return_content: yes
+  register: result
+  until: >
+    result.status == 200 and
+    result.json is defined and
+    result.json.result.block.header.height is defined and
+    result.json.result.block.header.height | int > 0
+  retries: 50
+  delay: 1
+
+- name: Set target height (current + 5)
+  set_fact:
+    target_height: "{{ result.json.result.block.header.height | int + 5 }}"
+
+- name: Print target height
+  debug:
+    msg: "Current height: {{ result.json.result.block.header.height | int }}, waiting until: {{ target_height }}"
+
+- name: Wait until target height is reached
+  uri:
+    url: "http://127.0.0.1:{{ rpc_port }}/block"
+    return_content: yes
+  register: result
+  until: >
+    result.status == 200 and
+    result.json is defined and
+    result.json.result.block.header.height is defined and
+    result.json.result.block.header.height | int >= target_height | int
+  retries: 50
+  delay: 5
+
+- name: Print final height
+  debug:
+    msg: "Target reached! Block height is now {{ result.json.result.block.header.height | int }}"
+
+- name: Stop cosmovisor systemd service
+  when: (chain_start | default(false) | bool) and ((use_cosmovisor | default(false) | bool))
+  systemd:
+    daemon_reload: true
+    state: stopped
+    enabled: true
+    name: "{{ cosmovisor_service_name }}"
+
+- name: Stop chain systemd service
+  when: (chain_start | default(false) | bool) and ((not use_cosmovisor | default(false) | bool))
+  systemd:
+    daemon_reload: true
+    state: stopped
+    enabled: true
+    name: "{{ node_service_name }}"
+
+- name: Export genesis
+  become_user: "{{node_user}}"
+  shell: |
+    cd
+    {{ chain_bin }} --home {{ chain_home }} export > {{ export_genesis_file_path }}

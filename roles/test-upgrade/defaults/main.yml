@@ -1,0 +1,6 @@
+---
+export_genesis_file_path: "{{node_user_home}}/exported-genesis.json"
+patched_genesis_file_path: "{{node_user_home}}/patched-genesis.json"
+upgrade_proposal_path: "{{node_user_home}}/upgrade-proposal.json"
+gov_proposal_path: "{{node_user_home}}/gov-proposal.json"
+upgrade_proposal_deposit_amount: "450000000uatom"

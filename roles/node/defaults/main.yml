@@ -24,7 +24,8 @@ validator_moniker: "{{inventory_hostname}}"
 # genesis config
 genesis_patching: true
 chain_gov_testing: false
-chain_voting_period: 10s
+chain_expedited_voting_period: 30s
+chain_voting_period: 60s
 chain_denom: uatom
 chain_denom_symbol: ATOM
 chain_id: "cosmos-testnet"
