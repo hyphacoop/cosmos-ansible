@@ -1,10 +1,9 @@
 server {
-	listen [::]:443 http2;
-	listen 0.0.0.0:443 http2;
+	listen [::]:443 http2 ssl;
+	listen 0.0.0.0:443 http2 ssl;
 
 	server_name {{site_hostname}};
 
-	ssl on;
 	server_tokens off;
 	ssl_protocols TLSv1.2 TLSv1.3;
 	ssl_prefer_server_ciphers on;
