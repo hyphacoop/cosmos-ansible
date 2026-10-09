@@ -34,6 +34,7 @@ chain_block_max_gas: "75000000"
 chain_evidence_max_bytes: "1048576"
 chain_globalfee_min_gas_prices: []
 chain_auth_cost_per_byte: "10"
+chain_max_validators: 200
 
 # genesis wasm config
 wasm_code_upload_access_permission: "Everybody"
@@ -66,7 +67,7 @@ cosmovisor_auto_download: true
 
 # Go configuration
 go_arch: "{{binary_arch_map[ansible_architecture]}}"
-go_version: '1.21.1'
+go_version: '1.25.7'
 
 # app.toml
 ## app.toml: Base Configuration

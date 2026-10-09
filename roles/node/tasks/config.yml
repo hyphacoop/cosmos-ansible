@@ -494,6 +494,16 @@
   set_fact:
     updated_auth: "{{ genesis_json['app_state']['auth'] | combine({'params': updated_auth_params}, recursive=True) }}"
 
+- name: Update staking params
+  when: (chain_binary_name == 'gaiad') and (genesis_patching)
+  set_fact:
+    updated_staking_params: "{{ genesis_json['app_state']['staking']['params'] | combine({'max_validators': chain_max_validators}, recursive=True) }}"
+
+- name: Update staking module
+  when: (chain_binary_name == 'gaiad') and (genesis_patching)
+  set_fact:
+    updated_staking: "{{ genesis_json['app_state']['staking'] | combine({'params': updated_staking_params}, recursive=True) }}"
+
 - name: Update globalfee params for gaiad version < v19
   when: (chain_binary_name == 'gaiad') and (genesis_patching) and major_version|int < 19
   set_fact:
@@ -539,6 +549,11 @@
   when: (chain_binary_name == 'gaiad') and (genesis_patching)
   set_fact:
     updated_app_state: "{{ genesis_json['app_state'] | combine({'auth': updated_auth}, recursive=True) }}"
+
+- name: Update app_state with staking
+  when: (chain_binary_name == 'gaiad') and (genesis_patching)
+  set_fact:
+    updated_app_state: "{{ updated_app_state | combine({'staking': updated_staking}, recursive=True) }}"
 
 - name: Update app_state with globalfee for gaiad version < v19
   when: (chain_binary_name == 'gaiad') and (genesis_patching) and major_version|int < 19

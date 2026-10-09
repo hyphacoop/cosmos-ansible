@@ -17,9 +17,13 @@
     dest: "{{node_user_home}}/ping-explorer/chains/mainnet/chain.json"
   become_user: "{{node_user}}"
 
+- name: Add NodeSource apt repository for Node.js 20
+  shell: curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+
 - name: Install nodejs
   apt:
     state: present
+    update_cache: yes
     pkg:
       - nodejs
       - rsync
@@ -33,6 +37,7 @@
 - name: Build Ping explorer
   shell: |
     cd {{node_user_home}}/ping-explorer
+    rm -rf node_modules
     {{node_user_home}}/.yarn/bin/yarn install --ignore-engines
     {{node_user_home}}/.yarn/bin/yarn build-only
   become_user: "{{node_user}}"
