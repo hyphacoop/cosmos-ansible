@@ -3,8 +3,8 @@
 all:
   vars:
     ansible_user: root
-    chain_version: "v25.2.0"
-    go_version: "1.24.3"
+    chain_version: "v28.3.1"
+    go_version: "1.25.7"
     chain_id: "cosmoshub-4"
     chain_home_clear: true
     node_unsafe_reset: true
